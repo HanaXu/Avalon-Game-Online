@@ -1,5 +1,5 @@
 /**
- * how many players will go on this quest, in the format of [questNum-1][total # players - 5]
+ * how many players will go on this quest, in the format of [questNum][total # players - 5]
  * ex: PLAYERS_ON_QUEST[0][0] = the first quest, with a 5 player game, will have 2 people on the Quest
  * @const {[][]}
  */
@@ -11,13 +11,25 @@ const PLAYERS_ON_QUEST = [
     [3,4,4,5,5,5]
 ];
 
+/**
+ * playerCount - the number of players in the whole game
+ * @var {number}
+ */
+var playerCount = 5; //todo: update this to a normal variable (rn it's set to always 5 players)
+
+/**
+ * leaderTrack is where in the list of players we are
+ * continues counting across all quests (so like a static variable)
+ * @var {number}
+ */
+var leaderTrack = 0;
 
 /**
  * Class representing the current Quest being played
  */
 class Quest {
     /**
-     * @typedef {Object} Quest
+     * Quest objects have:
      * @property {number} questNum - which quest players are on from 1 to 5
      * @property {number} teamSize - size of current quest’s team, based on below table
      * @property {number} voteTrack - how many failed votes have been for current quest, between 0 and 5
@@ -34,14 +46,25 @@ class Quest {
      * sets voteTrack to 0,
      * calls chooseNextLeader()
      */
-    constructor() {}
+    constructor(questNum, voteTrack) {
+        this.questNum = questNum;
+        this.teamSize = PLAYERS_ON_QUEST[questNum ][playerCount - 5];
+        this.voteTrack = voteTrack;
+        this.questLeader = "";
+        this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
+        this.success = null;
+        console.log("quest.js: constructor() created quest with questNum = " + questNum);
+    }
 
     /** @function chooseNextLeader
      * chooses next player in list of players (going in order)
      * assigns that player to questLeader variable
      * location in ordered player list persists across quests
      */
-    chooseNextLeader() {}
+    chooseNextLeader() {
+        leaderTrack = (leaderTrack + 1) % playerCount;
+        console.log("quest.js: chooseNextLeader() set leaderTrack = " + leaderTrack);
+    }
 
     /** @function questLeaderChooseTeam
      * @param questLeader the current Player leading the quest
@@ -50,13 +73,20 @@ class Quest {
      * puts those player names in a list in the team variable
      * sends the list to ALL players
      */
-     questLeaderChooseTeam(questLeader) {}
+     questLeaderChooseTeam() {
+         console.log("quest.js: questLeaderChooseTeam()");
+    }
 
     /** @function teamVote
      * called after questLeaderChooseTeam
      * all players see team list and vote Yes or No on their screen, then the following logic executes
+     * @return {boolean} true for succeeded quest, false for failed
      */
-    teamVote() {}
+    teamVote() {
+        console.log("quest.js: teamVote()");
+        //todo: make it only do teamGoOnQuest IF vote resolves to > 50% approval & if the vote fails, it increments voteTrack instead
+        this.teamGoOnQuest();
+    }
 
     /** @function teamGoOnQuest
      * called by teamVote function
@@ -64,12 +94,19 @@ class Quest {
      * displays the votes (stripped of Player identifiers) to all players
      * executes below logic to determine Success
      */
-    teamGoOnQuest() {}
+    teamGoOnQuest() {
+        console.log("quest.js: teamGoOnQuest()");
+
+        //todo: make success of quest conditional on inputs
+        this.success = true;
+    }
 
     /** @function saveQuestToHistory
      * executes after teamGoOnQuest
      * puts full Quest object into a list of Quest objects to be saved for later
      */
-    saveQuestToHistory() {}
+    saveQuestToHistory() {
+        console.log("quest.js: saveQuestToHistory()");
+    }
 
 }
