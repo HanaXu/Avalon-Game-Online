@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />
     <script src="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.js"></script>
 
+    <!-- Phone Authentication UI -->
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+
 </head>
 
 <body>
@@ -40,6 +44,8 @@
     <input id="roomcode" type="text" placeholder="Enter room code" value="788867">
     <button onclick="join()">Join room</button>
 </div>
+
+<div id="firebaseui-auth-container"></div>
 
 <script>
     var username;
@@ -123,8 +129,38 @@
         });
     }
 
+
+
     //authenticate user with phone number
     function phoneAuthenticate() {
+        // Initialize the FirebaseUI Widget using Firebase.
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
+        var uiConfig = {
+            signInSuccessUrl: 'index.html',
+            signInOptions: [
+                // Leave the lines as is for the providers you want to offer your users.
+                //firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+                //firebase.auth.GithubAuthProvider.PROVIDER_ID,
+                //firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+            ],
+            // tosUrl and privacyPolicyUrl accept either url string or a callback
+            // function.
+            // Terms of service url/callback.
+            tosUrl: 'index.html',
+            // Privacy policy url/callback.
+            privacyPolicyUrl: function () {
+                window.location.assign('index.html');
+            }
+        }
+
+        // The start method will wait until the DOM is loaded.
+        ui.start('#firebaseui-auth-container', uiConfig);
+
         firebase.auth().useDeviceLanguage();
 
         window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
