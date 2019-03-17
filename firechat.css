@@ -969,7 +969,8 @@
 
 #firechat #firechat-header {
     padding: 6px 0 0 0;
-    height: 40px
+    height: 40px;
+    display: none; /* don't show other rooms */
 }
 
 #firechat #firechat-tabs {
