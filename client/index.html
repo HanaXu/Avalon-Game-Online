@@ -124,21 +124,20 @@
     }
 
         function connectToGame(name, code, playerName, MsgId){
-            var gameCode = document.getElementById(code).value;
+            var game_code = document.getElementById(code).value;
+            var player_name = document.getElementById(name).value;
             var msg;
             //roomCodes.includes(gameCode
             if(true){
                 game.connectToGame = false;
-                document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + code;
-                startGame(name,gameCode);
+                document.getElementById(playerName).innerHTML = player_name + ", Welcome to Avalonline Room: " + code;
+                startGame(player_name,game_code);
             }
             else{
                 msg = "Game Does not exist";
                 document.getElementById(MsgId).innerHTML = msg;
             }
         }
-
-
 </script>
 
 
