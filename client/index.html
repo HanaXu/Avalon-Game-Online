@@ -45,8 +45,6 @@
     <h1 id="playerName"></h1>
 </div>
 
-<canvas id="ctx" width="800" height="600" style="border:1px
-solid #000000;"></canvas>
 
 </body>
 
@@ -124,45 +122,56 @@ solid #000000;"></canvas>
 
         return text;
     }
-    /*
+
         function connectToGame(name, code, playerName, MsgId){
             var gameCode = document.getElementById(code).value;
             var msg;
-            if(roomCodes.includes(gameCode)){
+            //roomCodes.includes(gameCode
+            if(true){
                 game.connectToGame = false;
                 document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + code;
-                startGame(name,code);
+                startGame(name,gameCode);
             }
             else{
                 msg = "Game Does not exist";
                 document.getElementById(MsgId).innerHTML = msg;
             }
         }
-    */
+
 
 </script>
 
 
 <script>
-    function startGame(playerName, roomCode){
         //creates a variable to the canvas created in html
-        var ctx = document.getElementById("ctx").getContext("2d");
-        ctx.font = '30px Arial';
-        //creates a socket variable to be used to communcated with the server
-        var socket = io();
+        //var ctx = document.getElementById("ctx").getContext("2d");
+        function startGame(playerName, roomCode){
+            //creates a variable to the canvas created in html
+            var canv = document.createElement("canvas");
+            canv.setAttribute('width', 800);
+            canv.setAttribute('height', 600);
+            canv.setAttribute('id', roomCode);
+            canv.setAttribute('style',"border:1px solid #000000");
+            document.body.appendChild(canv);
 
-        socket.emit('roomCode',{code:roomCode});
-        socket.emit('startGame');
-        socket.emit('playerName',{name:playerName});
-        socket.emit('createPlayer');
+            var ctx = document.getElementById(roomCode).getContext("2d");
+            //creates a socket variable to be used to communicate with the server
+            var socket = io();
 
-        //listens to new positions from the server and updates the client canvas
-        socket.on('newPositions', function(data){
-            ctx.clearRect(0,0,800,600);
-            for(var i = 0; i < data.length; i++)
-                ctx.fillText(data[i].name, data[i].x, data[i].y);
-        });
+            socket.emit('roomCode',{code:roomCode});
+            socket.emit('startGame');
+            socket.emit('playerName',{name:playerName});
+            socket.emit('createPlayer');
 
+            //listens to new positions from the server and updates the client canvas
+            socket.on('newPositions', function(data){
+                ctx.clearRect(0,0,800,600);
+                for(var i = 0; i < data.length; i++)
+                    if(data[i].code === roomCode){
+                        ctx.fillText(data[i].name + " " + data[i].code, data[i].x, data[i].y);
+                    }
+
+            });
 
         //listens to key down on d s a w and updates the server
         document.onkeydown = function(event){

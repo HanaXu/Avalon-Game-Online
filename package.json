@@ -2,7 +2,7 @@
   "name": "onlinegame",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.16.4",
     "socket.io": "^2.2.0"
@@ -12,7 +12,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node app.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC"

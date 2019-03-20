@@ -19,12 +19,13 @@ var PLAYER_LIST = {};
 var PLAYER_NAME = {};
 
 //create player attributes. x and y position, id and a number between 0 and 9
-var Player = function(id, name){
+var Player = function(id, name, gameCode){
     var self = {
         x:400,
         y:300,
         id:id,
         name:name,
+        gameCode:gameCode,
         pressingRight:false,
         pressingLeft:false,
         pressingUp:false,
@@ -45,12 +46,13 @@ var Player = function(id, name){
 }
 
 var io = require('socket.io')(serv,{});
-var code;
+
 
 
 
 io.sockets.on('connection', function(socket){
     socket.on('roomCode', function(data){
+        var code;
         socket.join(data.code);
         code = data.code;
 
@@ -68,9 +70,10 @@ io.sockets.on('connection', function(socket){
 
             //create player and add it to the player list
             socket.on('createPlayer', function(){
-                player = Player(socket.id, PLAYER_NAME[socket.id]);
+                player = Player(socket.id, PLAYER_NAME[socket.id], code);
                 PLAYER_LIST[socket.id] = player;
             });
+
 
 
             //if player disconnects, remove player from socket and player list
@@ -95,17 +98,19 @@ io.sockets.on('connection', function(socket){
 
 setInterval(function(){
     var pack = [];
+
     for(var i in PLAYER_LIST){
         var player = PLAYER_LIST[i];
         player.updatePosition();
         pack.push({
             x:player.x,
             y:player.y,
-            name:player.name
+            name:player.name,
+            code:player.gameCode
         });
     }
     for(var i in SOCKET_LIST){
-        var socket = SOCKET_LIST[i]
+        var socket = SOCKET_LIST[i];
         socket.emit('newPositions',pack);
     }
 },1000/25);
