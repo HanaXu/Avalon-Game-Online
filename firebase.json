@@ -1,8 +1,7 @@
 {
   "database": {
-    "rules": "dbRules.js"
+    "rules": "database.rules.json"
   },
-
   "hosting": {
     "public": "/server",
     "ignore": [
