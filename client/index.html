@@ -14,6 +14,24 @@
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 
     <script src="https://unpkg.com/vue@2.6.8/dist/vue.js"></script>
+
+
+    <!-- chat stuff added below -->
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+    <!-- Firechat -->
+    <link rel="stylesheet" href="firechat.css" />
+    <!--<script src="firechat.js"></script>-->
+    <!--<link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />-->
+    <script src="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.js"></script>
+
+    <!-- Phone Authentication UI -->
+    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
 </head>
 
 <body>
@@ -45,6 +63,15 @@
     <h1 id="playerName"></h1>
 </div>
 
+<div id="firechat-wrapper">
+    <input id="username" type="text" name="username" placeholder="Enter a username" value="testuser">
+    <button onclick="create()">Create room</button>
+    <button onclick="phoneAuthenticate()">Authenticate</button>
+    <br><br>
+    <input id="username2" type="text" placeholder="Enter a username" value="joinuser">
+    <input id="roomcode" type="text" placeholder="Enter room code" value="833512">
+    <button onclick="join()">Join room</button>
+</div>
 
 </body>
 
@@ -199,4 +226,162 @@
     }
 </script>
 
+<!-- chat stuff -->
+
+<script>
+    var username;
+    var roomCode;
+    // Get a Firebase Database ref
+    var chatRef = firebase.database().ref("chat");
+    var chatUI;
+    var chat;
+    //boilerplate to be able to make requests
+    var HttpClient = function() {
+        this.get = function(aUrl, aCallback) {
+            var anHttpRequest = new XMLHttpRequest();
+            anHttpRequest.onreadystatechange = function() {
+                if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                    aCallback(anHttpRequest.responseText);
+            }
+            anHttpRequest.open( "GET", aUrl, true );
+            anHttpRequest.send( null );
+        }
+    }
+
+    function create() {
+        //get entered username
+        username = document.getElementById("username").value;
+        console.log(username);
+        //instantiate chat UI
+        chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
+        chat = chatUI._chat;
+        //get random 6 digit number from random api
+        var client = new HttpClient();
+        client.get('https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new', function(response) {
+            console.log("random num: " + response);
+            roomCode = response.trim(); //remove /n, etc
+            //create the random room
+            chat.createRoom(roomCode, "public", function(roomId){
+                console.log("room ID: "+roomId);
+            });
+        });
+        //create user
+        firebase.auth().signInAnonymously().catch(function(error) {
+            console.log('sign in')
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // ...
+        });
+
+
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            console.log('on auth change')
+            if (user) {
+                console.log('1')
+                // User is signed in.
+                var isAnonymous = user.isAnonymous;
+                var uid = user.uid;
+                chat.setUser(user.uid, username);
+                // ...
+            } else {
+                console.log('2')
+                // User is signed out.
+                // ...
+            }
+            console.log('3')
+            // ...
+        });
+    }
+
+    //authenticate user with phone number
+    function phoneAuthenticate() {
+        // Initialize the FirebaseUI Widget using Firebase.
+        var ui = new firebaseui.auth.AuthUI(firebase.auth());
+        var uiConfig = {
+            signInSuccessUrl: 'index.html',
+            signInOptions: [
+                // Leave the lines as is for the providers you want to offer your users.
+                //firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+                //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+                //firebase.auth.GithubAuthProvider.PROVIDER_ID,
+                //firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+            ],
+            // tosUrl and privacyPolicyUrl accept either url string or a callback
+            // function.
+            // Terms of service url/callback.
+            tosUrl: 'index.html',
+            // Privacy policy url/callback.
+            privacyPolicyUrl: function () {
+                window.location.assign('index.html');
+            }
+        }
+        // The start method will wait until the DOM is loaded.
+        ui.start('#firebaseui-auth-container', uiConfig);
+        firebase.auth().useDeviceLanguage();
+        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+        var phoneNumber = getPhoneNumberFromUserInput();
+        var appVerifier = window.recaptchaVerifier;
+        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then(function (confirmationResult) {
+                // SMS sent. Prompt user to type the code from the message, then sign the
+                // user in with confirmationResult.confirm(code).
+                window.confirmationResult = confirmationResult;
+            }).catch(function (error) {
+            // Error; SMS not sent
+            // ...
+        });
+    }
+
+    function join() {
+        //get entered username & roomcode
+        username = document.getElementById("username2").value;
+        //console.log(username);
+        roomCode = document.getElementById("roomcode").value;
+        //instantiate firechat ui
+        chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
+        chat = chatUI._chat;
+        //create user
+        firebase.auth().signInAnonymously().catch(function(error) {
+            console.log('sign in')
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            // ...
+        });
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            console.log('on auth change')
+            if (user) {
+                console.log('1')
+                // User is signed in.
+                var isAnonymous = user.isAnonymous;
+                var uid = user.uid;
+                chat.setUser(user.uid, username);
+                //get all room names and compare with what the user inputted
+                //enter the user into the given room
+                chat.getRoomList(function(roomList){
+                    Object.keys(roomList).forEach(function(key) {
+                        if(roomCode === roomList[key].name){
+                            chat.enterRoom(key)
+                        }
+                    });
+                });
+                // ...
+            } else {
+                console.log('2')
+                // User is signed out.
+                // ...
+            }
+            console.log('3')
+            // ...
+        });
+    }
+</script>
+
+</body>
 </html>
