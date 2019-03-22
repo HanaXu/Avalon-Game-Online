@@ -18,370 +18,202 @@
     <!-- chat stuff added below -->
     <!-- jQuery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
-
     <!-- Firechat -->
-    <link rel="stylesheet" href="firechat.css" />
-    <!--<script src="firechat.js"></script>-->
-    <!--<link rel="stylesheet" href="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.css" />-->
-    <script src="https://cdn.firebase.com/libs/firechat/3.0.1/firechat.min.js"></script>
 
-    <!-- Phone Authentication UI -->
-    <script src="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.js"></script>
-    <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
+    <link rel="stylesheet" href="client/firechat.css" />
+    <script src="client/firechat.js"></script>
 </head>
 
 <body>
+    <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyC_0DpX0DNsW0WqtBq88BlQc1MntzEL3ZY",
+            authDomain: "avalonline-a8a5b.firebaseapp.com",
+            databaseURL: "https://avalonline-a8a5b.firebaseio.com",
+            projectId: "avalonline-a8a5b",
+            storageBucket: "avalonline-a8a5b.appspot.com",
+            messagingSenderId: "932679206673"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script src="client/chat.js"></script>
 
-<div id="game">
-    <button v-if="showButtons" onclick="createGameClicked()">Create New Game</button>
-    <button v-if="showButtons" onclick="connectToGameClicked()">Connect To Game</button>
+    <div id="game">
+        <button v-if="showButtons" onclick="createGameClicked()">Create New Game</button>
+        <button v-if="showButtons" onclick="connectToGameClicked()">Connect To Game</button>
 
-    <h3 v-cloak v-if="createNewGame">
-        {{ enterName }}
-        <input type="text" id="userName" value="">
-        <button onclick="createGame('userName','playerName','logonMsgId')">Create Game</button>
-        <p3 style="color:red;" id="logonMsgId"></p3>
-        <br>
-        <button onclick="back()">Back</button>
-    </h3>
+        <h3 v-cloak v-if="createNewGame">
+            {{ enterName }}
+            <input type="text" id="userName" value="">
+            <button onclick="createGame('userName','playerName','logonMsgId')">Create Game</button>
+            <p3 style="color:red;" id="logonMsgId"></p3>
+            <br>
+            <button onclick="back()">Back</button>
+        </h3>
 
-    <h3 v-cloak v-if="connectToGame">
-        {{ enterGameCode }}
-        <input type="text" id="gameId" value="">
-        {{ enterName }}
-        <input type="text" id="name" value="">
-        <button onclick="connectToGame('name','gameId','playerName','logonMsgId')">Connect To Game</button>
-        <p3 style="color:red;" id="logonMsgId"></p3>
-        <br>
-        <button onclick="back()">Back</button>
-    </h3>
+        <h3 v-cloak v-if="connectToGame">
+            {{ enterGameCode }}
+            <input type="text" id="gameId" value="">
+            {{ enterName }}
+            <input type="text" id="name" value="">
+            <button onclick="connectToGame('name','gameId','playerName','logonMsgId')">Connect To Game</button>
+            <p3 style="color:red;" id="logonMsgId"></p3>
+            <br>
+            <button onclick="back()">Back</button>
+        </h3>
 
-    <h1 id="playerName"></h1>
-</div>
+        <h1 id="playerName"></h1>
+    </div>
 
-<div id="firechat-wrapper">
-    <input id="username" type="text" name="username" placeholder="Enter a username" value="testuser">
-    <button onclick="create()">Create room</button>
-    <button onclick="phoneAuthenticate()">Authenticate</button>
-    <br><br>
-    <input id="username2" type="text" placeholder="Enter a username" value="joinuser">
-    <input id="roomcode" type="text" placeholder="Enter room code" value="833512">
-    <button onclick="join()">Join room</button>
-</div>
+    <div id="firechat-wrapper">
+        <input id="username" type="text" name="username" placeholder="Enter a username" value="testuser">
+        <button onclick="create()">Create room</button>
+        <button onclick="phoneAuthenticate()">Authenticate</button>
+        <br><br>
+        <input id="username2" type="text" placeholder="Enter a username" value="joinuser">
+        <input id="roomcode" type="text" placeholder="Enter room code" value="833512">
+        <button onclick="join()">Join room</button>
+    </div>
 
-<div id="firebaseui-auth-container"></div>
+    <div id="firebaseui-auth-container"></div>
 
-</body>
+    <script>
+        var game = new Vue({
+            el: '#game',
+            data: {
+                enterName: "Enter Your Name",
+                enterGameCode: "Enter Room Code",
+                gameCodeExist: false,
+                createNewGame: false,
+                connectToGame: false,
+                showButtons: true,
+                playerName: ""
+            }
+        })
 
-<script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
-<script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyC_0DpX0DNsW0WqtBq88BlQc1MntzEL3ZY",
-        authDomain: "avalonline-a8a5b.firebaseapp.com",
-        databaseURL: "https://avalonline-a8a5b.firebaseio.com",
-        projectId: "avalonline-a8a5b",
-        storageBucket: "avalonline-a8a5b.appspot.com",
-        messagingSenderId: "932679206673"
-    };
-    firebase.initializeApp(config);
-</script>
-
-
-<script>
-    var game = new Vue({
-        el: '#game',
-        data: {
-            enterName: "Enter Your Name",
-            enterGameCode: "Enter Room Code",
-            gameCodeExist: false,
-            createNewGame: false,
-            connectToGame: false,
-            showButtons: true,
-            playerName: ""
+        function createGameClicked() {
+            game.createNewGame = true;
+            game.connectToGame = false;
+            game.showButtons = false;
         }
-    })
 
-    function createGameClicked(){
-        game.createNewGame = true;
-        game.connectToGame = false;
-        game.showButtons = false;
-    }
-
-    function connectToGameClicked(){
-        game.connectToGame = true;
-        game.createNewGame = false;
-        game.showButtons = false;
-    }
-
-    function back(){
-        game.connectToGame = false;
-        game.createNewGame = false;
-        game.showButtons = true;
-    }
-
-    const roomCodes = new Array();
-
-    function createGame(userName, playerName, MsgId){
-        var name = document.getElementById(userName).value;
-        var msg;
-        if(name === ""){
-            msg = "*enter a name";
-            document.getElementById(MsgId).innerHTML = msg;
-        }else{
-            var roomCode = generateGameCode(4);
-            roomCodes.push(roomCode);
-            document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + roomCode;
+        function connectToGameClicked() {
+            game.connectToGame = true;
             game.createNewGame = false;
-            startGame(name,roomCode);
+            game.showButtons = false;
         }
 
-    }
+        function back() {
+            game.connectToGame = false;
+            game.createNewGame = false;
+            game.showButtons = true;
+        }
 
-    function generateGameCode(length) {
-        var text = "";
-        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const roomCodes = new Array();
 
-        for (var i = 0; i < length; i++)
-            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        function createGame(userName, playerName, MsgId) {
+            var name = document.getElementById(userName).value;
+            var msg;
 
-        return text;
-    }
+            if (name === "") {
+                msg = "*enter a name";
+                document.getElementById(MsgId).innerHTML = msg;
+            } else {
+                var roomCode;
+                //get random 6 digit number from random api
+                var client = new HttpClient();
+                client.get('https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new', function (response) {
+                    console.log("random roomcode: " + response);
+                    roomCode = response.trim(); //remove /n, etc
+                    roomCodes.push(roomCode);
+                    document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + roomCode;
+                    game.createNewGame = false;
 
-        function connectToGame(name, code, playerName, MsgId){
+                    startGame(name, roomCode);
+                    createNewChat(name, roomCode);
+                });
+            }
+        }
+
+        function connectToGame(name, code, playerName, MsgId) {
             var game_code = document.getElementById(code).value;
             var player_name = document.getElementById(name).value;
             var msg;
             //roomCodes.includes(gameCode
-            if(true){
+            if (true) {
                 game.connectToGame = false;
                 document.getElementById(playerName).innerHTML = player_name + ", Welcome to Avalonline Room: " + code;
-                startGame(player_name,game_code);
+                startGame(player_name, game_code);
             }
-            else{
+            else {
                 msg = "Game Does not exist";
                 document.getElementById(MsgId).innerHTML = msg;
             }
         }
-</script>
+    </script>
 
 
-<script>
+    <script>
         //creates a variable to the canvas created in html
         //var ctx = document.getElementById("ctx").getContext("2d");
-        function startGame(playerName, roomCode){
+        function startGame(playerName, roomCode) {
             //creates a variable to the canvas created in html
             var canv = document.createElement("canvas");
             canv.setAttribute('width', 800);
             canv.setAttribute('height', 600);
             canv.setAttribute('id', roomCode);
-            canv.setAttribute('style',"border:1px solid #000000");
-            document.body.appendChild(canv);
+            canv.setAttribute('style', "border:1px solid #000000");
+            document.getElementById("game").appendChild(canv);
 
             var ctx = document.getElementById(roomCode).getContext("2d");
             //creates a socket variable to be used to communicate with the server
             var socket = io();
 
-            socket.emit('roomCode',{code:roomCode});
+            socket.emit('roomCode', { code: roomCode });
             socket.emit('startGame');
-            socket.emit('playerName',{name:playerName});
+            socket.emit('playerName', { name: playerName });
             socket.emit('createPlayer');
 
             //listens to new positions from the server and updates the client canvas
-            socket.on('newPositions', function(data){
-                ctx.clearRect(0,0,800,600);
-                for(var i = 0; i < data.length; i++)
-                    if(data[i].code === roomCode){
+            socket.on('newPositions', function (data) {
+                ctx.clearRect(0, 0, 800, 600);
+                for (var i = 0; i < data.length; i++)
+                    if (data[i].code === roomCode) {
                         ctx.fillText(data[i].name + " " + data[i].code, data[i].x, data[i].y);
                     }
 
             });
 
-        //listens to key down on d s a w and updates the server
-        document.onkeydown = function(event){
-            if(event.keyCode === 68)    //d
-                socket.emit('keyPress',{inputId:'right',state:true});
-            else if(event.keyCode === 83)   //s
-                socket.emit('keyPress',{inputId:'down',state:true});
-            else if(event.keyCode === 65) //a
-                socket.emit('keyPress',{inputId:'left',state:true});
-            else if(event.keyCode === 87) // w
-                socket.emit('keyPress',{inputId:'up',state:true});
+            //listens to key down on d s a w and updates the server
+            document.onkeydown = function (event) {
+                if (event.keyCode === 68)    //d
+                    socket.emit('keyPress', { inputId: 'right', state: true });
+                else if (event.keyCode === 83)   //s
+                    socket.emit('keyPress', { inputId: 'down', state: true });
+                else if (event.keyCode === 65) //a
+                    socket.emit('keyPress', { inputId: 'left', state: true });
+                else if (event.keyCode === 87) // w
+                    socket.emit('keyPress', { inputId: 'up', state: true });
 
-        }
-
-        //listens to key up on d s a w and updates the server
-        document.onkeyup = function(event){
-            if(event.keyCode === 68)    //d
-                socket.emit('keyPress',{inputId:'right',state:false});
-            else if(event.keyCode === 83)   //s
-                socket.emit('keyPress',{inputId:'down',state:false});
-            else if(event.keyCode === 65) //a
-                socket.emit('keyPress',{inputId:'left',state:false});
-            else if(event.keyCode === 87) // w
-                socket.emit('keyPress',{inputId:'up',state:false});
-        }
-    }
-</script>
-
-<!-- chat stuff -->
-
-<script>
-    var username;
-    var roomCode;
-    // Get a Firebase Database ref
-    var chatRef = firebase.database().ref("chat");
-    var chatUI;
-    var chat;
-    //boilerplate to be able to make requests
-    var HttpClient = function() {
-        this.get = function(aUrl, aCallback) {
-            var anHttpRequest = new XMLHttpRequest();
-            anHttpRequest.onreadystatechange = function() {
-                if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
-                    aCallback(anHttpRequest.responseText);
             }
-            anHttpRequest.open( "GET", aUrl, true );
-            anHttpRequest.send( null );
-        }
-    }
 
-    function create() {
-        //get entered username
-        username = document.getElementById("username").value;
-        console.log(username);
-        //instantiate chat UI
-        chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
-        chat = chatUI._chat;
-        //get random 6 digit number from random api
-        var client = new HttpClient();
-        client.get('https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new', function(response) {
-            console.log("random num: " + response);
-            roomCode = response.trim(); //remove /n, etc
-            //create the random room
-            chat.createRoom(roomCode, "public", function(roomId){
-                console.log("room ID: "+roomId);
-            });
-        });
-        //create user
-        firebase.auth().signInAnonymously().catch(function(error) {
-            console.log('sign in')
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // ...
-        });
-
-
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            console.log('on auth change')
-            if (user) {
-                console.log('1')
-                // User is signed in.
-                var isAnonymous = user.isAnonymous;
-                var uid = user.uid;
-                chat.setUser(user.uid, username);
-                // ...
-            } else {
-                console.log('2')
-                // User is signed out.
-                // ...
-            }
-            console.log('3')
-            // ...
-        });
-    }
-
-    //authenticate user with phone number
-    function phoneAuthenticate() {
-        // Initialize the FirebaseUI Widget using Firebase.
-        var ui = new firebaseui.auth.AuthUI(firebase.auth());
-        var uiConfig = {
-            signInSuccessUrl: 'index.html',
-            signInOptions: [
-                // Leave the lines as is for the providers you want to offer your users.
-                //firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-                //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-                //firebase.auth.GithubAuthProvider.PROVIDER_ID,
-                //firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-                //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
-            ],
-            // tosUrl and privacyPolicyUrl accept either url string or a callback
-            // function.
-            // Terms of service url/callback.
-            tosUrl: 'index.html',
-            // Privacy policy url/callback.
-            privacyPolicyUrl: function () {
-                window.location.assign('index.html');
+            //listens to key up on d s a w and updates the server
+            document.onkeyup = function (event) {
+                if (event.keyCode === 68)    //d
+                    socket.emit('keyPress', { inputId: 'right', state: false });
+                else if (event.keyCode === 83)   //s
+                    socket.emit('keyPress', { inputId: 'down', state: false });
+                else if (event.keyCode === 65) //a
+                    socket.emit('keyPress', { inputId: 'left', state: false });
+                else if (event.keyCode === 87) // w
+                    socket.emit('keyPress', { inputId: 'up', state: false });
             }
         }
-        // The start method will wait until the DOM is loaded.
-        ui.start('#firebaseui-auth-container', uiConfig);
-        firebase.auth().useDeviceLanguage();
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
-        var phoneNumber = getPhoneNumberFromUserInput();
-        var appVerifier = window.recaptchaVerifier;
-        firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
-            .then(function (confirmationResult) {
-                // SMS sent. Prompt user to type the code from the message, then sign the
-                // user in with confirmationResult.confirm(code).
-                window.confirmationResult = confirmationResult;
-            }).catch(function (error) {
-            // Error; SMS not sent
-            // ...
-        });
-    }
-
-    function join() {
-        //get entered username & roomcode
-        username = document.getElementById("username2").value;
-        //console.log(username);
-        roomCode = document.getElementById("roomcode").value;
-        //instantiate firechat ui
-        chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
-        chat = chatUI._chat;
-        //create user
-        firebase.auth().signInAnonymously().catch(function(error) {
-            console.log('sign in')
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // ...
-        });
-
-        firebase.auth().onAuthStateChanged(function(user) {
-            console.log('on auth change')
-            if (user) {
-                console.log('1')
-                // User is signed in.
-                var isAnonymous = user.isAnonymous;
-                var uid = user.uid;
-                chat.setUser(user.uid, username);
-                //get all room names and compare with what the user inputted
-                //enter the user into the given room
-                chat.getRoomList(function(roomList){
-                    Object.keys(roomList).forEach(function(key) {
-                        if(roomCode === roomList[key].name){
-                            chat.enterRoom(key)
-                        }
-                    });
-                });
-                // ...
-            } else {
-                console.log('2')
-                // User is signed out.
-                // ...
-            }
-            console.log('3')
-            // ...
-        });
-    }
-</script>
+    </script>
+</body>
 
 </html>
