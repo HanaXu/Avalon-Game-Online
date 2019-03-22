@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -63,17 +64,7 @@
     <h1 id="playerName"></h1>
 </div>
 
-<div id="firechat-wrapper">
-    <input id="username" type="text" name="username" placeholder="Enter a username" value="testuser">
-    <button onclick="create()">Create room</button>
-    <button onclick="phoneAuthenticate()">Authenticate</button>
-    <br><br>
-    <input id="username2" type="text" placeholder="Enter a username" value="joinuser">
-    <input id="roomcode" type="text" placeholder="Enter room code" value="833512">
-    <button onclick="join()">Join room</button>
-</div>
 
-</body>
 
 <script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
 <script>
@@ -88,7 +79,15 @@
     };
     firebase.initializeApp(config);
 </script>
-
+<div id="firechat-wrapper">
+    <input id="username" type="text" name="username" placeholder="Enter a username" value="testuser">
+    <button onclick="create()">Create room</button>
+    <button onclick="phoneAuthenticate()">Authenticate</button>
+    <br><br>
+    <input id="username2" type="text" placeholder="Enter a username" value="joinuser">
+    <input id="roomcode" type="text" placeholder="Enter room code" value="833512">
+    <button onclick="join()">Join room</button>
+</div>
 
 <script>
     var game = new Vue({
@@ -252,19 +251,23 @@
         //get entered username
         username = document.getElementById("username").value;
         console.log(username);
+
         //instantiate chat UI
         chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
         chat = chatUI._chat;
+
         //get random 6 digit number from random api
         var client = new HttpClient();
         client.get('https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new', function(response) {
             console.log("random num: " + response);
             roomCode = response.trim(); //remove /n, etc
+
             //create the random room
             chat.createRoom(roomCode, "public", function(roomId){
                 console.log("room ID: "+roomId);
             });
         });
+
         //create user
         firebase.auth().signInAnonymously().catch(function(error) {
             console.log('sign in')
@@ -273,8 +276,6 @@
             var errorMessage = error.message;
             // ...
         });
-
-
 
         firebase.auth().onAuthStateChanged(function(user) {
             console.log('on auth change')
@@ -337,51 +338,53 @@
         });
     }
 
-    function join() {
-        //get entered username & roomcode
-        username = document.getElementById("username2").value;
-        //console.log(username);
-        roomCode = document.getElementById("roomcode").value;
-        //instantiate firechat ui
-        chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
-        chat = chatUI._chat;
-        //create user
-        firebase.auth().signInAnonymously().catch(function(error) {
-            console.log('sign in')
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            // ...
-        });
+        function join() {
+            //get entered username & roomcode
+            username = document.getElementById("username2").value;
+            //console.log(username);
+            roomCode = document.getElementById("roomcode").value;
 
-        firebase.auth().onAuthStateChanged(function(user) {
-            console.log('on auth change')
-            if (user) {
-                console.log('1')
-                // User is signed in.
-                var isAnonymous = user.isAnonymous;
-                var uid = user.uid;
-                chat.setUser(user.uid, username);
-                //get all room names and compare with what the user inputted
-                //enter the user into the given room
-                chat.getRoomList(function(roomList){
-                    Object.keys(roomList).forEach(function(key) {
-                        if(roomCode === roomList[key].name){
-                            chat.enterRoom(key)
-                        }
+            //instantiate firechat ui
+            chatUI = new FirechatUI(chatRef, document.getElementById("firechat-wrapper"));
+            chat = chatUI._chat;
+
+            //create user
+            firebase.auth().signInAnonymously().catch(function(error) {
+                console.log('sign in')
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // ...
+            });
+
+            firebase.auth().onAuthStateChanged(function(user) {
+                console.log('on auth change')
+                if (user) {
+                    console.log('1')
+                    // User is signed in.
+                    var isAnonymous = user.isAnonymous;
+                    var uid = user.uid;
+                    chat.setUser(user.uid, username);
+
+                    //get all room names and compare with what the user inputted
+                    //enter the user into the given room
+                    chat.getRoomList(function(roomList){
+                        Object.keys(roomList).forEach(function(key) {
+                            if(roomCode === roomList[key].name){
+                                chat.enterRoom(key)
+                            }
+                        });
                     });
-                });
+                    // ...
+                } else {
+                    console.log('2')
+                    // User is signed out.
+                    // ...
+                }
+                console.log('3')
                 // ...
-            } else {
-                console.log('2')
-                // User is signed out.
-                // ...
-            }
-            console.log('3')
-            // ...
-        });
-    }
-</script>
-
+            });
+        }
+    </script>
 </body>
 </html>
