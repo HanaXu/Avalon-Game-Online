@@ -1,0 +1,202 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Avalonline</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+    <script src="https://unpkg.com/vue@2.6.8/dist/vue.js"></script>
+</head>
+
+<body>
+
+<div id="game">
+    <button v-if="showButtons" onclick="createGameClicked()">Create New Game</button>
+    <button v-if="showButtons" onclick="connectToGameClicked()">Connect To Game</button>
+
+    <h3 v-cloak v-if="createNewGame">
+        {{ enterName }}
+        <input type="text" id="userName" value="">
+        <button onclick="createGame('userName','playerName','logonMsgId')">Create Game</button>
+        <p3 style="color:red;" id="logonMsgId"></p3>
+        <br>
+        <button onclick="back()">Back</button>
+    </h3>
+
+    <h3 v-cloak v-if="connectToGame">
+        {{ enterGameCode }}
+        <input type="text" id="gameId" value="">
+        {{ enterName }}
+        <input type="text" id="name" value="">
+        <button onclick="connectToGame('name','gameId','playerName','logonMsgId')">Connect To Game</button>
+        <p3 style="color:red;" id="logonMsgId"></p3>
+        <br>
+        <button onclick="back()">Back</button>
+    </h3>
+
+    <h1 id="playerName"></h1>
+</div>
+
+
+</body>
+
+<script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyC_0DpX0DNsW0WqtBq88BlQc1MntzEL3ZY",
+        authDomain: "avalonline-a8a5b.firebaseapp.com",
+        databaseURL: "https://avalonline-a8a5b.firebaseio.com",
+        projectId: "avalonline-a8a5b",
+        storageBucket: "avalonline-a8a5b.appspot.com",
+        messagingSenderId: "932679206673"
+    };
+    firebase.initializeApp(config);
+</script>
+
+
+<script>
+    var game = new Vue({
+        el: '#game',
+        data: {
+            enterName: "Enter Your Name",
+            enterGameCode: "Enter Room Code",
+            gameCodeExist: false,
+            createNewGame: false,
+            connectToGame: false,
+            showButtons: true,
+            playerName: ""
+        }
+    })
+
+    function createGameClicked(){
+        game.createNewGame = true;
+        game.connectToGame = false;
+        game.showButtons = false;
+    }
+
+    function connectToGameClicked(){
+        game.connectToGame = true;
+        game.createNewGame = false;
+        game.showButtons = false;
+    }
+
+    function back(){
+        game.connectToGame = false;
+        game.createNewGame = false;
+        game.showButtons = true;
+    }
+
+    const roomCodes = new Array();
+
+    function createGame(userName, playerName, MsgId){
+        var name = document.getElementById(userName).value;
+        var msg;
+        if(name === ""){
+            msg = "*enter a name";
+            document.getElementById(MsgId).innerHTML = msg;
+        }else{
+            var roomCode = generateGameCode(4);
+            roomCodes.push(roomCode);
+            document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + roomCode;
+            game.createNewGame = false;
+            startGame(name,roomCode);
+        }
+
+    }
+
+    function generateGameCode(length) {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for (var i = 0; i < length; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+        function connectToGame(name, code, playerName, MsgId){
+            var game_code = document.getElementById(code).value;
+            var player_name = document.getElementById(name).value;
+            var msg;
+            //roomCodes.includes(gameCode
+            if(true){
+                game.connectToGame = false;
+                document.getElementById(playerName).innerHTML = player_name + ", Welcome to Avalonline Room: " + code;
+                startGame(player_name,game_code);
+            }
+            else{
+                msg = "Game Does not exist";
+                document.getElementById(MsgId).innerHTML = msg;
+            }
+        }
+</script>
+
+
+<script>
+        //creates a variable to the canvas created in html
+        //var ctx = document.getElementById("ctx").getContext("2d");
+        function startGame(playerName, roomCode){
+            //creates a variable to the canvas created in html
+            var canv = document.createElement("canvas");
+            canv.setAttribute('width', 800);
+            canv.setAttribute('height', 600);
+            canv.setAttribute('id', roomCode);
+            canv.setAttribute('style',"border:1px solid #000000");
+            document.body.appendChild(canv);
+
+            var ctx = document.getElementById(roomCode).getContext("2d");
+            //creates a socket variable to be used to communicate with the server
+            var socket = io();
+
+            socket.emit('roomCode',{code:roomCode});
+            socket.emit('startGame');
+            socket.emit('playerName',{name:playerName});
+            socket.emit('createPlayer');
+
+            //listens to new positions from the server and updates the client canvas
+            socket.on('newPositions', function(data){
+                ctx.clearRect(0,0,800,600);
+                for(var i = 0; i < data.length; i++)
+                    if(data[i].code === roomCode){
+                        ctx.fillText(data[i].name + " " + data[i].code, data[i].x, data[i].y);
+                    }
+
+            });
+
+        //listens to key down on d s a w and updates the server
+        document.onkeydown = function(event){
+            if(event.keyCode === 68)    //d
+                socket.emit('keyPress',{inputId:'right',state:true});
+            else if(event.keyCode === 83)   //s
+                socket.emit('keyPress',{inputId:'down',state:true});
+            else if(event.keyCode === 65) //a
+                socket.emit('keyPress',{inputId:'left',state:true});
+            else if(event.keyCode === 87) // w
+                socket.emit('keyPress',{inputId:'up',state:true});
+
+        }
+
+        //listens to key up on d s a w and updates the server
+        document.onkeyup = function(event){
+            if(event.keyCode === 68)    //d
+                socket.emit('keyPress',{inputId:'right',state:false});
+            else if(event.keyCode === 83)   //s
+                socket.emit('keyPress',{inputId:'down',state:false});
+            else if(event.keyCode === 65) //a
+                socket.emit('keyPress',{inputId:'left',state:false});
+            else if(event.keyCode === 87) // w
+                socket.emit('keyPress',{inputId:'up',state:false});
+        }
+    }
+</script>
+
+</html>
