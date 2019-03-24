@@ -1,2 +1,5 @@
 #WebStorm settings files
 .idea/
+
+# Dependency directories, use npm install instead to get these
+node_modules/
