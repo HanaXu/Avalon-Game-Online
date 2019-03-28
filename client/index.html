@@ -5,10 +5,63 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Avalonline</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <style>
+        body{
+            padding: 20px;
+        }
         [v-cloak] {
             display: none;
         }
+        .btnCreate{
+            color: #ccc351 !important;
+            text-transform: uppercase;
+            background: #685035;
+            padding: 20px;
+            border: 4px solid #6f5035 !important;
+            border-radius: 7px;
+            display: inline-block;
+            font-size: 20px;
+        }
+        .btnCreate:hover {
+            color: #685035 !important;
+            background: #ccc351;
+            border-color: #ccc351 !important;
+            transition: all 0.4s ease 0s;
+        }
+        .btnJoin{
+             color: #ccc351 !important;
+             text-transform: uppercase;
+             background: #685035;
+             padding: 20px;
+             border: 4px solid #6f5035 !important;
+             border-radius: 7px;
+             display: inline-block;
+             font-size: 20px;
+         }
+        .btnJoin:hover {
+            color: #685035 !important;
+            background: #ccc351;
+            border-color: #ccc351 !important;
+            transition: all 0.4s ease 0s;
+        }
+        .btnBack{
+            color: #ccc351 !important;
+            text-transform: uppercase;
+            background: #685035;
+            padding: 20px;
+            border: 4px solid #6f5035 !important;
+            border-radius: 7px;
+            display: inline-block;
+            font-size: 20px;
+        }
+        .btnBack:hover {
+            color: #685035 !important;
+            background: #ccc351;
+            border-color: #ccc351 !important;
+            transition: all 0.4s ease 0s;
+        }
+
     </style>
 
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
@@ -42,16 +95,16 @@
     <script src="client/chat.js"></script>
 
     <div id="game">
-        <button v-if="showButtons" onclick="createGameClicked()">Create New Game</button>
-        <button v-if="showButtons" onclick="connectToGameClicked()">Connect To Game</button>
+        <button class="btnCreate" v-if="showButtons" onclick="createGameClicked()">Create New Game</button>
+        <button class="btnJoin" v-if="showButtons" onclick="connectToGameClicked()">Join Game</button>
 
         <h3 v-cloak v-if="createNewGame">
             {{ enterName }}
             <input type="text" id="username" value="">
-            <button onclick="createGame('username','playerName','logonMsgId')">Create Game</button>
+            <button class="btnCreate" onclick="createGame('username','playerName','logonMsgId')">Create Game</button>
             <p3 style="color:red;" id="logonMsgId"></p3>
             <br>
-            <button onclick="back()">Back</button>
+            <button class="btnBack" onclick="back()">Back</button>
         </h3>
 
         <h3 v-cloak v-if="connectToGame">
@@ -59,10 +112,10 @@
             <input type="text" id="gameCode" value="">
             {{ enterName }}
             <input type="text" id="username2" value="">
-            <button onclick="connectToGame('username2','gameCode','playerName','logonMsgId')">Connect To Game</button>
+            <button class="btnJoin" onclick="connectToGame('username2','gameCode','playerName','logonMsgId')">Join Game</button>
             <p3 style="color:red;" id="logonMsgId"></p3>
             <br>
-            <button onclick="back()">Back</button>
+            <button class="btnBack" onclick="back()">Back</button>
         </h3>
 
         <h1 id="playerName"></h1>
@@ -104,6 +157,7 @@
         const roomCodes = new Array();
 
         function createGame(userName, playerName, MsgId) {
+            var role = "Host";
             var name = document.getElementById(userName).value;
             var msg;
             if (name === "") {
@@ -119,26 +173,27 @@
                     roomCodes.push(roomCode);
                     document.getElementById(playerName).innerHTML = name + ", Welcome to Avalonline Room: " + roomCode;
                     game.createNewGame = false;
-                    startGame(name, roomCode);
+                    startGame(name, roomCode,role);
                     createNewChat(name, roomCode);
                 });
             }
         }
-        
+
         function connectToGame(username, gameCode, playerName, MsgId) {
             var gameCode = document.getElementById(gameCode).value;
             var username = document.getElementById(username).value;
+            var role = "Guest";
             var msg;
             //roomCodes.includes(gameCode
-            if (true) {
-                game.connectToGame = false;
-                document.getElementById(playerName).innerHTML = username + ", Welcome to Avalonline Room: " + gameCode;
-                startGame(username, gameCode);
-                joinChat(username, gameCode);
+            if (username === "" || gameCode === "") {
+                msg = "Enter Name and Code";
+                document.getElementById(MsgId).innerHTML = msg;
             }
             else {
-                msg = "Game Does not exist";
-                document.getElementById(MsgId).innerHTML = msg;
+                game.connectToGame = false;
+                document.getElementById(playerName).innerHTML = username + ", Welcome to Avalonline Room: " + gameCode;
+                startGame(username, gameCode,role);
+                joinChat(username, gameCode);
             }
         }
     </script>
@@ -147,7 +202,7 @@
     <script>
         //creates a variable to the canvas created in html
         //var ctx = document.getElementById("ctx").getContext("2d");
-        function startGame(playerName, roomCode) {
+        function startGame(playerName, roomCode, role) {
             //creates a variable to the canvas created in html
             var canv = document.createElement("canvas");
             canv.setAttribute('width', 800);
@@ -156,19 +211,22 @@
             canv.setAttribute('style', "border:1px solid #000000");
             document.getElementById("game").appendChild(canv);
             var ctx = document.getElementById(roomCode).getContext("2d");
+            ctx.font = "30px Arial";
             //creates a socket variable to be used to communicate with the server
             var socket = io();
             socket.emit('roomCode', { code: roomCode });
             socket.emit('startGame');
             socket.emit('playerName', { name: playerName });
-            socket.emit('createPlayer');
+            if(role === "Host"){
+                socket.emit('createPlayer');
+            } else {
+                socket.emit('connectPlayer');
+            }
             //listens to new positions from the server and updates the client canvas
-            socket.on('newPositions', function (data) {
+            socket.on(roomCode+'newPositions', function (data) {
                 ctx.clearRect(0, 0, 800, 600);
                 for (var i = 0; i < data.length; i++)
-                    if (data[i].code === roomCode) {
-                        ctx.fillText(data[i].name + " " + data[i].code, data[i].x, data[i].y);
-                    }
+                        ctx.fillText(data[i].role + ": " + data[i].name , data[i].x, data[i].y);
             });
             //listens to key down on d s a w and updates the server
             document.onkeydown = function (event) {
@@ -194,6 +252,8 @@
             }
         }
     </script>
+
+
 </body>
 
 </html>
