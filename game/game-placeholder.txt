@@ -1,0 +1,1 @@
+all vanilla JavaScript for game logic will go in this directory
