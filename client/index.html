@@ -231,7 +231,7 @@
             let gameReady = false;
             //creates a variable to the canvas created in html
             var canv = document.createElement("canvas");
-            canv.setAttribute('width', 1200);
+            canv.setAttribute('width', 1250);
             canv.setAttribute('height', 600);
             canv.setAttribute('id', roomCode);
             canv.setAttribute('style', "border:1px solid #000000");
@@ -259,7 +259,7 @@
                 }
                 let x = 50;
                 let y = 0;
-                ctx.clearRect(0, 0, 1200, 600);
+                ctx.clearRect(0, 0, 1250, 600);
                 for (var i = 0; i < data.length; i++){
                     y = y + 50;
                     ctx.fillText(data[i].role + ": " + data[i].name, x, y);
@@ -273,12 +273,13 @@
             });
 
             socket.on(roomCode+'assignIdentities', function (data) {
-                ctx.clearRect(0, 0, 800, 600);
+                ctx.clearRect(0, 0, 1250, 600);
                 for (var i = 0; i < data.length; i++){
                     ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
                     ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
                     ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
                 }
+
             });
         }
     </script>

@@ -25,16 +25,18 @@ let gameRoomsCount = 0;
 
 
 const FIVE_PLAYERS_IDENTITIES = ["Merlin", "Assassin" ,"Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
-const SIX_PLAYERS_IDENTITIES = ["Merlin", "Assassin, Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
+const SIX_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
 const SEVEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
 const EIGHT_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
 const NINE_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
-const TEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
+const TEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred", "Minion of Mordred"];
 
 let quest1, quest2, quest3, quest4, quest5;
 
 let quests = [quest1, quest2, quest3, quest4, quest5];
 
+
+//takes 3 param and sets players roles based on their length.
 function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
     console.log("assignIdentities()");
     //iterate over a list of player objects
@@ -105,6 +107,7 @@ function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
         }
     }
     //I did not assign any players their identities yet, not sure how the players are being passed
+    Assign_Identities[roomNumber] = 2;
 }
 
 function shuffle(array) {
@@ -126,7 +129,7 @@ function shuffle(array) {
     return array;
 }
 
-//create player attributes. x and y position, id and a number between 0 and 9
+//create player and their attributes
 const Player = function(id, name, gameCode, role, playerPosition){
     return {
         id: id,
@@ -146,7 +149,9 @@ const Player = function(id, name, gameCode, role, playerPosition){
 
 const io = require('socket.io')(serv,{});
 
+//start connection
 io.sockets.on('connection', function(socket){
+    //start room connection
     socket.on('roomCode', function(data){
         const code = data.code;
         let roomNumber;
@@ -154,6 +159,7 @@ io.sockets.on('connection', function(socket){
         let exist = false;
         socket.join(data.code);
 
+        //go through game list and if it exists or open connect the player to a game
         for(let i in GAME_LIST){
             if(GAME_LIST[i] === code && GAME_GATE[gameRoomsCount-1] === 1){
                 roomNumber = i;
@@ -164,6 +170,7 @@ io.sockets.on('connection', function(socket){
             }
         }
 
+        //if game does not exist add game stuff
         if(!exist){
             Assign_Identities[gameRoomsCount] = 0;
             GAME_GATE[gameRoomsCount] = 1;
@@ -174,6 +181,8 @@ io.sockets.on('connection', function(socket){
             console.log("Created New Game: " + code + " room number: " + roomNumber + " player position: " + playerPosition);
         }
 
+
+        //if room is open create and connect player to game
         if(GAME_GATE[gameRoomsCount-1] === 1){
             socket.on('startGame', function(){
                 console.log('connected to room: ' + code);
@@ -213,7 +222,13 @@ io.sockets.on('connection', function(socket){
                     PLAYER_LIST[roomNumber][socket.id] = player;
                 });
 
-                //if player disconnects, remove player from socket and player list
+                socket.on('startGameRoom',function(){
+                    GAME_GATE[roomNumber] = 0;
+                    Assign_Identities[roomNumber] = 1;
+                });
+
+
+                //if player disconnects, remove player stuff in array
                 socket.on('disconnect',function(){
                     delete SOCKET_LIST[roomNumber][socket.id];
                     delete PLAYER_LIST[roomNumber][socket.id];
@@ -221,15 +236,9 @@ io.sockets.on('connection', function(socket){
                     delete SOCKET_IDS[roomNumber][playerPosition];
                     socket.emit(GAME_LIST[roomNumber]+'setUpTable', PLAYER_LIST[roomNumber]);
                 });
-
-                socket.on('startGameRoom',function(){
-                    GAME_GATE[roomNumber] = 0;
-                    Assign_Identities[roomNumber] = 1;
-                });
             });
         }
-
-});
+    });
 });
 
 setInterval(function(){
@@ -238,7 +247,7 @@ setInterval(function(){
     for(let i = 0, len = PLAYER_LIST.length; i < len; i++){
         for(let j = 0, len2 = PLAYER_LIST[i].length; j < len2; j++) {
             socket_id = SOCKET_IDS[i][j];
-            if (socket_id != null) {
+            if(socket_id !== null) {
                 let player = PLAYER_LIST[i][socket_id];
                 pack[i].push({
                     id: player.id,
@@ -257,7 +266,7 @@ setInterval(function(){
         for(let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
             if(GAME_GATE[i] === 1){
                 socket_id = SOCKET_IDS[i][j];
-                if(socket_id != null){
+                if(socket_id !== null){
                     let socket = SOCKET_LIST[i][socket_id];
                     socket.emit(GAME_LIST[i]+'setUpTable', pack[i]);
                     if(pack[i].length >= 5 && GAME_GATE[i] === 1){
@@ -266,12 +275,16 @@ setInterval(function(){
                 }
             }else if(Assign_Identities[i] === 1){
                 assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
-                Assign_Identities[i] = 2;
-            }else if(Assign_Identities[i] === 2){
-                socket_id = SOCKET_IDS[i][j];
-                let socket = SOCKET_LIST[i][socket_id];
-                socket.emit(GAME_LIST[i]+'assignIdentities', pack[i]);
+            }else if (Assign_Identities[i] === 2) {
+                for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
+                    socket_id = SOCKET_IDS[i][j];
+                    if (socket_id !== null) {
+                        let socket = SOCKET_LIST[i][socket_id];
+                        socket.emit(GAME_LIST[i]+'assignIdentities', pack[i]);
+                    }
+                }
             }
         }
     }
+
 },1000/25);
