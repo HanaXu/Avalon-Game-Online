@@ -12,12 +12,12 @@ const TEAM_COUNTS = [
 ];
 
 //List of Player Identities, depending on how many players there are
-const FIVE_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred];
-const SIX_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred];
-const SEVEN_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred, Minion of Mordred];
-const EIGHT_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred, Minion of Mordred];
-const NINE_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred, Minion of Mordred];
-const TEN_PLAYERS_IDENTITIES = [Merlin, Assasin, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Loyal Servant of Arthur, Minion of Mordred, Minion of Mordred, Minion of Mordred];
+const FIVE_PLAYERS_IDENTITIES = ["Merlin", "Assassin, Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
+const SIX_PLAYERS_IDENTITIES = ["Merlin", "Assassin, Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
+const SEVEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
+const EIGHT_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
+const NINE_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
+const TEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
 
 /**
  * global variables for each of 5 quests

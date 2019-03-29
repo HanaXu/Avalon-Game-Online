@@ -119,7 +119,12 @@
         </h3>
 
         <h1 id="playerName"></h1>
+
+        <div>
+            <button v-cloak v-if="showStartGameInRoom" onclick="startGameInRoomClicked()">Start Game</button>
+        </div>
     </div>
+
 
     <div id="firechat-wrapper">
     </div>
@@ -127,6 +132,18 @@
     <div id="firebaseui-auth-container"></div>
 
     <script>
+        var playersCanvasPositions = [
+            [300, 20],
+            [850, 270],
+            [300, 500],
+            [20, 250],
+            [850, 100],
+            [40, 100],
+            [40, 400],
+            [850, 400],
+            [700, 20],
+            [700, 500]
+        ];
         var game = new Vue({
             el: '#game',
             data: {
@@ -136,6 +153,8 @@
                 createNewGame: false,
                 connectToGame: false,
                 showButtons: true,
+                showStartGameInRoom: false,
+                startGameInRoom:false,
                 playerName: ""
             }
         })
@@ -155,6 +174,12 @@
             game.showButtons = true;
         }
         const roomCodes = new Array();
+        var socket;
+
+        function startGameInRoomClicked() {
+            game.showStartGameInRoom = false;
+            socket.emit("startGameRoom");
+        }
 
         function createGame(userName, playerName, MsgId) {
             var role = "Host";
@@ -178,7 +203,7 @@
                 });
             }
         }
-
+        
         function connectToGame(username, gameCode, playerName, MsgId) {
             var gameCode = document.getElementById(gameCode).value;
             var username = document.getElementById(username).value;
@@ -203,17 +228,18 @@
         //creates a variable to the canvas created in html
         //var ctx = document.getElementById("ctx").getContext("2d");
         function startGame(playerName, roomCode, role) {
+            let gameReady = false;
             //creates a variable to the canvas created in html
             var canv = document.createElement("canvas");
-            canv.setAttribute('width', 800);
+            canv.setAttribute('width', 1250);
             canv.setAttribute('height', 600);
             canv.setAttribute('id', roomCode);
             canv.setAttribute('style', "border:1px solid #000000");
             document.getElementById("game").appendChild(canv);
             var ctx = document.getElementById(roomCode).getContext("2d");
-            ctx.font = "30px Arial";
+            ctx.font = "25px Arial";
             //creates a socket variable to be used to communicate with the server
-            var socket = io();
+            socket = io();
             socket.emit('roomCode', { code: roomCode });
             socket.emit('startGame');
             socket.emit('playerName', { name: playerName });
@@ -222,37 +248,41 @@
             } else {
                 socket.emit('connectPlayer');
             }
+
             //listens to new positions from the server and updates the client canvas
-            socket.on(roomCode+'newPositions', function (data) {
-                ctx.clearRect(0, 0, 800, 600);
-                for (var i = 0; i < data.length; i++)
-                        ctx.fillText(data[i].role + ": " + data[i].name , data[i].x, data[i].y);
+            socket.on(roomCode+'setUpTable', function (data) {
+                if(data.length >= 5){
+                    gameReady = true;
+                }else{
+                    gameReady = false;
+                    game.showStartGameInRoom = false;
+                }
+                let x = 50;
+                let y = 0;
+                ctx.clearRect(0, 0, 1250, 600);
+                for (var i = 0; i < data.length; i++){
+                    y = y + 50;
+                    ctx.fillText(data[i].role + ": " + data[i].name, x, y);
+                }
             });
-            //listens to key down on d s a w and updates the server
-            document.onkeydown = function (event) {
-                if (event.keyCode === 68)    //d
-                    socket.emit('keyPress', { inputId: 'right', state: true });
-                else if (event.keyCode === 83)   //s
-                    socket.emit('keyPress', { inputId: 'down', state: true });
-                else if (event.keyCode === 65) //a
-                    socket.emit('keyPress', { inputId: 'left', state: true });
-                else if (event.keyCode === 87) // w
-                    socket.emit('keyPress', { inputId: 'up', state: true });
-            }
-            //listens to key up on d s a w and updates the server
-            document.onkeyup = function (event) {
-                if (event.keyCode === 68)    //d
-                    socket.emit('keyPress', { inputId: 'right', state: false });
-                else if (event.keyCode === 83)   //s
-                    socket.emit('keyPress', { inputId: 'down', state: false });
-                else if (event.keyCode === 65) //a
-                    socket.emit('keyPress', { inputId: 'left', state: false });
-                else if (event.keyCode === 87) // w
-                    socket.emit('keyPress', { inputId: 'up', state: false });
-            }
+
+            socket.on(roomCode+"gameReady",function(){
+                if(role === "Host" && gameReady){
+                    game.showStartGameInRoom = true;
+                }
+            });
+
+            socket.on(roomCode+'assignIdentities', function (data) {
+                ctx.clearRect(0, 0, 1250, 600);
+                for (var i = 0; i < data.length; i++){
+                    ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                    ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                    ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                }
+
+            });
         }
     </script>
-
 
 </body>
 
