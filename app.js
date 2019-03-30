@@ -18,7 +18,7 @@ const SOCKET_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
 const PLAYER_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
 const SOCKET_IDS = [[],[],[],[],[]]; //[room index: 0,1,2..] [player index: 0,1,2..]
 const GAME_GATE = {};
-const Assign_Identities = {};
+const GAME_STAGE = {};
 const GAME_LIST = {}; // [room index] = the room code
 const PLAYER_NAME = {};
 let gameRoomsCount = 0;
@@ -156,7 +156,7 @@ function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
         }
     }
     //I did not assign any players their identities yet, not sure how the players are being passed
-    Assign_Identities[roomNumber] = 2;
+    GAME_STAGE[roomNumber] = 2;
 }
 
 function shuffle(array) {
@@ -221,7 +221,7 @@ io.sockets.on('connection', function(socket){
 
         //if game does not exist add game stuff
         if(!exist){
-            Assign_Identities[gameRoomsCount] = 0;
+            GAME_STAGE[gameRoomsCount] = 0;
             GAME_GATE[gameRoomsCount] = 1;
             GAME_LIST[gameRoomsCount] = code;
             roomNumber = gameRoomsCount;
@@ -277,7 +277,7 @@ io.sockets.on('connection', function(socket){
 
                 socket.on('startGameRoom',function(){
                     GAME_GATE[roomNumber] = 0;
-                    Assign_Identities[roomNumber] = 1;
+                    GAME_STAGE[roomNumber] = 1;
                 });
 
 
@@ -334,32 +334,40 @@ setInterval(function(){
             }
         }
     }
-    for(let i = 0, len = SOCKET_LIST.length; i < len; i++){
-        for(let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
-            if(GAME_GATE[i] === 1){
-                socket_id = SOCKET_IDS[i][j];
-                if(socket_id != null) {
-                    let socket = SOCKET_LIST[i][socket_id];
-                    socket.emit(GAME_LIST[i] + 'setUpTable', pack[i]);
-                    if (pack[i].length >= 5 && GAME_GATE[i] === 1) {
-                        for(let k = 0, len2 = SOCKET_IDS[i].length; k < len2; k++){
-                            if(PLAYER_LIST[i][SOCKET_IDS[i][j]].role === "Host"){
-                                SOCKET_LIST[i][SOCKET_IDS[i][j]].emit(GAME_LIST[i] + 'gameReady');
+
+    for(let i = 0, len = SOCKET_LIST.length; i < len; i++) {
+        if (GAME_STAGE[i] === 0) {
+            for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
+                if (GAME_GATE[i] === 1) {
+                    socket_id = SOCKET_IDS[i][j];
+                    if (socket_id != null) {
+                        let socket = SOCKET_LIST[i][socket_id];
+                        socket.emit(GAME_LIST[i] + 'setUpTable', pack[i]);
+                        if (pack[i].length >= 5 && GAME_GATE[i] === 1) {
+                            for (let k = 0, len2 = SOCKET_IDS[i].length; k < len2; k++) {
+                                if (PLAYER_LIST[i][SOCKET_IDS[i][j]].role === "Host") {
+                                    SOCKET_LIST[i][SOCKET_IDS[i][j]].emit(GAME_LIST[i] + 'gameReady');
+                                }
                             }
                         }
                     }
                 }
-            }else if(Assign_Identities[i] === 1){
-                assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
-            }else if (Assign_Identities[i] === 2) {
-                for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
-                    socket_id = SOCKET_IDS[i][j];
-                    if(socket_id != null) {
-                        let socket = SOCKET_LIST[i][socket_id];
-                        socket.emit(GAME_LIST[i] + 'assignIdentities', pack[i]);
-                    }
+            }
+        }else if (GAME_STAGE[i] === 1) {
+            assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
+        }else if (GAME_STAGE[i] === 2) {
+            for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
+                socket_id = SOCKET_IDS[i][j];
+                if (socket_id != null) {
+                    let socket = SOCKET_LIST[i][socket_id];
+                    socket.emit(GAME_LIST[i] + 'assignIdentities', pack[i]);
                 }
             }
+            GAME_STAGE[i] = 3;
         }
     }
+
+
+
+
 },1000/25);
