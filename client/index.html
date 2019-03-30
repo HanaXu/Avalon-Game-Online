@@ -267,7 +267,7 @@
             });
 
             socket.on(roomCode+"gameReady",function(){
-                if(role === "Host" && gameReady){
+                if(gameReady){
                     game.showStartGameInRoom = true;
                 }
             });
@@ -279,7 +279,6 @@
                     ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
                     ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
                 }
-
             });
         }
     </script>
