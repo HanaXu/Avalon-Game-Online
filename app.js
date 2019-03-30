@@ -156,6 +156,16 @@ function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
         }
     }
     //I did not assign any players their identities yet, not sure how the players are being passed
+}
+
+function assignLeader(roomNumber, socket_id){
+    var randomNumber = Math.floor(Math.random() * Math.floor(PLAYER_LIST[roomNumber].length));
+    for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
+        if(PLAYER_LIST[roomNumber][socket_id[randomNumber]] != null){
+            PLAYER_LIST[roomNumber][socket_id[randomNumber]].leader = true;
+            break;
+        }
+    }
     GAME_STAGE[roomNumber] = 2;
 }
 
@@ -189,6 +199,9 @@ const Player = function(id, name, gameCode, role, playerPosition){
         turn: false,
         team: "undecided",
         character: "undecided",
+        leader: false,
+        quest_action: "undecided",
+        quest_approval: "undecided",
         action: "undecided"
     };
 }
@@ -329,6 +342,9 @@ setInterval(function(){
                     turn: player.turn,
                     team: player.team,
                     character: player.character,
+                    leader: player.leader,
+                    quest_action: player.quest_action,
+                    quest_approval: player.quest_approval,
                     action: player.action
                 });
             }
@@ -355,6 +371,7 @@ setInterval(function(){
             }
         }else if (GAME_STAGE[i] === 1) {
             assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
+            assignLeader(i, SOCKET_IDS[i]);
         }else if (GAME_STAGE[i] === 2) {
             for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
                 socket_id = SOCKET_IDS[i][j];
@@ -364,9 +381,10 @@ setInterval(function(){
                 }
             }
             GAME_STAGE[i] = 3;
+        }else if (GAME_STAGE[i] === 3){
+        }else if (GAME_STAGE[i] === 4){
         }
     }
-
 
 
 
