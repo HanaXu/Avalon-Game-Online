@@ -352,6 +352,7 @@ setInterval(function(){
     }
 
     for(let i = 0, len = SOCKET_LIST.length; i < len; i++) {
+        //GAME_STAGE 0 is users connecting
         if (GAME_STAGE[i] === 0) {
             for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
                 if (GAME_GATE[i] === 1) {
@@ -369,9 +370,11 @@ setInterval(function(){
                     }
                 }
             }
+        // GAME_STAGE 1 = after host clicks start, assign identities & select first leader (in server)
         }else if (GAME_STAGE[i] === 1) {
             assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
             assignLeader(i, SOCKET_IDS[i]);
+        //GAME_STAGE 2 = update client with identity info (all in client)
         }else if (GAME_STAGE[i] === 2) {
             for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
                 socket_id = SOCKET_IDS[i][j];
@@ -381,8 +384,11 @@ setInterval(function(){
                 }
             }
             GAME_STAGE[i] = 3;
+        //GAME_STAGE 3 = game loop; loops through all 5 quests
         }else if (GAME_STAGE[i] === 3){
+        //GAME_STAGE 4 = end of game; display winner and what not
         }else if (GAME_STAGE[i] === 4){
+
         }
     }
 
