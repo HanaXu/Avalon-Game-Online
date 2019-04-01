@@ -39,123 +39,42 @@ let quests = [quest1, quest2, quest3, quest4, quest5];
 //takes 3 param and sets players roles based on their length.
 function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
     console.log("assignIdentities()");
+    var shuffledIdentities;
     //iterate over a list of player objects
     if (numberOfPlayers ===5){
-        var shuffledIdentities = shuffle(FIVE_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
-            }else{
-                j++;
-            }
-        }
+        shuffledIdentities = shuffle(FIVE_PLAYERS_IDENTITIES);
     }
-
     else if (numberOfPlayers ===6){
         shuffledIdentities = shuffle(SIX_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
-            }else{
-                j++;
-            }
-        }
     }
     else if (numberOfPlayers === 7){
         shuffledIdentities = shuffle(SEVEN_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
-            }else{
-                j++;
-            }
-        }
     }
     else if (numberOfPlayers === 8){
         shuffledIdentities = shuffle(EIGHT_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
-            }else{
-                j++;
-            }
-        }
     }
     else if (numberOfPlayers === 9){
         shuffledIdentities = shuffle(NINE_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
-            }else{
-                j++;
-            }
-        }
     }
     else if (numberOfPlayers === 10){
         shuffledIdentities = shuffle(TEN_PLAYERS_IDENTITIES);
-        var x = 0;
-        var j = 0;
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            if(PLAYER_LIST[roomNumber][socket_id[j]] != null){
-                PLAYER_LIST[roomNumber][socket_id[j]].character = shuffledIdentities[x];
-                if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Good";
-                }else{
-                    PLAYER_LIST[roomNumber][socket_id[j]].team = "Evil";
-                }
-                j++;
-                x++;
+    }
+
+    //x = index of shuffledIdentities array
+    var x = 0;
+    //i = index of PLAYER_LIST array, which may have null values if players disconnected
+    for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
+        //make sure that this player has not disconnected (is not null)
+        if(PLAYER_LIST[roomNumber][socket_id[i]] != null){
+            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[x];
+            if(shuffledIdentities[x] === "Merlin" || shuffledIdentities[x] === "Loyal Servant of Arthur"){
+                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
             }else{
-                j++;
+                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
             }
+            x++;
         }
     }
-    //I did not assign any players their identities yet, not sure how the players are being passed
 }
 
 function assignLeader(roomNumber, socket_id){
