@@ -14,8 +14,8 @@ serv.listen(process.env.PORT || 2000);
 console.log("Server started.");
 
 //create three arrays for sockets, game code and players
-const SOCKET_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
-const PLAYER_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
+const SOCKET_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id] = socket
+const PLAYER_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id] = player
 const SOCKET_IDS = [[],[],[],[],[]]; //[room index: 0,1,2..] [player index: 0,1,2..]
 const GAME_GATE = {};
 const GAME_STAGE = {};
