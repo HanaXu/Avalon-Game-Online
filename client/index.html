@@ -267,19 +267,127 @@
             });
 
             socket.on(roomCode+"gameReady",function(){
-                if(role === "Host" && gameReady){
+                if(gameReady){
                     game.showStartGameInRoom = true;
                 }
             });
 
             socket.on(roomCode+'assignIdentities', function (data) {
                 ctx.clearRect(0, 0, 1250, 600);
-                for (var i = 0; i < data.length; i++){
-                    ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
-                    ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
-                    ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                var playerCharacter;
+                var playerTeam;
+                var leader;
+                for (var j = 0; j < data.length; j++){
+                    if(data[j].name === playerName){
+                        playerTeam = data[j].team;
+                        playerCharacter = data[j].character;
+                        leader = data[j].leader;
+                    }
                 }
-
+                if(playerTeam === "Good" && playerCharacter !== "Merlin"){
+                    for (var i = 0; i < data.length; i++){
+                        if(data[i].name !== playerName){
+                            ctx.fillStyle = "black";
+                            ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                            ctx.fillText("Team: Hidden", playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                            ctx.fillText("Character: Hidden", playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                            if(data[i].leader === true){
+                                ctx.beginPath();
+                                ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                ctx.fillStyle = "red";
+                                ctx.fill();
+                            }
+                        }else{
+                            ctx.fillStyle = "green";
+                            ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                            ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                            ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                            if(leader){
+                                ctx.beginPath();
+                                ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                ctx.fillStyle = "red";
+                                ctx.fill();
+                            }
+                        }
+                    }
+                }else if(playerTeam === "Good" && playerCharacter === "Merlin"){
+                    for (var i = 0; i < data.length; i++){
+                        if(data[i].name !== playerName){
+                            ctx.fillStyle = "black";
+                            ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                            ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                            ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                            if(data[i].leader === true){
+                                ctx.beginPath();
+                                ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                ctx.fillStyle = "red";
+                                ctx.fill();
+                            }
+                        }else{
+                            ctx.fillStyle = "green";
+                            ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                            ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                            ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                            if(leader === true){
+                                ctx.beginPath();
+                                ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                ctx.fillStyle = "red";
+                                ctx.fill();
+                            }
+                        }
+                    }
+                }else if(playerTeam === "Evil"){
+                    for (var i = 0; i < data.length; i++){
+                        if(data[i].name !== playerName){
+                            if(data[i].team === "Evil"){
+                                ctx.fillStyle = "black";
+                                ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                                ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                                ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                                if(data[i].leader === true){
+                                    ctx.beginPath();
+                                    ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                    ctx.fillStyle = "red";
+                                    ctx.fill();
+                                }
+                            }else{
+                                ctx.fillStyle = "black";
+                                ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                                ctx.fillText("Team: Hidden", playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                                ctx.fillText("Character: Hidden", playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                                if(data[i].leader === true){
+                                    ctx.beginPath();
+                                    ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                    ctx.fillStyle = "red";
+                                    ctx.fill();
+                                }
+                            }
+                        }else{
+                            ctx.fillStyle = "green";
+                            ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                            ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                            ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                            if(leader === true){
+                                ctx.beginPath();
+                                ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                                ctx.fillStyle = "red";
+                                ctx.fill();
+                            }
+                        }
+                    }
+                }else{
+                    for (var i = 0; i < data.length; i++){
+                        ctx.fillText(data[i].role + ": " + data[i].name, playersCanvasPositions[i][0], playersCanvasPositions[i][1]);
+                        ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
+                        ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
+                        if(data[i].leader === true){
+                            ctx.beginPath();
+                            ctx.arc(playersCanvasPositions[i][0]+10, playersCanvasPositions[i][1]+65,10,0,2 * Math.PI);
+                            ctx.fillStyle = "red";
+                            ctx.fill();
+                        }
+                    }
+                }
             });
         }
     </script>
