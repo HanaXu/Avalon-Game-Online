@@ -65,7 +65,6 @@
     </style>
 
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-
     <script src="https://unpkg.com/vue@2.6.8/dist/vue.js"></script>
 
     <!-- chat stuff added below -->
@@ -102,7 +101,7 @@
             {{ enterName }}
             <input type="text" id="username" value="">
             <button class="btnCreate" onclick="createGame('username','playerName','logonMsgId')">Create Game</button>
-            <p3 style="color:red;" id="logonMsgId"></p3>
+            <p style="color:red;" id="logonMsgId"></p>
             <br>
             <button class="btnBack" onclick="back()">Back</button>
         </h3>
@@ -113,7 +112,7 @@
             {{ enterName }}
             <input type="text" id="username2" value="">
             <button class="btnJoin" onclick="connectToGame('username2','gameCode','playerName','logonMsgId')">Join Game</button>
-            <p3 style="color:red;" id="logonMsgId"></p3>
+            <p style="color:red;" id="logonMsgId"></p>
             <br>
             <button class="btnBack" onclick="back()">Back</button>
         </h3>
@@ -225,8 +224,6 @@
 
 
     <script>
-        //creates a variable to the canvas created in html
-        //var ctx = document.getElementById("ctx").getContext("2d");
         function startGame(playerName, roomCode, role) {
             let gameReady = false;
             //creates a variable to the canvas created in html
@@ -238,6 +235,7 @@
             document.getElementById("game").appendChild(canv);
             var ctx = document.getElementById(roomCode).getContext("2d");
             ctx.font = "25px Arial";
+
             //creates a socket variable to be used to communicate with the server
             socket = io();
             socket.emit('roomCode', { code: roomCode });
@@ -279,7 +277,6 @@
                     ctx.fillText("Team: " + data[i].team, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+25);
                     ctx.fillText("Character: " + data[i].character, playersCanvasPositions[i][0], playersCanvasPositions[i][1]+50);
                 }
-
             });
         }
     </script>
