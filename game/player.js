@@ -1,5 +1,5 @@
 
-class Player {
+module.exports = class Player {
 
     /**
      * Player objects have identity and info for each individual player:
@@ -14,8 +14,18 @@ class Player {
     /**
      * constructor for player object
      */
-    constructor() {
-
+    constructor(id, name, gameCode, role, playerPosition) {
+        this.id = id;
+        this.name = name;
+        this.gameCode = gameCode;
+        this.role = role;
+        this.playerPosition = playerPosition;
+        this.turn = false;
+        this.team = 'undecided';
+        this.character = 'undecided';
+        this.leader = false;
+        this.questAction = 'undecided';
+        this.action = 'undecided';
     }
 
-}
+};
