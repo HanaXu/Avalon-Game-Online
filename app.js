@@ -37,7 +37,6 @@ io.on("connection", function(socket) {
       if (GameList[roomCode] != null) {
         console.log("room already exists");
         roomExists = true;
-        //gameIndex = i; //save the index where we found the game room with our roomcode
         break;
       }
     }

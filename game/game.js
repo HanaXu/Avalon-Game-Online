@@ -1,12 +1,67 @@
-//--GLOBAL VARS-----------------------------------------------------------------------------------------------------
-/**
- * how many good vs evil players there will be
- * first param is 0 for good, 1 for evil
- * second param is [player count - 5]
- * ex. TEAM_COUNTS[0][0] is how many good players there will be when there are 5 players total
- * @type {[][]}
- *
- */
+const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
+
+//defines what type of characters for size of game
+//key: number of players
+//value: list of characters
+const PlayerIdentities = {
+  "5": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred"
+  ],
+  "6": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred"
+  ],
+  "7": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "8": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "9": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "10": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ]
+};
 
 module.exports = class Game {
   constructor(roomCode) {
@@ -14,98 +69,47 @@ module.exports = class Game {
     this.gameIsClosed = 0; //false
     this.gameStage = 0;
     this.players = [];
-
-    const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
-
-    //defines what type of characters for size of game
-    //key: number of players
-    //value: list of characters
-    const PlayerIdentities = {
-      "5": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred"
-      ],
-      "6": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred"
-      ],
-      "7": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred",
-        "Minion of Mordred"
-      ],
-      "8": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred",
-        "Minion of Mordred"
-      ],
-      "9": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred",
-        "Minion of Mordred"
-      ],
-      "10": [
-        "Merlin",
-        "Assassin",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Loyal Servant of Arthur",
-        "Minion of Mordred",
-        "Minion of Mordred",
-        "Minion of Mordred"
-      ]
-    };
     var quest1, quest2, quest3, quest4, quest5;
     var quests = [quest1, quest2, quest3, quest4, quest5];
   }
 
+  //getter for PlayerIdentities
+  static get PlayerIdentities() {
+    return PlayerIdentities;
+  }
+
+  //getter for GoodTeam
+  static get GoodTeam() {
+    return GoodTeam;
+  }
+
   //randomly assign a room leader in the player list.
-//   assignLeader(roomNumber) {
-//     var randomNumber = Math.floor(
-//       Math.random() * Math.floor(PlayerList[roomNumber].length)
-//     );
-//     for (var i = 0; i < PlayerList[roomNumber].length; i++) {
-//       if (PlayerList[roomNumber][i] != null) {
-//         PlayerList[roomNumber][i].leader = true;
-//         break;
-//       }
-//     }
-//     GameStage[roomNumber] = 2;
-//   }
+  assignLeader(roomNumber) {
+    console.log("assignLeader()");
+    var randomNumber = Math.floor(
+      Math.random() * Math.floor(this.players.length)
+    );
+    for (var i = 0; i < this.players.length; i++) {
+      if (this.players[i] != null) {
+        this.players[i].leader = true;
+        console.log("Current leader is:");
+        console.log(this.players[i]);
+        break;
+      }
+    }
+    this.gameStage = 2;
+  }
 
   assignIdentities() {
-    let shuffledIdentities = shuffle(PlayerIdentities[players.length]);
+    console.log("assignIdentities()");
+    let shuffledIdentities = this.shuffle(Game.PlayerIdentities[this.players.length]);
 
-    for (let i = 0; i < players.length; i++) {
-      players[i].character = shuffledIdentities[i];
-      if (GoodTeam.has(shuffledIdentities[i])) {
-        players[i].team = "Good";
+    for (let i = 0; i < this.players.length; i++) {
+      this.players[i].character = shuffledIdentities[i];
+      if (Game.GoodTeam.has(shuffledIdentities[i])) {
+        this.players[i].team = "Good";
       } else {
-        players[i].team = "Evil";
+        this.players[i].team = "Evil";
       }
     }
   }
