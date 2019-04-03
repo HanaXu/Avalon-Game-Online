@@ -5,9 +5,6 @@ let express = require("express");
 let app = express();
 let serv = require("http").Server(app);
 
-var Game = require("./game/Game");
-var Player = require("./game/Player");
-
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/client/index.html");
 });
@@ -16,139 +13,9 @@ app.use("/client", express.static(__dirname + "/client"));
 serv.listen(process.env.PORT || 2000);
 console.log("Server started.");
 
-// const SocketList = [[], [], [], [], []]; //Contains all sockets of clients
-// const PlayerList = []; //Contains all player objects
-
-// const PlayerCount = {}; //Keeps record of player count in each game
-const GameIsClosed = {}; //value of 0 or 1 for each game. if 1 room is open, if 0 room is closed
-const GameStage = {}; //keeps record of game stage in each room
-
+var Game = require("./game/Game");
+var Player = require("./game/Player");
 const GameList = []; //keeps record of all game objects
-
-let gameRoomsCount = 0; //keeps record of how many game rooms there are
-
-//constants used in assignIdentites function depending on how many players are connected when game is started
-const PlayerIdentities = {
-  "5": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred"
-  ],
-  "6": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred"
-  ],
-  "7": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred",
-    "Minion of Mordred"
-  ],
-  "8": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred",
-    "Minion of Mordred"
-  ],
-  "9": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred",
-    "Minion of Mordred"
-  ],
-  "10": [
-    "Merlin",
-    "Assassin",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Loyal Servant of Arthur",
-    "Minion of Mordred",
-    "Minion of Mordred",
-    "Minion of Mordred"
-  ]
-};
-
-const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
-
-// let quest1, quest2, quest3, quest4, quest5;
-// let quests = [quest1, quest2, quest3, quest4, quest5];
-
-//assigns each player an identity in the game
-function assignIdentities(numberOfPlayers, roomNumber) {
-  console.log("assignIdentities()");
-  var shuffledIdentities = shuffle(PlayerIdentities[numberOfPlayers]);
-
-  //x = index of shuffledIdentities array
-  var x = 0;
-  //loops through the player list, if it is not null assign an identity from the shuffled Identities
-  for (var i = 0; i < PlayerList[roomNumber].length; i++) {
-    if (PlayerList[roomNumber][i] != null) {
-      PlayerList[roomNumber][i].character = shuffledIdentities[x];
-      if (GoodTeam.has(shuffledIdentities[x])) {
-        PlayerList[roomNumber][i].team = "Good";
-      } else {
-        PlayerList[roomNumber][i].team = "Evil";
-      }
-      x++;
-    }
-  }
-}
-
-//randomly assign a room leader in the player list.
-function assignLeader(roomNumber) {
-  var randomNumber = Math.floor(
-    Math.random() * Math.floor(PlayerList[roomNumber].length)
-  );
-  for (var i = 0; i < PlayerList[roomNumber].length; i++) {
-    if (PlayerList[roomNumber][i] != null) {
-      PlayerList[roomNumber][i].leader = true;
-      break;
-    }
-  }
-  GameStage[roomNumber] = 2;
-}
-
-//shuffle the array
-function shuffle(array) {
-  var currentIndex = array.length,
-    temporaryValue,
-    randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
 const io = require("socket.io")(serv, {});
 
 //start connection
@@ -160,17 +27,16 @@ io.on("connection", function(socket) {
     console.log("got room code: " + roomCode);
     socket.join(roomCode); //subscribe the socket to the roomcode
 
-    let roomNumber;
-
     let roomExists = false;
     let game;
     let gameIndex;
+    let name;
 
     for (let i in GameList) {
       if (GameList[i].roomCode === roomCode) {
         console.log("room already exists");
         roomExists = true;
-        gameIndex = i;
+        gameIndex = i; //save the index where we found the game room with our roomcode
         break;
       }
     }
@@ -178,19 +44,15 @@ io.on("connection", function(socket) {
       console.log("room does not exist. creating new game room");
       game = new Game(roomCode);
     }
-
     console.log("connected to room: " + roomCode + "\n");
-    var player;
-    var name;
-
+    
     socket.on("playerName", function(data) {
       name = data.name;
     });
 
-    //create player and add it to the player list
+    //create player and add it to the game object, then add game object to game list
     socket.on("createPlayer", function() {
-      player = new Player(socket.id, name, roomCode, "Host");
-      // console.log(player);
+      let player = new Player(socket.id, name, roomCode, "Host");
       game.players.push(player);
       GameList.push(game);
 
@@ -200,8 +62,7 @@ io.on("connection", function(socket) {
     });
 
     socket.on("connectPlayer", function() {
-      player = new Player(socket.id, name, roomCode, "Guest");
-      // console.log(player);
+      let player = new Player(socket.id, name, roomCode, "Guest");
       GameList[gameIndex].players.push(player);
 
       //emit all the game players to client, client then updates the canvas
@@ -209,12 +70,36 @@ io.on("connection", function(socket) {
         roomCode + "SetUpTable",
         GameList[gameIndex].players
       );
+
+      //check for game ready
+      if(GameList[gameIndex].players.length >= 2){
+        console.log('game ready')
+        let hostSocketID;
+
+        //get host socket id
+        let players = GameList[gameIndex].players;
+        for (let i in players) {
+          if (players[i].role === 'Host') {
+            console.log("Host found");
+            hostSocketID = players[i].socketID;
+            break;
+          }
+        }
+        io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
+      }
       console.log(GameList);
     });
 
+    //no other clients can join now that game is started (not yet implemented)
+    //assign identities
+    //TODO: gamelist is undefined?
     socket.on("startGameRoom", function() {
-      GameIsClosed[roomNumber] = 0;
-      GameStage[roomNumber] = 1;
+      console.log(GameList[gameIndex])
+      GameList[gameIndex].gameIsClosed = 1; //true
+      GameList[gameIndex].gameStage = 1;
+
+      // GameList[gameIndex].assignIdentities();
+      // console.log(GameList[gameIndex].players);
     });
 
     //right now, if the host leaves, the server crashes
@@ -238,34 +123,10 @@ io.on("connection", function(socket) {
   });
 });
 
+//dont need setinterval stuff b/c game is turn based
+
 // setInterval(function() {
 // const pack = [[], [], [], [], []];
-// const pack = [];
-// loop through all the players in the server
-// for (let i = 0, len = PlayerList.length; i < len; i++) {
-// loop through all the players in a specific room
-
-// for (let j = 0, len2 = PlayerList[i].length; j < len2; j++) {
-
-// if player does not exist, move on to next. if they do exist, update their attributes by pushing it to pack
-//     if (PlayerList[i][j] != null) {
-//       let player = PlayerList[i][j];
-//       pack[i].push({
-//         id: player.id,
-//         name: player.name,
-//         roomCode: player.gameroomCode,
-//         role: player.role,
-//         turn: player.turn,
-//         team: player.team,
-//         character: player.character,
-//         leader: player.leader,
-//         quest_action: player.quest_action,
-//         quest_approval: player.quest_approval,
-//         action: player.action
-//       });
-//     }
-//   }
-// }
 
 // //loop through all the sockets in the server
 // for (let i = 0, len = SocketList.length; i < len; i++) {

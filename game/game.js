@@ -5,96 +5,148 @@
  * second param is [player count - 5]
  * ex. TEAM_COUNTS[0][0] is how many good players there will be when there are 5 players total
  * @type {[][]}
- * 
+ *
  */
 
 module.exports = class Game {
-    constructor(roomCode){
-        this.roomCode = roomCode;
-        this.players = [];
-        const PlayerIdentities = {  "5": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred"
-          ],
-          "6": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred"
-          ],
-          "7": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred",
-            "Minion of Mordred"
-          ],
-          "8": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred",
-            "Minion of Mordred"
-          ],
-          "9": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred",
-            "Minion of Mordred"
-          ],
-          "10": [
-            "Merlin",
-            "Assassin",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Loyal Servant of Arthur",
-            "Minion of Mordred",
-            "Minion of Mordred",
-            "Minion of Mordred"
-          ]}
+  constructor(roomCode) {
+    this.roomCode = roomCode;
+    this.gameIsClosed = 0; //false
+    this.gameStage = 0;
+    this.players = [];
+
+    const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
+
+    //defines what type of characters for size of game
+    //key: number of players
+    //value: list of characters
+    const PlayerIdentities = {
+      "5": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred"
+      ],
+      "6": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred"
+      ],
+      "7": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred",
+        "Minion of Mordred"
+      ],
+      "8": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred",
+        "Minion of Mordred"
+      ],
+      "9": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred",
+        "Minion of Mordred"
+      ],
+      "10": [
+        "Merlin",
+        "Assassin",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Loyal Servant of Arthur",
+        "Minion of Mordred",
+        "Minion of Mordred",
+        "Minion of Mordred"
+      ]
+    };
     var quest1, quest2, quest3, quest4, quest5;
     var quests = [quest1, quest2, quest3, quest4, quest5];
+  }
 
+  //randomly assign a room leader in the player list.
+//   assignLeader(roomNumber) {
+//     var randomNumber = Math.floor(
+//       Math.random() * Math.floor(PlayerList[roomNumber].length)
+//     );
+//     for (var i = 0; i < PlayerList[roomNumber].length; i++) {
+//       if (PlayerList[roomNumber][i] != null) {
+//         PlayerList[roomNumber][i].leader = true;
+//         break;
+//       }
+//     }
+//     GameStage[roomNumber] = 2;
+//   }
+
+  assignIdentities() {
+    let shuffledIdentities = shuffle(PlayerIdentities[players.length]);
+
+    for (let i = 0; i < players.length; i++) {
+      players[i].character = shuffledIdentities[i];
+      if (GoodTeam.has(shuffledIdentities[i])) {
+        players[i].team = "Good";
+      } else {
+        players[i].team = "Evil";
+      }
     }
-}
+  }
 
-    
-    //List of Player Identities, depending on how many players there are
-   
-    /**
-     * global variables for each of 5 quests
-     * @var {Quest}
-     */
-    /**
-     * list containing each of 5 quests
-     * @var {*[]}
-     */
-    
-    
-    //--FUNCTIONS-----------------------------------------------------------------------------------------------------
-    /** @function Main
-     * the main function for the game application; this will execute when host clicks Start Game
-     * calls all of the game setup & game logic functions when needed
-     */
+  shuffle(array) {
+    var currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
 
-     /*
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+    return array;
+  }
+};
+
+//List of Player Identities, depending on how many players there are
+
+/**
+ * global variables for each of 5 quests
+ * @var {Quest}
+ */
+/**
+ * list containing each of 5 quests
+ * @var {*[]}
+ */
+
+//--FUNCTIONS-----------------------------------------------------------------------------------------------------
+/** @function Main
+ * the main function for the game application; this will execute when host clicks Start Game
+ * calls all of the game setup & game logic functions when needed
+ */
+
+/*
 
     function Main() {
         console.log("game.js: Main function initiated");
@@ -125,74 +177,30 @@ module.exports = class Game {
     }
     
     */
-    /** @function assignIdentities()
-     * randomly assigns each player to Good or Evil team & gives them a specific identity
-     * sets value of identity, onTeamGood, and knownIdentities for each Player object
-     * sends identity and knownIdentities to UI for each player
-     */
+/** @function assignIdentities()
+ * randomly assigns each player to Good or Evil team & gives them a specific identity
+ * sets value of identity, onTeamGood, and knownIdentities for each Player object
+ * sends identity and knownIdentities to UI for each player
+ */
 
-     /*
-    function assignIdentities() {
-        console.log("game.js: assignIdentities()");
-        //iterate over a list of player objects
-        if (numPlayers ===5){
-            shuffle(FIVE_PLAYERS_IDENTITIES);
-        }
-        if (numPlayers ===6){
-            shuffle(SIX_PLAYERS_IDENTITIES);
-        }
-        if (numPlayers === 7){
-            shuffle(SEVEN_PLAYERS_IDENTITIES);
-        }
-        if (numPlayers === 8){
-            shuffle(EIGHT_PLAYERS_IDENTITIES);
-        }
-        if (numPlayers === 9){
-            shuffle(NINE_PLAYERS_IDENTITIES);
-        }
-        if (numPlayers === 10){
-            shuffle(TEN_PLAYERS_IDENTITIES);
-        }
+/**
+ * @function shuffle()
+ * @param array
+ * Known as the Fisher-Yates shuffle, it shuffles the list of player identities to randomly assign the players their identities in
+ * the assignIdentities() function
+ */
+
+/*
     
-        //I did not assign any players their identities yet, not sure how the players are being passed
-    }
     */
 
-    /**
-     * @function shuffle()
-     * @param array
-     * Known as the Fisher-Yates shuffle, it shuffles the list of player identities to randomly assign the players their identities in
-     * the assignIdentities() function
-     */
+/** @function countQuestSuccesses
+ * checks value of Quest.success for each quest in History
+ * if there are 2 or more fails, sets goodGuysWin to false
+ * else, calls assassinate()
+ */
 
-     /*
-    function shuffle(array) {
-        var currentIndex = array.length, temporaryValue, randomIndex;
-    
-        // While there remain elements to shuffle...
-        while (0 !== currentIndex) {
-    
-            // Pick a remaining element...
-            randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex -= 1;
-    
-            // And swap it with the current element.
-            temporaryValue = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temporaryValue;
-        }
-    
-        return array;
-    }
-    */
-    
-    /** @function countQuestSuccesses
-     * checks value of Quest.success for each quest in History
-     * if there are 2 or more fails, sets goodGuysWin to false
-     * else, calls assassinate()
-     */
-
-    /*
+/*
     function countQuestSuccesses() {
         console.log("game.js: countQuestSuccesses()");
         //iterate over quest.success
@@ -205,12 +213,8 @@ module.exports = class Game {
      * if correct, goodGuysWin = false
      * if incorrect, goodGuysWin = true
      */
-    /*
+/*
     function assassinate() {
         console.log("game.js: assassinate()");
     }
 }   */
-    /**
-     * execute main function automatically when running game.js file (for easy testing in console):
-     */
-    //Main()

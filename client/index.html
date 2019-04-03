@@ -229,12 +229,6 @@
         //listens to new positions from the server and updates the client canvas
         socket.on(roomCode + "SetUpTable", function(players) {
           console.log(players)
-          if (players.length >= 5) {
-            gameReady = true;
-          } else {
-            gameReady = false;
-            game.showStartGameInRoom = false;
-          }
           let x = 50;
           let y = 0;
           ctx.clearRect(0, 0, 1250, 600);
@@ -245,9 +239,8 @@
         });
 
         socket.on(roomCode + "gameReady", function() {
-          if (gameReady) {
+          console.log('game ready')
             game.showStartGameInRoom = true;
-          }
         });
 
         socket.on(roomCode + "assignIdentities", function(data) {
