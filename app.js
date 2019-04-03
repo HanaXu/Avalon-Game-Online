@@ -29,22 +29,22 @@ io.on("connection", function(socket) {
 
     let roomExists = false;
     let game;
-    let gameIndex;
+    //let roomCode;
     let name;
 
+    //check if this room already exists in GameList
     for (let i in GameList) {
-      if (GameList[roomCode] === roomCode) {
+      if (GameList[roomCode] != null) {
         console.log("room already exists");
         roomExists = true;
-        gameIndex = i; //save the index where we found the game room with our roomcode
+        //gameIndex = i; //save the index where we found the game room with our roomcode
         break;
       }
     }
     if (!roomExists) {
       console.log("room does not exist. creating new game room");
-
       game = new Game(roomCode);
-      // game.push(roomCode, new Game(roomCode));
+      console.log("game object for new room:");
       console.log(game);
     }
     console.log("connected to room: " + roomCode + "\n");
@@ -57,71 +57,67 @@ io.on("connection", function(socket) {
     socket.on("createPlayer", function() {
       let player = new Player(socket.id, name, roomCode, "Host");
       game.players.push(player);
-      GameList = Object.assign(GameList, {roomCode: game});
+      GameList[roomCode] = game;
+      console.log("GameList object after adding game:");
       console.log(GameList);
 
-      /*
-      
-
-      console.log("GameList.roomCode.PUSH() game object");
-      console.log(GameList.roomCode.game);
+      console.log("This game object in GameList:");
+      console.log(GameList[roomCode]);
       //emit all the game players to client, client then updates the canvas
       io.in(roomCode).emit(roomCode + "SetUpTable", game.players);
-      // console.log(GameList);
-      */
+
     });
 
     socket.on("connectPlayer", function() {
       let player = new Player(socket.id, name, roomCode, "Guest");
 
-      //GameList = Object.assign(GameList, {roomCode: game});
-      GameList.roomCode.players.push(player);
+      console.log("Connecting player to game room");
+      GameList[roomCode].players.push(player);
+      console.log("GameList object after adding new player to existing game:");
       console.log(GameList);
 
       //emit all the game players to client, client then updates the canvas
-      // io.in(roomCode).emit(
-      //   roomCode + "SetUpTable",
-      //   GameList[gameIndex].players
-      // );
+      io.in(roomCode).emit(
+        roomCode + "SetUpTable",
+        GameList[roomCode].players
+      );
 
       //check for game ready
-      // if(GameList[gameIndex].players.length >= 2){
-      //   console.log('game ready')
-      //   let hostSocketID;
+      if(GameList[roomCode].players.length >= 5){
+        console.log('game ready');
+        let hostSocketID;
 
-      //   //get host socket id
-      //   let players = GameList[gameIndex].players;
-      //   for (let i in players) {
-      //     if (players[i].role === 'Host') {
-      //       console.log("Host found");
-      //       hostSocketID = players[i].socketID;
-      //       break;
-      //     }
-      //   }
-      //   io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
-      // }
-//      console.log(GameList);
+        //get host socket id
+        let players = GameList[roomCode].players;
+        for (let i in players) {
+          if (players[i].role === 'Host') {
+            console.log("Host found");
+            hostSocketID = players[i].socketID;
+            break;
+          }
+        }
+        io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
+      }
     });
 
     //no other clients can join now that game is started (not yet implemented)
     //assign identities
-    //TODO: gamelist is undefined?
     socket.on("startGameRoom", function() {
       console.log('startGameRoom. this is the game list object');
       console.log(GameList);
       console.log('this is the game room object');
-      console.log(GameList[gameIndex]);
-      GameList[gameIndex].gameIsClosed = 1; //true
-      GameList[gameIndex].gameStage = 1;
+      console.log(GameList[roomCode]);
+      GameList[roomCode].gameIsClosed = 1; //true
+      GameList[roomCode].gameStage = 1;
 
-      // GameList[gameIndex].assignIdentities();
-      // console.log(GameList[gameIndex].players);
+      GameList[roomCode].assignIdentities();
+      console.log(GameList[roomCode].players);
     });
 
     //right now, if the host leaves, the server crashes
     //works with guests leaving tho
     socket.on("disconnect", function() {
-      let players = GameList[gameIndex].players;
+      let players = GameList[roomCode].players;
       for (let i in players) {
         if (players[i].socketID === socket.id) {
           console.log("removing player from game");
@@ -130,7 +126,7 @@ io.on("connection", function(socket) {
           //emit all the game players to client, client then updates the canvas
           io.in(roomCode).emit(
             roomCode + "SetUpTable",
-            GameList[gameIndex].players
+            GameList[roomCode].players
           );
           break;
         }
