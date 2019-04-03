@@ -1,290 +1,397 @@
-console.log('Hello world');
+console.log("Hello world");
 
 //File comunication with express
-let express = require('express');
+let express = require("express");
 let app = express();
-let serv = require('http').Server(app);
+let serv = require("http").Server(app);
 
-app.get('/',function(req, res) {
-    res.sendFile(__dirname + '/client/index.html');
+var Player = require('./game/Player');
+
+app.get("/", function(req, res) {
+  res.sendFile(__dirname + "/client/index.html");
 });
-app.use('/client',express.static(__dirname + '/client'));
+app.use("/client", express.static(__dirname + "/client"));
 
 serv.listen(process.env.PORT || 2000);
 console.log("Server started.");
 
-//create three arrays for sockets, game code and players
-const SOCKET_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
-const PLAYER_LIST = [[],[],[],[],[]]; //[room index: 0,1,2..] [socket.id]
-const SOCKET_IDS = [[],[],[],[],[]]; //[room index: 0,1,2..] [player index: 0,1,2..]
-const GAME_GATE = {};
-const Assign_Identities = {};
-const GAME_LIST = {}; // [room index] = the room code
-const PLAYER_NAME = {};
-let gameRoomsCount = 0;
+const SocketList = [[], [], [], [], []]; //Contains all sockets of clients
+const PlayerList = [[], [], [], [], []]; //Contains all player objects
+const PlayerCount = {}; //Keeps record of player count in each game
+const GameIsClosed = {}; //value of 0 or 1 for each game. if 1 room is open, if 0 room is closed
+const GameStage = {}; //keeps record of game stage in each room
+const GameList = {}; //keeps record of all game codes
+const PLAYER_NAME = {}; //used to set player name, but can be done without it
 
+let gameRoomsCount = 0; //keeps record of how many game rooms there are
 
-const FIVE_PLAYERS_IDENTITIES = ["Merlin", "Assassin" ,"Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
-const SIX_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred"];
-const SEVEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
-const EIGHT_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
-const NINE_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred"];
-const TEN_PLAYERS_IDENTITIES = ["Merlin", "Assassin", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Loyal Servant of Arthur", "Minion of Mordred", "Minion of Mordred", "Minion of Mordred"];
+//constants used in assignIdentites function depending on how many players are connected when game is started
+const PlayerIdentities = {
+  "5": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred"
+  ],
+  "6": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred"
+  ],
+  "7": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "8": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "9": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ],
+  "10": [
+    "Merlin",
+    "Assassin",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Loyal Servant of Arthur",
+    "Minion of Mordred",
+    "Minion of Mordred",
+    "Minion of Mordred"
+  ]
+};
+const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
 
 let quest1, quest2, quest3, quest4, quest5;
-
 let quests = [quest1, quest2, quest3, quest4, quest5];
 
-
-//takes 3 param and sets players roles based on their length.
-function assignIdentities(numberOfPlayers, roomNumber, socket_id) {
-    console.log("assignIdentities()");
-    //iterate over a list of player objects
-    if (numberOfPlayers ===5){
-        var shuffledIdentities = shuffle(FIVE_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
+//assigns each player an identity in the game
+function assignIdentities(numberOfPlayers, roomNumber) {
+  console.log("assignIdentities()");
+  var shuffledIdentities = shuffle(PlayerIdentities[numberOfPlayers]);
+  
+  //x = index of shuffledIdentities array
+  var x = 0;
+  //loops through the player list, if it is not null assign an identity from the shuffled Identities
+  for (var i = 0; i < PlayerList[roomNumber].length; i++) {
+    if (PlayerList[roomNumber][i] != null) {
+      PlayerList[roomNumber][i].character = shuffledIdentities[x];
+      //if the identity merlin or loyal servant of arthur set team to good, else to evil
+      if (GoodTeam.has(shuffledIdentities[x])) {
+        PlayerList[roomNumber][i].team = "Good";
+      } else {
+        PlayerList[roomNumber][i].team = "Evil";
+      }
+      x++;
     }
-    else if (numberOfPlayers ===6){
-        shuffledIdentities = shuffle(SIX_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
-    }
-    else if (numberOfPlayers === 7){
-        shuffledIdentities = shuffle(SEVEN_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
-    }
-    else if (numberOfPlayers === 8){
-        shuffledIdentities = shuffle(EIGHT_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
-    }
-    else if (numberOfPlayers === 9){
-        shuffledIdentities = shuffle(NINE_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
-    }
-    else if (numberOfPlayers === 10){
-        shuffledIdentities = shuffle(TEN_PLAYERS_IDENTITIES);
-        for(var i = 0; i < PLAYER_LIST[roomNumber].length; i++){
-            PLAYER_LIST[roomNumber][socket_id[i]].character = shuffledIdentities[i];
-            if(shuffledIdentities[i] === "Merlin" || shuffledIdentities[i] === "Loyal Servant of Arthur"){
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Good";
-            }else{
-                PLAYER_LIST[roomNumber][socket_id[i]].team = "Evil";
-            }
-        }
-    }
-    //I did not assign any players their identities yet, not sure how the players are being passed
-    Assign_Identities[roomNumber] = 2;
+  }
 }
 
+//randomly assign a room leader in the player list.
+function assignLeader(roomNumber) {
+  var randomNumber = Math.floor(
+    Math.random() * Math.floor(PlayerList[roomNumber].length)
+  );
+  for (var i = 0; i < PlayerList[roomNumber].length; i++) {
+    if (PlayerList[roomNumber][i] != null) {
+      PlayerList[roomNumber][i].leader = true;
+      break;
+    }
+  }
+  GameStage[roomNumber] = 2;
+}
+
+//shuffle the array
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
 
-    // While there remain elements to shuffle...
-    while (0 !== currentIndex) {
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
 
-        // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
 
-        // And swap it with the current element.
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
+  return array;
 }
 
-//create player and their attributes
-const Player = function(id, name, gameCode, role, playerPosition){
-    return {
-        id: id,
-        name: name,
-        gameCode: gameCode,
-        role: role,
-        playerPosition: playerPosition,
-        turn: false,
-        team: "undecided",
-        character: "undecided",
-        action: "undecided"
-    };
-}
-
-
-
-
-const io = require('socket.io')(serv,{});
+const io = require("socket.io")(serv, {});
 
 //start connection
-io.sockets.on('connection', function(socket){
-    //start room connection
-    socket.on('roomCode', function(data){
-        const code = data.code;
-        let roomNumber;
-        let playerPosition;
-        let exist = false;
-        socket.join(data.code);
+io.sockets.on("connection", function(socket) {
+  //start room connection
+  socket.on("roomCode", function(data) {
+    const code = data.code;
+    let roomNumber;
+    let playerPosition;
+    let exist = false;
+    socket.join(data.code);
 
-        //go through game list and if it exists or open connect the player to a game
-        for(let i in GAME_LIST){
-            if(GAME_LIST[i] === code && GAME_GATE[gameRoomsCount-1] === 1){
-                roomNumber = i;
-                playerPosition = PLAYER_LIST[i].length;
-                exist = true;
-                console.log("Connected to Game: " + code + " room number: " + roomNumber + " player position: " + playerPosition);
-                break;
+    //go through game list and if it exists or open connect the player to a game
+    for (let i in GameList) {
+      if (GameList[i] === code && GameIsClosed[gameRoomsCount - 1] === 1) {
+        roomNumber = i;
+        PlayerCount[roomNumber] = PlayerCount[roomNumber] + 1;
+        playerPosition = PlayerList[i].length;
+        exist = true;
+        console.log(
+          "Connected to Game: " +
+            code +
+            " room number: " +
+            roomNumber +
+            " player position: " +
+            playerPosition
+        );
+        break;
+      }
+    }
+
+    //if game does not exist add game stuff
+    if (!exist) {
+      PlayerCount[gameRoomsCount] = 0;
+      GameStage[gameRoomsCount] = 0;
+      GameIsClosed[gameRoomsCount] = 1;
+      GameList[gameRoomsCount] = code;
+      roomNumber = gameRoomsCount;
+      playerPosition = 0;
+      gameRoomsCount = gameRoomsCount + 1;
+      console.log(
+        "Created New Game: " +
+          code +
+          " room number: " +
+          roomNumber +
+          " player position: " +
+          playerPosition
+      );
+    }
+
+    //if room is open create and connect player to game
+    if (GameIsClosed[roomNumber] === 1) {
+      socket.on("startGame", function() {
+        console.log("connected to room: " + code);
+        var player;
+
+        socket.on("playerName", function(data) {
+          PLAYER_NAME[PlayerCount[roomNumber]] = data.name;
+        });
+
+        //create player and add it to the player list
+        socket.on("createPlayer", function() {
+          SocketList.push(roomNumber);
+          SocketList[roomNumber].push(PlayerCount[roomNumber]);
+          SocketList[roomNumber][PlayerCount[roomNumber]] = socket;
+          console.log(SocketList);
+          player = new Player(
+            socket.id,
+            PLAYER_NAME[PlayerCount[roomNumber]],
+            code,
+            "Host",
+            playerPosition
+          );
+
+          PlayerList.push(roomNumber);
+          PlayerList[roomNumber].push(PlayerCount[roomNumber]);
+          PlayerList[roomNumber][PlayerCount[roomNumber]] = player;
+          console.log(PlayerList);
+          console.log(
+            "Room " +
+              roomNumber +
+              " SocketList: " +
+              SocketList[roomNumber] +
+              ". PlayerList: " +
+              PlayerList[roomNumber] +
+              ". Socket Ids: " +
+              ". PlayerPosition: " +
+              playerPosition
+          );
+        });
+
+        socket.on("connectPlayer", function() {
+          SocketList[roomNumber].push(PlayerCount[roomNumber]);
+          SocketList[roomNumber][PlayerCount[roomNumber]] = socket;
+          player = new Player(
+            socket.id,
+            PLAYER_NAME[PlayerCount[roomNumber]],
+            code,
+            "Guest",
+            playerPosition
+          );
+
+          PlayerList[roomNumber].push(PlayerCount[roomNumber]);
+          PlayerList[roomNumber][PlayerCount[roomNumber]] = player;
+          console.log(
+            "Room " +
+              roomNumber +
+              " SocketList: " +
+              SocketList[roomNumber] +
+              ". PlayerList: " +
+              PlayerList[roomNumber] +
+              ". Socket Ids: " +
+              ". PlayerPosition: " +
+              playerPosition
+          );
+        });
+
+        socket.on("startGameRoom", function() {
+          GameIsClosed[roomNumber] = 0;
+          GameStage[roomNumber] = 1;
+        });
+
+        //if player disconnects, remove player stuff in array
+        socket.on("disconnect", function() {
+          if (PlayerList[roomNumber][playerPosition].role === "Host") {
+            delete SocketList[roomNumber][playerPosition];
+            delete PlayerList[roomNumber][playerPosition];
+            if (PlayerList[roomNumber].length > 0) {
+              for (
+                let j = 0, len2 = PlayerList[roomNumber].length;
+                j < len2;
+                j++
+              ) {
+                if (PlayerList[roomNumber][j] != null) {
+                  PlayerList[roomNumber][j].role = "Host";
+                  break;
+                }
+              }
             }
-        }
-
-        //if game does not exist add game stuff
-        if(!exist){
-            Assign_Identities[gameRoomsCount] = 0;
-            GAME_GATE[gameRoomsCount] = 1;
-            GAME_LIST[gameRoomsCount] = code;
-            roomNumber = gameRoomsCount;
-            playerPosition = 0;
-            gameRoomsCount = gameRoomsCount + 1;
-            console.log("Created New Game: " + code + " room number: " + roomNumber + " player position: " + playerPosition);
-        }
-
-
-        //if room is open create and connect player to game
-        if(GAME_GATE[gameRoomsCount-1] === 1){
-            socket.on('startGame', function(){
-                console.log('connected to room: ' + code);
-                //assign the socket id a random number and add the socket to a socket list
-                socket.id = Math.random();
-
-                var player;
-
-                socket.on('playerName', function(data){
-                    PLAYER_NAME[socket.id] = data.name;
-                });
-
-                //create player and add it to the player list
-                socket.on('createPlayer', function(){
-                    SOCKET_LIST.push(roomNumber);
-                    SOCKET_LIST[roomNumber].push(socket.id);
-                    SOCKET_LIST[roomNumber][socket.id] = socket;
-                    console.log(SOCKET_LIST);
-                    SOCKET_IDS.push(roomNumber);
-                    SOCKET_IDS[roomNumber].push(playerPosition);
-                    SOCKET_IDS[roomNumber][playerPosition] = socket.id;
-                    console.log(SOCKET_IDS);
-                    player = Player(socket.id, PLAYER_NAME[socket.id], code, "Host",playerPosition);
-                    PLAYER_LIST.push(roomNumber);
-                    PLAYER_LIST[roomNumber].push(socket.id);
-                    PLAYER_LIST[roomNumber][socket.id] = player;
-                    console.log(PLAYER_LIST);
-                });
-
-                socket.on('connectPlayer', function(){
-                    SOCKET_LIST[roomNumber].push(socket.id);
-                    SOCKET_LIST[roomNumber][socket.id] = socket;
-                    SOCKET_IDS[roomNumber].push(playerPosition);
-                    SOCKET_IDS[roomNumber][playerPosition] = socket.id;
-                    player = Player(socket.id, PLAYER_NAME[socket.id], code, "Guest",playerPosition);
-                    PLAYER_LIST[roomNumber].push(socket.id);
-                    PLAYER_LIST[roomNumber][socket.id] = player;
-                });
-
-                socket.on('startGameRoom',function(){
-                    GAME_GATE[roomNumber] = 0;
-                    Assign_Identities[roomNumber] = 1;
-                });
-
-
-                //if player disconnects, remove player stuff in array
-                socket.on('disconnect',function(){
-                    delete SOCKET_LIST[roomNumber][socket.id];
-                    delete PLAYER_LIST[roomNumber][socket.id];
-                    delete PLAYER_NAME[socket.id];
-                    delete SOCKET_IDS[roomNumber][playerPosition];
-                    socket.emit(GAME_LIST[roomNumber]+'setUpTable', PLAYER_LIST[roomNumber]);
-                });
-            });
-        }
-    });
+            socket.emit(
+              GameList[roomNumber] + "setUpTable",
+              PlayerList[roomNumber]
+            );
+            console.log(
+              "Room " +
+                roomNumber +
+                " SocketList: " +
+                SocketList[roomNumber] +
+                ". PlayerList: " +
+                PlayerList[roomNumber] +
+                ". PlayerPosition: " +
+                playerPosition
+            );
+          } else {
+            delete SocketList[roomNumber][playerPosition];
+            delete PlayerList[roomNumber][playerPosition];
+            socket.emit(
+              GameList[roomNumber] + "setUpTable",
+              PlayerList[roomNumber]
+            );
+            console.log(
+              "Room " +
+                roomNumber +
+                " SocketList: " +
+                SocketList[roomNumber] +
+                ". PlayerList: " +
+                PlayerList[roomNumber] +
+                ". PlayerPosition: " +
+                playerPosition
+            );
+          }
+        });
+      });
+    }
+  });
 });
 
-setInterval(function(){
-    const pack = [[],[],[],[],[]];
-    let socket_id;
-    for(let i = 0, len = PLAYER_LIST.length; i < len; i++){
-        for(let j = 0, len2 = PLAYER_LIST[i].length; j < len2; j++) {
-            socket_id = SOCKET_IDS[i][j];
-            if(socket_id !== null) {
-                let player = PLAYER_LIST[i][socket_id];
-                pack[i].push({
-                    id: player.id,
-                    name: player.name,
-                    code: player.gameCode,
-                    role: player.role,
-                    turn: player.turn,
-                    team: player.team,
-                    character: player.character,
-                    action: player.action
-                });
-            }
-        }
+setInterval(function() {
+  const pack = [[], [], [], [], []];
+  //loop through all the players in the server
+  for (let i = 0, len = PlayerList.length; i < len; i++) {
+    //loop through all the players in a specific room
+    for (let j = 0, len2 = PlayerList[i].length; j < len2; j++) {
+      //if player does not exist, move on to next. if they do exist, update their attributes by pushing it to pack
+      if (PlayerList[i][j] != null) {
+        let player = PlayerList[i][j];
+        pack[i].push({
+          id: player.id,
+          name: player.name,
+          code: player.gameCode,
+          role: player.role,
+          turn: player.turn,
+          team: player.team,
+          character: player.character,
+          leader: player.leader,
+          quest_action: player.quest_action,
+          quest_approval: player.quest_approval,
+          action: player.action
+        });
+      }
     }
-    for(let i = 0, len = SOCKET_LIST.length; i < len; i++){
-        for(let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
-            if(GAME_GATE[i] === 1){
-                socket_id = SOCKET_IDS[i][j];
-                if(socket_id !== null){
-                    let socket = SOCKET_LIST[i][socket_id];
-                    socket.emit(GAME_LIST[i]+'setUpTable', pack[i]);
-                    if(pack[i].length >= 5 && GAME_GATE[i] === 1){
-                        SOCKET_LIST[i][SOCKET_IDS[i][0]].emit(GAME_LIST[i]+'gameReady');
-                    }
-                }
-            }else if(Assign_Identities[i] === 1){
-                assignIdentities(pack[i].length, i, SOCKET_IDS[i]);
-            }else if (Assign_Identities[i] === 2) {
-                for (let j = 0, len2 = SOCKET_LIST[i].length; j < len2; j++) {
-                    socket_id = SOCKET_IDS[i][j];
-                    if (socket_id !== null) {
-                        let socket = SOCKET_LIST[i][socket_id];
-                        socket.emit(GAME_LIST[i]+'assignIdentities', pack[i]);
-                    }
-                }
-            }
-        }
-    }
+  }
 
-},1000/25);
+  //loop through all the sockets in the server
+  for (let i = 0, len = SocketList.length; i < len; i++) {
+    //GameStage 0 is users connecting
+    if (GameStage[i] === 0) {
+      //loop through sockets in a specific room
+      for (let j = 0, len2 = SocketList[i].length; j < len2; j++) {
+        if (GameIsClosed[i] === 1) {
+          //if socket does not exist move on to the next one
+          if (SocketList[i][j] != null) {
+            let socket = SocketList[i][j];
+            //send that socket the pack[i] which has all the players in that room so it sets up the table
+            socket.emit(GameList[i] + "setUpTable", pack[i]);
+            if (pack[i].length >= 5 && GameIsClosed[i] === 1) {
+              for (let k = 0, len2 = PlayerList[i].length; k < len2; k++) {
+                if (PlayerList[i][j].role === "Host") {
+                  SocketList[i][j].emit(GameList[i] + "gameReady");
+                }
+              }
+            }
+          }
+        }
+      }
+      // GameStage 1 = after host clicks start, assign identities & select first leader (in server)
+    } else if (GameStage[i] === 1) {
+      //assign identities and leader
+      assignIdentities(pack[i].length, i);
+      assignLeader(i);
+      //GameStage 2 = update client with identity info (all in client)
+    } else if (GameStage[i] === 2) {
+      //loop through all the sockets in a specific room and give all of them the pack[i] which as all player objects
+      for (let j = 0, len2 = SocketList[i].length; j < len2; j++) {
+        if (SocketList[i][j] != null) {
+          let socket = SocketList[i][j];
+          //emit pack as assignIdentities to client
+          socket.emit(GameList[i] + "assignIdentities", pack[i]);
+        }
+      }
+      GameStage[i] = 3;
+      //GameStage 3 = game loop; loops through all 5 quests
+    } else if (GameStage[i] === 3) {
+      //GameStage 4 = end of game; display winner and what not
+    } else if (GameStage[i] === 4) {
+    }
+  }
+}, 1000 / 25);
