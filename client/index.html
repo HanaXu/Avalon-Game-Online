@@ -60,7 +60,7 @@
 
       <h3 v-cloak v-if="createNewGame">
         {{ enterName }}
-        <input type="text" id="username" value="" />
+        <input type="text" id="username" value="1" />
         <button
           class="btnCreate"
           onclick="createGame('username','playerName','logonMsgId')"
@@ -76,7 +76,7 @@
         {{ enterGameCode }}
         <input type="text" id="gameCode" value="" />
         {{ enterName }}
-        <input type="text" id="username2" value="" />
+        <input type="text" id="username2" value="1" />
         <button
           class="btnJoin"
           onclick="connectToGame('username2','gameCode','playerName','logonMsgId')"
@@ -217,8 +217,8 @@
         ctx.font = "25px Arial";
         //creates a socket variable to be used to communicate with the server
         socket = io();
-        socket.emit("roomCode", { code: roomCode });
-        socket.emit("startGame");
+        socket.emit("roomCode", { roomCode: roomCode });
+        console.log('emitted roomcode: ' + roomCode)
         socket.emit("playerName", { name: playerName });
         if (role === "Host") {
           socket.emit("createPlayer");
@@ -227,26 +227,20 @@
         }
 
         //listens to new positions from the server and updates the client canvas
-        socket.on(roomCode + "setUpTable", function(data) {
-          if (data.length >= 5) {
-            gameReady = true;
-          } else {
-            gameReady = false;
-            game.showStartGameInRoom = false;
-          }
+        socket.on(roomCode + "SetUpTable", function(players) {
+          console.log(players)
           let x = 50;
           let y = 0;
           ctx.clearRect(0, 0, 1250, 600);
-          for (var i = 0; i < data.length; i++) {
+          for (var i = 0; i < players.length; i++) {
             y = y + 50;
-            ctx.fillText(data[i].role + ": " + data[i].name, x, y);
+            ctx.fillText(players[i].role + ": " + players[i].name, x, y);
           }
         });
 
         socket.on(roomCode + "gameReady", function() {
-          if (gameReady) {
+          console.log('game ready')
             game.showStartGameInRoom = true;
-          }
         });
 
         socket.on(roomCode + "assignIdentities", function(data) {

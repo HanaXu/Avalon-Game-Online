@@ -14,10 +14,10 @@ module.exports = class Player {
     /**
      * constructor for player object
      */
-    constructor(id, name, gameCode, role, playerPosition) {
-        this.id = id;
+    constructor(socketID, name, roomCode, role, playerPosition) {
+        this.socketID = socketID;
         this.name = name;
-        this.gameCode = gameCode;
+        this.roomCode = roomCode;
         this.role = role;
         this.playerPosition = playerPosition;
         this.turn = false;
