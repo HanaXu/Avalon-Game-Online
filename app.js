@@ -15,7 +15,7 @@ console.log("Server started.");
 
 var Game = require("./game/Game");
 var Player = require("./game/Player");
-const GameList = []; //keeps record of all game objects
+var GameList = {}; //keeps record of all game objects
 const io = require("socket.io")(serv, {});
 
 //start connection
@@ -33,7 +33,7 @@ io.on("connection", function(socket) {
     let name;
 
     for (let i in GameList) {
-      if (GameList[i].roomCode === roomCode) {
+      if (GameList[roomCode] === roomCode) {
         console.log("room already exists");
         roomExists = true;
         gameIndex = i; //save the index where we found the game room with our roomcode
@@ -42,7 +42,10 @@ io.on("connection", function(socket) {
     }
     if (!roomExists) {
       console.log("room does not exist. creating new game room");
+
       game = new Game(roomCode);
+      // game.push(roomCode, new Game(roomCode));
+      console.log(game);
     }
     console.log("connected to room: " + roomCode + "\n");
     
@@ -54,47 +57,60 @@ io.on("connection", function(socket) {
     socket.on("createPlayer", function() {
       let player = new Player(socket.id, name, roomCode, "Host");
       game.players.push(player);
-      GameList.push(game);
+      GameList = Object.assign(GameList, {roomCode: game});
+      console.log(GameList);
 
+      /*
+      
+
+      console.log("GameList.roomCode.PUSH() game object");
+      console.log(GameList.roomCode.game);
       //emit all the game players to client, client then updates the canvas
       io.in(roomCode).emit(roomCode + "SetUpTable", game.players);
-      console.log(GameList);
+      // console.log(GameList);
+      */
     });
 
     socket.on("connectPlayer", function() {
       let player = new Player(socket.id, name, roomCode, "Guest");
-      GameList[gameIndex].players.push(player);
+
+      //GameList = Object.assign(GameList, {roomCode: game});
+      GameList.roomCode.players.push(player);
+      console.log(GameList);
 
       //emit all the game players to client, client then updates the canvas
-      io.in(roomCode).emit(
-        roomCode + "SetUpTable",
-        GameList[gameIndex].players
-      );
+      // io.in(roomCode).emit(
+      //   roomCode + "SetUpTable",
+      //   GameList[gameIndex].players
+      // );
 
       //check for game ready
-      if(GameList[gameIndex].players.length >= 2){
-        console.log('game ready')
-        let hostSocketID;
+      // if(GameList[gameIndex].players.length >= 2){
+      //   console.log('game ready')
+      //   let hostSocketID;
 
-        //get host socket id
-        let players = GameList[gameIndex].players;
-        for (let i in players) {
-          if (players[i].role === 'Host') {
-            console.log("Host found");
-            hostSocketID = players[i].socketID;
-            break;
-          }
-        }
-        io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
-      }
-      console.log(GameList);
+      //   //get host socket id
+      //   let players = GameList[gameIndex].players;
+      //   for (let i in players) {
+      //     if (players[i].role === 'Host') {
+      //       console.log("Host found");
+      //       hostSocketID = players[i].socketID;
+      //       break;
+      //     }
+      //   }
+      //   io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
+      // }
+//      console.log(GameList);
     });
 
     //no other clients can join now that game is started (not yet implemented)
     //assign identities
     //TODO: gamelist is undefined?
     socket.on("startGameRoom", function() {
-      console.log(GameList[gameIndex])
+      console.log('startGameRoom. this is the game list object');
+      console.log(GameList);
+      console.log('this is the game room object');
+      console.log(GameList[gameIndex]);
       GameList[gameIndex].gameIsClosed = 1; //true
       GameList[gameIndex].gameStage = 1;
 
