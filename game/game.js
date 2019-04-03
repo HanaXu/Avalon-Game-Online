@@ -84,7 +84,7 @@ module.exports = class Game {
   }
 
   //randomly assign a room leader in the player list.
-  assignLeader(roomNumber) {
+  assignLeader() {
     console.log("assignLeader()");
     var randomNumber = Math.floor(
       Math.random() * Math.floor(this.players.length)

@@ -100,7 +100,7 @@ io.on("connection", function(socket) {
     });
 
     //no other clients can join now that game is started (not yet implemented)
-    //assign identities
+    //assign identities & assign first quest leader
     socket.on("startGameRoom", function() {
       console.log('startGameRoom. this is the game list object');
       console.log(GameList);
@@ -110,7 +110,17 @@ io.on("connection", function(socket) {
       GameList[roomCode].gameStage = 1;
 
       GameList[roomCode].assignIdentities();
+      GameList[roomCode].assignLeader();
       console.log(GameList[roomCode].players);
+
+
+
+      //emit all the game players to client, client then updates the canvas to show identities
+      io.in(roomCode).emit(
+          roomCode + "assignIdentities",
+          GameList[roomCode].players
+      );
+
     });
 
     //right now, if the host leaves, the server crashes
