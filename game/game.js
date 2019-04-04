@@ -92,8 +92,8 @@ module.exports = class Game {
     for (var i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
-        console.log("Current leader is:");
-        console.log(this.players[i]);
+        // console.log("Current leader is:");
+        // console.log(this.players[i]);
         break;
       }
     }
@@ -105,15 +105,16 @@ module.exports = class Game {
     let shuffledIdentities = this.shuffle(Game.PlayerIdentities[this.players.length]);
 
     for (let i = 0; i < this.players.length; i++) {
-      this.players[i].character = shuffledIdentities[i];
+      this.players[i].character = shuffledIdentities[i]; //assign character to player
       if (Game.GoodTeam.has(shuffledIdentities[i])) {
-        this.players[i].team = "Good";
+        this.players[i].team = "Good"; //assign team based on character
       } else {
         this.players[i].team = "Evil";
       }
     }
   }
 
+  //Fisher-Yates shuffle
   shuffle(array) {
     var currentIndex = array.length,
       temporaryValue,
@@ -179,22 +180,6 @@ module.exports = class Game {
         countQuestSuccesses();
         assassinate();
     }
-    
-    */
-/** @function assignIdentities()
- * randomly assigns each player to Good or Evil team & gives them a specific identity
- * sets value of identity, onTeamGood, and knownIdentities for each Player object
- * sends identity and knownIdentities to UI for each player
- */
-
-/**
- * @function shuffle()
- * @param array
- * Known as the Fisher-Yates shuffle, it shuffles the list of player identities to randomly assign the players their identities in
- * the assignIdentities() function
- */
-
-/*
     
     */
 
