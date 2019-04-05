@@ -6,8 +6,8 @@
     <title>Avalonline</title>
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="client/styles.css" type="text/css" />
@@ -42,7 +42,7 @@
     </script>
     <script src="client/chat.js"></script>
 
-    <div id="game">
+    <div id="startScreen">
       <button
         class="btnCreate"
         v-if="showButtons"
@@ -63,32 +63,32 @@
         <input type="text" id="username" value="1" />
         <button
           class="btnCreate"
-          onclick="createGame('username','playerName','logonMsgId')"
+          onclick="createGame(document.getElementById('username').value)"
         >
           Create Game
         </button>
-        <p style="color:red;" id="logonMsgId"></p>
+        <p style="color:red;" id="errorMsg"></p>
         <br />
         <button class="btnBack" onclick="back()">Back</button>
       </h3>
 
       <h3 v-cloak v-if="connectToGame">
         {{ enterGameCode }}
-        <input type="text" id="gameCode" value="" />
+        <input type="text" id="roomCode" value="" />
         {{ enterName }}
         <input type="text" id="username2" value="1" />
         <button
           class="btnJoin"
-          onclick="connectToGame('username2','gameCode','playerName','logonMsgId')"
+          onclick="connectToGame(document.getElementById('username2').value, document.getElementById('roomCode').value)"
         >
           Join Game
         </button>
-        <p style="color:red;" id="logonMsgId"></p>
+        <p style="color:red;" id="errorMsg"></p>
         <br />
         <button class="btnBack" onclick="back()">Back</button>
       </h3>
 
-      <h1 id="playerName"></h1>
+      <h1 id="loginMessage"></h1>
 
       <div>
         <button
@@ -119,7 +119,7 @@
         [700, 500]
       ];
       var game = new Vue({
-        el: "#game",
+        el: "#startScreen",
         data: {
           enterName: "Enter Your Name",
           enterGameCode: "Enter Room Code",
@@ -147,7 +147,6 @@
         game.createNewGame = false;
         game.showButtons = true;
       }
-      const roomCodes = new Array();
       var socket;
 
       function startGameInRoomClicked() {
@@ -155,13 +154,9 @@
         socket.emit("startGameRoom");
       }
 
-      function createGame(userName, playerName, MsgId) {
-        var role = "Host";
-        var name = document.getElementById(userName).value;
-        var msg;
+      function createGame(name) {
         if (name === "") {
-          msg = "*enter a name";
-          document.getElementById(MsgId).innerHTML = msg;
+          document.getElementById('errorMsg').innerHTML = 'Enter a name';
         } else {
           var roomCode;
           //get random 6 digit number from random api
@@ -171,39 +166,31 @@
             function(response) {
               console.log("random roomcode: " + response);
               roomCode = response.trim(); //remove /n, etc
-              roomCodes.push(roomCode);
-              document.getElementById(playerName).innerHTML =
+              document.getElementById('loginMessage').innerHTML =
                 name + ", Welcome to Avalonline Room: " + roomCode;
               game.createNewGame = false;
-              startGame(name, roomCode, role);
-            //   createNewChat(name, roomCode);
+              startGame(name, roomCode, 'Host');
+              //   createNewChat(name, roomCode);
             }
           );
         }
       }
 
-      function connectToGame(username, gameCode, playerName, MsgId) {
-        var gameCode = document.getElementById(gameCode).value;
-        var username = document.getElementById(username).value;
-        var role = "Guest";
-        var msg;
-        //roomCodes.includes(gameCode
-        if (username === "" || gameCode === "") {
-          msg = "Enter Name and Code";
-          document.getElementById(MsgId).innerHTML = msg;
+      function connectToGame(name, roomCode) {
+        if (name === "" || roomCode === "") {
+          document.getElementById('errorMsg').innerHTML = 'Enter Name and room code';
         } else {
           game.connectToGame = false;
-          document.getElementById(playerName).innerHTML =
-            username + ", Welcome to Avalonline Room: " + gameCode;
-          startGame(username, gameCode, role);
-        //   joinChat(username, gameCode);
+          document.getElementById('loginMessage').innerHTML =
+          name + ", Welcome to Avalonline Room: " + roomCode;
+          startGame(name, roomCode, 'Guest');
+          //   joinChat(name, roomCode);
         }
       }
     </script>
 
     <script>
       //creates a variable to the canvas created in html
-      //var ctx = document.getElementById("ctx").getContext("2d");
       function startGame(playerName, roomCode, role) {
         let gameReady = false;
         //creates a variable to the canvas created in html
@@ -212,13 +199,13 @@
         canv.setAttribute("height", 600);
         canv.setAttribute("id", roomCode);
         canv.setAttribute("style", "border:1px solid #000000");
-        document.getElementById("game").appendChild(canv);
+        document.getElementById("startScreen").appendChild(canv);
         var ctx = document.getElementById(roomCode).getContext("2d");
         ctx.font = "25px Arial";
         //creates a socket variable to be used to communicate with the server
         socket = io();
         socket.emit("roomCode", { roomCode: roomCode });
-        console.log('emitted roomcode: ' + roomCode)
+        console.log("emitted roomcode: " + roomCode);
         socket.emit("playerName", { name: playerName });
         if (role === "Host") {
           socket.emit("createPlayer");
@@ -228,7 +215,7 @@
 
         //listens to new positions from the server and updates the client canvas
         socket.on(roomCode + "SetUpTable", function(players) {
-          console.log(players)
+          console.log(players);
           let x = 50;
           let y = 0;
           ctx.clearRect(0, 0, 1250, 600);
@@ -239,8 +226,8 @@
         });
 
         socket.on(roomCode + "gameReady", function() {
-          console.log('game ready')
-            game.showStartGameInRoom = true;
+          console.log("game ready");
+          game.showStartGameInRoom = true;
         });
 
         socket.on(roomCode + "assignIdentities", function(data) {
