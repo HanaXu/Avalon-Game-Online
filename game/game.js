@@ -95,8 +95,9 @@ module.exports = class Game {
     let clonedPlayers = JSON.parse(JSON.stringify(this.players));
     for (let i in clonedPlayers) {
       if (GoodTeam.has(clonedPlayers[i].character)) {
-        //hide good team's characters
+        //hide good team's info
         clonedPlayers[i].character = "hidden";
+        clonedPlayers[i].team = "hidden";
       }
     }
     return clonedPlayers;

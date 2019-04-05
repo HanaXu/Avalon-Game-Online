@@ -43,33 +43,37 @@
     <script src="client/chat.js"></script>
 
     <div id="connectScreen">
-      <button
-        class="btnCreate"
-        v-if="showButtons"
-        onclick="createGameClicked()"
-      >
-        Create New Game
-      </button>
-      <button
-        class="btnJoin"
-        v-if="showButtons"
-        onclick="connectToGameClicked()"
-      >
-        Join Game
-      </button>
+      <div class="row">
+        <div class="col">
+          <button
+            class="avalon-btn"
+            v-if="showButtons"
+            onclick="createGameClicked()"
+          >
+            Create New Game
+          </button>
+          <button
+            class="avalon-btn"
+            v-if="showButtons"
+            onclick="connectToGameClicked()"
+          >
+            Join Game
+          </button>
+        </div>
+      </div>
 
       <h3 v-cloak v-if="createNewGame">
         Enter a name
         <input type="text" id="username" value="1" />
         <button
-          class="btnCreate"
+          class="avalon-btn"
           onclick="createGame(document.getElementById('username').value)"
         >
           Create Game
         </button>
         <p style="color:red;" id="errorMsg"></p>
         <br />
-        <button class="btnBack" onclick="back()">Back</button>
+        <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
 
       <h3 v-cloak v-if="connectToGame">
@@ -78,27 +82,17 @@
         Enter a name
         <input type="text" id="username2" value="1" />
         <button
-          class="btnJoin"
+          class="avalon-btn"
           onclick="connectToGame(document.getElementById('username2').value, document.getElementById('roomCode').value)"
         >
           Join Game
         </button>
         <p style="color:red;" id="errorMsg"></p>
         <br />
-        <button class="btnBack" onclick="back()">Back</button>
+        <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
 
       <h1 id="loginMessage"></h1>
-
-      <div>
-        <button
-          v-cloak
-          v-if="showStartGameInRoom"
-          onclick="startGameInRoomClicked()"
-        >
-          Start Game
-        </button>
-      </div>
     </div>
 
     <div id="gameScreen" v-if="showGameScreen">
@@ -108,39 +102,36 @@
         </li>
       </ul>
 
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="avalon-btn"
+            v-cloak
+            v-if="showStartGameButton"
+            onclick="startGameButtonClicked()"
+          >
+            Start Game
+          </button>
+        </div>
+      </div>
+
       <div id="assignIdentities" v-if="assignIdentities">
         <div class="row">
-          <div class="card" style="margin: 5px" v-for="player in players">
+          <div class="card" v-for="player in players">
             <div
               class="card-body"
-              :class="{red: player.team === 'Evil', green: player.team === 'Good'}"
+              :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
             >
               <h5 class="card-title">{{ player.role }}: {{ player.name }}</h5>
               <h6 class="card-subtitle mb-2 text-muted">
-                Team: {{ player.team }} <br />
-                Character: {{ player.character }}
+                <b>Team:</b> {{ player.team }} <br />
+                <b>Character:</b> {{ player.character }} <br>
               </h6>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <style>
-      #gameScreen {
-        padding: 10px 25px;
-        border-style: solid;
-        border-width: 1px;
-        height: 600px;
-        width: 1200px;
-      }
-      .red {
-        border-top: 5px solid red;
-      }
-      .green {
-        border-top: 5px solid green;
-      }
-    </style>
 
     <div id="firechat-wrapper"></div>
 
@@ -152,7 +143,8 @@
         data: {
           players: [],
           showGameScreen: false,
-          assignIdentities: false
+          assignIdentities: false,
+          showStartGameButton: false
         }
       });
 
@@ -162,8 +154,7 @@
           createNewGame: false,
           connectToGame: false,
           showButtons: true,
-          showStartGameInRoom: false,
-          startGameInRoom: false,
+          startGameInRoom: false
         }
       });
       function createGameClicked() {
@@ -183,8 +174,8 @@
       }
       var socket;
 
-      function startGameInRoomClicked() {
-        connectScreen.showStartGameInRoom = false;
+      function startGameButtonClicked() {
+        gameScreen.showStartGameButton = false;
         socket.emit("startGameRoom");
       }
 
@@ -204,7 +195,7 @@
               document.getElementById("loginMessage").innerHTML =
                 name + ", Welcome to Avalonline Room: " + roomCode;
 
-                connectScreen.createNewGame = false;
+              connectScreen.createNewGame = false;
               startGame(name, roomCode, "Host");
               //   createNewChat(name, roomCode);
             }
@@ -250,7 +241,7 @@
 
         socket.on("gameReady", function() {
           console.log("game ready");
-          connectScreen.showStartGameInRoom = true;
+          gameScreen.showStartGameButton = true;
         });
 
         socket.on("assignIdentities", function(players) {
