@@ -115,7 +115,7 @@
       </div>
       <div id="assignIdentities" v-if="assignIdentities">
         <div class="row">
-          <div class="card" v-for="player in players">
+          <div class="card" :class="{darkerBG: player.name.includes('You')}" v-for="player in players">
             <div
               class="card-body"
               :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
