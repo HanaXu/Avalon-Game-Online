@@ -59,7 +59,7 @@
       </button>
 
       <h3 v-cloak v-if="createNewGame">
-        {{ enterName }}
+        Enter a name
         <input type="text" id="username" value="1" />
         <button
           class="btnCreate"
@@ -73,9 +73,9 @@
       </h3>
 
       <h3 v-cloak v-if="connectToGame">
-        {{ enterGameCode }}
+        Enter room code
         <input type="text" id="roomCode" value="" />
-        {{ enterName }}
+        Enter a name
         <input type="text" id="username2" value="1" />
         <button
           class="btnJoin"
@@ -156,39 +156,35 @@
         }
       });
 
-      var game = new Vue({
+      var connectScreen = new Vue({
         el: "#connectScreen",
         data: {
-          enterName: "Enter Your Name",
-          enterGameCode: "Enter Room Code",
-          gameCodeExist: false,
           createNewGame: false,
           connectToGame: false,
           showButtons: true,
           showStartGameInRoom: false,
           startGameInRoom: false,
-          playerName: ""
         }
       });
       function createGameClicked() {
-        game.createNewGame = true;
-        game.connectToGame = false;
-        game.showButtons = false;
+        connectScreen.createNewGame = true;
+        connectScreen.connectToGame = false;
+        connectScreen.showButtons = false;
       }
       function connectToGameClicked() {
-        game.connectToGame = true;
-        game.createNewGame = false;
-        game.showButtons = false;
+        connectScreen.connectToGame = true;
+        connectScreen.createNewGame = false;
+        connectScreen.showButtons = false;
       }
       function back() {
-        game.connectToGame = false;
-        game.createNewGame = false;
-        game.showButtons = true;
+        connectScreen.connectToGame = false;
+        connectScreen.createNewGame = false;
+        connectScreen.showButtons = true;
       }
       var socket;
 
       function startGameInRoomClicked() {
-        game.showStartGameInRoom = false;
+        connectScreen.showStartGameInRoom = false;
         socket.emit("startGameRoom");
       }
 
@@ -204,9 +200,11 @@
             function(response) {
               console.log("random roomcode: " + response);
               roomCode = response.trim(); //remove /n, etc
+
               document.getElementById("loginMessage").innerHTML =
                 name + ", Welcome to Avalonline Room: " + roomCode;
-              game.createNewGame = false;
+
+                connectScreen.createNewGame = false;
               startGame(name, roomCode, "Host");
               //   createNewChat(name, roomCode);
             }
@@ -219,7 +217,7 @@
           document.getElementById("errorMsg").innerHTML =
             "Enter Name and room code";
         } else {
-          game.connectToGame = false;
+          connectScreen.connectToGame = false;
           document.getElementById("loginMessage").innerHTML =
             name + ", Welcome to Avalonline Room: " + roomCode;
           startGame(name, roomCode, "Guest");
@@ -236,24 +234,26 @@
         //creates a socket variable to be used to communicate with the server
         socket = io();
         socket.emit("roomCode", { roomCode: roomCode, name: name });
-        console.log("emitted name & roomcode to server: " + name + " " + roomCode);
+        console.log(
+          "emitted name & roomcode to server: " + name + " " + roomCode
+        );
         if (role === "Host") {
           socket.emit("createPlayer");
         } else {
           socket.emit("connectPlayer");
         }
 
-        socket.on(roomCode + "SetUpTable", function(players) {
+        socket.on("SetUpTable", function(players) {
           gameScreen.showGameScreen = true;
           updatePlayers(players, name);
         });
 
-        socket.on(roomCode + "gameReady", function() {
+        socket.on("gameReady", function() {
           console.log("game ready");
-          game.showStartGameInRoom = true;
+          connectScreen.showStartGameInRoom = true;
         });
 
-        socket.on(roomCode + "assignIdentities", function(players) {
+        socket.on("assignIdentities", function(players) {
           gameScreen.assignIdentities = true;
           updatePlayers(players, name);
         });

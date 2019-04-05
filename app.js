@@ -55,7 +55,7 @@ io.on("connection", function(socket) {
       console.log(GameList);
 
       //emit all the game players to client, client then updates the UI
-      io.in(roomCode).emit(roomCode + "SetUpTable", game.players);
+      io.in(roomCode).emit("SetUpTable", game.players);
     });
 
     socket.on("connectPlayer", function() {
@@ -68,7 +68,7 @@ io.on("connection", function(socket) {
       console.log(GameList);
 
       //emit all the game players to client, client then updates the UI
-      io.in(roomCode).emit(roomCode + "SetUpTable", GameList[roomCode].players);
+      io.in(roomCode).emit("SetUpTable", GameList[roomCode].players);
 
       //check for game ready
       if (GameList[roomCode].players.length >= 5) {
@@ -84,7 +84,7 @@ io.on("connection", function(socket) {
             break;
           }
         }
-        io.to(hostSocketID).emit(roomCode + "gameReady"); //only emit to the host client
+        io.to(hostSocketID).emit("gameReady"); //only emit to the host client
       }
     });
 
@@ -103,36 +103,24 @@ io.on("connection", function(socket) {
       for (let i in players) {
         if (players[i].character === "Merlin") {
           //emit non-sanitized player list, client then updates the UI
-          io.to(players[i].socketID).emit(
-            roomCode + "assignIdentities",
-            players
-          );
+          io.to(players[i].socketID).emit("assignIdentities", players);
         } else if (
           players[i].character === "Minion of Mordred" ||
           players[i].character === "Assassin"
         ) {
           let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam();
           //emit sanitized player list to client, client then updates the UI
-          io.to(players[i].socketID).emit(
-            roomCode + "assignIdentities",
-            sanitizedPlayers
-          );
+          io.to(players[i].socketID).emit("assignIdentities", sanitizedPlayers);
         } else {
           let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(
             players[i].socketID
           );
           //emit sanitized player list to client, client then updates the UI
-          io.to(players[i].socketID).emit(
-            roomCode + "assignIdentities",
-            sanitizedPlayers
-          );
+          io.to(players[i].socketID).emit("assignIdentities", sanitizedPlayers);
         }
       }
     });
 
-    //TODO: fix
-    //disconnecting right now will reset the canvas to pregame setup
-    //so if game is started and someone disconnects, will go back to pregame
     socket.on("disconnect", function() {
       let players = GameList[roomCode].players;
       for (let i in players) {
@@ -143,7 +131,7 @@ io.on("connection", function(socket) {
         }
       }
       //emit all the game players to client, client then updates the UI
-      io.in(roomCode).emit(roomCode + "SetUpTable", GameList[roomCode].players);
+      io.in(roomCode).emit("SetUpTable", GameList[roomCode].players);
     });
   });
 });
