@@ -95,7 +95,7 @@
     <!-- /Connection  -->
 
     <!-- Game  -->
-    <div id="gameScreen" v-if="showGameScreen">
+    <div v-cloak id="gameScreen" v-if="showGameScreen">
       <ul style="list-style-type:none;" v-if="!assignIdentities">
         <li style="font-size: 27px;" v-for="player in players">
           {{ player.role }}: {{ player.name }}
@@ -115,17 +115,20 @@
       </div>
       <div id="assignIdentities" v-if="assignIdentities">
         <div class="row">
-          <div class="card" :class="{darkerBG: player.name.includes('You')}" v-for="player in players">
+          <div
+            class="card"
+            :class="{darkerBG: player.name.includes(' (You)')}"
+            v-for="player in players"
+          >
             <div
               class="card-body"
               :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
             >
               <h5 class="card-title">
-                <img
-                  v-if="player.leader === true"
-                  src="/client/assets/leader-icon.png"
-                />
                 {{ player.role }}: {{ player.name }}
+                <span style="color: #FFD700" v-if="player.leader === true">
+                  👑
+                </span>
               </h5>
               <h6 class="card-subtitle mb-2 text-muted">
                 <b>Team:</b> {{ player.team }} <br />
@@ -163,10 +166,10 @@
         data: {
           createNewGame: false,
           connectToGame: false,
-          showButtons: true,
-          startGameInRoom: false
+          showButtons: true
         }
       });
+
       function createGameClicked() {
         connectScreen.createNewGame = true;
         connectScreen.connectToGame = false;
@@ -182,12 +185,13 @@
         connectScreen.createNewGame = false;
         connectScreen.showButtons = true;
       }
-      var socket;
 
       function startGameButtonClicked() {
         gameScreen.showStartGameButton = false;
         socket.emit("startGameRoom");
       }
+
+      var socket;
 
       function createGame(name) {
         if (name === "") {
@@ -228,7 +232,6 @@
     </script>
 
     <script>
-      //creates a variable to the canvas created in html
       function startGame(name, roomCode, role) {
         let gameReady = false;
 
@@ -238,6 +241,7 @@
         console.log(
           "emitted name & roomcode to server: " + name + " " + roomCode
         );
+
         if (role === "Host") {
           socket.emit("createPlayer");
         } else {
