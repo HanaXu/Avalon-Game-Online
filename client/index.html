@@ -6,8 +6,8 @@
     <title>Avalonline</title>
     <link
       rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
       crossorigin="anonymous"
     />
     <link rel="stylesheet" href="client/styles.css" type="text/css" />
@@ -42,126 +42,160 @@
     </script>
     <script src="client/chat.js"></script>
 
-    <div id="game">
-      <button
-        class="btnCreate"
-        v-if="showButtons"
-        onclick="createGameClicked()"
-      >
-        Create New Game
-      </button>
-      <button
-        class="btnJoin"
-        v-if="showButtons"
-        onclick="connectToGameClicked()"
-      >
-        Join Game
-      </button>
-
+    <!-- Connection  -->
+    <div id="connectScreen">
+      <div class="row">
+        <div class="col">
+          <button
+            class="avalon-btn"
+            v-if="showButtons"
+            onclick="createGameClicked()"
+          >
+            Create New Game
+          </button>
+          <button
+            class="avalon-btn"
+            v-if="showButtons"
+            onclick="connectToGameClicked()"
+          >
+            Join Game
+          </button>
+        </div>
+      </div>
       <h3 v-cloak v-if="createNewGame">
-        {{ enterName }}
+        Enter a name
         <input type="text" id="username" value="1" />
         <button
-          class="btnCreate"
-          onclick="createGame('username','playerName','logonMsgId')"
+          class="avalon-btn"
+          onclick="createGame(document.getElementById('username').value)"
         >
           Create Game
         </button>
-        <p style="color:red;" id="logonMsgId"></p>
+        <p style="color:red;" id="errorMsg"></p>
         <br />
-        <button class="btnBack" onclick="back()">Back</button>
+        <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
-
       <h3 v-cloak v-if="connectToGame">
-        {{ enterGameCode }}
-        <input type="text" id="gameCode" value="" />
-        {{ enterName }}
+        Enter room code
+        <input type="text" id="roomCode" value="" />
+        Enter a name
         <input type="text" id="username2" value="1" />
         <button
-          class="btnJoin"
-          onclick="connectToGame('username2','gameCode','playerName','logonMsgId')"
+          class="avalon-btn"
+          onclick="connectToGame(document.getElementById('username2').value, document.getElementById('roomCode').value)"
         >
           Join Game
         </button>
-        <p style="color:red;" id="logonMsgId"></p>
+        <p style="color:red;" id="errorMsg"></p>
         <br />
-        <button class="btnBack" onclick="back()">Back</button>
+        <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
+      <h1 id="loginMessage"></h1>
+    </div>
+    <!-- /Connection  -->
 
-      <h1 id="playerName"></h1>
-
-      <div>
-        <button
-          v-cloak
-          v-if="showStartGameInRoom"
-          onclick="startGameInRoomClicked()"
-        >
-          Start Game
-        </button>
+    <!-- Game  -->
+    <div v-cloak id="gameScreen" v-if="showGameScreen">
+      <ul style="list-style-type:none;" v-if="!assignIdentities">
+        <li style="font-size: 27px;" v-for="player in players">
+          {{ player.role }}: {{ player.name }}
+        </li>
+      </ul>
+      <div class="row">
+        <div class="col text-center">
+          <button
+            class="avalon-btn"
+            v-cloak
+            v-if="showStartGameButton"
+            onclick="startGameButtonClicked()"
+          >
+            Start Game
+          </button>
+        </div>
+      </div>
+      <div id="assignIdentities" v-if="assignIdentities">
+        <div class="row">
+          <div
+            class="card"
+            :class="{darkerBG: player.name.includes(' (You)')}"
+            v-for="player in players"
+          >
+            <div
+              class="card-body"
+              :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
+            >
+              <h5 class="card-title">
+                {{ player.role }}: {{ player.name }}
+                <span style="color: #FFD700" v-if="player.leader === true">
+                  👑
+                </span>
+              </h5>
+              <h6 class="card-subtitle mb-2 text-muted">
+                <b>Team:</b> {{ player.team }} <br />
+                <b>Character:</b> {{ player.character }} <br />
+              </h6>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    <!-- /Game  -->
 
     <div id="firechat-wrapper"></div>
-
     <div id="firebaseui-auth-container"></div>
 
     <script>
-      var playersCanvasPositions = [
-        [300, 20],
-        [850, 270],
-        [300, 500],
-        [20, 250],
-        [850, 100],
-        [40, 100],
-        [40, 400],
-        [850, 400],
-        [700, 20],
-        [700, 500]
-      ];
-      var game = new Vue({
-        el: "#game",
+      var gameScreen = new Vue({
+        el: "#gameScreen",
         data: {
-          enterName: "Enter Your Name",
-          enterGameCode: "Enter Room Code",
-          gameCodeExist: false,
-          createNewGame: false,
-          connectToGame: false,
-          showButtons: true,
-          showStartGameInRoom: false,
-          startGameInRoom: false,
-          playerName: ""
+          players: [],
+          showGameScreen: false,
+          assignIdentities: false,
+          showStartGameButton: false
         }
       });
+
+      // var questsWidget = new Vue({
+      //   el: "#questsWidget", //html element with the id
+      //   data: {
+      //   }
+      // });
+
+      var connectScreen = new Vue({
+        el: "#connectScreen",
+        data: {
+          createNewGame: false,
+          connectToGame: false,
+          showButtons: true
+        }
+      });
+
       function createGameClicked() {
-        game.createNewGame = true;
-        game.connectToGame = false;
-        game.showButtons = false;
+        connectScreen.createNewGame = true;
+        connectScreen.connectToGame = false;
+        connectScreen.showButtons = false;
       }
       function connectToGameClicked() {
-        game.connectToGame = true;
-        game.createNewGame = false;
-        game.showButtons = false;
+        connectScreen.connectToGame = true;
+        connectScreen.createNewGame = false;
+        connectScreen.showButtons = false;
       }
       function back() {
-        game.connectToGame = false;
-        game.createNewGame = false;
-        game.showButtons = true;
+        connectScreen.connectToGame = false;
+        connectScreen.createNewGame = false;
+        connectScreen.showButtons = true;
       }
-      const roomCodes = new Array();
-      var socket;
 
-      function startGameInRoomClicked() {
-        game.showStartGameInRoom = false;
+      function startGameButtonClicked() {
+        gameScreen.showStartGameButton = false;
         socket.emit("startGameRoom");
       }
 
-      function createGame(userName, playerName, MsgId) {
-        var role = "Host";
-        var name = document.getElementById(userName).value;
-        var msg;
+      var socket;
+
+      function createGame(name) {
         if (name === "") {
-          msg = "*enter a name";
-          document.getElementById(MsgId).innerHTML = msg;
+          document.getElementById("errorMsg").innerHTML = "Enter a name";
         } else {
           var roomCode;
           //get random 6 digit number from random api
@@ -171,339 +205,75 @@
             function(response) {
               console.log("random roomcode: " + response);
               roomCode = response.trim(); //remove /n, etc
-              roomCodes.push(roomCode);
-              document.getElementById(playerName).innerHTML =
+
+              document.getElementById("loginMessage").innerHTML =
                 name + ", Welcome to Avalonline Room: " + roomCode;
-              game.createNewGame = false;
-              startGame(name, roomCode, role);
-            //   createNewChat(name, roomCode);
+
+              connectScreen.createNewGame = false;
+              startGame(name, roomCode, "Host");
+              //   createNewChat(name, roomCode);
             }
           );
         }
       }
 
-      function connectToGame(username, gameCode, playerName, MsgId) {
-        var gameCode = document.getElementById(gameCode).value;
-        var username = document.getElementById(username).value;
-        var role = "Guest";
-        var msg;
-        //roomCodes.includes(gameCode
-        if (username === "" || gameCode === "") {
-          msg = "Enter Name and Code";
-          document.getElementById(MsgId).innerHTML = msg;
+      function connectToGame(name, roomCode) {
+        if (name === "" || roomCode === "") {
+          document.getElementById("errorMsg").innerHTML =
+            "Enter Name and room code";
         } else {
-          game.connectToGame = false;
-          document.getElementById(playerName).innerHTML =
-            username + ", Welcome to Avalonline Room: " + gameCode;
-          startGame(username, gameCode, role);
-        //   joinChat(username, gameCode);
+          connectScreen.connectToGame = false;
+          document.getElementById("loginMessage").innerHTML =
+            name + ", Welcome to Avalonline Room: " + roomCode;
+          startGame(name, roomCode, "Guest");
+          //   joinChat(name, roomCode);
         }
       }
     </script>
 
     <script>
-      //creates a variable to the canvas created in html
-      //var ctx = document.getElementById("ctx").getContext("2d");
-      function startGame(playerName, roomCode, role) {
+      function startGame(name, roomCode, role) {
         let gameReady = false;
-        //creates a variable to the canvas created in html
-        var canv = document.createElement("canvas");
-        canv.setAttribute("width", 1250);
-        canv.setAttribute("height", 600);
-        canv.setAttribute("id", roomCode);
-        canv.setAttribute("style", "border:1px solid #000000");
-        document.getElementById("game").appendChild(canv);
-        var ctx = document.getElementById(roomCode).getContext("2d");
-        ctx.font = "25px Arial";
+
         //creates a socket variable to be used to communicate with the server
         socket = io();
-        socket.emit("roomCode", { roomCode: roomCode });
-        console.log('emitted roomcode: ' + roomCode)
-        socket.emit("playerName", { name: playerName });
+        socket.emit("roomCode", { roomCode: roomCode, name: name });
+        console.log(
+          "emitted name & roomcode to server: " + name + " " + roomCode
+        );
+
         if (role === "Host") {
           socket.emit("createPlayer");
         } else {
           socket.emit("connectPlayer");
         }
 
-        //listens to new positions from the server and updates the client canvas
-        socket.on(roomCode + "SetUpTable", function(players) {
-          console.log(players)
-          let x = 50;
-          let y = 0;
-          ctx.clearRect(0, 0, 1250, 600);
-          for (var i = 0; i < players.length; i++) {
-            y = y + 50;
-            ctx.fillText(players[i].role + ": " + players[i].name, x, y);
-          }
+        socket.on("SetUpTable", function(players) {
+          gameScreen.showGameScreen = true;
+          updatePlayers(players, name);
         });
 
-        socket.on(roomCode + "gameReady", function() {
-          console.log('game ready')
-            game.showStartGameInRoom = true;
+        socket.on("gameReady", function() {
+          console.log("game ready");
+          gameScreen.showStartGameButton = true;
         });
 
-        socket.on(roomCode + "assignIdentities", function(data) {
-          ctx.clearRect(0, 0, 1250, 600);
-          var playerCharacter;
-          var playerTeam;
-          var leader;
-          for (var j = 0; j < data.length; j++) {
-            if (data[j].name === playerName) {
-              playerTeam = data[j].team;
-              playerCharacter = data[j].character;
-              leader = data[j].leader;
-            }
-          }
-          if (playerTeam === "Good" && playerCharacter !== "Merlin") {
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].name !== playerName) {
-                ctx.fillStyle = "black";
-                ctx.fillText(
-                  data[i].role + ": " + data[i].name,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1]
-                );
-                ctx.fillText(
-                  "Team: Hidden",
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 25
-                );
-                ctx.fillText(
-                  "Character: Hidden",
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 50
-                );
-                if (data[i].leader === true) {
-                  ctx.beginPath();
-                  ctx.arc(
-                    playersCanvasPositions[i][0] + 10,
-                    playersCanvasPositions[i][1] + 65,
-                    10,
-                    0,
-                    2 * Math.PI
-                  );
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              } else {
-                ctx.fillStyle = "green";
-                ctx.fillText(
-                  data[i].role + ": " + data[i].name,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1]
-                );
-                ctx.fillText(
-                  "Team: " + data[i].team,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 25
-                );
-                ctx.fillText(
-                  "Character: " + data[i].character,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 50
-                );
-                if (leader) {
-                  ctx.beginPath();
-                  ctx.arc(
-                    playersCanvasPositions[i][0] + 10,
-                    playersCanvasPositions[i][1] + 65,
-                    10,
-                    0,
-                    2 * Math.PI
-                  );
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              }
-            }
-          } else if (playerTeam === "Good" && playerCharacter === "Merlin") {
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].name !== playerName) {
-                ctx.fillStyle = "black";
-                ctx.fillText(
-                  data[i].role + ": " + data[i].name,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1]
-                );
-                ctx.fillText(
-                  "Team: " + data[i].team,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 25
-                );
-                ctx.fillText(
-                  "Character: " + data[i].character,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 50
-                );
-                if (data[i].leader === true) {
-                  ctx.beginPath();
-                  ctx.arc(
-                    playersCanvasPositions[i][0] + 10,
-                    playersCanvasPositions[i][1] + 65,
-                    10,
-                    0,
-                    2 * Math.PI
-                  );
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              } else {
-                ctx.fillStyle = "green";
-                ctx.fillText(
-                  data[i].role + ": " + data[i].name,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1]
-                );
-                ctx.fillText(
-                  "Team: " + data[i].team,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 25
-                );
-                ctx.fillText(
-                  "Character: " + data[i].character,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 50
-                );
-                if (leader === true) {
-                  ctx.beginPath();
-                  ctx.arc(
-                    playersCanvasPositions[i][0] + 10,
-                    playersCanvasPositions[i][1] + 65,
-                    10,
-                    0,
-                    2 * Math.PI
-                  );
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              }
-            }
-          } else if (playerTeam === "Evil") {
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].name !== playerName) {
-                if (data[i].team === "Evil") {
-                  ctx.fillStyle = "black";
-                  ctx.fillText(
-                    data[i].role + ": " + data[i].name,
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1]
-                  );
-                  ctx.fillText(
-                    "Team: " + data[i].team,
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1] + 25
-                  );
-                  ctx.fillText(
-                    "Character: " + data[i].character,
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1] + 50
-                  );
-                  if (data[i].leader === true) {
-                    ctx.beginPath();
-                    ctx.arc(
-                      playersCanvasPositions[i][0] + 10,
-                      playersCanvasPositions[i][1] + 65,
-                      10,
-                      0,
-                      2 * Math.PI
-                    );
-                    ctx.fillStyle = "red";
-                    ctx.fill();
-                  }
-                } else {
-                  ctx.fillStyle = "black";
-                  ctx.fillText(
-                    data[i].role + ": " + data[i].name,
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1]
-                  );
-                  ctx.fillText(
-                    "Team: Hidden",
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1] + 25
-                  );
-                  ctx.fillText(
-                    "Character: Hidden",
-                    playersCanvasPositions[i][0],
-                    playersCanvasPositions[i][1] + 50
-                  );
-                  if (data[i].leader === true) {
-                    ctx.beginPath();
-                    ctx.arc(
-                      playersCanvasPositions[i][0] + 10,
-                      playersCanvasPositions[i][1] + 65,
-                      10,
-                      0,
-                      2 * Math.PI
-                    );
-                    ctx.fillStyle = "red";
-                    ctx.fill();
-                  }
-                }
-              } else {
-                ctx.fillStyle = "green";
-                ctx.fillText(
-                  data[i].role + ": " + data[i].name,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1]
-                );
-                ctx.fillText(
-                  "Team: " + data[i].team,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 25
-                );
-                ctx.fillText(
-                  "Character: " + data[i].character,
-                  playersCanvasPositions[i][0],
-                  playersCanvasPositions[i][1] + 50
-                );
-                if (leader === true) {
-                  ctx.beginPath();
-                  ctx.arc(
-                    playersCanvasPositions[i][0] + 10,
-                    playersCanvasPositions[i][1] + 65,
-                    10,
-                    0,
-                    2 * Math.PI
-                  );
-                  ctx.fillStyle = "red";
-                  ctx.fill();
-                }
-              }
-            }
-          } else {
-            for (var i = 0; i < data.length; i++) {
-              ctx.fillText(
-                data[i].role + ": " + data[i].name,
-                playersCanvasPositions[i][0],
-                playersCanvasPositions[i][1]
-              );
-              ctx.fillText(
-                "Team: " + data[i].team,
-                playersCanvasPositions[i][0],
-                playersCanvasPositions[i][1] + 25
-              );
-              ctx.fillText(
-                "Character: " + data[i].character,
-                playersCanvasPositions[i][0],
-                playersCanvasPositions[i][1] + 50
-              );
-              if (data[i].leader === true) {
-                ctx.beginPath();
-                ctx.arc(
-                  playersCanvasPositions[i][0] + 10,
-                  playersCanvasPositions[i][1] + 65,
-                  10,
-                  0,
-                  2 * Math.PI
-                );
-                ctx.fillStyle = "red";
-                ctx.fill();
-              }
-            }
-          }
+        socket.on("assignIdentities", function(players) {
+          gameScreen.assignIdentities = true;
+          updatePlayers(players, name);
         });
+      }
+
+      function updatePlayers(players, name) {
+        gameScreen.players = []; //clear players
+        console.log(players);
+
+        for (let i in players) {
+          if (players[i].name === name) {
+            players[i].name += " (You)"; //mark yourself
+          }
+          gameScreen.players.push(players[i]);
+        }
       }
     </script>
   </body>

@@ -1,4 +1,5 @@
 const GoodTeam = new Set(["Merlin", "Loyal Servant of Arthur"]);
+const EvilTeam = new Set(["Assassin", "Minion of Mordred"]);
 
 //defines what type of characters for size of game
 //key: number of players
@@ -66,11 +67,40 @@ const PlayerIdentities = {
 module.exports = class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
-    this.gameIsClosed = 0; //false
+    this.gameIsStarted = false;
     this.gameStage = 0;
     this.players = [];
     var quest1, quest2, quest3, quest4, quest5;
     var quests = [quest1, quest2, quest3, quest4, quest5];
+  }
+
+  //hide all player team and character info but yourself
+  sanitizeForGoodTeam(yourSocketID) {
+    let clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (let i in clonedPlayers) {
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        //dont hide your own info
+        continue;
+      } else {
+        //hide everyone else's info
+        clonedPlayers[i].character = "hidden";
+        clonedPlayers[i].team = "hidden";
+      }
+    }
+    return clonedPlayers;
+  }
+
+  //hide all good team's characters
+  sanitizeForEvilTeam() {
+    let clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (let i in clonedPlayers) {
+      if (GoodTeam.has(clonedPlayers[i].character)) {
+        //hide good team's info
+        clonedPlayers[i].character = "hidden";
+        clonedPlayers[i].team = "hidden";
+      }
+    }
+    return clonedPlayers;
   }
 
   //getter for PlayerIdentities
@@ -92,8 +122,8 @@ module.exports = class Game {
     for (var i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
-        console.log("Current leader is:");
-        console.log(this.players[i]);
+        // console.log("Current leader is:");
+        // console.log(this.players[i]);
         break;
       }
     }
@@ -102,18 +132,21 @@ module.exports = class Game {
 
   assignIdentities() {
     console.log("assignIdentities()");
-    let shuffledIdentities = this.shuffle(Game.PlayerIdentities[this.players.length]);
+    let shuffledIdentities = this.shuffle(
+      Game.PlayerIdentities[this.players.length]
+    );
 
     for (let i = 0; i < this.players.length; i++) {
-      this.players[i].character = shuffledIdentities[i];
+      this.players[i].character = shuffledIdentities[i]; //assign character to player
       if (Game.GoodTeam.has(shuffledIdentities[i])) {
-        this.players[i].team = "Good";
+        this.players[i].team = "Good"; //assign team based on character
       } else {
         this.players[i].team = "Evil";
       }
     }
   }
 
+  //Fisher-Yates shuffle
   shuffle(array) {
     var currentIndex = array.length,
       temporaryValue,
@@ -179,22 +212,6 @@ module.exports = class Game {
         countQuestSuccesses();
         assassinate();
     }
-    
-    */
-/** @function assignIdentities()
- * randomly assigns each player to Good or Evil team & gives them a specific identity
- * sets value of identity, onTeamGood, and knownIdentities for each Player object
- * sends identity and knownIdentities to UI for each player
- */
-
-/**
- * @function shuffle()
- * @param array
- * Known as the Fisher-Yates shuffle, it shuffles the list of player identities to randomly assign the players their identities in
- * the assignIdentities() function
- */
-
-/*
     
     */
 
