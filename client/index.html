@@ -42,6 +42,7 @@
     </script>
     <script src="client/chat.js"></script>
 
+    <!-- Connection  -->
     <div id="connectScreen">
       <div class="row">
         <div class="col">
@@ -61,7 +62,6 @@
           </button>
         </div>
       </div>
-
       <h3 v-cloak v-if="createNewGame">
         Enter a name
         <input type="text" id="username" value="1" />
@@ -75,7 +75,6 @@
         <br />
         <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
-
       <h3 v-cloak v-if="connectToGame">
         Enter room code
         <input type="text" id="roomCode" value="" />
@@ -91,17 +90,17 @@
         <br />
         <button class="avalon-btn" onclick="back()">Back</button>
       </h3>
-
       <h1 id="loginMessage"></h1>
     </div>
+    <!-- /Connection  -->
 
+    <!-- Game  -->
     <div id="gameScreen" v-if="showGameScreen">
       <ul style="list-style-type:none;" v-if="!assignIdentities">
         <li style="font-size: 27px;" v-for="player in players">
           {{ player.role }}: {{ player.name }}
         </li>
       </ul>
-
       <div class="row">
         <div class="col text-center">
           <button
@@ -114,7 +113,6 @@
           </button>
         </div>
       </div>
-
       <div id="assignIdentities" v-if="assignIdentities">
         <div class="row">
           <div class="card" v-for="player in players">
@@ -122,19 +120,25 @@
               class="card-body"
               :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
             >
-              <h5 class="card-title">{{ player.role }}: {{ player.name }}</h5>
+              <h5 class="card-title">
+                <img
+                  v-if="player.leader === true"
+                  src="/client/assets/leader-icon.png"
+                />
+                {{ player.role }}: {{ player.name }}
+              </h5>
               <h6 class="card-subtitle mb-2 text-muted">
                 <b>Team:</b> {{ player.team }} <br />
-                <b>Character:</b> {{ player.character }} <br>
+                <b>Character:</b> {{ player.character }} <br />
               </h6>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- /Game  -->
 
     <div id="firechat-wrapper"></div>
-
     <div id="firebaseui-auth-container"></div>
 
     <script>
@@ -147,6 +151,12 @@
           showStartGameButton: false
         }
       });
+
+      // var questsWidget = new Vue({
+      //   el: "#questsWidget", //html element with the id
+      //   data: {
+      //   }
+      // });
 
       var connectScreen = new Vue({
         el: "#connectScreen",

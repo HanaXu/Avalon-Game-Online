@@ -35,7 +35,7 @@ body {
   border-top: 5px solid green;
 }
 .card-body {
-  padding: 1rem;
+  padding: .5rem 1rem;
 }
 #assignIdentities .card {
   margin: 5px;
