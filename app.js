@@ -22,13 +22,14 @@ const io = require("socket.io")(serv, {});
 io.on("connection", function(socket) {
   //start room connection
   socket.on("roomCode", function(data) {
+    const name = data.name;
     const roomCode = data.roomCode;
+
     console.log("got room code: " + roomCode);
     socket.join(roomCode); //subscribe the socket to the roomcode
 
     let roomExists = false;
     let game;
-    let name;
 
     //check if this room already exists in GameList
     for (let i in GameList) {
@@ -44,10 +45,6 @@ io.on("connection", function(socket) {
     }
     console.log("connected to room: " + roomCode + "\n");
 
-    socket.on("playerName", function(data) {
-      name = data.name;
-    });
-
     //create player and add it to the game object, then add game object to game list
     socket.on("createPlayer", function() {
       let player = new Player(socket.id, name, roomCode, "Host");
@@ -57,7 +54,7 @@ io.on("connection", function(socket) {
       console.log("GameList object after adding game:");
       console.log(GameList);
 
-      //emit all the game players to client, client then updates the canvas
+      //emit all the game players to client, client then updates the UI
       io.in(roomCode).emit(roomCode + "SetUpTable", game.players);
     });
 
@@ -70,7 +67,7 @@ io.on("connection", function(socket) {
       console.log("GameList object after adding new player to existing game:");
       console.log(GameList);
 
-      //emit all the game players to client, client then updates the canvas
+      //emit all the game players to client, client then updates the UI
       io.in(roomCode).emit(roomCode + "SetUpTable", GameList[roomCode].players);
 
       //check for game ready
@@ -94,23 +91,43 @@ io.on("connection", function(socket) {
     //no other clients can join now that game is started (not yet implemented)
     //assign identities & assign first quest leader
     socket.on("startGameRoom", function() {
-      // console.log("startGameRoom. this is the game list object");
-      // console.log(GameList);
-      // console.log("this is the game room object");
-      // console.log(GameList[roomCode]);
-
-      GameList[roomCode].gameIsClosed = 1; //true
+      GameList[roomCode].gameIsStarted = true;
       GameList[roomCode].gameStage = 1;
       GameList[roomCode].assignIdentities();
       GameList[roomCode].assignLeader();
 
-      // console.log(GameList[roomCode].players);
+      let players = GameList[roomCode].players;
 
-      //emit all the game players to client, client then updates the canvas to show identities
-      io.in(roomCode).emit(
-        roomCode + "assignIdentities",
-        GameList[roomCode].players
-      );
+      //server side validate instead of having the client validate
+      //client's only job is to update the UI
+      for (let i in players) {
+        if (players[i].character === "Merlin") {
+          //emit non-sanitized player list, client then updates the UI
+          io.to(players[i].socketID).emit(
+            roomCode + "assignIdentities",
+            players
+          );
+        } else if (
+          players[i].character === "Minion of Mordred" ||
+          players[i].character === "Assassin"
+        ) {
+          let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam();
+          //emit sanitized player list to client, client then updates the UI
+          io.to(players[i].socketID).emit(
+            roomCode + "assignIdentities",
+            sanitizedPlayers
+          );
+        } else {
+          let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(
+            players[i].socketID
+          );
+          //emit sanitized player list to client, client then updates the UI
+          io.to(players[i].socketID).emit(
+            roomCode + "assignIdentities",
+            sanitizedPlayers
+          );
+        }
+      }
     });
 
     //TODO: fix
@@ -121,15 +138,12 @@ io.on("connection", function(socket) {
       for (let i in players) {
         if (players[i].socketID === socket.id) {
           console.log("removing player from game");
-          players.splice(i,1); //delete 1 player element at index i
+          players.splice(i, 1); //delete 1 player element at index i
           break;
         }
       }
-      //emit all the game players to client, client then updates the canvas
-      io.in(roomCode).emit(
-        roomCode + "SetUpTable",
-        GameList[roomCode].players
-      );
+      //emit all the game players to client, client then updates the UI
+      io.in(roomCode).emit(roomCode + "SetUpTable", GameList[roomCode].players);
     });
   });
 });
