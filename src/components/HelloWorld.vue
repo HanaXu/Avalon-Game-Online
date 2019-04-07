@@ -10,7 +10,6 @@
     <ul>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-pwa" target="_blank" rel="noopener">pwa</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
     </ul>
     <h3>Essential Links</h3>
     <ul>
@@ -35,9 +34,15 @@
 export default {
   name: 'HelloWorld',
   props: {
+<<<<<<< HEAD
     msg: String,
   },
 };
+=======
+    msg: String
+  }
+}
+>>>>>>> no-eslint
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
