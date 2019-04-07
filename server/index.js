@@ -10,7 +10,6 @@ var Player = require('../game/Player');
 var GameList = {}; //keeps record of all game objects
 
 io.on('connection', socket => {
-  var roomCode;
   //create a new room
   socket.on('createRoom', data => {
     roomCode = data.roomCode;
@@ -89,6 +88,7 @@ io.on('connection', socket => {
 
   socket.on('disconnect', function() {
     if (GameList.length != 0) {
+      console.log('disconnecting from room: ' + roomCode);
       let players = GameList[roomCode].players;
       for (let i in players) {
         if (players[i].socketID === socket.id) {
@@ -98,7 +98,10 @@ io.on('connection', socket => {
         }
       }
       //emit all the game players to client, client then updates the UI
-      io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
+      io.in(roomCode).emit('updatePlayers', {
+        roomCode: roomCode,
+        players: players
+      });
     }
   });
 });
