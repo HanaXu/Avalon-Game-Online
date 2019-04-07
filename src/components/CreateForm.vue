@@ -4,14 +4,30 @@
       <label class="sr-only" for="inline-form-input-name">Name</label>
       <b-input id="inline-form-input-name" class="mb-2 mr-sm-2 mb-sm-0" placeholder="Name"></b-input>
 
-      <b-button class="avalon-btn-lg">Create Room</b-button>
+      <b-button class="avalon-btn-lg" @click="getRandomNum">Create Room</b-button>
     </b-form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import io from "socket.io-client";
+
 export default {
-  name: 'CreateForm'
+  name: "CreateForm",
+  methods: {
+    getRandomNum() {
+      axios
+        .get(
+          "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
+        )
+        .then(res => {
+          console.log(res.data);
+          const socket = io("localhost:3000");
+          socket.emit("roomCode", { roomCode: res.data });
+        });
+    }
+  }
 };
 </script>
 
