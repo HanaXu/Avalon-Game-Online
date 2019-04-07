@@ -37,7 +37,7 @@ export default {
         .then(res => {
           console.log(res.data);
           console.log(this.name);
-          this.$socket.emit("roomCode", { roomCode: res.data, name: this.name });
+          this.$socket.emit("createRoom", { roomCode: res.data, name: this.name });
         });
     }
   }
