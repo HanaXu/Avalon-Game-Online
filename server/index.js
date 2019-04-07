@@ -10,9 +10,10 @@ var Player = require('../game/Player');
 var GameList = {}; //keeps record of all game objects
 
 io.on('connection', socket => {
+  var roomCode;
   //create a new room
   socket.on('createRoom', data => {
-    const roomCode = data.roomCode;
+    roomCode = data.roomCode;
     const name = data.name;
     console.log(roomCode);
     console.log(name);
@@ -44,7 +45,6 @@ io.on('connection', socket => {
 
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', {
-      yourName: name,
       roomCode: roomCode,
       players: game.players
     });
@@ -65,7 +65,6 @@ io.on('connection', socket => {
 
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', {
-      yourName: name,
       roomCode: roomCode,
       players: GameList[roomCode].players
     });
@@ -88,16 +87,18 @@ io.on('connection', socket => {
     }
   });
 
-  // socket.on("disconnect", function() {
-  //   let players = GameList[roomCode].players;
-  //   for (let i in players) {
-  //     if (players[i].socketID === socket.id) {
-  //       console.log("removing player from game");
-  //       players.splice(i, 1); //delete 1 player element at index i
-  //       break;
-  //     }
-  //   }
-  //   //emit all the game players to client, client then updates the UI
-  //   io.in(roomCode).emit("updatePlayers", GameList[roomCode].players);
-  // });
+  socket.on('disconnect', function() {
+    if (GameList.length != 0) {
+      let players = GameList[roomCode].players;
+      for (let i in players) {
+        if (players[i].socketID === socket.id) {
+          console.log('removing player from game');
+          players.splice(i, 1); //delete 1 player element at index i
+          break;
+        }
+      }
+      //emit all the game players to client, client then updates the UI
+      io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
+    }
+  });
 });

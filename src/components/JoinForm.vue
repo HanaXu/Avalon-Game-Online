@@ -14,7 +14,8 @@
         <b-input id="inline-form-input-roomCode" placeholder="roomCode" v-model="roomCode"></b-input>
       </b-input-group>
 
-      <router-link @click.native="joinRoom" to="/game" tag="button" class="avalon-btn-lg">Join Room</router-link>
+      <router-link @click.native="joinRoom" :to="{ name: 'game', params: { yourName: this.name } }" 
+      tag="button" class="avalon-btn-lg">Join Room</router-link>
     </b-form>
   </div>
 </template>

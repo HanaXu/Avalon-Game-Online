@@ -44,20 +44,21 @@ export default {
       loading: true,
       message: null,
       players: [],
-      //   yourName: null,
+      yourName: null,
       roomCode: null
     };
   },
-  props: ['yourName'],
+  created() {
+    this.yourName = this.$route.params.yourName;
+    console.log(yourName)
+  },
   sockets: {
     connect: function() {
       console.log("socket connected");
     },
     updatePlayers: function(data) {
-      // console.log('data: ' + data);
       this.loading = false;
       this.roomCode = data["roomCode"];
-      //   this.yourName = data["yourName"];
       this.players = data["players"];
 
       //   console.log("you are: " + this.yourName);

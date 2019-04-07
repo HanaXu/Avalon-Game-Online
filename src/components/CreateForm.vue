@@ -10,8 +10,7 @@
       ></b-input>
       <router-link
         @click.native="getRandomNum"
-        to="/game"
-        :name="name"
+        :to="{ name: 'game', params: { yourName: this.name } }"
         tag="button"
         class="avalon-btn-lg"
       >Create Room</router-link>
@@ -38,7 +37,10 @@ export default {
         .then(res => {
           console.log(res.data);
           console.log(this.name);
-          this.$socket.emit("createRoom", { roomCode: res.data, name: this.name });
+          this.$socket.emit("createRoom", {
+            roomCode: res.data,
+            name: this.name
+          });
         });
     }
   }
