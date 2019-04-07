@@ -17,6 +17,6 @@ io.on('connection', socket => {
     console.log(data.roomCode);
     console.log(data.name);
 
-    socket.emit('received', 'hello');
+    socket.emit('received', 'received room code');
   });
 });

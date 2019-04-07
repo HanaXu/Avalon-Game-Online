@@ -23,7 +23,6 @@
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue';
 import JoinForm from '@/components/JoinForm.vue';
 import CreateForm from '@/components/CreateForm.vue';
 

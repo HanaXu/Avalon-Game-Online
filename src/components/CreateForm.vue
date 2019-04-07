@@ -14,14 +14,12 @@
         tag="button"
         class="avalon-btn-lg"
       >Create Room</router-link>
-      <!-- <b-button class="avalon-btn-lg" @click="getRandomNum">Create 2</b-button> -->
     </b-form>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import io from "socket.io-client";
 
 export default {
   name: "CreateForm",
@@ -39,12 +37,7 @@ export default {
         .then(res => {
           console.log(res.data);
           console.log(this.name);
-          const socket = io("localhost:3000");
-          socket.emit("roomCode", { roomCode: res.data, name: this.name });
-
-          // socket.on("received", function(message) {
-          //   console.log("received " + message);
-          // });
+          this.$socket.emit("roomCode", { roomCode: res.data, name: this.name });
         });
     }
   }

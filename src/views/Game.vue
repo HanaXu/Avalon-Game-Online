@@ -1,25 +1,30 @@
 <template>
-  <div class="game"></div>
+  <div class="game">
+    <div class="container jumbo">
+      <div v-if="loading">Loading...</div>
+      <div v-if="!loading">{{ message }}</div>
+    </div>
+  </div>
 </template>
 
 <script>
-import io from "socket.io-client";
-
 export default {
   name: "Game",
   data() {
     return {
-      loading: false,
-      roomCode: null,
-      name: null
+      loading: true,
+      message: null
     };
   },
-  beforeMount: function() {
-    console.log("before mount");
-    const socket = io("localhost:3000");
-    socket.on("received", function(message) {
-      console.log("received " + message);
-    });
+  sockets: {
+    connect: function() {
+      console.log("socket connected");
+    },
+    received: function(data) {
+      this.loading = false;
+      this.message = data;
+      console.log(data);
+    }
   }
 };
 </script>
