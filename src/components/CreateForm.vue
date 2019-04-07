@@ -8,7 +8,13 @@
         placeholder="user1"
         v-model="name"
       ></b-input>
-      <b-button class="avalon-btn-lg" @click="getRandomNum">Create Room</b-button>
+      <router-link
+        @click.native="getRandomNum"
+        to="/game"
+        tag="button"
+        class="avalon-btn-lg"
+      >Create Room</router-link>
+      <!-- <b-button class="avalon-btn-lg" @click="getRandomNum">Create 2</b-button> -->
     </b-form>
   </div>
 </template>
@@ -35,6 +41,10 @@ export default {
           console.log(this.name);
           const socket = io("localhost:3000");
           socket.emit("roomCode", { roomCode: res.data, name: this.name });
+
+          // socket.on("received", function(message) {
+          //   console.log("received " + message);
+          // });
         });
     }
   }

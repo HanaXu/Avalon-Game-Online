@@ -16,5 +16,7 @@ io.on('connection', socket => {
   socket.on('roomCode', data => {
     console.log(data.roomCode);
     console.log(data.name);
+
+    socket.emit('received', 'hello');
   });
 });

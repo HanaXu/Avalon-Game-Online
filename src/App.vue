@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
-      <b-navbar-brand href="#">Avalonline</b-navbar-brand>
+      <b-navbar-brand to="/">Avalonline</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>

@@ -34,15 +34,9 @@
 export default {
   name: 'HelloWorld',
   props: {
-<<<<<<< HEAD
-    msg: String,
-  },
-};
-=======
     msg: String
   }
 }
->>>>>>> no-eslint
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
