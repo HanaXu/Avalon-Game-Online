@@ -10,6 +10,7 @@ var Player = require('../game/Player');
 var GameList = {}; //keeps record of all game objects
 
 io.on('connection', socket => {
+  //create a new room
   socket.on('createRoom', data => {
     const roomCode = data.roomCode;
     const name = data.name;
@@ -42,6 +43,47 @@ io.on('connection', socket => {
     console.log(GameList);
 
     //emit all the game players to client, client then updates the UI
-    io.in(roomCode).emit('updatePlayers', {yourName: name, players: game.players });
+    io.in(roomCode).emit('updatePlayers', {
+      yourName: name,
+      roomCode: roomCode,
+      players: game.players
+    });
+  });
+
+  //join an existing room
+  socket.on('joinRoom', data => {
+    let name = data.name;
+    let roomCode = data.roomCode;
+    let player = new Player(socket.id, name, roomCode, 'Guest');
+
+    console.log('Connecting player to game room');
+    GameList[roomCode].players.push(player);
+
+    console.log('GameList object after adding new player to existing game:');
+    console.log(GameList);
+
+    //emit all the game players to client, client then updates the UI
+    io.in(roomCode).emit('updatePlayers', {
+      yourName: name,
+      roomCode: roomCode,
+      players: GameList[roomCode].players
+    });
+
+    //check for game ready
+    if (GameList[roomCode].players.length >= 5) {
+      console.log('game ready');
+      let hostSocketID;
+
+      //get host socket id
+      let players = GameList[roomCode].players;
+      for (let i in players) {
+        if (players[i].role === 'Host') {
+          console.log('Host socket found');
+          hostSocketID = players[i].socketID;
+          break;
+        }
+      }
+      io.to(hostSocketID).emit('gameReady'); //only emit to the host client
+    }
   });
 });

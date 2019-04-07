@@ -1,13 +1,16 @@
 <template>
-  <div class="game">
+  <div>
     <div class="jumbo" v-if="loading">Loading...</div>
-    <div class="container" v-if="!loading">
-      <div class="col">
+    <div class="container text-left" style="margin-top: .5rem">
+      <h4 v-if="!loading">{{ yourName }}, welcome to Avalonline Room: {{ roomCode }}</h4>
+    </div>
+    <div class="container game" v-if="!loading">
+      <div>
         <ul style="list-style-type:none;">
           <li
             style="font-size: 27px;"
-            v-for="player in players"
-            :key="player.socketID"
+            v-for="(player, index) in players"
+            :key="index"
           >{{ player.role }}: {{ player.name }}</li>
         </ul>
       </div>
@@ -16,21 +19,22 @@
 </template>
 
 <style scoped>
-.container {
-  margin-top: 1rem;
+.game {
   height: 80vh;
-  background: #777;
-  border-radius: 3px;
   display: flex;
   justify-content: left;
   text-align: left;
+  background: #777;
+  border-radius: 3px;
 }
 ul {
   margin-top: 1rem;
   padding: 0;
 }
+li {
+  padding-left: 1.5rem;
+}
 </style>
-
 
 <script>
 export default {
@@ -40,7 +44,8 @@ export default {
       loading: true,
       message: null,
       players: [],
-      yourName: null
+      yourName: null,
+      roomCode: null
     };
   },
   sockets: {
@@ -49,11 +54,12 @@ export default {
     },
     updatePlayers: function(data) {
       this.loading = false;
+      this.roomCode = data["roomCode"];
       this.yourName = data["yourName"];
       this.players = data["players"];
 
       console.log("you are: " + this.yourName);
-      console.log("players: " + this.players);
+      console.log("roomCode" + data["roomCode"]);
     }
   }
 };
