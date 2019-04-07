@@ -44,22 +44,24 @@ export default {
       loading: true,
       message: null,
       players: [],
-      yourName: null,
+      //   yourName: null,
       roomCode: null
     };
   },
+  props: ['yourName'],
   sockets: {
     connect: function() {
       console.log("socket connected");
     },
     updatePlayers: function(data) {
+      // console.log('data: ' + data);
       this.loading = false;
       this.roomCode = data["roomCode"];
-      this.yourName = data["yourName"];
+      //   this.yourName = data["yourName"];
       this.players = data["players"];
 
-      console.log("you are: " + this.yourName);
-      console.log("roomCode" + data["roomCode"]);
+      //   console.log("you are: " + this.yourName);
+      console.log("roomCode: " + this.roomCode);
     }
   }
 };

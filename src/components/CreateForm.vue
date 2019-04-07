@@ -11,6 +11,7 @@
       <router-link
         @click.native="getRandomNum"
         to="/game"
+        :name="name"
         tag="button"
         class="avalon-btn-lg"
       >Create Room</router-link>

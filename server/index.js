@@ -55,8 +55,9 @@ io.on('connection', socket => {
     let name = data.name;
     let roomCode = data.roomCode;
     let player = new Player(socket.id, name, roomCode, 'Guest');
+    socket.join(roomCode); //subscribe the socket to the roomcode
 
-    console.log('Connecting player to game room');
+    console.log('Connecting player to game room: ' + roomCode);
     GameList[roomCode].players.push(player);
 
     console.log('GameList object after adding new player to existing game:');
@@ -86,4 +87,17 @@ io.on('connection', socket => {
       io.to(hostSocketID).emit('gameReady'); //only emit to the host client
     }
   });
+
+  // socket.on("disconnect", function() {
+  //   let players = GameList[roomCode].players;
+  //   for (let i in players) {
+  //     if (players[i].socketID === socket.id) {
+  //       console.log("removing player from game");
+  //       players.splice(i, 1); //delete 1 player element at index i
+  //       break;
+  //     }
+  //   }
+  //   //emit all the game players to client, client then updates the UI
+  //   io.in(roomCode).emit("updatePlayers", GameList[roomCode].players);
+  // });
 });

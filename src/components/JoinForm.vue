@@ -11,7 +11,7 @@
 
       <label class="sr-only" for="inline-form-input-roomCode">roomCode</label>
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-        <b-input id="inline-form-input-roomCode" placeholder="roomCode"></b-input>
+        <b-input id="inline-form-input-roomCode" placeholder="roomCode" v-model="roomCode"></b-input>
       </b-input-group>
 
       <router-link @click.native="joinRoom" to="/game" tag="button" class="avalon-btn-lg">Join Room</router-link>
