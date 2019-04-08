@@ -44,7 +44,6 @@ export default {
     startGame: function() {
       console.log("starting game in room: " + this.roomCode);
       this.$socket.emit("startGame", this.roomCode);
-      this.assignIdentities = true;
       this.showStartButton = false;
     }
   },

@@ -122,7 +122,7 @@ io.on('connection', socket => {
       }
     }
 
-    // io.in(roomCode).emit('identitiesAssigned');
+    io.in(roomCode).emit('identitiesAssigned');
   });
 
   socket.on('disconnect', function() {

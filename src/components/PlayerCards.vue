@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" style="padding: 1rem;">
     <div
       class="card"
       :class="{darkerBG: player.name.includes(' (You)')}"
