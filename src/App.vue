@@ -1,4 +1,4 @@
-<template>
+<template xmlns="">
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
@@ -6,16 +6,25 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">Game Play</b-nav-item>
+          <b-nav-item @click="modalShow = !modalShow">Game Rules</b-nav-item>
           <b-nav-item href="#">Roles</b-nav-item>
           <b-nav-item href="#">Features</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <router-view/>
+      <b-modal v-model="modalShow">Hello From Modal!</b-modal>
+      <router-view/>
   </div>
 </template>
-
+<script>
+    export default {
+        data() {
+            return {
+                modalShow: false
+            }
+        }
+    }
+</script>
 <style lang="scss">
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
