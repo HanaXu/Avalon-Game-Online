@@ -137,11 +137,11 @@ module.exports = class Game {
       randomIndex = Math.floor(Math.random() * currentIndex);
       currentIndex -= 1;
       // And swap it with the current element.
-      temporaryValue = this.array[currentIndex];
-      this.array[currentIndex] = this.array[randomIndex];
-      this.array[randomIndex] = temporaryValue;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
     }
-    return this.array;
+    return array;
   }
 };
 

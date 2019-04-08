@@ -1,9 +1,7 @@
 <template>
   <div class="home">
-    <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-    <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
     <section class="container">
-      <div v-if="!(joinToggled || createToggled)" class="jumbo">
+      <div v-if="!(joinToggled || createToggled)" style="margin-top: 15%">
         <h1 class="title">Avalonline</h1>
         <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
         <b-button :pressed.sync="createToggled" class="avalon-btn-lg">Create Room</b-button>
@@ -22,12 +20,11 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import JoinForm from '@/components/JoinForm.vue';
-import CreateForm from '@/components/CreateForm.vue';
+import JoinForm from "@/components/JoinForm.vue";
+import CreateForm from "@/components/CreateForm.vue";
 
 export default {
-  name: 'home',
+  name: "home",
   components: {
     JoinForm,
     CreateForm
@@ -41,9 +38,16 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .jumbo {
-  margin-top: 15%;
+  margin-top: 30%;
+}
+
+.container {
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
 
 .title {

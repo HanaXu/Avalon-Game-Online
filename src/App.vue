@@ -24,12 +24,6 @@
   text-align: center;
   color: #2c3e50;
 }
-.container {
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-}
 .navbar-default {
   background: #eae7e3;
   border-color: #e7e7e7;
