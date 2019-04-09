@@ -6,7 +6,7 @@
         autofocus
         id="inline-form-input-name"
         class="mb-2 mr-sm-2 mb-sm-0"
-        placeholder="user1"
+        placeholder="name"
         v-model="name"
       ></b-input>
       <b-button @click="createRoom" class="avalon-btn-lg">Create Room</b-button>
@@ -21,7 +21,7 @@ export default {
   name: "CreateForm",
   data() {
     return {
-      name: "user1",
+      name: "1",
       roomCode: null
     };
   },

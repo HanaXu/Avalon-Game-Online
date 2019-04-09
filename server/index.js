@@ -15,7 +15,6 @@ io.on('connection', socket => {
   //create a new room
   socket.on('createRoom', data => {
     roomCode = data.roomCode;
-    console.log('in createRoom, roomCode is: ' + roomCode)
     const name = data.name;
     console.log(roomCode);
     console.log(name);
@@ -55,7 +54,7 @@ io.on('connection', socket => {
   socket.on('joinRoom', data => {
     let name = data.name;
     roomCode = data.roomCode;
-    console.log('in joinRoom, roomCode is: ' + roomCode)
+
     let player = new Player(socket.id, name, roomCode, 'Guest');
     socket.join(roomCode); //subscribe the socket to the roomcode
 
@@ -88,58 +87,69 @@ io.on('connection', socket => {
     }
   });
 
-  //no other clients can join now that game is started (not yet implemented)
+  //no other clients can join now that game is started
   //assign identities & assign first quest leader
   socket.on('startGame', function(data) {
     roomCode = data;
-    console.log('in startGame, roomCode is: ' + roomCode)
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].assignIdentities();
     GameList[roomCode].assignLeader();
 
     let players = GameList[roomCode].players;
-
-    //server side validate instead of having the client validate
-    //client's only job is to update the UI
-    for (let i in players) {
-      if (players[i].character === 'Merlin') {
-        //emit non-sanitized player list, client then updates the UI
-        io.to(players[i].socketID).emit('updatePlayers', {players: players});
-      } else if (
-        players[i].character === 'Minion of Mordred' ||
-        players[i].character === 'Assassin'
-      ) {
-        let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam();
-        //emit sanitized player list to client, client then updates the UI
-        io.to(players[i].socketID).emit('updatePlayers', {players: sanitizedPlayers});
-      } else {
-        let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(
-          players[i].socketID
-        );
-        //emit sanitized player list to client, client then updates the UI
-        io.to(players[i].socketID).emit('updatePlayers', {players: sanitizedPlayers});
-      }
-    }
-
+    emitSanitizedPlayers(roomCode, players);
     io.in(roomCode).emit('identitiesAssigned');
   });
 
   socket.on('disconnect', function() {
-    if (GameList.length > 0) {
-      console.log('disconnecting from room: ' + roomCode);
+    if (Object.keys(GameList).length != 0) {
       let players = GameList[roomCode].players;
       for (let i in players) {
         if (players[i].socketID === socket.id) {
-          console.log('removing player from game');
+          console.log('removing player from room: ' + roomCode);
           players.splice(i, 1); //delete 1 player element at index i
           break;
         }
       }
-      //emit all the game players to client, client then updates the UI
-      io.in(roomCode).emit('updatePlayers', {
-        players: players
-      });
+      //disconnection after game start
+      if (GameList[roomCode].gameIsStarted) {
+        emitSanitizedPlayers(roomCode, players);
+      }
+      //disconnection before game start
+      else {
+        //emit all the game players to client, client then updates the UI
+        io.in(roomCode).emit('updatePlayers', {
+          players: players
+        });
+      }
     }
   });
 });
+
+//server side validate instead of having the client validate
+//client's only job is to update the UI
+function emitSanitizedPlayers(roomCode, players) {
+  for (let i in players) {
+    if (players[i].character === 'Merlin') {
+      //emit non-sanitized player list, client then updates the UI
+      io.to(players[i].socketID).emit('updatePlayers', { players: players });
+    } else if (
+      players[i].character === 'Minion of Mordred' ||
+      players[i].character === 'Assassin'
+    ) {
+      let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam();
+      //emit sanitized player list to client, client then updates the UI
+      io.to(players[i].socketID).emit('updatePlayers', {
+        players: sanitizedPlayers
+      });
+    } else {
+      let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(
+        players[i].socketID
+      );
+      //emit sanitized player list to client, client then updates the UI
+      io.to(players[i].socketID).emit('updatePlayers', {
+        players: sanitizedPlayers
+      });
+    }
+  }
+}
