@@ -12,18 +12,24 @@
       </div>
       <PlayerCards v-if="assignIdentities" :players="players" :yourName="yourName"/>
     </div>
+    <!--<div class="container chat">-->
+      <!--<Chat></Chat>-->
+    <!--</div>-->
+    <Chat></Chat>
   </div>
 </template>
 
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import Chat from "@/components/Chat.vue";
 
 export default {
   name: "Game",
   components: {
     LobbyList,
-    PlayerCards
+    PlayerCards,
+    Chat
   },
   data() {
     return {
