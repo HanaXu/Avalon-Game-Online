@@ -122,7 +122,22 @@ io.on('connection', socket => {
   //no other clients can join now that game is started
   //assign identities & assign first quest leader
   socket.on('startGame', function(data) {
-    roomCode = data;
+    roomCode = data.roomCode;
+    var characters = data.optionalCharacters; //an array containing names of selected optional characters
+    console.log("Optional characters are");
+    console.log(characters);
+    if(characters.includes("percival")) {
+      GameList[roomCode].hasPercival = true;
+    }
+    if(characters.includes("mordred")) {
+      GameList[roomCode].hasMordred = true;
+    }
+    if(characters.includes("oberon")) {
+      GameList[roomCode].hasOberon = true;
+    }
+    if(characters.includes("morgana")) {
+      GameList[roomCode].hasMorgana = true;
+    }
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].assignIdentities();

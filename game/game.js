@@ -176,7 +176,7 @@ module.exports = class Game {
     var mord = "";
     var ober = "";
     var morg = "";
-    if(this.hasPercival) {
+    /*if(this.hasPercival) {
       perc = "Percival";
     }
     if(this.hasMordred) {
@@ -188,7 +188,7 @@ module.exports = class Game {
     if(this.hasMorgana) {
       morg = "Morgana";
     }
-
+*/
 
     const shuffledIdentities = this.shuffle(
       Game.PlayerIdentities[playerIdentitiesKey + perc + mord + ober + morg]

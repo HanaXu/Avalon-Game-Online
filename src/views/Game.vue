@@ -61,7 +61,7 @@ export default {
     startGame: function() {
       console.log("starting game in room: " + this.roomCode);
       //emit startGame with roomcode & optional character choices
-      this.$socket.emit("startGame", {"roomCode" : this.roomCode, "optionalCharacters" : selected});
+      this.$socket.emit("startGame", {"roomCode" : this.roomCode, "optionalCharacters" : this.selected});
       this.showStartButton = false;
     }
   },
@@ -77,6 +77,7 @@ export default {
     },
     identitiesAssigned: function() {
       this.assignIdentities = true;
+      this.showSetupOptions = false;
     },
     showHostSetupOptions: function() {
       this.showSetupOptions = true;
