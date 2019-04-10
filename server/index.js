@@ -20,11 +20,11 @@ io.on('connection', socket => {
     let game;
 
     //validation
-    if (name.length < 1 || name.length > 15) {
+    if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
       socket.emit(
         'errorMsg',
-        'Error: Name must be between 1-15 characters: ' + name
+        'Error: Name must be between 1-20 characters: ' + name
       );
       return;
     }
@@ -78,7 +78,7 @@ io.on('connection', socket => {
         'Error: Cannot join a game that has already started'
       );
       return;
-    } else if (name.length < 1 || name.length > 15) {
+    } else if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
       socket.emit(
         'errorMsg',

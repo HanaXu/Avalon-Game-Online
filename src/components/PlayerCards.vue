@@ -11,7 +11,7 @@
         :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
       >
         <h5 class="card-title">
-          <span>{{ player.role }}: </span>{{ player.name }}
+          {{ player.role }}: {{ player.name }}
           <span
             style="color: #FFD700"
             v-if="player.leader === true"
