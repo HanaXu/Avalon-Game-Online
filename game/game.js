@@ -1,4 +1,4 @@
-const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur']);
+const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
 // defines what type of characters for size of game
 // key: number of players
@@ -10,6 +10,9 @@ const PlayerIdentities = {
     'Loyal Servant of Arthur',
     'Loyal Servant of Arthur',
     'Minion of Mordred'
+  ],
+  '5Percival': [
+
   ],
   6: [
     'Merlin',
@@ -69,6 +72,10 @@ module.exports = class Game {
     this.gameIsStarted = false;
     this.gameStage = 0;
     this.players = [];
+    this.hasPercival = false;
+    this.hasMordred = false;
+    this.hasOberon = false;
+    this.hasMorgana = false;
     let quest1;
     let quest2;
     let quest3;
@@ -161,8 +168,30 @@ module.exports = class Game {
 
   assignIdentities() {
     console.log('assignIdentities()');
+
+    //keys in PlayerIdentities are in format of (PlayerCount)(Percival)(Mordred)(Oberon)(Morgana)
+    //ex 6PercivalMorgana is a 6-player game with Percival and Morgana as optional characters
+    var playerIdentitiesKey = this.players.length;
+    var perc = "";
+    var mord = "";
+    var ober = "";
+    var morg = "";
+    if(this.hasPercival) {
+      perc = "Percival";
+    }
+    if(this.hasMordred) {
+      mord = "Mordred";
+    }
+    if(this.hasOberon) {
+      ober = "Oberon";
+    }
+    if(this.hasMorgana) {
+      morg = "Morgana";
+    }
+
+
     const shuffledIdentities = this.shuffle(
-      Game.PlayerIdentities[this.players.length]
+      Game.PlayerIdentities[playerIdentitiesKey + perc + mord + ober + morg]
     );
 
     for (let i = 0; i < this.players.length; i++) {

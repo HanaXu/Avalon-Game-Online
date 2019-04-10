@@ -52,6 +52,10 @@ io.on('connection', socket => {
     console.log('GameList object after adding game:');
     console.log(GameList);
 
+
+    //since player is Host, show them the game setup options (bots, optional characters)
+    io.to(socket.id).emit('showHostSetupOptions');
+
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', {
       players: game.players

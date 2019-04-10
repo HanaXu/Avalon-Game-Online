@@ -7,6 +7,16 @@
       <div style="text-align: left; align-items: left; justify-content: left">
         <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
       </div>
+
+      <div v-if="showSetupOptions">
+        <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
+        <b-form-group label="Include optional characters:">
+            <b-form-checkbox-group v-model="selected" name="optionalCharacters" :options="optionalCharacters">
+            </b-form-checkbox-group>
+        </b-form-group>
+      </div>
+
+
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
       </div>
@@ -31,7 +41,15 @@ export default {
       yourName: null,
       roomCode: null,
       showStartButton: false,
-      assignIdentities: false
+      showSetupOptions: false,
+      assignIdentities: false,
+      selected: [],
+      optionalCharacters: [
+        {text: 'Percival', value: 'percival'},
+        {text: 'Mordred', value: 'mordred'},
+        {text: 'Oberon', value: 'oberon'},
+        {text: 'Morgana', value: 'morgana'}
+      ]
     };
   },
   created() {
@@ -42,7 +60,8 @@ export default {
   methods: {
     startGame: function() {
       console.log("starting game in room: " + this.roomCode);
-      this.$socket.emit("startGame", this.roomCode);
+      //emit startGame with roomcode & optional character choices
+      this.$socket.emit("startGame", {"roomCode" : this.roomCode, "optionalCharacters" : selected});
       this.showStartButton = false;
     }
   },
@@ -58,6 +77,9 @@ export default {
     },
     identitiesAssigned: function() {
       this.assignIdentities = true;
+    },
+    showHostSetupOptions: function() {
+      this.showSetupOptions = true;
     }
   }
 };
