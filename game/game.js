@@ -4,7 +4,7 @@ const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 // key: number of players
 // value: list of characters
 const PlayerIdentities = {
-  5: [
+  '5': [
     'Merlin',
     'Assassin',
     'Loyal Servant of Arthur',
@@ -12,7 +12,53 @@ const PlayerIdentities = {
     'Minion of Mordred'
   ],
   '5Percival': [
-
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred'
+  ],
+  '5PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Mordred'
+  ],
+  '5PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Oberon'
+  ],
+  '5PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Morgana'
+  ],
+  '5Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred'
+  ],
+  '5Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon'
+  ],
+  '5Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana'
   ],
   6: [
     'Merlin',
@@ -21,6 +67,62 @@ const PlayerIdentities = {
     'Loyal Servant of Arthur',
     'Loyal Servant of Arthur',
     'Minion of Mordred'
+  ],
+  '6Percival': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred'
+  ],
+  '6PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred'
+  ],
+  '6PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon'
+  ],
+  '6PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana'
+  ],
+  '6Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred'
+  ],
+  '6Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon'
+  ],
+  '6Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana'
   ],
   7: [
     'Merlin',
@@ -31,6 +133,123 @@ const PlayerIdentities = {
     'Minion of Mordred',
     'Minion of Mordred'
   ],
+  '7Percival': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '7PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '7PercivalMordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '7PercivalMordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '7PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '7PercivalOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '7PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred'
+  ],
+  '7Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '7MordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '7MordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '7Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '7OberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '7Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred'
+  ],
   8: [
     'Merlin',
     'Assassin',
@@ -39,6 +258,136 @@ const PlayerIdentities = {
     'Loyal Servant of Arthur',
     'Loyal Servant of Arthur',
     'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '8Percival': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '8PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '8PercivalMordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '8PercivalMordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '8PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '8PercivalOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '8PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred'
+  ],
+  '8Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '8MordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '8MordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '8Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '8OberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '8Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
     'Minion of Mordred'
   ],
   9: [
@@ -52,6 +401,150 @@ const PlayerIdentities = {
     'Minion of Mordred',
     'Minion of Mordred'
   ],
+  '9Percival': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '9PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '9PercivalMordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '9PercivalMordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '9PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '9PercivalOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '9PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred'
+  ],
+  '9Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred'
+  ],
+  '9MordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Oberon'
+  ],
+  '9MordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana'
+  ],
+  '9Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred'
+  ],
+  '9OberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Morgana'
+  ],
+  '9Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred'
+  ],
   10: [
     'Merlin',
     'Assassin',
@@ -61,6 +554,188 @@ const PlayerIdentities = {
     'Loyal Servant of Arthur',
     'Loyal Servant of Arthur',
     'Minion of Mordred',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10Percival': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10PercivalMordred': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10PercivalMordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Oberon'
+  ],
+  '10PercivalMordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Morgana'
+  ],
+  '10PercivalOberon': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10PercivalOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred',
+    'Morgana'
+  ],
+  '10PercivalMordredOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Mordred',
+    'Morgana'
+  ],
+  '10PercivalMorgana': [
+    'Merlin',
+    'Assassin',
+    'Percival',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10Mordred': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10MordredOberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Oberon'
+  ],
+  '10MordredOberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Morgana',
+    'Oberon'
+  ],
+  '10MordredMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Mordred',
+    'Minion of Mordred',
+    'Morgana'
+  ],
+  '10Oberon': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
+  '10OberonMorgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Oberon',
+    'Minion of Mordred',
+    'Morgana'
+  ],
+  '10Morgana': [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Morgana',
     'Minion of Mordred',
     'Minion of Mordred'
   ]
@@ -101,14 +776,65 @@ module.exports = class Game {
     return clonedPlayers;
   }
 
-  // hide all good team's characters
-  sanitizeForEvilTeam() {
+  sanitizeForPercival(yourSocketID) {
     const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+
     for (const i in clonedPlayers) {
-      if (GoodTeam.has(clonedPlayers[i].character)) {
-        // hide good team's info
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      }
+      else if(clonedPlayers[i].character == 'Merlin' || clonedPlayers[i].character == 'Morgana' ) {
+        //Merlin & Morgana both appear to be Merlin
+        clonedPlayers[i].character = 'Merlin';
+        clonedPlayers[i].team = 'Good';
+      }
+      else {
+        // hide everyone else's info
         clonedPlayers[i].character = 'hidden';
         clonedPlayers[i].team = 'hidden';
+      }
+    }
+    return clonedPlayers;
+  }
+
+  // hide identities of good team & Oberon
+  sanitizeForEvilTeam(yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (const i in clonedPlayers) {
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      }
+      else if (GoodTeam.has(clonedPlayers[i].character) || clonedPlayers[i].character == "Oberon") {
+        // hide good team's info (& Oberon)
+        clonedPlayers[i].character = 'hidden';
+        clonedPlayers[i].team = 'hidden';
+      }
+      else {
+        //just hide character of your teammates
+        clonedPlayers[i].character = 'hidden';
+      }
+    }
+    return clonedPlayers;
+  }
+
+  // hide identities of good team & Morgana
+  sanitizeForMerlin(yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (const i in clonedPlayers) {
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      }
+      else if (GoodTeam.has(clonedPlayers[i].character) || clonedPlayers[i].character == "Mordred") {
+        // hide good team's info (& Oberon)
+        clonedPlayers[i].character = 'hidden';
+        clonedPlayers[i].team = 'hidden';
+      }
+      else {
+        //just hide character of your teammates
+        clonedPlayers[i].character = 'hidden';
       }
     }
     return clonedPlayers;
@@ -176,7 +902,7 @@ module.exports = class Game {
     var mord = "";
     var ober = "";
     var morg = "";
-    /*if(this.hasPercival) {
+    if(this.hasPercival) {
       perc = "Percival";
     }
     if(this.hasMordred) {
@@ -188,8 +914,6 @@ module.exports = class Game {
     if(this.hasMorgana) {
       morg = "Morgana";
     }
-*/
-
     const shuffledIdentities = this.shuffle(
       Game.PlayerIdentities[playerIdentitiesKey + perc + mord + ober + morg]
     );
@@ -223,75 +947,3 @@ module.exports = class Game {
     return array;
   }
 };
-
-// List of Player Identities, depending on how many players there are
-
-/**
- * global variables for each of 5 quests
- * @var {Quest}
- */
-/**
- * list containing each of 5 quests
- * @var {*[]}
- */
-
-// --FUNCTIONS-----------------------------------------------------------------------------------------------------
-/** @function Main
- * the main function for the game application; this will execute when host clicks Start Game
- * calls all of the game setup & game logic functions when needed
- */
-
-/*
-    function Main() {
-        console.log("game.js: Main function initiated");
-
-        // do game setup stuff (find out how many players there are, and in future will find out how many bots & any optional characters)
-        //Need to figure out how to get the number of players in the game
-        var numPlayers = 5;
-
-        //give each player an identity
-        assignIdentities();
-
-        //this is the main game logic
-        for(var questNum = 0; questNum < 5; questNum++) { //NOTE: questNum starts at 0, so quests[0] is what players will call Quest 1
-            //loop through this until all quests are complete
-            quests[questNum] = new Quest(questNum, 0);
-            //stay on this quest until success or fail has been determined OR voteTrack reaches 5
-            while(quests[questNum].success == null && quests[questNum].voteTrack < 5) {
-                quests[questNum].chooseNextLeader();
-                quests[questNum].questLeaderChooseTeam();
-                quests[questNum].teamVote();
-            }
-            quests[questNum].saveQuestToHistory();
-        }
-
-        //do endgame stuff (count succeeded/failed quests, assassin tries to assassinate) to determine winner
-        countQuestSuccesses();
-        assassinate();
-    }
-
-    */
-
-/** @function countQuestSuccesses
- * checks value of Quest.success for each quest in History
- * if there are 2 or more fails, sets goodGuysWin to false
- * else, calls assassinate()
- */
-
-/*
-    function countQuestSuccesses() {
-        console.log("game.js: countQuestSuccesses()");
-        //iterate over quest.success
-    }
-    *'
-    /** @function assassinate
-     * called by countQuestSuccesses
-     * player with identity Assassin receives list of players on good team, selects the one they think is Merlin
-     * if correct, goodGuysWin = false
-     * if incorrect, goodGuysWin = true
-     */
-/*
-    function assassinate() {
-        console.log("game.js: assassinate()");
-    }
-}   */

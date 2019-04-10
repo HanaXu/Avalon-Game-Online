@@ -14,6 +14,7 @@
             <b-form-checkbox-group v-model="selected" name="optionalCharacters" :options="optionalCharacters">
             </b-form-checkbox-group>
         </b-form-group>
+        <p>Note: do not include Morgana unless Percival is also in the game. 5- and 6-player games cannot include more than one optional evil character. 7- 8- and 9-player games cannot include more than two optional evil characters.</p>
       </div>
 
 
@@ -45,10 +46,10 @@ export default {
       assignIdentities: false,
       selected: [],
       optionalCharacters: [
-        {text: 'Percival', value: 'percival'},
-        {text: 'Mordred', value: 'mordred'},
-        {text: 'Oberon', value: 'oberon'},
-        {text: 'Morgana', value: 'morgana'}
+        {text: "Percival (Good, knows Merlin's identity)", value: "percival"},
+        {text: "Mordred (Evil, invisible to Merlin)", value: "mordred"},
+        {text: "Oberon (Evil, invisible to other Evil characters)", value: "oberon"},
+        {text: "Morgana (Evil, appears as Merlin to Percival)", value: "morgana"}
       ]
     };
   },
