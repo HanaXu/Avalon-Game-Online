@@ -21,7 +21,10 @@
 
       <b-button @click="joinRoom" class="avalon-btn-lg">Join Room</b-button>
     </b-form>
-    <div style="margin-top: 1rem" v-if="tryingToJoinRoom">{{ message }}</div>
+    <div v-if="loading" class="text-center">
+      <b-spinner variant="dark" label="Text Centered"></b-spinner>
+    </div>
+    <div style="margin-top: 1rem" v-if="error">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -32,13 +35,15 @@ export default {
     return {
       name: "2",
       roomCode: null,
-      tryingToJoinRoom: false,
-      message: "Trying to join room..."
+      error: false,
+      loading: false,
+      errorMsg: null
     };
   },
   methods: {
     joinRoom() {
-      this.tryingToJoinRoom = true;
+      this.error = false;
+      this.loading = true;
       this.$socket.emit("joinRoom", {
         roomCode: this.roomCode,
         name: this.name
@@ -47,7 +52,9 @@ export default {
   },
   sockets: {
     errorMsg: function(msg) {
-      this.message = msg;
+      this.error = true;
+      this.errorMsg = msg;
+      this.loading = false;
     },
     passedValidation: function() {
       this.$router.push({

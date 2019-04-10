@@ -11,7 +11,10 @@
       ></b-input>
       <b-button @click="createRoom" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
-    <div style="margin: .5rem" v-if="tryingToCreateRoom">{{ message }}</div>
+    <div v-if="loading" class="text-center">
+      <b-spinner variant="dark" label="Text Centered"></b-spinner>
+    </div>
+    <div style="margin: .5rem" v-if="error">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -24,19 +27,21 @@ export default {
     return {
       name: "1",
       roomCode: null,
-      tryingToCreateRoom: false,
-      message: "Trying to create room..."
+      loading: false,
+      error: false,
+      errorMsg: null
     };
   },
   methods: {
     createRoom() {
+      this.error = false;
+      this.loading = true;
       axios
         .get(
           "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
         )
         .then(res => {
           this.roomCode = res.data;
-          this.tryingToCreateRoom = true;
 
           this.$socket.emit("createRoom", {
             roomCode: this.roomCode,
@@ -47,7 +52,9 @@ export default {
   },
   sockets: {
     errorMsg: function(msg) {
-      this.message = msg;
+      this.error = true;
+      this.errorMsg = msg;
+      this.loading = false;
     },
     passedValidation: function() {
       this.$router.push({
