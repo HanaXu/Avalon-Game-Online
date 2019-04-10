@@ -1,3 +1,5 @@
+var Quest = require('../game/Quest');
+
 const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur']);
 
 // defines what type of characters for size of game
@@ -69,12 +71,26 @@ module.exports = class Game {
     this.gameIsStarted = false;
     this.gameStage = 0;
     this.players = [];
-    let quest1;
-    let quest2;
-    let quest3;
-    let quest4;
-    let quest5;
-    const quests = [quest1, quest2, quest3, quest4, quest5];
+    this.quests = null;
+  }
+
+  initializeQuests() {
+    console.log('initializing quests. total players: ' + this.players.length)
+    this.quests = {
+      1: new Quest(1, this.players.length),
+      2: new Quest(2, this.players.length),
+      3: new Quest(3, this.players.length),
+      4: new Quest(4, this.players.length),
+      5: new Quest(5, this.players.length)
+    };
+  }
+
+  getCurrentQuest() {
+    for (let i in this.quests) {
+      if (this.quests[i].currentQuest === true) {
+        return this.quests[i];
+      }
+    }
   }
 
   // hide all player team and character info but yourself
@@ -145,12 +161,14 @@ module.exports = class Game {
   }
 
   // randomly assign a room leader in the player list.
-  assignLeader() {
+  assignLeaderToQuest(questNum) {
     console.log('assignLeader()');
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
+        this.quests[1].questLeader = this.players[i].name;
+        this.quests[1].currentQuest = true;
         // console.log("Current leader is:");
         // console.log(this.players[i]);
         break;

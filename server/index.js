@@ -121,12 +121,16 @@ io.on('connection', socket => {
     roomCode = data;
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
+    GameList[roomCode].initializeQuests();
     GameList[roomCode].assignIdentities();
-    GameList[roomCode].assignLeader();
+    GameList[roomCode].assignLeaderToQuest(1);
 
     let players = GameList[roomCode].players;
     emitSanitizedPlayers(roomCode, players);
-    io.in(roomCode).emit('identitiesAssigned');
+    io.in(roomCode).emit('gameStarted');
+
+    let currentQuest = GameList[roomCode].getCurrentQuest();
+    io.in(roomCode).emit('updateQuests', {quests: GameList[roomCode].quests, currentQuestNum: currentQuest.questNum, voteTrack: currentQuest.voteTrack});
   });
 
   socket.on('disconnect', function() {

@@ -8,11 +8,11 @@
         <b-button :pressed.sync="joinToggled" class="avalon-btn-lg">Join Room</b-button>
       </div>
       <div v-if="createToggled">
-        <CreateForm class="jumbo"></CreateForm>
+        <CreateForm style="margin-top: 40%"></CreateForm>
         <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
       <div v-if="joinToggled">
-        <JoinForm class="jumbo"></JoinForm>
+        <JoinForm style="margin-top: 30%"></JoinForm>
         <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
     </section>
@@ -39,10 +39,6 @@ export default {
 </script>
 
 <style scoped>
-.jumbo {
-  margin-top: 30%;
-}
-
 .container {
   margin: 0 auto;
   display: flex;

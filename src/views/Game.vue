@@ -5,12 +5,14 @@
     </div>
     <div class="container game">
       <div style="text-align: left; align-items: left; justify-content: left">
-        <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
+        <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
       </div>
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
       </div>
-      <PlayerCards v-if="assignIdentities" :players="players" :yourName="yourName"/>
+      <PlayerCards v-if="gameStarted" :players="players" :yourName="yourName"/>
+      <QuestCards v-if="gameStarted" :quests="quests"/>
+      <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
   </div>
 </template>
@@ -18,20 +20,27 @@
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import QuestCards from "@/components/QuestCards.vue";
+import VoteTrack from "@/components/VoteTrack.vue";
 
 export default {
   name: "Game",
   components: {
     LobbyList,
-    PlayerCards
+    PlayerCards,
+    QuestCards,
+    VoteTrack
   },
   data() {
     return {
       players: [],
+      quests: [],
+      // currentQuestNum: null,
+      currentVoteTrack: null,
       yourName: null,
       roomCode: null,
       showStartButton: false,
-      assignIdentities: false
+      gameStarted: false
     };
   },
   created() {
@@ -53,11 +62,16 @@ export default {
     updatePlayers: function(data) {
       this.players = data["players"];
     },
+    updateQuests: function(data) {
+      this.quests = data["quests"];
+      // this.currentQuestNum = data["currentQuestNum"];
+      this.currentVoteTrack = data["voteTrack"];
+    },
     gameReady: function() {
       this.showStartButton = true;
     },
-    identitiesAssigned: function() {
-      this.assignIdentities = true;
+    gameStarted: function() {
+      this.gameStarted = true;
     }
   }
 };

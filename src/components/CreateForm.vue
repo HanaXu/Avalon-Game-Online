@@ -1,5 +1,5 @@
 <template>
-  <div class="jumbo">
+  <div>
     <b-form inline>
       <label class="sr-only" for="inline-form-input-name">Name</label>
       <b-input

@@ -1,5 +1,5 @@
 <template>
-  <div class="jumbo">
+  <div>
     <b-form inline>
       <label class="sr-only" for="inline-form-input-roomCode">roomCode</label>
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
