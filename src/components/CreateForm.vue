@@ -11,6 +11,7 @@
       ></b-input>
       <b-button @click="createRoom" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
+    <div style="margin: .5rem" v-if="tryingToCreateRoom">{{ message }}</div>
   </div>
 </template>
 
@@ -22,7 +23,9 @@ export default {
   data() {
     return {
       name: "1",
-      roomCode: null
+      roomCode: null,
+      tryingToCreateRoom: false,
+      message: "Trying to create room..."
     };
   },
   methods: {
@@ -33,19 +36,24 @@ export default {
         )
         .then(res => {
           this.roomCode = res.data;
-          console.log(this.roomCode);
-          console.log(this.name);
+          this.tryingToCreateRoom = true;
 
           this.$socket.emit("createRoom", {
             roomCode: this.roomCode,
             name: this.name
           });
-
-          this.$router.push({
-            name: "game",
-            params: { yourName: this.name, roomCode: this.roomCode }
-          });
         });
+    }
+  },
+  sockets: {
+    errorMsg: function(msg) {
+      this.message = msg;
+    },
+    passedValidation: function() {
+      this.$router.push({
+        name: "game",
+        params: { yourName: this.name, roomCode: this.roomCode }
+      });
     }
   }
 };

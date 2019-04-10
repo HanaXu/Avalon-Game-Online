@@ -3,7 +3,12 @@
     <b-form inline>
       <label class="sr-only" for="inline-form-input-roomCode">roomCode</label>
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
-        <b-input autofocus id="inline-form-input-roomCode" placeholder="roomCode" v-model="roomCode"></b-input>
+        <b-input
+          autofocus
+          id="inline-form-input-roomCode"
+          placeholder="roomCode"
+          v-model="roomCode"
+        ></b-input>
       </b-input-group>
 
       <label class="sr-only" for="inline-form-input-name">Name</label>
@@ -14,13 +19,9 @@
         v-model="name"
       ></b-input>
 
-      <router-link
-        @click.native="joinRoom"
-        :to="{ name: 'game', params: { yourName: this.name, roomCode: this.roomCode } }"
-        tag="button"
-        class="avalon-btn-lg"
-      >Join Room</router-link>
+      <b-button @click="joinRoom" class="avalon-btn-lg">Join Room</b-button>
     </b-form>
+    <div style="margin-top: 1rem" v-if="tryingToJoinRoom">{{ message }}</div>
   </div>
 </template>
 
@@ -30,15 +31,28 @@ export default {
   data() {
     return {
       name: "2",
-      roomCode: null
+      roomCode: null,
+      tryingToJoinRoom: false,
+      message: "Trying to join room..."
     };
   },
   methods: {
     joinRoom() {
-      console.log("join room");
+      this.tryingToJoinRoom = true;
       this.$socket.emit("joinRoom", {
         roomCode: this.roomCode,
         name: this.name
+      });
+    }
+  },
+  sockets: {
+    errorMsg: function(msg) {
+      this.message = msg;
+    },
+    passedValidation: function() {
+      this.$router.push({
+        name: "game",
+        params: { yourName: this.name, roomCode: this.roomCode }
       });
     }
   }

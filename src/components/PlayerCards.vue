@@ -2,7 +2,7 @@
   <div class="row" style="padding: 1rem;">
     <div
       class="card"
-      :class="{darkerBG: player.name.includes(' (You)')}"
+      :class="{darkerBG: player.name === yourName}"
       v-for="(player, index) in players"
       :key="index"
     >
@@ -11,7 +11,7 @@
         :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
       >
         <h5 class="card-title">
-          {{ player.role }}: {{ player.name }}
+          <span>{{ player.role }}: </span>{{ player.name }}
           <span
             style="color: #FFD700"
             v-if="player.leader === true"
@@ -33,7 +33,7 @@
 <script>
 export default {
   name: "PlayerCards",
-  props: ["players"]
+  props: ["players", "yourName"]
 };
 </script>
 
@@ -53,7 +53,7 @@ export default {
   width: 12rem;
 }
 .darkerBG {
-  background: lightsteelblue;
+  background: lightsteelblue !important;
 }
 .card .card-body {
   margin: 5px;

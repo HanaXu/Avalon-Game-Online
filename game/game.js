@@ -4,9 +4,30 @@ const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur']);
 // key: number of players
 // value: list of characters
 const PlayerIdentities = {
-  5: ['Merlin', 'Assassin', 'Loyal Servant of Arthur', 'Loyal Servant of Arthur', 'Minion of Mordred'],
-  6: ['Merlin', 'Assassin', 'Loyal Servant of Arthur', 'Loyal Servant of Arthur', 'Loyal Servant of Arthur', 'Minion of Mordred'],
-  7: ['Merlin', 'Assassin', 'Loyal Servant of Arthur', 'Loyal Servant of Arthur', 'Loyal Servant of Arthur', 'Minion of Mordred', 'Minion of Mordred'],
+  5: [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred'
+  ],
+  6: [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred'
+  ],
+  7: [
+    'Merlin',
+    'Assassin',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Loyal Servant of Arthur',
+    'Minion of Mordred',
+    'Minion of Mordred'
+  ],
   8: [
     'Merlin',
     'Assassin',
@@ -96,6 +117,33 @@ module.exports = class Game {
     return GoodTeam;
   }
 
+  hasPlayerWithName(name) {
+    for (let i in this.players) {
+      if (this.players[i].name === name) {
+        return true;
+      }
+    }
+  }
+
+  deletePlayer(socketID) {
+    for (let i in this.players) {
+      if (this.players[i].socketID === socketID) {
+        console.log('removing player from room: ' + this.roomCode);
+        this.players.splice(i, 1); //delete 1 player element at index i
+        break;
+      }
+    }
+  }
+
+  getHostSocketID() {
+    for (let i in this.players) {
+      if (this.players[i].role === 'Host') {
+        console.log('Host socket found');
+        return this.players[i].socketID;
+      }
+    }
+  }
+
   // randomly assign a room leader in the player list.
   assignLeader() {
     console.log('assignLeader()');
@@ -113,7 +161,9 @@ module.exports = class Game {
 
   assignIdentities() {
     console.log('assignIdentities()');
-    const shuffledIdentities = this.shuffle(Game.PlayerIdentities[this.players.length]);
+    const shuffledIdentities = this.shuffle(
+      Game.PlayerIdentities[this.players.length]
+    );
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
