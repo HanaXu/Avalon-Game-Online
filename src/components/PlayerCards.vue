@@ -23,7 +23,10 @@
           <br>
           <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
         </h6>
-        <div v-if="showAddPlayerButton || showRemovePlayerButton" class="row justify-content-md-center">
+        <div
+          v-if="showAddPlayerButton || showRemovePlayerButton"
+          class="row justify-content-md-center"
+        >
           <b-button
             variant="success"
             class="mx-1"
@@ -45,19 +48,18 @@
 <script>
 export default {
   name: "PlayerCards",
-  props: ["players", "yourName", "showAddPlayerButton", "showRemovePlayerButton", "currentQuestNum"],
+  props: [
+    "players",
+    "yourName",
+    "showAddPlayerButton",
+    "showRemovePlayerButton"
+  ],
   methods: {
     addPlayerToQuest: function(playerName) {
-      this.$socket.emit("addPlayerToQuest", {
-        name: playerName,
-        questNum: this.currentQuestNum
-      });
+      this.$socket.emit("addPlayerToQuest", playerName);
     },
     removePlayerFromQuest: function(playerName) {
-      this.$socket.emit("removePlayerFromQuest", {
-        name: playerName,
-        questNum: this.currentQuestNum
-      });
+      this.$socket.emit("removePlayerFromQuest", playerName);
     }
   }
 };

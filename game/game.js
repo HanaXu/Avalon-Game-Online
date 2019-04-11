@@ -142,15 +142,21 @@ module.exports = class Game {
   }
 
   addPlayerToQuest(questNum, name) {
+    let playersNeededLeft =
+      this.quests[questNum].playersNeeded -
+      this.quests[questNum].playersOnQuest.size;
     for (let i in this.players) {
-      if (this.players[i].name === name) {
+      if (this.players[i].name === name && playersNeededLeft > 0) {
         this.players[i].onQuest = true;
         console.log(name + ' is now on the quest');
         this.quests[questNum].playersOnQuest.players.add(name);
         this.quests[questNum].playersOnQuest.size++;
+        playersNeededLeft--;
+        console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
+    return playersNeededLeft;
   }
 
   removePlayerFromQuest(questNum, name) {

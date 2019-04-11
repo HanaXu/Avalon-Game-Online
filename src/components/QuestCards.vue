@@ -1,11 +1,6 @@
 <template>
   <div>
     <div class="row justify-content-md-center" style="padding: 1rem;">
-      <span
-        class="text-light"
-      >{{ playersLeft }} more player(s) is needed to go on quest {{ currentQuestNum }}</span>
-    </div>
-    <div class="row justify-content-md-center" style="padding: 1rem;">
       <div class="card" v-for="(quest, index) in quests" :key="index">
         <div class="card-body">
           <h5 class="card-title">
@@ -25,7 +20,7 @@
 <script>
 export default {
   name: "QuestCards",
-  props: ["quests", "currentQuestNum", "playersLeft"]
+  props: ["quests"]
 };
 </script>
 

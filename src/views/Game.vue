@@ -16,14 +16,11 @@
         :yourName="yourName"
         :showAddPlayerButton="showAddPlayerButton"
         :showRemovePlayerButton="showRemovePlayerButton"
-        :currentQuestNum="currentQuestNum"
       />
-      <QuestCards
-        v-if="gameStarted"
-        :quests="quests"
-        :currentQuestNum="currentQuestNum"
-        :playersLeft="playersLeftForQuest"
-      />
+      <div v-if="gameStarted" class="row justify-content-md-center" style="padding: 1rem;">
+        <span class="text-light">{{ questMsg }}</span>
+      </div>
+      <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
   </div>
@@ -47,8 +44,9 @@ export default {
     return {
       players: [],
       quests: [],
-      currentQuestNum: null,
+      // currentQuestNum: null,
       currentVoteTrack: null,
+      questMsg: null,
       yourName: null,
       roomCode: null,
       showStartButton: false,
@@ -74,7 +72,7 @@ export default {
     },
     updateQuests: function(data) {
       this.quests = data["quests"];
-      this.currentQuestNum = data["currentQuestNum"];
+      // this.currentQuestNum = data["currentQuestNum"];
     },
     updateVoteTrack: function(data) {
       this.currentVoteTrack = data["voteTrack"];
@@ -88,16 +86,10 @@ export default {
     ChoosePlayersForQuest: function() {
       this.showAddPlayerButton = true;
       this.showRemovePlayerButton = true;
-    }
-  },
-  computed: {
-    // a computed getter
-    playersLeftForQuest: function() {
-      let playersRequired = this.quests[this.currentQuestNum].playersNeeded;
-      let currentNumPlayers = this.quests[this.currentQuestNum].playersOnQuest
-        .size;
-      let playersLeft = playersRequired - currentNumPlayers;
-      return playersRequired - currentNumPlayers;
+    },
+    updateQuestMsg: function(data) {
+      this.questMsg = data["questMsg"];
+      console.log(this.questMsg);
     }
   }
 };

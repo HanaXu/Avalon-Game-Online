@@ -117,39 +117,59 @@ io.on('connection', socket => {
 
   //no other clients can join now that game is started
   //assign identities & assign first quest leader
-  socket.on('startGame', function(data) {
-    roomCode = data;
+  socket.on('startGame', function(roomCode) {
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].initializeQuests();
     GameList[roomCode].assignIdentities();
     let leaderSocketID = GameList[roomCode].assignLeaderToQuest(1);
 
-    let players = GameList[roomCode].players;
-    emitSanitizedPlayers(roomCode, players);
+    emitSanitizedPlayers(roomCode, GameList[roomCode].players);
     io.in(roomCode).emit('gameStarted');
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
+    //update quest cards
     io.in(roomCode).emit('updateQuests', {
       quests: GameList[roomCode].quests,
       currentQuestNum: currentQuest.questNum
     });
+    //update vote track
     io.in(roomCode).emit('updateVoteTrack', {
       voteTrack: currentQuest.voteTrack
     });
-    io.to(leaderSocketID).emit('ChoosePlayersForQuest'); //only emit to the quest leader
+    //update quest message
+    io.in(roomCode).emit('updateQuestMsg', {
+      questMsg:
+        currentQuest.playersNeeded +
+        ' more player(s) needed to go on quest ' +
+        currentQuest.questNum
+    });
+
+    io.to(leaderSocketID).emit('ChoosePlayersForQuest'); //only let the quest leader choose players
   });
 
-  socket.on('addPlayerToQuest', function(data) {
-    let name = data.name;
-    let questNum = data.questNum;
-    GameList[roomCode].addPlayerToQuest(questNum, name);
-
+  socket.on('addPlayerToQuest', function(name) {
+    let currentQuest = GameList[roomCode].getCurrentQuest();
+    let playersNeededLeft = GameList[roomCode].addPlayerToQuest(
+      currentQuest.questNum,
+      name
+    );
+    //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
-    io.in(roomCode).emit('updateQuests', {
-      quests: GameList[roomCode].quests,
-      currentQuestNum: questNum
-    });
+
+    if (playersNeededLeft > 0) {
+      io.in(roomCode).emit('updateQuestMsg', {
+        questMsg:
+          playersNeededLeft +
+          ' more player(s) needed to go on quest ' +
+          currentQuest.questNum
+      });
+    } else {
+      io.in(roomCode).emit('updateQuestMsg', {
+        questMsg: 'Capacity reached for quest ' + currentQuest.questNum
+      });
+      console.log('capacity reached for quest: ' + currentQuest.questNum);
+    }
   });
 
   socket.on('removePlayerFromQuest', function(data) {
@@ -162,6 +182,11 @@ io.on('connection', socket => {
       quests: GameList[roomCode].quests,
       currentQuestNum: questNum
     });
+
+    let playersRequired = this.quests[this.questNum].playersNeeded;
+    let currentNumPlayers = this.quests[this.questNum].playersOnQuest.size;
+    let playersLeft = playersRequired - currentNumPlayers;
+    io.in(roomCode).emit('playersLeftForQuest', { playersLeft: playersLeft });
   });
 
   socket.on('disconnect', function() {
