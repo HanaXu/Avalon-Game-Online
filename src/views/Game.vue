@@ -66,9 +66,10 @@ export default {
   },
   methods: {
     clickedSetupOptions: function(data) {
+      //this is called after Okay is clicked from Setup Options window
       console.log("selectedOptions emitted");
-      console.log(data);
       this.selected = data;
+      console.log(this.selected);
     },
     attemptStartGame: function() {
       console.log("attemptStartGame()");

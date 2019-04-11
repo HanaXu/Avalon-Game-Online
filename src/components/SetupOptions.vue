@@ -19,8 +19,8 @@
     <b-form-group id="characters">
        <!-- <b-form-checkbox-group v-model="selected" name="optionalCharacters" stacked> -->
           <b-form-checkbox v-model="percival" value="true" unchecked-value="false" :disabled="hasMorgana" @input="togglePercival()">Percival (Good, knows Merlin)</b-form-checkbox>
-          <b-form-checkbox v-model="mordred" value="true" unchecked-value="false">Mordred (Evil, invisible to Merlin)</b-form-checkbox>
-          <b-form-checkbox v-model="oberon" value="true" unchecked-value="false">Oberon (Evil, invisible to other Evil characters)</b-form-checkbox>
+          <b-form-checkbox v-model="mordred" value="true" unchecked-value="false" @input="toggleMordred()">Mordred (Evil, invisible to Merlin)</b-form-checkbox>
+          <b-form-checkbox v-model="oberon" value="true" unchecked-value="false" @input="toggleOberon()">Oberon (Evil, invisible to other Evil characters)</b-form-checkbox>
           <b-form-checkbox v-model="morgana" value="true" unchecked-value="false" :disabled="!hasPercival" @input="toggleMorgana()">Morgana (Evil, appears as Merlin to Percival)</b-form-checkbox>
      <!--   </b-form-checkbox-group> -->
     </b-form-group>
@@ -42,6 +42,8 @@ export default {
       error: false,
       errorMsg: "",
       hasPercival: false,
+      hasMordred: false,
+      hasOberon: false,
       hasMorgana: false,
       selected: [],
       percival: false,
@@ -52,25 +54,34 @@ export default {
   },
   methods: {
     togglePercival() {
+      //I have no clue why I need these toggle functions and cant just reference the value of each v-model yet here we are
       this.hasPercival = !this.hasPercival;
-      console.log(this.hasPercival);
+    },
+    toggleMordred() {
+      this.hasMordred = !this.hasMordred;
+    },
+    toggleOberon() {
+      this.hasOberon = !this.hasOberon;
     },
     toggleMorgana() {
       this.hasMorgana = !this.hasMorgana;
-      console.log(this.hasMorgana);
     },
     handleOk() {
-      var selectedArray = [];
-      if (this.percival) {
+      let selectedArray = [];
+      if (this.hasPercival) {
+        console.log("percival true");
         selectedArray.push("percival");
       }
-      if (this.mordred) {
+      if (this.hasMordred) {
+        console.log("mordred true");
         selectedArray.push("mordred");
       }
-      if (this.oberon) {
+      if (this.hasOberon) {
+        console.log("oberon true");
         selectedArray.push("oberon");
       }
-      if (this.morgana) {
+      if (this.hasMorgana) {
+        console.log("morgana true");
         selectedArray.push("morgana");
       }
       console.log(selectedArray);
