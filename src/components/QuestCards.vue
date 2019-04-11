@@ -1,12 +1,22 @@
 <template>
-  <div class="row justify-content-md-center" style="padding: 1rem;">
-    <div class="card" v-for="(quest, index) in quests" :key="index">
-      <div class="card-body">
-        <h5 class="card-title">
-          Quest {{ quest.questNum }}
-          <span style="color: #FFD700" v-if="quest.currentQuest === true">👑</span>
-        </h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ quest.teamSize }} players</h6>
+  <div>
+    <div class="row justify-content-md-center" style="padding: 1rem;">
+      <span
+        class="text-light"
+      >{{ playersLeft }} more player(s) is needed to go on quest {{ currentQuestNum }}</span>
+    </div>
+    <div class="row justify-content-md-center" style="padding: 1rem;">
+      <div class="card" v-for="(quest, index) in quests" :key="index">
+        <div class="card-body">
+          <h5 class="card-title">
+            Quest {{ quest.questNum }}
+            <span
+              style="color: #FFD700"
+              v-if="quest.currentQuest === true"
+            >👑</span>
+          </h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ quest.playersNeeded }} players</h6>
+        </div>
       </div>
     </div>
   </div>
@@ -15,7 +25,7 @@
 <script>
 export default {
   name: "QuestCards",
-  props: ["quests"]
+  props: ["quests", "currentQuestNum", "playersLeft"]
 };
 </script>
 

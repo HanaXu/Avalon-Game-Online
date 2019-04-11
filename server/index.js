@@ -123,14 +123,45 @@ io.on('connection', socket => {
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].initializeQuests();
     GameList[roomCode].assignIdentities();
-    GameList[roomCode].assignLeaderToQuest(1);
+    let leaderSocketID = GameList[roomCode].assignLeaderToQuest(1);
 
     let players = GameList[roomCode].players;
     emitSanitizedPlayers(roomCode, players);
     io.in(roomCode).emit('gameStarted');
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
-    io.in(roomCode).emit('updateQuests', {quests: GameList[roomCode].quests, currentQuestNum: currentQuest.questNum, voteTrack: currentQuest.voteTrack});
+    io.in(roomCode).emit('updateQuests', {
+      quests: GameList[roomCode].quests,
+      currentQuestNum: currentQuest.questNum
+    });
+    io.in(roomCode).emit('updateVoteTrack', {
+      voteTrack: currentQuest.voteTrack
+    });
+    io.to(leaderSocketID).emit('ChoosePlayersForQuest'); //only emit to the quest leader
+  });
+
+  socket.on('addPlayerToQuest', function(data) {
+    let name = data.name;
+    let questNum = data.questNum;
+    GameList[roomCode].addPlayerToQuest(questNum, name);
+
+    emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+    io.in(roomCode).emit('updateQuests', {
+      quests: GameList[roomCode].quests,
+      currentQuestNum: questNum
+    });
+  });
+
+  socket.on('removePlayerFromQuest', function(data) {
+    let name = data.name;
+    let questNum = data.questNum;
+    GameList[roomCode].removePlayerFromQuest(questNum, name);
+
+    emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+    io.in(roomCode).emit('updateQuests', {
+      quests: GameList[roomCode].quests,
+      currentQuestNum: questNum
+    });
   });
 
   socket.on('disconnect', function() {

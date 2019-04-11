@@ -75,7 +75,7 @@ module.exports = class Game {
   }
 
   initializeQuests() {
-    console.log('initializing quests. total players: ' + this.players.length)
+    console.log('initializing quests. total players: ' + this.players.length);
     this.quests = {
       1: new Quest(1, this.players.length),
       2: new Quest(2, this.players.length),
@@ -141,6 +141,30 @@ module.exports = class Game {
     }
   }
 
+  addPlayerToQuest(questNum, name) {
+    for (let i in this.players) {
+      if (this.players[i].name === name) {
+        this.players[i].onQuest = true;
+        console.log(name + ' is now on the quest');
+        this.quests[questNum].playersOnQuest.players.add(name);
+        this.quests[questNum].playersOnQuest.size++;
+        break;
+      }
+    }
+  }
+
+  removePlayerFromQuest(questNum, name) {
+    for (let i in this.players) {
+      if (this.players[i].name === name) {
+        this.players[i].onQuest = false;
+        console.log(name + ' is no longer on the quest');
+        this.quests[questNum].playersOnQuest.players.delete(name);
+        this.quests[questNum].playersOnQuest.size--;
+        break;
+      }
+    }
+  }
+
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
@@ -163,6 +187,8 @@ module.exports = class Game {
   // randomly assign a room leader in the player list.
   assignLeaderToQuest(questNum) {
     console.log('assignLeader()');
+    this.gameStage = 2;
+
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
@@ -171,10 +197,9 @@ module.exports = class Game {
         this.quests[1].currentQuest = true;
         // console.log("Current leader is:");
         // console.log(this.players[i]);
-        break;
+        return this.players[i].socketID; //return quest leader socketID
       }
     }
-    this.gameStage = 2;
   }
 
   assignIdentities() {
@@ -212,73 +237,3 @@ module.exports = class Game {
     return array;
   }
 };
-
-// List of Player Identities, depending on how many players there are
-
-/**
- * global variables for each of 5 quests
- * @var {Quest}
- */
-/**
- * list containing each of 5 quests
- * @var {*[]}
- */
-
-// --FUNCTIONS-----------------------------------------------------------------------------------------------------
-/** @function Main
- * the main function for the game application; this will execute when host clicks Start Game
- * calls all of the game setup & game logic functions when needed
- */
-
-/*
-    function Main() {
-        console.log("game.js: Main function initiated");
-
-        // do game setup stuff (find out how many players there are, and in future will find out how many bots & any optional characters)
-        //Need to figure out how to get the number of players in the game
-        var numPlayers = 5;
-
-        //give each player an identity
-        assignIdentities();
-
-        //this is the main game logic
-        for(var questNum = 0; questNum < 5; questNum++) { //NOTE: questNum starts at 0, so quests[0] is what players will call Quest 1
-            //loop through this until all quests are complete
-            quests[questNum] = new Quest(questNum, 0);
-            //stay on this quest until success or fail has been determined OR voteTrack reaches 5
-            while(quests[questNum].success == null && quests[questNum].voteTrack < 5) {
-                quests[questNum].chooseNextLeader();
-                quests[questNum].questLeaderChooseTeam();
-                quests[questNum].teamVote();
-            }
-            quests[questNum].saveQuestToHistory();
-        }
-        //do endgame stuff (count succeeded/failed quests, assassin tries to assassinate) to determine winner
-        countQuestSuccesses();
-        assassinate();
-    }
-    */
-
-/** @function countQuestSuccesses
- * checks value of Quest.success for each quest in History
- * if there are 2 or more fails, sets goodGuysWin to false
- * else, calls assassinate()
- */
-
-/*
-    function countQuestSuccesses() {
-        console.log("game.js: countQuestSuccesses()");
-        //iterate over quest.success
-    }
-    *'
-    /** @function assassinate
-     * called by countQuestSuccesses
-     * player with identity Assassin receives list of players on good team, selects the one they think is Merlin
-     * if correct, goodGuysWin = false
-     * if incorrect, goodGuysWin = true
-     */
-/*
-    function assassinate() {
-        console.log("game.js: assassinate()");
-    }
-}   */

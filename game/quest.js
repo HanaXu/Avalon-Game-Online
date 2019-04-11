@@ -27,8 +27,9 @@ module.exports = class Quest {
   constructor(questNum, totalNumPlayers) {
     this.questNum = questNum;
     this.totalNumPlayers = totalNumPlayers;
-    this.teamSize = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
-    this.voteTrack = 2;
+    this.playersNeeded = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
+    this.playersOnQuest = {size: 0, players: new Set([])};
+    this.voteTrack = 1;
     this.questLeader = '';
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule

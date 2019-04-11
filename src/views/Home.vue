@@ -8,11 +8,11 @@
         <b-button :pressed.sync="joinToggled" class="avalon-btn-lg">Join Room</b-button>
       </div>
       <div v-if="createToggled">
-        <CreateForm style="margin-top: 40%"></CreateForm>
+        <CreateForm style="margin-top: 45%"></CreateForm>
         <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
       <div v-if="joinToggled">
-        <JoinForm style="margin-top: 30%"></JoinForm>
+        <JoinForm style="margin-top: 31%"></JoinForm>
         <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
     </section>

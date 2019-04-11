@@ -12,10 +12,7 @@
       >
         <h5 class="card-title">
           {{ player.role }}: {{ player.name }}
-          <span
-            style="color: #FFD700"
-            v-if="player.leader === true"
-          >👑</span>
+          <span style="color: #FFD700" v-if="player.leader">👑</span>
         </h5>
         <h6 class="card-subtitle mb-2 text-muted">
           <b>Team:</b>
@@ -24,7 +21,22 @@
           <b>Character:</b>
           {{ player.character }}
           <br>
+          <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
         </h6>
+        <div v-if="showAddPlayerButton || showRemovePlayerButton" class="row justify-content-md-center">
+          <b-button
+            variant="success"
+            class="mx-1"
+            v-if="!player.onQuest && showAddPlayerButton"
+            @click="addPlayerToQuest(player.name)"
+          >Add to Quest</b-button>
+          <b-button
+            variant="danger"
+            class="mx-1"
+            v-if="player.onQuest && showRemovePlayerButton"
+            @click="removePlayerFromQuest(player.name)"
+          >Drop from Quest</b-button>
+        </div>
       </div>
     </div>
   </div>
@@ -33,7 +45,21 @@
 <script>
 export default {
   name: "PlayerCards",
-  props: ["players", "yourName"]
+  props: ["players", "yourName", "showAddPlayerButton", "showRemovePlayerButton", "currentQuestNum"],
+  methods: {
+    addPlayerToQuest: function(playerName) {
+      this.$socket.emit("addPlayerToQuest", {
+        name: playerName,
+        questNum: this.currentQuestNum
+      });
+    },
+    removePlayerFromQuest: function(playerName) {
+      this.$socket.emit("removePlayerFromQuest", {
+        name: playerName,
+        questNum: this.currentQuestNum
+      });
+    }
+  }
 };
 </script>
 
@@ -43,6 +69,9 @@ export default {
 }
 .markGreen {
   border-top: 5px solid green;
+}
+.questBadge {
+  margin-top: 0.5rem;
 }
 .card-body {
   padding: 0.5rem 1rem;

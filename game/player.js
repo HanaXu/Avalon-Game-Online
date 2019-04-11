@@ -21,6 +21,7 @@ module.exports = class Player {
     this.team = 'undecided';
     this.character = 'undecided';
     this.leader = false;
+    this.onQuest = false;
     this.questAction = 'undecided';
     this.action = 'undecided';
   }

@@ -10,8 +10,20 @@
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
       </div>
-      <PlayerCards v-if="gameStarted" :players="players" :yourName="yourName"/>
-      <QuestCards v-if="gameStarted" :quests="quests"/>
+      <PlayerCards
+        v-if="gameStarted"
+        :players="players"
+        :yourName="yourName"
+        :showAddPlayerButton="showAddPlayerButton"
+        :showRemovePlayerButton="showRemovePlayerButton"
+        :currentQuestNum="currentQuestNum"
+      />
+      <QuestCards
+        v-if="gameStarted"
+        :quests="quests"
+        :currentQuestNum="currentQuestNum"
+        :playersLeft="playersLeftForQuest"
+      />
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
   </div>
@@ -35,18 +47,19 @@ export default {
     return {
       players: [],
       quests: [],
-      // currentQuestNum: null,
+      currentQuestNum: null,
       currentVoteTrack: null,
       yourName: null,
       roomCode: null,
       showStartButton: false,
-      gameStarted: false
+      gameStarted: false,
+      showAddPlayerButton: false,
+      showRemovePlayerButton: false
     };
   },
   created() {
     this.yourName = this.$route.params.yourName;
     this.roomCode = this.$route.params.roomCode;
-    console.log("roomcode is: " + this.roomCode);
   },
   methods: {
     startGame: function() {
@@ -56,15 +69,14 @@ export default {
     }
   },
   sockets: {
-    connect: function() {
-      console.log("socket connected");
-    },
     updatePlayers: function(data) {
       this.players = data["players"];
     },
     updateQuests: function(data) {
       this.quests = data["quests"];
-      // this.currentQuestNum = data["currentQuestNum"];
+      this.currentQuestNum = data["currentQuestNum"];
+    },
+    updateVoteTrack: function(data) {
       this.currentVoteTrack = data["voteTrack"];
     },
     gameReady: function() {
@@ -72,6 +84,20 @@ export default {
     },
     gameStarted: function() {
       this.gameStarted = true;
+    },
+    ChoosePlayersForQuest: function() {
+      this.showAddPlayerButton = true;
+      this.showRemovePlayerButton = true;
+    }
+  },
+  computed: {
+    // a computed getter
+    playersLeftForQuest: function() {
+      let playersRequired = this.quests[this.currentQuestNum].playersNeeded;
+      let currentNumPlayers = this.quests[this.currentQuestNum].playersOnQuest
+        .size;
+      let playersLeft = playersRequired - currentNumPlayers;
+      return playersRequired - currentNumPlayers;
     }
   }
 };
