@@ -14,7 +14,7 @@
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
-    <div style="margin: .5rem" v-if="error">{{ errorMsg }}</div>
+    <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
   </div>
 </template>
 
