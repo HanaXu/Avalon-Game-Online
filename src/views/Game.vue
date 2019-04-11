@@ -4,19 +4,17 @@
       <h4>{{ yourName }}, welcome to Avalonline Room: {{ roomCode }}</h4>
     </div>
     <div class="container game">
-      <div style="text-align: left; align-items: left; justify-content: left">
-        <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
-      </div>
+      <b-row>
+        <b-col cols="10">
+        <div style="text-align: left; align-items: left; justify-content: left">
+          <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
+        </div>
+        </b-col>
 
-      <div class="setup" v-if="showSetupOptions">
-        <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
-        <b-form-group label="Include optional characters:" label-size="lg" label-cols-sm="4" label-cols-lg="3">
-            <b-form-checkbox-group v-model="selected" name="optionalCharacters" :options="optionalCharacters" stacked>
-            </b-form-checkbox-group>
-        </b-form-group>
-        <p><em><strong>Note:</strong> do not include Morgana unless Percival is also in the game. 5 and 6-player games cannot include more than one optional evil character. 7, 8, and 9-player games cannot include more than two optional evil characters.</em></p>
-      </div>
-
+        <b-col>
+        <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+        </b-col>
+      </b-row>
 
       <b-alert variant="danger" v-if="error" show>
         {{ errorMsg }}
@@ -27,19 +25,28 @@
         <b-button class="avalon-btn-lg" @click="attemptStartGame">Start Game</b-button>
       </div>
       <PlayerCards v-if="assignIdentities" :players="players" :yourName="yourName"/>
+
+
     </div>
+
+
+    <b-modal id="setupModal">
+      <SetupOptions></SetupOptions>
+    </b-modal>
   </div>
 </template>
 
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import SetupOptions from "@/components/SetupOptions.vue";
 
 export default {
   name: "Game",
   components: {
     LobbyList,
-    PlayerCards
+    PlayerCards,
+    SetupOptions
   },
   data() {
     return {
@@ -50,14 +57,7 @@ export default {
       showSetupOptions: false,
       assignIdentities: false,
       error: false,
-      errorMsg: "",
-      selected: [],
-      optionalCharacters: [
-        {text: "Percival (Good, knows Merlin's identity)", value: "percival"},
-        {text: "Mordred (Evil, invisible to Merlin)", value: "mordred"},
-        {text: "Oberon (Evil, invisible to other Evil characters)", value: "oberon"},
-        {text: "Morgana (Evil, appears as Merlin to Percival)", value: "morgana"}
-      ]
+      errorMsg: ""
     };
   },
   created() {
@@ -119,19 +119,14 @@ export default {
 
 <style>
 .game {
-  background: #777;
+  background: #eae7e3;
   border-radius: 3px;
   /*height: 75vh;*/
   padding: 1em;
 }
 
-.setup {
-  color: #000;
-  text-align: left;
-  background: #f8f9fa; /* bootstrap 4 bg-light*/
-  margin: 5px 0;
-  padding: 1rem;
-  border-radius: 3px;
+.setupButton {
+  float: right;
 }
 
 </style>
