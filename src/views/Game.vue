@@ -29,10 +29,8 @@
 
     </div>
 
+    <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
 
-    <b-modal id="setupModal">
-      <SetupOptions></SetupOptions>
-    </b-modal>
   </div>
 </template>
 
@@ -56,6 +54,7 @@ export default {
       showStartButton: false,
       showSetupOptions: false,
       assignIdentities: false,
+      selected: [],
       error: false,
       errorMsg: ""
     };
@@ -66,6 +65,11 @@ export default {
     console.log("roomcode is: " + this.roomCode);
   },
   methods: {
+    clickedSetupOptions: function(data) {
+      console.log("selectedOptions emitted");
+      console.log(data);
+      this.selected = data;
+    },
     attemptStartGame: function() {
       console.log("attemptStartGame()");
       //check to make sure chosen optional characters works for number of players

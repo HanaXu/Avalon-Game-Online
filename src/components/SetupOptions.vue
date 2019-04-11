@@ -1,5 +1,5 @@
 <template>
-<div class="setup">
+<b-modal id="setupModal" class="setup" @ok="handleOk">
     <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
     <b-row style="padding-bottom: 10px">
     <b-col sm="5">
@@ -30,7 +30,7 @@
 
     <p><em><strong>Notes:</strong><br>You cannot include Morgana unless Percival is also in the game.<br>5 and 6-player games cannot include more than one optional evil character.<br>7, 8, and 9-player games cannot include more than two optional evil characters.</em></p>
 
-</div>
+</b-modal>
 </template>
 
 <script>
@@ -59,7 +59,23 @@ export default {
       this.hasMorgana = !this.hasMorgana;
       console.log(this.hasMorgana);
     },
-    doNothing() {
+    handleOk() {
+      var selectedArray = [];
+      if (this.percival) {
+        selectedArray.push("percival");
+      }
+      if (this.mordred) {
+        selectedArray.push("mordred");
+      }
+      if (this.oberon) {
+        selectedArray.push("oberon");
+      }
+      if (this.morgana) {
+        selectedArray.push("morgana");
+      }
+      console.log(selectedArray);
+      //send array of selected characters to parent (Game.vue)
+      this.$emit('clicked', selectedArray);
     }
   }
 };
