@@ -21,45 +21,15 @@
             v-model="selected"
             :key="option.value"
             :value="option.value"
-            :disabled="option.value === 'Morgana' && !selected.includes('Percival')"
+            :disabled="option.value === 'morgana' && !selected.includes('percival')"
             @input="validateSelected()"
           >{{ option.text }}</b-form-checkbox>
         </b-form-group>
-
-        <!-- <b-form-group id="characters">
-          <b-form-checkbox
-            v-model="percival"
-            value="true"
-            unchecked-value="false"
-            :disabled="hasMorgana"
-            @input="togglePercival()"
-          >Percival (Good, knows Merlin)</b-form-checkbox>
-          <b-form-checkbox
-            v-model="mordred"
-            value="true"
-            unchecked-value="false"
-            @input="toggleMordred()"
-          >Mordred (Evil, invisible to Merlin)</b-form-checkbox>
-          <b-form-checkbox
-            v-model="oberon"
-            value="true"
-            unchecked-value="false"
-            @input="toggleOberon()"
-          >Oberon (Evil, invisible to other Evil characters)</b-form-checkbox>
-          <b-form-checkbox
-            v-model="morgana"
-            value="true"
-            unchecked-value="false"
-            :disabled="!hasPercival"
-            @input="toggleMorgana()"
-          >Morgana (Evil, appears as Merlin to Percival)</b-form-checkbox>
-        </b-form-group>-->
       </b-col>
     </b-row>
-    <div>
-      Selected:
-      <strong>{{ selected }}</strong>
-    </div>
+
+<!-- <div> Selected: <strong>{{ selected }}</strong> </div> -->
+
     <p>
       <em>
         <strong>Notes:</strong>
@@ -81,76 +51,42 @@ export default {
       errorMsg: "",
       selected: [], // Must be an array reference!
       options: [
-        { text: "Percival (Good, knows Merlin)", value: "Percival" },
-        { text: "Mordred (Evil, invisible to Merlin)", value: "Mordred" },
+        {
+          text: "Percival (Good, knows Merlin)",
+          value: "percival"
+        },
+        {
+          text: "Mordred (Evil, invisible to Merlin)",
+          value: "mordred"
+        },
         {
           text: "Oberon (Evil, invisible to other evil characters)",
-          value: "Oberon"
+          value: "oberon"
         },
         {
           text: "Morgana (Evil, appears as Merlin to Percival)",
-          value: "Morgana"
+          value: "morgana"
         }
       ]
-      // percivalSelected: false
-      // hasMordred: false,
-      // hasOberon: false,
-      // hasMorgana: false,
-      // selected: [],
-      // percival: false,
-      // mordred: false,
-      // oberon: false,
-      // morgana: false
     };
   },
   methods: {
     validateSelected() {
       if (
-        this.selected.includes("Morgana") &&
-        !this.selected.includes("Percival")
+        this.selected.includes("morgana") &&
+        !this.selected.includes("percival")
       ) {
         for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i] === 'Morgana') {
+          if (this.selected[i] === 'morgana') {
             this.selected.splice(i, 1);
           }
         }
       }
       console.log(this.selected);
     },
-    // togglePercival() {
-    //   //I have no clue why I need these toggle functions and cant just reference the value of each v-model yet here we are
-    //   this.hasPercival = !this.hasPercival;
-    // },
-    // toggleMordred() {
-    //   this.hasMordred = !this.hasMordred;
-    // },
-    // toggleOberon() {
-    //   this.hasOberon = !this.hasOberon;
-    // },
-    // toggleMorgana() {
-    //   this.hasMorgana = !this.hasMorgana;
-    // },
     handleOk() {
-      let selectedArray = [];
-      if (this.hasPercival) {
-        console.log("percival true");
-        selectedArray.push("percival");
-      }
-      if (this.hasMordred) {
-        console.log("mordred true");
-        selectedArray.push("mordred");
-      }
-      if (this.hasOberon) {
-        console.log("oberon true");
-        selectedArray.push("oberon");
-      }
-      if (this.hasMorgana) {
-        console.log("morgana true");
-        selectedArray.push("morgana");
-      }
-      console.log(selectedArray);
       //send array of selected characters to parent (Game.vue)
-      this.$emit("clicked", selectedArray);
+      this.$emit("clicked", this.selected);
     }
   }
 };
