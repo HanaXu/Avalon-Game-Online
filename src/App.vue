@@ -6,25 +6,52 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item @click="modalShow = !modalShow">Game Rules</b-nav-item>
+          <b-nav-item @click="openModal">Game Rules</b-nav-item>
           <b-nav-item href="#">Roles</b-nav-item>
           <b-nav-item href="#">Features</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-      <b-modal v-model="modalShow">Hello From Modal!</b-modal>
-      <router-view/>
+    <!-- Game Rules Modal -->
+    <modal v-if="showModal">
+      <h3 slot="header" class="modal-title">Game Rules Modal</h3>
+      <div slot="footer">
+        <button type="button" class="btn btn-outline-info" @click="closeModal()">Close</button>
+      </div>
+    </modal>
+    <!-- End of: Game Rules Modal -->
+    <router-view/>
   </div>
 </template>
+
+
 <script>
-    export default {
-        data() {
-            return {
-                modalShow: false
-            }
-        }
+import modal from "./views/GameRulesModal.vue";
+import home from "./views/Home.vue";
+
+export default {
+  components: {
+    //Game Rules Modal Component
+    modal,
+    home
+  },
+  data() {
+    return {
+      showModal: false
+    };
+  },
+  methods: {
+    openModal() {
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
     }
+  }
+};
 </script>
+
+
 <style lang="scss">
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
