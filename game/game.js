@@ -235,12 +235,10 @@ module.exports = class Game {
             }
             quests[questNum].saveQuestToHistory();
         }
-
         //do endgame stuff (count succeeded/failed quests, assassin tries to assassinate) to determine winner
         countQuestSuccesses();
         assassinate();
     }
-
     */
 
 /** @function countQuestSuccesses
