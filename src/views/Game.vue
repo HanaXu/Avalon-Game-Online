@@ -1,17 +1,16 @@
 <template>
   <div>
-    <!-- <div class="jumbo" v-if="loading">Loading...</div> -->
     <div class="container text-left" style="margin-top: .5rem">
       <h4>{{ yourName }}, welcome to Avalonline Room: {{ roomCode }}</h4>
     </div>
     <div class="container game">
       <div style="text-align: left; align-items: left; justify-content: left">
-        <LobbyList v-if="!assignIdentities" :players="players"/>
+        <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
       </div>
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
       </div>
-      <PlayerCards v-if="assignIdentities" :players="players"/>
+      <PlayerCards v-if="assignIdentities" :players="players" :yourName="yourName"/>
     </div>
   </div>
 </template>

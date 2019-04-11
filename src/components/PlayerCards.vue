@@ -2,7 +2,7 @@
   <div class="row" style="padding: 1rem;">
     <div
       class="card"
-      :class="{darkerBG: player.name.includes(' (You)')}"
+      :class="{darkerBG: player.name === yourName}"
       v-for="(player, index) in players"
       :key="index"
     >
@@ -33,7 +33,7 @@
 <script>
 export default {
   name: "PlayerCards",
-  props: ["players"]
+  props: ["players", "yourName"]
 };
 </script>
 
@@ -53,7 +53,7 @@ export default {
   width: 12rem;
 }
 .darkerBG {
-  background: lightsteelblue;
+  background: lightsteelblue !important;
 }
 .card .card-body {
   margin: 5px;

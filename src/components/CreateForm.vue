@@ -6,11 +6,15 @@
         autofocus
         id="inline-form-input-name"
         class="mb-2 mr-sm-2 mb-sm-0"
-        placeholder="user1"
+        placeholder="name"
         v-model="name"
       ></b-input>
       <b-button @click="createRoom" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
+    <div v-if="loading" class="text-center">
+      <b-spinner variant="dark" label="Text Centered"></b-spinner>
+    </div>
+    <div style="margin: .5rem" v-if="error">{{ errorMsg }}</div>
   </div>
 </template>
 
@@ -20,12 +24,17 @@ export default {
   name: "CreateForm",
   data() {
     return {
-      name: "user1",
-      roomCode: null
+      name: "1",
+      roomCode: null,
+      loading: false,
+      error: false,
+      errorMsg: null
     };
   },
   methods: {
     createRoom() {
+      this.error = false;
+      this.loading = true;
       axios
         .get(
           "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
@@ -43,6 +52,19 @@ export default {
             params: { yourName: this.name, roomCode: this.roomCode }
           });
         });
+    }
+  },
+  sockets: {
+    errorMsg: function(msg) {
+      this.error = true;
+      this.errorMsg = msg;
+      this.loading = false;
+    },
+    passedValidation: function() {
+      this.$router.push({
+        name: "game",
+        params: { yourName: this.name, roomCode: this.roomCode }
+      });
     }
   }
 };
