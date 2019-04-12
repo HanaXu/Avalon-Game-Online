@@ -160,15 +160,21 @@ module.exports = class Game {
   }
 
   removePlayerFromQuest(questNum, name) {
+    let playersNeededLeft =
+        this.quests[questNum].playersNeeded -
+        this.quests[questNum].playersOnQuest.size;
     for (let i in this.players) {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
         console.log(name + ' is no longer on the quest');
         this.quests[questNum].playersOnQuest.players.delete(name);
         this.quests[questNum].playersOnQuest.size--;
+        playersNeededLeft++;
+        console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
+    return playersNeededLeft;
   }
 
   deletePlayer(socketID) {

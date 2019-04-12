@@ -172,7 +172,25 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('removePlayerFromQuest', function(data) {
+  socket.on('removePlayerFromQuest', function(name) {
+    let currentQuest = GameList[roomCode].getCurrentQuest();
+    let playersNeededLeft = GameList[roomCode].removePlayerFromQuest(
+        currentQuest.questNum,
+        name
+    );
+    //update player cards
+    emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+
+
+    io.in(roomCode).emit('updateQuestMsg', {
+      questMsg:
+      playersNeededLeft +
+      ' more player(s) needed to go on quest ' +
+      currentQuest.questNum
+    });
+
+
+/*    console.log("removePlayerFromQuest()");
     let name = data.name;
     let questNum = data.questNum;
     GameList[roomCode].removePlayerFromQuest(questNum, name);
@@ -183,10 +201,10 @@ io.on('connection', socket => {
       currentQuestNum: questNum
     });
 
-    let playersRequired = this.quests[this.questNum].playersNeeded;
-    let currentNumPlayers = this.quests[this.questNum].playersOnQuest.size;
+    let playersRequired = GameList[roomCode].getCurrentQuest().playersNeeded;
+    let currentNumPlayers = GameList[roomCode].getCurrentQuest().playersOnQuest.size;
     let playersLeft = playersRequired - currentNumPlayers;
-    io.in(roomCode).emit('playersLeftForQuest', { playersLeft: playersLeft });
+    io.in(roomCode).emit('playersLeftForQuest', { playersLeft: playersLeft });*/
   });
 
   socket.on('disconnect', function() {
