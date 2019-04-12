@@ -22,10 +22,7 @@ io.on('connection', socket => {
     //validation
     if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
-      socket.emit(
-        'errorMsg',
-        'Error: Name must be between 1-20 characters: ' + name
-      );
+      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
       return;
     }
 
@@ -52,7 +49,6 @@ io.on('connection', socket => {
     console.log('GameList object after adding game:');
     console.log(GameList);
 
-
     //since player is Host, show them the game setup options (bots, optional characters)
     io.to(socket.id).emit('showHostSetupOptions');
 
@@ -70,26 +66,20 @@ io.on('connection', socket => {
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
       console.log('error joining room. room does not exist: ' + roomCode);
-      socket.emit(
-        'errorMsg',
-        "Error: Room code '" + roomCode + "' does not exist."
-      );
+      socket.emit('errorMsg', "Error: Room code '" + roomCode + "' does not exist.");
       return;
-    } else if (GameList[roomCode].gameIsStarted) {
+    }
+    else if (GameList[roomCode].gameIsStarted) {
       console.log('game has already started. cannot join');
-      socket.emit(
-        'errorMsg',
-        'Error: Cannot join a game that has already started'
-      );
+      socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
-    } else if (name.length < 1 || name.length > 20) {
+    }
+    else if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
-      socket.emit(
-        'errorMsg',
-        'Error: Name must be between 1-20 characters: ' + name
-      );
+      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
       return;
-    } else if (GameList[roomCode].hasPlayerWithName(name)) {
+    }
+    else if (GameList[roomCode].hasPlayerWithName(name)) {
       console.log('error someone already has name: ' + name);
       socket.emit('errorMsg', "Error: Name '" + name + "' is already taken.");
       return;
@@ -126,6 +116,12 @@ io.on('connection', socket => {
     var optionalCharacters = data.optionalCharacters; //an array containing names of selected optional characters
     console.log("Optional characters are");
     console.log(optionalCharacters);
+
+    let errorMsg = GameList[roomCode].validateOptionalCharacters(optionalCharacters);
+    if (errorMsg.length > 0) {
+      socket.emit('errorMsg', errorMsg);
+      return;
+    }
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].assignIdentities(optionalCharacters);
