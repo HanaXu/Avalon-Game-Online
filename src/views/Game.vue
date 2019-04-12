@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container text-left" style="margin-top: .5rem">
-      <h4>{{ yourName }}, welcome to Avalonline Room: {{ roomCode }}</h4>
+      <h4>{{ yourName }}, welcome to Avalonline Room: <span id="roomCode">{{ roomCode }}</span></h4>
     </div>
     <div class="container game">
       <b-row>
