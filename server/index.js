@@ -22,10 +22,7 @@ io.on('connection', socket => {
     //validation
     if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
-      socket.emit(
-        'errorMsg',
-        'Error: Name must be between 1-20 characters: ' + name
-      );
+      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
       return;
     }
 
@@ -52,6 +49,9 @@ io.on('connection', socket => {
     console.log('GameList object after adding game:');
     console.log(GameList);
 
+    //since player is Host, show them the game setup options (bots, optional characters)
+    io.to(socket.id).emit('showHostSetupOptions');
+
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', {
       players: game.players
@@ -66,26 +66,20 @@ io.on('connection', socket => {
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
       console.log('error joining room. room does not exist: ' + roomCode);
-      socket.emit(
-        'errorMsg',
-        "Error: Room code '" + roomCode + "' does not exist."
-      );
+      socket.emit('errorMsg', "Error: Room code '" + roomCode + "' does not exist.");
       return;
-    } else if (GameList[roomCode].gameIsStarted) {
+    }
+    else if (GameList[roomCode].gameIsStarted) {
       console.log('game has already started. cannot join');
-      socket.emit(
-        'errorMsg',
-        'Error: Cannot join a game that has already started'
-      );
+      socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
-    } else if (name.length < 1 || name.length > 20) {
+    }
+    else if (name.length < 1 || name.length > 20) {
       console.log('name does not meet length requirements: ' + name);
-      socket.emit(
-        'errorMsg',
-        'Error: Name must be between 1-20 characters: ' + name
-      );
+      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
       return;
-    } else if (GameList[roomCode].hasPlayerWithName(name)) {
+    }
+    else if (GameList[roomCode].hasPlayerWithName(name)) {
       console.log('error someone already has name: ' + name);
       socket.emit('errorMsg', "Error: Name '" + name + "' is already taken.");
       return;
@@ -117,19 +111,31 @@ io.on('connection', socket => {
 
   //no other clients can join now that game is started
   //assign identities & assign first quest leader
-  socket.on('startGame', function(data) {
-    roomCode = data;
+  socket.on('startGame', function (data) {
+    roomCode = data.roomCode;
+    var optionalCharacters = data.optionalCharacters; //an array containing names of selected optional characters
+    console.log("Optional characters are");
+    console.log(optionalCharacters);
+
+    let errorMsg = GameList[roomCode].validateOptionalCharacters(optionalCharacters);
+    if (errorMsg.length > 0) {
+      socket.emit('errorMsg', errorMsg);
+      return;
+    }
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
-    GameList[roomCode].assignIdentities();
+    GameList[roomCode].assignIdentities(optionalCharacters);
     GameList[roomCode].assignLeader();
+
+    // console.log('Game object after start game:');
+    // console.log(GameList[roomCode]);
 
     let players = GameList[roomCode].players;
     emitSanitizedPlayers(roomCode, players);
     io.in(roomCode).emit('identitiesAssigned');
   });
 
-  socket.on('disconnect', function() {
+  socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0) {
       GameList[roomCode].deletePlayer(socket.id);
       let players = GameList[roomCode].players;
@@ -153,22 +159,26 @@ io.on('connection', socket => {
 //client's only job is to update the UI
 function emitSanitizedPlayers(roomCode, players) {
   for (let i in players) {
-    if (players[i].character === 'Merlin') {
-      //emit non-sanitized player list, client then updates the UI
-      io.to(players[i].socketID).emit('updatePlayers', { players: players });
-    } else if (
-      players[i].character === 'Minion of Mordred' ||
-      players[i].character === 'Assassin'
-    ) {
-      let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam();
+    if (players[i].character === 'Percival') {
+      let sanitizedPlayers = GameList[roomCode].sanitizeForPercival(players[i].socketID);
+      //emit sanitized player list to client, client then updates the UI
+      io.to(players[i].socketID).emit('updatePlayers', {
+        players: sanitizedPlayers
+      });
+    } else if (players[i].character === 'Merlin') {
+      let sanitizedPlayers = GameList[roomCode].sanitizeForMerlin(players[i].socketID);
+      //emit sanitized player list to client, client then updates the UI
+      io.to(players[i].socketID).emit('updatePlayers', {
+        players: sanitizedPlayers
+      });
+    } else if (players[i].character === 'Minion of Mordred' || players[i].character === 'Assassin' || players[i].character === 'Mordred' || players[i].character === 'Morgana') {
+      let sanitizedPlayers = GameList[roomCode].sanitizeForEvilTeam(players[i].socketID);
       //emit sanitized player list to client, client then updates the UI
       io.to(players[i].socketID).emit('updatePlayers', {
         players: sanitizedPlayers
       });
     } else {
-      let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(
-        players[i].socketID
-      );
+      let sanitizedPlayers = GameList[roomCode].sanitizeForGoodTeam(players[i].socketID);
       //emit sanitized player list to client, client then updates the UI
       io.to(players[i].socketID).emit('updatePlayers', {
         players: sanitizedPlayers
