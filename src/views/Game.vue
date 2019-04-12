@@ -12,7 +12,7 @@
         </b-col>
 
         <b-col>
-        <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
         </b-col>
       </b-row>
 
@@ -69,10 +69,14 @@ export default {
       console.log("attemptStartGame()");
       //check to make sure chosen optional characters works for number of players
       //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
-      if((this.players.length <= 6) &&
-        ((this.selected.includes("mordred") && this.selected.includes("oberon")) ||
-        (this.selected.includes("mordred") && this.selected.includes("morgana")) ||
-        (this.selected.includes("oberon") && this.selected.includes("morgana")))
+      if (
+        this.players.length <= 6 &&
+        ((this.selected.includes("Mordred") &&
+          this.selected.includes("Oberon")) ||
+          (this.selected.includes("Mordred") &&
+            this.selected.includes("Morgana")) ||
+          (this.selected.includes("Oberon") &&
+            this.selected.includes("Morgana")))
       ) {
         this.errorMsg =
           "Error: game with 5 or 6 players can only include 1 of Mordred, Oberon, or Morgana. Please select only one then click Start Game again.";
@@ -81,9 +85,9 @@ export default {
       } else if (
         this.players.length > 6 &&
         this.players.length < 10 &&
-        this.selected.includes("mordred") &&
-        this.selected.includes("oberon") &&
-        this.selected.includes("morgana")
+        this.selected.includes("Mordred") &&
+        this.selected.includes("Oberon") &&
+        this.selected.includes("Morgana")
       ) {
         this.errorMsg =
           "Error: game with 7, 8, or 9 players can only include 2 of Mordred, Oberon, or Morgana. Please de-select one then click Start Game again.";

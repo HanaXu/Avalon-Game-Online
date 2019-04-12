@@ -21,7 +21,7 @@
             v-model="selected"
             :key="option.value"
             :value="option.value"
-            :disabled="option.value === 'morgana' && !selected.includes('percival')"
+            :disabled="option.value === 'Morgana' && !selected.includes('Percival')"
             @input="validateSelected()"
           >{{ option.text }}</b-form-checkbox>
         </b-form-group>
@@ -53,19 +53,19 @@ export default {
       options: [
         {
           text: "Percival (Good, knows Merlin)",
-          value: "percival"
+          value: "Percival"
         },
         {
           text: "Mordred (Evil, invisible to Merlin)",
-          value: "mordred"
+          value: "Mordred"
         },
         {
           text: "Oberon (Evil, invisible to other evil characters)",
-          value: "oberon"
+          value: "Oberon"
         },
         {
           text: "Morgana (Evil, appears as Merlin to Percival)",
-          value: "morgana"
+          value: "Morgana"
         }
       ]
     };
@@ -73,16 +73,15 @@ export default {
   methods: {
     validateSelected() {
       if (
-        this.selected.includes("morgana") &&
-        !this.selected.includes("percival")
+        this.selected.includes("Morgana") &&
+        !this.selected.includes("Percival")
       ) {
         for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i] === 'morgana') {
+          if (this.selected[i] === 'Morgana') {
             this.selected.splice(i, 1);
           }
         }
       }
-      console.log(this.selected);
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)

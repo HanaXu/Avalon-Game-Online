@@ -2,743 +2,44 @@ const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
 // defines what type of characters for size of game
 // key: number of players
-// value: list of characters
-const PlayerIdentities = {
-  '5': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  '5Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  '5PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Mordred'
-  ],
-  '5PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Oberon'
-  ],
-  '5PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Morgana'
-  ],
-  '5Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred'
-  ],
-  '5Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon'
-  ],
-  '5Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana'
-  ],
-  6: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  '6Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  '6PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred'
-  ],
-  '6PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon'
-  ],
-  '6PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana'
-  ],
-  '6Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred'
-  ],
-  '6Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon'
-  ],
-  '6Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana'
-  ],
-  7: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '7Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '7PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '7PercivalMordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '7PercivalMordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '7PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '7PercivalOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '7PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  '7Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '7MordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '7MordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '7Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '7OberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '7Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  8: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '8Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '8PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '8PercivalMordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '8PercivalMordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '8PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '8PercivalOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '8PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  '8Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '8MordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '8MordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '8Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '8OberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '8Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  9: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '9Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '9PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '9PercivalMordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '9PercivalMordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '9PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '9PercivalOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '9PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  '9Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred'
-  ],
-  '9MordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Oberon'
-  ],
-  '9MordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana'
-  ],
-  '9Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred'
-  ],
-  '9OberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Morgana'
-  ],
-  '9Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred'
-  ],
-  10: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10Percival': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10PercivalMordred': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10PercivalMordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Oberon'
-  ],
-  '10PercivalMordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Morgana'
-  ],
-  '10PercivalOberon': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10PercivalOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred',
-    'Morgana'
-  ],
-  '10PercivalMordredOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Mordred',
-    'Morgana'
-  ],
-  '10PercivalMorgana': [
-    'Merlin',
-    'Assassin',
-    'Percival',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10Mordred': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10MordredOberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Oberon'
-  ],
-  '10MordredOberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Morgana',
-    'Oberon'
-  ],
-  '10MordredMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Mordred',
-    'Minion of Mordred',
-    'Morgana'
-  ],
-  '10Oberon': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  '10OberonMorgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Oberon',
-    'Minion of Mordred',
-    'Morgana'
-  ],
-  '10Morgana': [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Morgana',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ]
+// value: object of characters and how many
+const BaseCharacters = {
+  5: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 2,
+    'Minion of Mordred': 1
+  },
+  6: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 3,
+    'Minion of Mordred': 1
+  },
+  7: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 3,
+    'Minion of Mordred': 2
+  },
+  8: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 4,
+    'Minion of Mordred': 2
+  },
+  9: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 5,
+    'Minion of Mordred': 2
+  },
+  10: {
+    Merlin: 1,
+    Assassin: 1,
+    'Loyal Servant of Arthur': 5,
+    'Minion of Mordred': 3
+  }
 };
 
 module.exports = class Game {
@@ -747,10 +48,6 @@ module.exports = class Game {
     this.gameIsStarted = false;
     this.gameStage = 0;
     this.players = [];
-    this.hasPercival = false;
-    this.hasMordred = false;
-    this.hasOberon = false;
-    this.hasMorgana = false;
     let quest1;
     let quest2;
     let quest3;
@@ -783,13 +80,14 @@ module.exports = class Game {
       if (clonedPlayers[i].socketID === yourSocketID) {
         // dont hide your own info
         continue;
-      }
-      else if(clonedPlayers[i].character == 'Merlin' || clonedPlayers[i].character == 'Morgana' ) {
+      } else if (
+        clonedPlayers[i].character == 'Merlin' ||
+        clonedPlayers[i].character == 'Morgana'
+      ) {
         //Merlin & Morgana both appear to be Merlin
         clonedPlayers[i].character = 'Merlin';
         clonedPlayers[i].team = 'Good';
-      }
-      else {
+      } else {
         // hide everyone else's info
         clonedPlayers[i].character = 'hidden';
         clonedPlayers[i].team = 'hidden';
@@ -805,13 +103,14 @@ module.exports = class Game {
       if (clonedPlayers[i].socketID === yourSocketID) {
         // dont hide your own info
         continue;
-      }
-      else if (GoodTeam.has(clonedPlayers[i].character) || clonedPlayers[i].character == "Oberon") {
+      } else if (
+        GoodTeam.has(clonedPlayers[i].character) ||
+        clonedPlayers[i].character == 'Oberon'
+      ) {
         // hide good team's info (& Oberon)
         clonedPlayers[i].character = 'hidden';
         clonedPlayers[i].team = 'hidden';
-      }
-      else {
+      } else {
         //just hide character of your teammates
         clonedPlayers[i].character = 'hidden';
       }
@@ -826,13 +125,14 @@ module.exports = class Game {
       if (clonedPlayers[i].socketID === yourSocketID) {
         // dont hide your own info
         continue;
-      }
-      else if (GoodTeam.has(clonedPlayers[i].character) || clonedPlayers[i].character == "Mordred") {
+      } else if (
+        GoodTeam.has(clonedPlayers[i].character) ||
+        clonedPlayers[i].character == 'Mordred'
+      ) {
         // hide good team's info (& Oberon)
         clonedPlayers[i].character = 'hidden';
         clonedPlayers[i].team = 'hidden';
-      }
-      else {
+      } else {
         //just hide character of your teammates
         clonedPlayers[i].character = 'hidden';
       }
@@ -841,8 +141,8 @@ module.exports = class Game {
   }
 
   // getter for PlayerIdentities
-  static get PlayerIdentities() {
-    return PlayerIdentities;
+  static get BaseCharacters() {
+    return BaseCharacters;
   }
 
   // getter for GoodTeam
@@ -877,7 +177,6 @@ module.exports = class Game {
     }
   }
 
-  // randomly assign a room leader in the player list.
   assignLeader() {
     console.log('assignLeader()');
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
@@ -892,31 +191,33 @@ module.exports = class Game {
     this.gameStage = 2;
   }
 
-  assignIdentities() {
+  assignIdentities(optionalCharacters) {
     console.log('assignIdentities()');
+    let shuffledIdentities;
 
-    //keys in PlayerIdentities are in format of (PlayerCount)(Percival)(Mordred)(Oberon)(Morgana)
-    //ex 6PercivalMorgana is a 6-player game with Percival and Morgana as optional characters
-    var playerIdentitiesKey = this.players.length;
-    var perc = "";
-    var mord = "";
-    var ober = "";
-    var morg = "";
-    if(this.hasPercival) {
-      perc = "Percival";
+    if (optionalCharacters.length > 0) {
+      let newTeamObj = Game.BaseCharacters[this.players.length];
+
+      for (let i = 0; i < optionalCharacters.length; i++) {
+        if (optionalCharacters[i] === 'Percival') {
+          newTeamObj['Loyal Servant of Arthur']--;
+          newTeamObj['Percival'] = 1;
+        } else if (optionalCharacters[i] === 'Mordred') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Mordred'] = 1;
+        } else if (optionalCharacters[i] === 'Oberon') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Oberon'] = 1;
+        } else if (optionalCharacters[i] === 'Morgana') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Morgana'] = 1;
+        }
+      }
+      shuffledIdentities = this.shuffle(this.objectToArray(newTeamObj));
+    } else {
+      let teamObj = Game.BaseCharacters[this.players.length]
+      shuffledIdentities = this.shuffle(this.objectToArray(teamObj));
     }
-    if(this.hasMordred) {
-      mord = "Mordred";
-    }
-    if(this.hasOberon) {
-      ober = "Oberon";
-    }
-    if(this.hasMorgana) {
-      morg = "Morgana";
-    }
-    const shuffledIdentities = this.shuffle(
-      Game.PlayerIdentities[playerIdentitiesKey + perc + mord + ober + morg]
-    );
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
@@ -945,5 +246,16 @@ module.exports = class Game {
       array[randomIndex] = temporaryValue;
     }
     return array;
+  }
+
+  //convert the object to array for shuffling
+  objectToArray(team) {
+    let arr = []
+    for (let character in team) {
+      for (var i = 0; i < team[character]; i++) {
+        arr.push(character)
+      }
+    }
+    return arr;
   }
 };
