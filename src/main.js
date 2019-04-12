@@ -24,9 +24,6 @@ var config = {
 
 firebase.initializeApp(config);
 
-//var fire = firebase.intializeApp(config);
-//export default fire;
-
 Vue.use(BootstrapVue);
 Vue.use(new VueSocketIO({
   debug: true,

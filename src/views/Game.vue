@@ -4,7 +4,7 @@
       <h4>{{ yourName }}, welcome to Avalonline Room: {{ roomCode }}</h4>
     </div>
     <div class="container game">
-      <div style="text-align: left; align-items: left; justify-content: left">
+      <div style="text-align: left; align-items: left; justify-content: left;">
         <LobbyList v-if="!assignIdentities" :players="players" :yourName="yourName"/>
       </div>
       <div v-if="showStartButton">
@@ -12,17 +12,18 @@
       </div>
       <PlayerCards v-if="assignIdentities" :players="players" :yourName="yourName"/>
     </div>
-    <!--<div class="container chat">-->
-      <!--<Chat></Chat>-->
-    <!--</div>-->
-    <Chat></Chat>
+    <div class="container chat">
+      <div style="align: right">
+        <Chat></Chat>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import LobbyList from "@/components/LobbyList.vue";
-import PlayerCards from "@/components/PlayerCards.vue";
-import Chat from "@/components/Chat.vue";
+import LobbyList from "../components/LobbyList.vue";
+import PlayerCards from "../components/PlayerCards.vue";
+import Chat from "../components/Chat.vue";
 
 export default {
   name: "Game",
