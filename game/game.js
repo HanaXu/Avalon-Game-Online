@@ -215,7 +215,7 @@ module.exports = class Game {
       }
       shuffledIdentities = this.shuffle(this.objectToArray(newTeamObj));
     } else {
-      let teamObj = Game.BaseCharacters[this.players.length]
+      let teamObj = Game.BaseCharacters[this.players.length];
       shuffledIdentities = this.shuffle(this.objectToArray(teamObj));
     }
 
