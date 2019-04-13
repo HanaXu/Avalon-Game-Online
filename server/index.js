@@ -223,8 +223,11 @@ io.on('connection', socket => {
     console.log('received decision from: ' + name);
     io.in(roomCode).emit('teamVotes', currentQuest.questTeamDecisions.voted);
 
-    //reveal the votes
+    //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
+      //check if Approve or Reject has majority
+
+
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
     }
   })

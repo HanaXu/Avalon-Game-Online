@@ -31,7 +31,8 @@
 export default {
   name: "QuestVote",
   props: [
-    "showAcceptRejectButtons"
+    "showAcceptRejectButtons",
+    "yourName"
   ],
   data: function() {
     return {
@@ -63,11 +64,13 @@ export default {
       this.showHasVoted = true;
     },
     revealTeamVotes: function(votes) {
+      this.showAcceptRejectButtons = false;
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
       this.teamVotes.reject = votes.reject.join(", ");
       this.showHasVoted = false;
       this.showTeamVoteResults = true;
+      this.$socket.emit("updateQuestMsg", {"questMsg": "All players have voted on the quest team. Results are:"});
     }
   }
 };

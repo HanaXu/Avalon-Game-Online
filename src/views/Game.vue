@@ -38,7 +38,7 @@
         <span class="text-dark">{{ questMsg }}</span>
       </div>
 
-      <QuestVote v-if="showQuestVoteButtons" :showAcceptRejectButtons="showAcceptRejectButtons" />
+      <QuestVote v-if="showQuestVoteButtons" :showAcceptRejectButtons="showAcceptRejectButtons" :yourName="yourName" />
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -134,6 +134,7 @@ export default {
     },
     acceptOrRejectTeam: function(data) {
       this.questMsg = data;
+      this.showQuestVoteButtons = true;
       this.showAddPlayerButton = false;
       this.showRemovePlayerButton = false;
       this.showAcceptRejectButtons = true;
