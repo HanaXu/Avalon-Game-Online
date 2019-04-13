@@ -90,9 +90,6 @@ io.on('connection', socket => {
     let player = new Player(socket.id, name, roomCode, 'Guest');
     socket.join(roomCode); //subscribe the socket to the roomcode
 
-    console.log('Connecting player to game room: ' + roomCode);
-    console.log('GameList object after adding new player to existing game:');
-
     GameList[roomCode].players.push(player);
     console.log(GameList);
 
@@ -115,10 +112,6 @@ io.on('connection', socket => {
     roomCode = data.roomCode;
     //an array containing names of selected optional characters
     var optionalCharacters = data.optionalCharacters;
-
-    console.log("Optional characters are");
-    console.log(optionalCharacters);
-
     let errorMsg = GameList[roomCode].validateOptionalCharacters(optionalCharacters);
     if (errorMsg.length > 0) {
       socket.emit('errorMsg', errorMsg);
@@ -131,6 +124,7 @@ io.on('connection', socket => {
     GameList[roomCode].assignIdentities(optionalCharacters);
     let leaderSocketID = GameList[roomCode].assignLeaderToQuest(1);
 
+    //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
     io.in(roomCode).emit('gameStarted');
 
@@ -161,9 +155,11 @@ io.on('connection', socket => {
       currentQuest.questNum,
       name
     );
+
     //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
 
+    //update quest message
     if (playersNeededLeft > 0) {
       io.in(roomCode).emit('updateQuestMsg', {
         questMsg:
@@ -173,9 +169,11 @@ io.on('connection', socket => {
       });
     } else {
       io.in(roomCode).emit('updateQuestMsg', {
-        questMsg: 'Capacity reached for quest ' + currentQuest.questNum
+        questMsg: 'Waiting for quest leader to confirm team.'
       });
       console.log('capacity reached for quest: ' + currentQuest.questNum);
+      //show confirm button to quest leader
+      socket.emit('confirmQuestTeam', true)
     }
   });
 
@@ -185,16 +183,23 @@ io.on('connection', socket => {
       currentQuest.questNum,
       name
     );
+
     //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
 
-
+    //update quest message
     io.in(roomCode).emit('updateQuestMsg', {
       questMsg:
         playersNeededLeft +
         ' more player(s) needed to go on quest ' +
         currentQuest.questNum
     });
+    //hide confirm button from quest leader
+    socket.emit('confirmQuestTeam', false);
+  });
+
+  socket.on('questTeamConfirmed', function () {
+    io.in(roomCode).emit('acceptOrRejectTeam');
   });
 
   socket.on('disconnect', function () {

@@ -33,7 +33,20 @@
         :showAddPlayerButton="showAddPlayerButton"
         :showRemovePlayerButton="showRemovePlayerButton"
       />
-      <div v-if="gameStarted" class="row justify-content-md-center" style="padding: 1rem;">
+      <div v-if="showConfirmTeamButton">
+        <b-button class="avalon-btn-lg" @click="questTeamConfirmed">Confirm Team</b-button>
+      </div>
+      <div v-if="showAcceptRejectButtons">
+        <div class="row justify-content-md-center">
+          <b-button class="avalon-btn-lg">Accept Team</b-button>
+          <b-button class="avalon-btn-lg">Reject Team</b-button>
+        </div>
+      </div>
+      <div
+        v-if="gameStarted && !showAcceptRejectButtons"
+        class="row justify-content-md-center"
+        style="padding: 1rem;"
+      >
         <span class="text-dark">{{ questMsg }}</span>
       </div>
       <QuestCards v-if="gameStarted" :quests="quests"/>
@@ -62,7 +75,6 @@ export default {
     return {
       players: [],
       quests: [],
-      // currentQuestNum: null,
       currentVoteTrack: null,
       questMsg: null,
       yourName: null,
@@ -71,6 +83,8 @@ export default {
       gameStarted: false,
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
+      showConfirmTeamButton: false,
+      showAcceptRejectButtons: false,
       showSetupOptions: false,
       optionalCharacters: [],
       error: false,
@@ -96,6 +110,10 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
+    },
+    questTeamConfirmed: function() {
+      this.$socket.emit("questTeamConfirmed");
+      this.showConfirmTeamButton = false;
     }
   },
   sockets: {
@@ -104,7 +122,6 @@ export default {
     },
     updateQuests: function(data) {
       this.quests = data["quests"];
-      // this.currentQuestNum = data["currentQuestNum"];
     },
     updateVoteTrack: function(data) {
       this.currentVoteTrack = data["voteTrack"];
@@ -124,6 +141,12 @@ export default {
     updateQuestMsg: function(data) {
       this.questMsg = data["questMsg"];
       console.log(this.questMsg);
+    },
+    confirmQuestTeam: function(bool) {
+      this.showConfirmTeamButton = bool;
+    },
+    acceptOrRejectTeam: function() {
+      this.showAcceptRejectButtons = true;
     },
     showHostSetupOptions: function() {
       this.showSetupOptions = true;
