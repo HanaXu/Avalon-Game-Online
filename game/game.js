@@ -1,68 +1,47 @@
 var Quest = require('../game/Quest');
 
-const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur']);
+const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
 // defines what type of characters for size of game
 // key: number of players
-// value: list of characters
-const PlayerIdentities = {
-  5: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  6: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred'
-  ],
-  7: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  8: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  9: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ],
-  10: [
-    'Merlin',
-    'Assassin',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Loyal Servant of Arthur',
-    'Minion of Mordred',
-    'Minion of Mordred',
-    'Minion of Mordred'
-  ]
+// value: object of characters and how many
+const BaseCharacters = {
+  5: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 2,
+    'Minion of Mordred': 1
+  },
+  6: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 3,
+    'Minion of Mordred': 1
+  },
+  7: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 3,
+    'Minion of Mordred': 2
+  },
+  8: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 4,
+    'Minion of Mordred': 2
+  },
+  9: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 5,
+    'Minion of Mordred': 2
+  },
+  10: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 5,
+    'Minion of Mordred': 3
+  }
 };
 
 module.exports = class Game {
@@ -110,12 +89,22 @@ module.exports = class Game {
     return clonedPlayers;
   }
 
-  // hide all good team's characters
-  sanitizeForEvilTeam() {
+  sanitizeForPercival(yourSocketID) {
     const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+
     for (const i in clonedPlayers) {
-      if (GoodTeam.has(clonedPlayers[i].character)) {
-        // hide good team's info
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      } else if (
+        clonedPlayers[i].character == 'Merlin' ||
+        clonedPlayers[i].character == 'Morgana'
+      ) {
+        //Merlin & Morgana both appear to be Merlin
+        clonedPlayers[i].character = 'Merlin';
+        clonedPlayers[i].team = 'Good';
+      } else {
+        // hide everyone else's info
         clonedPlayers[i].character = 'hidden';
         clonedPlayers[i].team = 'hidden';
       }
@@ -123,9 +112,53 @@ module.exports = class Game {
     return clonedPlayers;
   }
 
+  // hide identities of good team & Oberon
+  sanitizeForEvilTeam(yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (const i in clonedPlayers) {
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      } else if (
+        GoodTeam.has(clonedPlayers[i].character) ||
+        clonedPlayers[i].character == 'Oberon'
+      ) {
+        // hide good team's info (& Oberon)
+        clonedPlayers[i].character = 'hidden';
+        clonedPlayers[i].team = 'hidden';
+      } else {
+        //just hide character of your teammates
+        clonedPlayers[i].character = 'hidden';
+      }
+    }
+    return clonedPlayers;
+  }
+
+  // hide identities of good team & Morgana
+  sanitizeForMerlin(yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
+    for (const i in clonedPlayers) {
+      if (clonedPlayers[i].socketID === yourSocketID) {
+        // dont hide your own info
+        continue;
+      } else if (
+        GoodTeam.has(clonedPlayers[i].character) ||
+        clonedPlayers[i].character == 'Mordred'
+      ) {
+        // hide good team's info (& Oberon)
+        clonedPlayers[i].character = 'hidden';
+        clonedPlayers[i].team = 'hidden';
+      } else {
+        //just hide character of your teammates
+        clonedPlayers[i].character = 'hidden';
+      }
+    }
+    return clonedPlayers;
+  }
+
   // getter for PlayerIdentities
-  static get PlayerIdentities() {
-    return PlayerIdentities;
+  static get BaseCharacters() {
+    return BaseCharacters;
   }
 
   // getter for GoodTeam
@@ -161,8 +194,8 @@ module.exports = class Game {
 
   removePlayerFromQuest(questNum, name) {
     let playersNeededLeft =
-        this.quests[questNum].playersNeeded -
-        this.quests[questNum].playersOnQuest.size;
+      this.quests[questNum].playersNeeded -
+      this.quests[questNum].playersOnQuest.size;
     for (let i in this.players) {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
@@ -214,11 +247,35 @@ module.exports = class Game {
     }
   }
 
-  assignIdentities() {
+  assignIdentities(optionalCharacters) {
     console.log('assignIdentities()');
-    const shuffledIdentities = this.shuffle(
-      Game.PlayerIdentities[this.players.length]
-    );
+    let shuffledIdentities;
+
+    if (optionalCharacters.length > 0) {
+      let newTeamObj = Game.BaseCharacters[this.players.length];
+
+      for (let i = 0; i < optionalCharacters.length; i++) {
+        if (optionalCharacters[i] === 'Percival') {
+          newTeamObj['Loyal Servant of Arthur']--;
+          newTeamObj['Percival'] = 1;
+        } else if (optionalCharacters[i] === 'Mordred') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Mordred'] = 1;
+        } else if (optionalCharacters[i] === 'Oberon') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Oberon'] = 1;
+        } else if (optionalCharacters[i] === 'Morgana') {
+          newTeamObj['Minion of Mordred']--;
+          newTeamObj['Morgana'] = 1;
+        }
+      }
+      shuffledIdentities = this.shuffle(this.objectToArray(newTeamObj));
+      console.log(shuffledIdentities)
+    } else {
+      let teamObj = Game.BaseCharacters[this.players.length];
+      shuffledIdentities = this.shuffle(this.objectToArray(teamObj));
+      console.log(shuffledIdentities)
+    }
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
@@ -227,6 +284,29 @@ module.exports = class Game {
       } else {
         this.players[i].team = 'Evil';
       }
+    }
+  }
+
+  //check to make sure chosen optional characters works for number of players
+  //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
+  validateOptionalCharacters(characters) {
+    console.log(characters)
+    if (this.players.length <= 6 &&
+      ((characters.includes("Mordred") && characters.includes("Oberon")) ||
+        characters.includes("Mordred") && characters.includes("Morgana")) ||
+      characters.includes("Oberon") && characters.includes("Morgana")) {
+      return "Error: game with 5 or 6 players can only include 1 of Mordred, Oberon, or Morgana. Please select only one then click Start Game again.";
+    }
+    else if (
+      this.players.length > 6 &&
+      this.players.length < 10 &&
+      characters.includes("Mordred") &&
+      characters.includes("Oberon") &&
+      characters.includes("Morgana")
+    ) {
+      return "Error: game with 7, 8, or 9 players can only include 2 of Mordred, Oberon, or Morgana. Please de-select one then click Start Game again.";
+    } else {
+      return ""
     }
   }
 
@@ -247,5 +327,16 @@ module.exports = class Game {
       array[randomIndex] = temporaryValue;
     }
     return array;
+  }
+
+  //convert the object to array for shuffling
+  objectToArray(team) {
+    let arr = []
+    for (let character in team) {
+      for (var i = 0; i < team[character]; i++) {
+        arr.push(character)
+      }
+    }
+    return arr;
   }
 };

@@ -1,12 +1,28 @@
 <template>
   <div>
     <div class="container text-left" style="margin-top: .5rem">
-      <h4>{{ yourName }}, welcome to Avalonline Room: <span id="roomCode">{{ roomCode }}</span></h4>
+      <h4>
+        {{ yourName }}, welcome to Avalonline Room:
+        <span id="roomCode">{{ roomCode }}</span>
+      </h4>
     </div>
     <div class="container game">
-      <div style="text-align: left; align-items: left; justify-content: left">
-        <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
-      </div>
+      <b-row>
+        <b-col cols="10">
+          <div style="text-align: left; align-items: left; justify-content: left">
+            <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
+          </div>
+        </b-col>
+
+        <b-col>
+          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+        </b-col>
+      </b-row>
+
+      <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
+
+      <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
       </div>
@@ -18,7 +34,7 @@
         :showRemovePlayerButton="showRemovePlayerButton"
       />
       <div v-if="gameStarted" class="row justify-content-md-center" style="padding: 1rem;">
-        <span class="text-light">{{ questMsg }}</span>
+        <span class="text-dark">{{ questMsg }}</span>
       </div>
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -31,6 +47,7 @@ import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
+import SetupOptions from "@/components/SetupOptions.vue";
 
 export default {
   name: "Game",
@@ -38,7 +55,8 @@ export default {
     LobbyList,
     PlayerCards,
     QuestCards,
-    VoteTrack
+    VoteTrack,
+    SetupOptions
   },
   data() {
     return {
@@ -52,7 +70,11 @@ export default {
       showStartButton: false,
       gameStarted: false,
       showAddPlayerButton: false,
-      showRemovePlayerButton: false
+      showRemovePlayerButton: false,
+      showSetupOptions: false,
+      optionalCharacters: [],
+      error: false,
+      errorMsg: null
     };
   },
   created() {
@@ -60,9 +82,19 @@ export default {
     this.roomCode = this.$route.params.roomCode;
   },
   methods: {
+    clickedSetupOptions: function(data) {
+      //this is called after Okay is clicked from Setup Options window
+      console.log("selectedOptions emitted");
+      this.optionalCharacters = data;
+      console.log(this.optionalCharacters);
+    },
     startGame: function() {
       console.log("starting game in room: " + this.roomCode);
-      this.$socket.emit("startGame", this.roomCode);
+      //emit startGame with roomcode & optional character choices
+      this.$socket.emit("startGame", {
+        roomCode: this.roomCode,
+        optionalCharacters: this.optionalCharacters
+      });
       this.showStartButton = false;
     }
   },
@@ -82,6 +114,8 @@ export default {
     },
     gameStarted: function() {
       this.gameStarted = true;
+      this.error = false;
+      this.showSetupOptions = false;
     },
     ChoosePlayersForQuest: function() {
       this.showAddPlayerButton = true;
@@ -90,6 +124,14 @@ export default {
     updateQuestMsg: function(data) {
       this.questMsg = data["questMsg"];
       console.log(this.questMsg);
+    },
+    showHostSetupOptions: function() {
+      this.showSetupOptions = true;
+    },
+    errorMsg: function(msg) {
+      this.error = true;
+      this.errorMsg = msg;
+      this.showStartButton = true;
     }
   }
 };
@@ -97,8 +139,13 @@ export default {
 
 <style>
 .game {
-  background: #777;
+  background: #eae7e3;
   border-radius: 3px;
-  height: 75vh;
+  padding: 1em;
+  min-height: 75vh;
+}
+
+.setupButton {
+  float: right;
 }
 </style>
