@@ -254,20 +254,23 @@ module.exports = class Game {
     console.log("assignNextLeader()");
 
     //reset prev leader Player object
-    this.players[leaderIndex].leader = false;
+    this.players[this.leaderIndex].leader = false;
+    //reset players on quest
+    this.resetPlayersOnQuest();
 
     //increment leaderIndex (mod by playerLength so it wraps around)
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
+
 
     //continue incrementing leaderIndex until we find next non-null player object
     while(this.players[this.leaderIndex] === null) {
       this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
     }
     //assign new leader to correct Player
-    this.players[leaderIndex].leader = true;
-    this.quests[questNum].questLeader = this.players[leaderIndex].name;
+    this.players[this.leaderIndex].leader = true;
+    this.quests[questNum].questLeader = this.players[this.leaderIndex].name;
     this.quests[questNum].currentQuest = true;
-    return this.players[i].socketID;
+    return this.players[this.leaderIndex].socketID;
   }
 
   assignIdentities(optionalCharacters) {
@@ -307,6 +310,13 @@ module.exports = class Game {
       } else {
         this.players[i].team = 'Evil';
       }
+    }
+  }
+
+  //sets onQuest to false for every player
+  resetPlayersOnQuest() {
+    for(let i in this.players) {
+      this.players[i].onQuest = false;
     }
   }
 
