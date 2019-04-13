@@ -146,6 +146,8 @@ export default {
       this.showConfirmTeamButton = bool;
     },
     acceptOrRejectTeam: function() {
+      this.showAddPlayerButton = false;
+      this.showRemovePlayerButton = false;
       this.showAcceptRejectButtons = true;
     },
     showHostSetupOptions: function() {
