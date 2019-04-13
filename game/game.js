@@ -238,8 +238,8 @@ module.exports = class Game {
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
-        this.quests[1].questLeader = this.players[i].name;
-        this.quests[1].currentQuest = true;
+        this.quests[questNum].questLeader = this.players[i].name;
+        this.quests[questNum].currentQuest = true;
         // console.log("Current leader is:");
         // console.log(this.players[i]);
         return this.players[i].socketID; //return quest leader socketID
@@ -290,7 +290,8 @@ module.exports = class Game {
   //check to make sure chosen optional characters works for number of players
   //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
   validateOptionalCharacters(characters) {
-    console.log(characters)
+    console.log(characters);
+    console.log(this.players.length);
     if (this.players.length <= 6 &&
       ((characters.includes("Mordred") && characters.includes("Oberon")) ||
         characters.includes("Mordred") && characters.includes("Morgana")) ||

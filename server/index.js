@@ -146,11 +146,12 @@ io.on('connection', socket => {
         currentQuest.questNum
     });
 
-    io.to(leaderSocketID).emit('ChoosePlayersForQuest'); //only let the quest leader choose players
+    io.to(leaderSocketID).emit('choosePlayersForQuest'); //only let the quest leader choose players
   });
 
   socket.on('addPlayerToQuest', function (name) {
     let currentQuest = GameList[roomCode].getCurrentQuest();
+    let leader = currentQuest.questLeader;
     let playersNeededLeft = GameList[roomCode].addPlayerToQuest(
       currentQuest.questNum,
       name
@@ -163,21 +164,24 @@ io.on('connection', socket => {
     if (playersNeededLeft > 0) {
       io.in(roomCode).emit('updateQuestMsg', {
         questMsg:
+          leader +
+          ' is choosing ' +
           playersNeededLeft +
-          ' more player(s) needed to go on quest ' +
+          ' more player(s) to go on quest ' +
           currentQuest.questNum
       });
     } else {
       io.in(roomCode).emit('updateQuestMsg', {
-        questMsg: 'Waiting for quest leader to confirm team.'
+        questMsg: 'Waiting for ' + leader + ' to confirm team.'
       });
       //show confirm button to quest leader
-      socket.emit('confirmQuestTeam', true)
+      socket.emit('confirmQuestTeam', true);
     }
   });
 
   socket.on('removePlayerFromQuest', function (name) {
     let currentQuest = GameList[roomCode].getCurrentQuest();
+    let leader = currentQuest.questLeader;
     let playersNeededLeft = GameList[roomCode].removePlayerFromQuest(
       currentQuest.questNum,
       name
@@ -189,8 +193,10 @@ io.on('connection', socket => {
     //update quest message
     io.in(roomCode).emit('updateQuestMsg', {
       questMsg:
+        leader +
+        ' is choosing ' +
         playersNeededLeft +
-        ' more player(s) needed to go on quest ' +
+        ' more player(s) to go on quest ' +
         currentQuest.questNum
     });
     //hide confirm button from quest leader
@@ -198,7 +204,7 @@ io.on('connection', socket => {
   });
 
   socket.on('questTeamConfirmed', function () {
-    io.in(roomCode).emit('acceptOrRejectTeam');
+    io.in(roomCode).emit('acceptOrRejectTeam', 'Waiting for all players to Accept or Reject team.');
   });
 
   //players vote whether they like the team or not
@@ -224,7 +230,7 @@ io.on('connection', socket => {
   })
 
   socket.on('disconnect', function () {
-    if (Object.keys(GameList).length != 0) {
+    if (Object.keys(GameList).length != 0 && GameList[roomCode] != undefined) {
       GameList[roomCode].deletePlayer(socket.id);
       let players = GameList[roomCode].players;
 

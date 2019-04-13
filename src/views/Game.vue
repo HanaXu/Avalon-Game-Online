@@ -33,29 +33,13 @@
         :showAddPlayerButton="showAddPlayerButton"
         :showRemovePlayerButton="showRemovePlayerButton"
       />
-      <div v-if="showConfirmTeamButton">
-        <b-button class="avalon-btn-lg" @click="questTeamConfirmed">Confirm Team</b-button>
-      </div>
-      <div v-if="showHasVoted && !showTeamVoteResults">
-        Voted:
-        <strong>{{ teamVotes }}</strong>
-      </div>
-      <div v-if="showTeamVoteResults">
-        <strong>Accepted:</strong>
-        {{ teamVotes.accept }}
-        <br>
-        <strong>Rejected:</strong>
-        {{ teamVotes.reject }}
-      </div>
-      <div v-if="showAcceptRejectButtons">
-        <div class="row justify-content-md-center">
-          <b-button class="avalon-btn-lg" @click="questTeamDecision('accept')">Accept Team</b-button>
-          <b-button class="avalon-btn-lg" @click="questTeamDecision('reject')">Reject Team</b-button>
-        </div>
-      </div>
+
       <div v-if="showQuestMsg" class="row justify-content-md-center" style="padding: 1rem;">
         <span class="text-dark">{{ questMsg }}</span>
       </div>
+
+      <QuestVote v-if="showQuestVoteButtons" :showAcceptRejectButtons="showAcceptRejectButtons" />
+
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
@@ -68,6 +52,7 @@ import PlayerCards from "@/components/PlayerCards.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
+import QuestVote from "@/components/QuestVote.vue";
 
 export default {
   name: "Game",
@@ -76,7 +61,8 @@ export default {
     PlayerCards,
     QuestCards,
     VoteTrack,
-    SetupOptions
+    SetupOptions,
+    QuestVote
   },
   data() {
     return {
@@ -89,13 +75,10 @@ export default {
       roomCode: null,
       showStartButton: false,
       gameStarted: false,
+      showQuestVoteButtons: false,
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
-      showConfirmTeamButton: false,
       showAcceptRejectButtons: false,
-      showHasVoted: false,
-      teamVotes: null,
-      showTeamVoteResults: false,
       showSetupOptions: false,
       optionalCharacters: [],
       error: false,
@@ -121,17 +104,6 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
-    },
-    questTeamConfirmed: function() {
-      this.showConfirmTeamButton = false;
-      this.$socket.emit("questTeamConfirmed");
-    },
-    questTeamDecision: function(decision) {
-      this.showAcceptRejectButtons = false;
-      this.$socket.emit("questTeamDecision", {
-        name: this.yourName,
-        decision: decision
-      });
     }
   },
   sockets: {
@@ -147,41 +119,28 @@ export default {
     gameReady: function() {
       this.showStartButton = true;
     },
+    showHostSetupOptions: function() {
+      this.showSetupOptions = true;
+    },
     gameStarted: function() {
       this.gameStarted = true;
       this.error = false;
       this.showSetupOptions = false;
     },
-    ChoosePlayersForQuest: function() {
+    choosePlayersForQuest: function() {
+      this.showQuestVoteButtons = true;
       this.showAddPlayerButton = true;
       this.showRemovePlayerButton = true;
     },
-    updateQuestMsg: function(data) {
-      this.questMsg = data["questMsg"];
-      this.showQuestMsg = true;
-    },
-    confirmQuestTeam: function(bool) {
-      this.showConfirmTeamButton = bool;
-    },
-    acceptOrRejectTeam: function() {
-      this.showQuestMsg = false;
+    acceptOrRejectTeam: function(data) {
+      this.questMsg = data;
       this.showAddPlayerButton = false;
       this.showRemovePlayerButton = false;
       this.showAcceptRejectButtons = true;
     },
-    teamVotes: function(voted) {
-      this.teamVotes = voted.join(", "); //make array look nicer
-      this.showHasVoted = true;
-    },
-    revealTeamVotes: function(votes) {
-      this.teamVotes = votes;
-      this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
-      this.teamVotes.reject = votes.reject.join(", ");
-      this.showHasVoted = false;
-      this.showTeamVoteResults = true;
-    },
-    showHostSetupOptions: function() {
-      this.showSetupOptions = true;
+    updateQuestMsg: function(data) {
+      this.questMsg = data["questMsg"];
+      this.showQuestMsg = true;
     },
     errorMsg: function(msg) {
       this.error = true;
