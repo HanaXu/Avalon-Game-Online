@@ -122,7 +122,7 @@ io.on('connection', socket => {
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].initializeQuests();
     GameList[roomCode].assignIdentities(optionalCharacters);
-    let leaderSocketID = GameList[roomCode].assignLeaderToQuest(1);
+    let leaderSocketID = GameList[roomCode].assignFirstLeader();
 
     //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
@@ -224,13 +224,36 @@ io.on('connection', socket => {
     io.in(roomCode).emit('teamVotes', currentQuest.questTeamDecisions.voted);
 
     //everyone has voted, reveal the votes & move to next step
+    let questMsg = "";
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
       //check if Approve or Reject has majority
+      if(currentQuest.questTeamDecisions.reject.length >= GameList[roomCode].players.length / 2) {
+        //quest Rejected
+
+        //choose next quest leader
+        let leaderSocketID = GameList[roomCode].assignNextLeader();
+        //update player cards
+        emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+
+        questMsg = "Vote Results: quest team was Rejected. New quest leader has been chosen."
+      }
+      else {
+        //quest Approved
+        //team going on quest:
+        let questTeam = currentQuest.playersOnQuest;
+        console.log("Quest Team is " + questTeam);
 
 
+        questMsg = "Vote Results: quest team was Approved. Waiting for quest team to go on quest."
+
+      }
+      //send revealTeamVotes to QuestVote component
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
+
+      //send next steps to Game component
+
     }
-  })
+  });
 
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && GameList[roomCode] != undefined) {
@@ -282,4 +305,26 @@ function emitSanitizedPlayers(roomCode, players) {
       });
     }
   }
+}
+
+function startQuest(leaderSocketID) {
+  let currentQuest = GameList[roomCode].getCurrentQuest();
+  //update quest cards
+  io.in(roomCode).emit('updateQuests', {
+    quests: GameList[roomCode].quests,
+    currentQuestNum: currentQuest.questNum
+  });
+  //update vote track
+  io.in(roomCode).emit('updateVoteTrack', {
+    voteTrack: currentQuest.voteTrack
+  });
+  //update quest message
+  io.in(roomCode).emit('updateQuestMsg', {
+    questMsg:
+    currentQuest.playersNeeded +
+    ' more player(s) needed to go on quest ' +
+    currentQuest.questNum
+  });
+
+  io.to(leaderSocketID).emit('choosePlayersForQuest'); //only let the quest leader choose players
 }

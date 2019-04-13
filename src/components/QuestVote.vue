@@ -17,7 +17,7 @@
     {{ teamVotes.reject }}
   </div>
 
-  <div v-if="showAcceptRejectButtons">
+  <div v-if="localShowAcceptRejectButtons">
     <div class="row justify-content-md-center">
       <b-button class="avalon-btn-lg" @click="questTeamDecision('accept')">Accept Team</b-button>
       <b-button class="avalon-btn-lg" @click="questTeamDecision('reject')">Reject Team</b-button>
@@ -40,14 +40,17 @@ export default {
       showHasVoted: false,
       showTeamVoteResults: false,
       teamVotes: null,
+      localShowAcceptRejectButtons: this.showAcceptRejectButtons
     }
   },
   methods: {
     questTeamConfirmed: function() {
       this.showConfirmTeamButton = false;
       this.$socket.emit("questTeamConfirmed");
+      this.localShowAcceptRejectButtons = true;
     },
     questTeamDecision: function(decision) {
+      this.localShowAcceptRejectButtons = false;
       this.$socket.emit("questTeamDecision", {
         name: this.yourName,
         decision: decision
@@ -64,13 +67,14 @@ export default {
       this.showHasVoted = true;
     },
     revealTeamVotes: function(votes) {
-      this.showAcceptRejectButtons = false;
+      this.localShowAcceptRejectButtons = false;
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
       this.teamVotes.reject = votes.reject.join(", ");
       this.showHasVoted = false;
       this.showTeamVoteResults = true;
-      this.$socket.emit("updateQuestMsg", {"questMsg": "All players have voted on the quest team. Results are:"});
+
+
     }
   }
 };

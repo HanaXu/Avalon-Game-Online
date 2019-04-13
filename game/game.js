@@ -51,6 +51,7 @@ module.exports = class Game {
     this.gameStage = 0;
     this.players = [];
     this.quests = null;
+    this.leaderIndex = 0;
   }
 
   initializeQuests() {
@@ -230,21 +231,43 @@ module.exports = class Game {
   }
 
   // randomly assign a room leader in the player list.
-  assignLeaderToQuest(questNum) {
-    console.log('assignLeader()');
+  assignFirstLeader() {
+    console.log('assignFirstLeader()');
     this.gameStage = 2;
 
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
-        this.quests[questNum].questLeader = this.players[i].name;
-        this.quests[questNum].currentQuest = true;
+        this.leaderIndex = i;
+        this.quests[1].questLeader = this.players[i].name;
+        this.quests[1].currentQuest = true;
         // console.log("Current leader is:");
         // console.log(this.players[i]);
         return this.players[i].socketID; //return quest leader socketID
       }
     }
+  }
+
+  //assign next room leader (goes in order incrementally always)
+  assignNextLeader(questNum) {
+    console.log("assignNextLeader()");
+
+    //reset prev leader Player object
+    this.players[leaderIndex].leader = false;
+
+    //increment leaderIndex (mod by playerLength so it wraps around)
+    this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
+
+    //continue incrementing leaderIndex until we find next non-null player object
+    while(this.players[this.leaderIndex] === null) {
+      this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
+    }
+    //assign new leader to correct Player
+    this.players[leaderIndex].leader = true;
+    this.quests[questNum].questLeader = this.players[leaderIndex].name;
+    this.quests[questNum].currentQuest = true;
+    return this.players[i].socketID;
   }
 
   assignIdentities(optionalCharacters) {
