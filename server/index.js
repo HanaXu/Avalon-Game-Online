@@ -171,7 +171,6 @@ io.on('connection', socket => {
       io.in(roomCode).emit('updateQuestMsg', {
         questMsg: 'Waiting for quest leader to confirm team.'
       });
-      console.log('capacity reached for quest: ' + currentQuest.questNum);
       //show confirm button to quest leader
       socket.emit('confirmQuestTeam', true)
     }
@@ -201,6 +200,28 @@ io.on('connection', socket => {
   socket.on('questTeamConfirmed', function () {
     io.in(roomCode).emit('acceptOrRejectTeam');
   });
+
+  //players vote whether they like the team or not
+  socket.on('questTeamDecision', function (data) {
+    let name = data.name;
+    let decision = data.decision;
+    let currentQuest = GameList[roomCode].getCurrentQuest();
+
+    if (decision === 'accept') {
+      currentQuest.questTeamDecisions.voted.push(name);
+      currentQuest.questTeamDecisions.accept.push(name);
+    } else {
+      currentQuest.questTeamDecisions.voted.push(name);
+      currentQuest.questTeamDecisions.reject.push(name);
+    }
+    console.log('received decision from: ' + name);
+    io.in(roomCode).emit('teamVotes', currentQuest.questTeamDecisions.voted);
+
+    //reveal the votes
+    if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
+      io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
+    }
+  })
 
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0) {

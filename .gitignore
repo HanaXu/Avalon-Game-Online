@@ -21,3 +21,4 @@ yarn-error.log*
 *.sw*
 test/.ipynb_checkpoints
 test/chromedriver.exe
+test/createAndJoinGame.ipynb

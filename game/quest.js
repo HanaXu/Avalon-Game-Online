@@ -4,12 +4,12 @@
  * @const {[][]}
  */
 const PLAYERS_ON_QUEST = [
-   //5 6 7 8 9 10 players
-    [2,2,2,3,3,3],
-    [3,3,3,4,4,4],
-    [2,4,3,4,4,4],
-    [3,3,4,5,5,5],
-    [3,4,4,5,5,5]
+  //5 6 7 8 9 10 players
+  [2, 2, 2, 3, 3, 3],
+  [3, 3, 3, 4, 4, 4],
+  [2, 4, 3, 4, 4, 4],
+  [3, 3, 4, 5, 5, 5],
+  [3, 4, 4, 5, 5, 5]
 ];
 
 module.exports = class Quest {
@@ -28,9 +28,14 @@ module.exports = class Quest {
     this.questNum = questNum;
     this.totalNumPlayers = totalNumPlayers;
     this.playersNeeded = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
-    this.playersOnQuest = {size: 0, players: new Set([])};
+    this.playersOnQuest = { size: 0, players: new Set([]) };
     this.voteTrack = 1;
     this.questLeader = '';
+    this.questTeamDecisions = {
+      'voted': [],
+      'accept': [],
+      'reject': []
+    };
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.success = null;
