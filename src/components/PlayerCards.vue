@@ -55,10 +55,10 @@ export default {
     "showRemovePlayerButton"
   ],
   methods: {
-    addPlayerToQuest: function(playerName) {
+    addPlayerToQuest(playerName) {
       this.$socket.emit("addPlayerToQuest", playerName);
     },
-    removePlayerFromQuest: function(playerName) {
+    removePlayerFromQuest(playerName) {
       this.$socket.emit("removePlayerFromQuest", playerName);
     }
   }

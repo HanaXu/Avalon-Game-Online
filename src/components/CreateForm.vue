@@ -51,12 +51,12 @@ export default {
     }
   },
   sockets: {
-    errorMsg: function(msg) {
+    errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation: function() {
+    passedValidation() {
       this.$router.push({
         name: "game",
         params: { yourName: this.name, roomCode: this.roomCode }

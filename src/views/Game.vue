@@ -103,13 +103,13 @@ export default {
     this.roomCode = this.$route.params.roomCode;
   },
   methods: {
-    clickedSetupOptions: function(data) {
+    clickedSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
       console.log("selectedOptions emitted");
       this.optionalCharacters = data;
       console.log(this.optionalCharacters);
     },
-    startGame: function() {
+    startGame() {
       console.log("starting game in room: " + this.roomCode);
       //emit startGame with roomcode & optional character choices
       this.$socket.emit("startGame", {
@@ -121,41 +121,41 @@ export default {
   },
   sockets: {
     //update overall game
-    updatePlayers: function(data) {
+    updatePlayers(data) {
       this.players = data["players"];
     },
-    updateQuests: function(data) {
+    updateQuests(data) {
       this.quests = data["quests"];
     },
-    updateVoteTrack: function(data) {
+    updateVoteTrack(data) {
       this.currentVoteTrack = data["voteTrack"];
     },
     //when game starts
-    gameReady: function() {
+    gameReady() {
       this.showStartButton = true;
     },
-    showHostSetupOptions: function() {
+    showHostSetupOptions() {
       this.showSetupOptions = true;
     },
-    gameStarted: function() {
+    gameStarted() {
       this.gameStarted = true;
       this.error = false;
       this.showSetupOptions = false;
     },
     //choose player for quest stuff
-    choosePlayersForQuest: function() {
+    choosePlayersForQuest() {
       this.showAddPlayerButton = true;
       this.showRemovePlayerButton = true;
     },
-    updateQuestMsg: function(msg) {
+    updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-    confirmQuestTeam: function(bool) {
+    confirmQuestTeam(bool) {
       this.showConfirmTeamButton = bool;
     },
     //vote on the quest team
-    acceptOrRejectTeam: function(bool) {
+    acceptOrRejectTeam(bool) {
       this.showAddPlayerButton = false;
       this.showRemovePlayerButton = false;
       this.showAcceptRejectButtons = bool;
@@ -165,7 +165,7 @@ export default {
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
     },
-    revealTeamVotes: function(votes) {
+    revealTeamVotes(votes) {
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
       this.teamVotes.reject = votes.reject.join(", ");
@@ -173,10 +173,10 @@ export default {
       this.showTeamVoteResults = true;
     },
     //etc
-    showHostSetupOptions: function() {
+    showHostSetupOptions() {
       this.showSetupOptions = true;
     },
-    errorMsg: function(msg) {
+    errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.showStartButton = true;

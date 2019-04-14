@@ -41,10 +41,10 @@ export default {
     "showAcceptRejectButtons"
   ],
   methods: {
-    questTeamConfirmed: function() {
+    questTeamConfirmed() {
       this.$socket.emit("questTeamConfirmed");
     },
-    questTeamDecision: function(decision) {
+    questTeamDecision(decision) {
       this.$socket.emit("questTeamDecision", {
         name: this.yourName,
         decision: decision

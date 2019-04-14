@@ -184,15 +184,13 @@ module.exports = class Game {
       if (this.players[i].name === name && playersNeededLeft > 0) {
         this.players[i].onQuest = true;
         console.log(name + ' is now on the quest');
-        this.quests[questNum].playersOnQuest.players.add(name);
-        this.quests[questNum].playersOnQuest.size++;
+        this.quests[questNum].playersOnQuest.add(name);
         playersNeededLeft--;
         this.quests[questNum].playersNeededLeft = playersNeededLeft;
         console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
-    // return playersNeededLeft;
   }
 
   removePlayerFromQuest(questNum, name) {
@@ -203,15 +201,13 @@ module.exports = class Game {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
         console.log(name + ' is no longer on the quest');
-        this.quests[questNum].playersOnQuest.players.delete(name);
-        this.quests[questNum].playersOnQuest.size--;
+        this.quests[questNum].playersOnQuest.delete(name);
         playersNeededLeft++;
         this.quests[questNum].playersNeededLeft = playersNeededLeft;
         console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
-    // return playersNeededLeft;
   }
 
   deletePlayer(socketID) {
@@ -322,8 +318,7 @@ module.exports = class Game {
       this.players[i].onQuest = false;
     }
     currentQuest.playersNeededLeft = currentQuest.playersRequired;
-    currentQuest.playersOnQuest.players.clear();
-    currentQuest.playersOnQuest.size = 0;
+    currentQuest.playersOnQuest.clear();
     currentQuest.questTeamDecisions.voted = [];
     currentQuest.questTeamDecisions.accept = [];
     currentQuest.questTeamDecisions.reject = [];

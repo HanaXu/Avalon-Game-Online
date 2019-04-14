@@ -204,6 +204,8 @@ io.on('connection', socket => {
 
     //hide buttons if they already voted
     socket.emit('acceptOrRejectTeam', showButtons = false);
+
+    //show that player has made some kind of vote
     io.in(roomCode).emit('votedOnTeam', currentQuest.questTeamDecisions.voted);
 
     //everyone has voted, reveal the votes & move to next step
@@ -211,10 +213,8 @@ io.on('connection', socket => {
       io.in(roomCode).emit('updateQuestMsg', 'The votes results are: ');
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
 
-      //check if Approve or Reject has majority
+      //quest Rejected
       if (currentQuest.questTeamDecisions.reject.length >= GameList[roomCode].players.length / 2) {
-        //quest Rejected
-
         //choose next quest leader
         let leaderSocketID = GameList[roomCode].assignNextLeader(currentQuest.questNum);
         currentQuest.voteTrack++;
@@ -227,7 +227,6 @@ io.on('connection', socket => {
       else {
         //quest Approved
         questMsg = "Vote Results: Quest team was Approved. Waiting for quest team to go on quest.";
-
         io.in(roomCode).emit('updateQuestMsg', questMsg);
 
         let questTeam = currentQuest.playersOnQuest.players;
