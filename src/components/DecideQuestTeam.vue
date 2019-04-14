@@ -9,6 +9,10 @@
       <strong>{{ teamVotes }}</strong>
     </div>
     <div v-if="showTeamVoteResults">
+      <span
+        v-if="teamVotes.reject.length > teamVotes.accept.length"
+      >Vote Results: Quest team was Rejected. New quest leader has been chosen.</span>
+      <br>
       <strong>Accepted:</strong>
       {{ teamVotes.accept }}
       <br>

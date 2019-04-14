@@ -51,6 +51,7 @@ module.exports = class Game {
     this.gameStage = 0;
     this.players = [];
     this.quests = null;
+    this.leaderIndex = 0;
   }
 
   initializeQuests() {
@@ -62,6 +63,7 @@ module.exports = class Game {
       4: new Quest(4, this.players.length),
       5: new Quest(5, this.players.length)
     };
+    this.quests[1].currentQuest = true;
   }
 
   getCurrentQuest() {
@@ -232,14 +234,15 @@ module.exports = class Game {
   }
 
   // randomly assign a room leader in the player list.
-  assignLeaderToQuest(questNum) {
-    console.log('assignLeader()');
+  assignFirstLeader() {
+    console.log('assignFirstLeader()');
     this.gameStage = 2;
 
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
+        this.leaderIndex = i;
         this.quests[1].questLeader = this.players[i].name;
         this.quests[1].currentQuest = true;
         // console.log("Current leader is:");
@@ -247,6 +250,29 @@ module.exports = class Game {
         return this.players[i].socketID; //return quest leader socketID
       }
     }
+  }
+
+  //assign next room leader (goes in order incrementally always)
+  assignNextLeader(questNum) {
+    console.log("assignNextLeader()");
+
+    //reset prev leader Player object
+    this.players[this.leaderIndex].leader = false;
+    //reset players on quest
+    this.resetPlayersOnQuest(questNum);
+
+    //increment leaderIndex (mod by playerLength so it wraps around)
+    this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
+
+    //continue incrementing leaderIndex until we find next non-null player object
+    while (this.players[this.leaderIndex] === null) {
+      this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
+    }
+    //assign new leader to correct Player
+    this.players[this.leaderIndex].leader = true;
+    this.quests[questNum].questLeader = this.players[this.leaderIndex].name;
+    this.quests[questNum].currentQuest = true;
+    return this.players[this.leaderIndex].socketID;
   }
 
   assignIdentities(optionalCharacters) {
@@ -289,10 +315,26 @@ module.exports = class Game {
     }
   }
 
+  //resets all values relating to players on quest & quest votes to original values
+  resetPlayersOnQuest(questNum) {
+    var currentQuest = this.quests[questNum];
+    for (let i in this.players) {
+      this.players[i].onQuest = false;
+    }
+    currentQuest.playersNeededLeft = currentQuest.playersRequired;
+    currentQuest.playersOnQuest.players.clear();
+    currentQuest.playersOnQuest.size = 0;
+    currentQuest.questTeamDecisions.voted = [];
+    currentQuest.questTeamDecisions.accept = [];
+    currentQuest.questTeamDecisions.reject = [];
+
+  }
+
   //check to make sure chosen optional characters works for number of players
   //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
   validateOptionalCharacters(characters) {
-    console.log(characters)
+    console.log(characters);
+    console.log(this.players.length);
     if (this.players.length <= 6 &&
       ((characters.includes("Mordred") && characters.includes("Oberon")) ||
         characters.includes("Mordred") && characters.includes("Morgana")) ||

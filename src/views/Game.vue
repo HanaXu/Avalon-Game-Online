@@ -84,7 +84,6 @@ export default {
 
       showStartButton: false,
       gameStarted: false,
-
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
       showConfirmTeamButton: false,
@@ -135,6 +134,9 @@ export default {
     gameReady: function() {
       this.showStartButton = true;
     },
+    showHostSetupOptions: function() {
+      this.showSetupOptions = true;
+    },
     gameStarted: function() {
       this.gameStarted = true;
       this.error = false;
@@ -158,9 +160,10 @@ export default {
       this.showRemovePlayerButton = false;
       this.showAcceptRejectButtons = bool;
     },
-    teamVotes: function(voted) {
-      this.teamVotes = voted.join(", "); //make array look nicer
+    votedOnTeam(votes) {
+      this.teamVotes = votes.join(", ");
       this.showHasVoted = true;
+      this.showTeamVoteResults = false;
     },
     revealTeamVotes: function(votes) {
       this.teamVotes = votes;
