@@ -1,6 +1,7 @@
-var Quest = require('../game/Quest');
+import { objectToArray, shuffle } from './utility.mjs';
+import { Quest } from './quest.mjs';
 
-const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
+export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
 // defines what type of characters for size of game
 // key: number of players
@@ -44,7 +45,7 @@ const BaseCharacters = {
   }
 };
 
-module.exports = class Game {
+export class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.gameIsStarted = false;
@@ -74,90 +75,6 @@ module.exports = class Game {
     }
   }
 
-  // hide all player team and character info but yourself
-  sanitizeForGoodTeam(yourSocketID) {
-    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
-
-    for (const i in clonedPlayers) {
-      if (clonedPlayers[i].socketID === yourSocketID) {
-        // dont hide your own info
-        continue;
-      } else {
-        // hide everyone else's info
-        clonedPlayers[i].character = 'hidden';
-        clonedPlayers[i].team = 'hidden';
-      }
-    }
-    return clonedPlayers;
-  }
-
-  sanitizeForPercival(yourSocketID) {
-    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
-
-    for (const i in clonedPlayers) {
-      if (clonedPlayers[i].socketID === yourSocketID) {
-        // dont hide your own info
-        continue;
-      } else if (
-        clonedPlayers[i].character == 'Merlin' ||
-        clonedPlayers[i].character == 'Morgana'
-      ) {
-        //Merlin & Morgana both appear to be Merlin
-        clonedPlayers[i].character = 'Merlin';
-        clonedPlayers[i].team = 'Good';
-      } else {
-        // hide everyone else's info
-        clonedPlayers[i].character = 'hidden';
-        clonedPlayers[i].team = 'hidden';
-      }
-    }
-    return clonedPlayers;
-  }
-
-  // hide identities of good team & Oberon
-  sanitizeForEvilTeam(yourSocketID) {
-    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
-    for (const i in clonedPlayers) {
-      if (clonedPlayers[i].socketID === yourSocketID) {
-        // dont hide your own info
-        continue;
-      } else if (
-        GoodTeam.has(clonedPlayers[i].character) ||
-        clonedPlayers[i].character == 'Oberon'
-      ) {
-        // hide good team's info (& Oberon)
-        clonedPlayers[i].character = 'hidden';
-        clonedPlayers[i].team = 'hidden';
-      } else {
-        //just hide character of your teammates
-        clonedPlayers[i].character = 'hidden';
-      }
-    }
-    return clonedPlayers;
-  }
-
-  // hide identities of good team & Morgana
-  sanitizeForMerlin(yourSocketID) {
-    const clonedPlayers = JSON.parse(JSON.stringify(this.players));
-    for (const i in clonedPlayers) {
-      if (clonedPlayers[i].socketID === yourSocketID) {
-        // dont hide your own info
-        continue;
-      } else if (
-        GoodTeam.has(clonedPlayers[i].character) ||
-        clonedPlayers[i].character == 'Mordred'
-      ) {
-        // hide good team's info (& Oberon)
-        clonedPlayers[i].character = 'hidden';
-        clonedPlayers[i].team = 'hidden';
-      } else {
-        //just hide character of your teammates
-        clonedPlayers[i].character = 'hidden';
-      }
-    }
-    return clonedPlayers;
-  }
-
   // getter for PlayerIdentities
   static get BaseCharacters() {
     return BaseCharacters;
@@ -177,38 +94,28 @@ module.exports = class Game {
   }
 
   addPlayerToQuest(questNum, name) {
-    let playersNeededLeft =
-      this.quests[questNum].playersRequired -
-      this.quests[questNum].playersOnQuest.size;
-
     for (let i in this.players) {
-      if (this.players[i].name === name && playersNeededLeft > 0) {
+      if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0) {
         this.players[i].onQuest = true;
         this.quests[questNum].playersOnQuest.add(name);
-        playersNeededLeft--;
+        this.quests[questNum].playersNeededLeft--;
 
         console.log(`${name} is now on the quest`);
-        this.quests[questNum].playersNeededLeft = playersNeededLeft;
-        console.log(`players needed left: ${playersNeededLeft}`);
+        console.log(`players needed left: ${this.quests[questNum].playersNeededLeft}`);
         break;
       }
     }
   }
 
   removePlayerFromQuest(questNum, name) {
-    let playersNeededLeft =
-      this.quests[questNum].playersRequired -
-      this.quests[questNum].playersOnQuest.size;
-
     for (let i in this.players) {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
         this.quests[questNum].playersOnQuest.delete(name);
-        playersNeededLeft++;
+        this.quests[questNum].playersNeededLeft++;
 
         console.log(`${name} is no longer on the quest`);
-        this.quests[questNum].playersNeededLeft = playersNeededLeft;
-        console.log(`players needed left: ${playersNeededLeft}`);
+        console.log(`players needed left: ${this.quests[questNum].playersNeededLeft}`);
         break;
       }
     }
@@ -298,11 +205,11 @@ module.exports = class Game {
           newTeamObj['Morgana'] = 1;
         }
       }
-      shuffledIdentities = this.shuffle(this.objectToArray(newTeamObj));
+      shuffledIdentities = shuffle(objectToArray(newTeamObj));
       console.log(shuffledIdentities)
     } else {
       let teamObj = Game.BaseCharacters[this.players.length];
-      shuffledIdentities = this.shuffle(this.objectToArray(teamObj));
+      shuffledIdentities = shuffle(objectToArray(teamObj));
       console.log(shuffledIdentities)
     }
 
@@ -330,34 +237,6 @@ module.exports = class Game {
 
   }
 
-  //check to make sure chosen optional characters works for number of players
-  //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
-  validateOptionalCharacters(characters) {
-    console.log(characters);
-    console.log(this.players.length);
-    if (this.players.length <= 6 &&
-      ((characters.includes("Mordred") && characters.includes("Oberon")) ||
-        characters.includes("Mordred") && characters.includes("Morgana")) ||
-      characters.includes("Oberon") && characters.includes("Morgana")) {
-      return `Error: game with 5 or 6 players can only include 1 of Mordred, 
-              Oberon, or Morgana. Please select only one then click Start Game again.`;
-    }
-    else if (
-      this.players.length > 6 &&
-      this.players.length < 10 &&
-      characters.includes("Mordred") &&
-      characters.includes("Oberon") &&
-      characters.includes("Morgana")
-    ) {
-      return `Error: game with 7, 8, or 9 players can only include 2 of Mordred, 
-              Oberon, or Morgana. Please de-select one then click Start Game again.`;
-    } else {
-      return ""
-    }
-  }
-
-
-
   //end the game in favor of evil
   //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin
   endGameEvilWins(msg) {
@@ -365,36 +244,4 @@ module.exports = class Game {
     console.log("Evil Wins: " + msg);
   }
 
-
-
-
-  // Fisher-Yates shuffle
-  shuffle(array) {
-    let currentIndex = array.length;
-    let temporaryValue;
-    let randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex !== 0) {
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex -= 1;
-      // And swap it with the current element.
-      temporaryValue = array[currentIndex];
-      array[currentIndex] = array[randomIndex];
-      array[randomIndex] = temporaryValue;
-    }
-    return array;
-  }
-
-  //convert the object to array for shuffling
-  objectToArray(team) {
-    let arr = []
-    for (let character in team) {
-      for (var i = 0; i < team[character]; i++) {
-        arr.push(character)
-      }
-    }
-    return arr;
-  }
 };

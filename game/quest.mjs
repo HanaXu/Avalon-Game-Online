@@ -12,7 +12,7 @@ const PLAYERS_ON_QUEST = [
   [3, 4, 4, 5, 5, 5]
 ];
 
-module.exports = class Quest {
+export class Quest {
   /**
    * Quest objects have:
    * @property {number} questNum - which quest players are on from 1 to 5
