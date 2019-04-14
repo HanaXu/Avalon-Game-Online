@@ -176,7 +176,7 @@ module.exports = class Game {
 
   addPlayerToQuest(questNum, name) {
     let playersNeededLeft =
-      this.quests[questNum].playersNeeded -
+      this.quests[questNum].playersRequired -
       this.quests[questNum].playersOnQuest.size;
     for (let i in this.players) {
       if (this.players[i].name === name && playersNeededLeft > 0) {
@@ -185,16 +185,17 @@ module.exports = class Game {
         this.quests[questNum].playersOnQuest.players.add(name);
         this.quests[questNum].playersOnQuest.size++;
         playersNeededLeft--;
+        this.quests[questNum].playersNeededLeft = playersNeededLeft;
         console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
-    return playersNeededLeft;
+    // return playersNeededLeft;
   }
 
   removePlayerFromQuest(questNum, name) {
     let playersNeededLeft =
-      this.quests[questNum].playersNeeded -
+      this.quests[questNum].playersRequired -
       this.quests[questNum].playersOnQuest.size;
     for (let i in this.players) {
       if (this.players[i].name === name) {
@@ -203,11 +204,12 @@ module.exports = class Game {
         this.quests[questNum].playersOnQuest.players.delete(name);
         this.quests[questNum].playersOnQuest.size--;
         playersNeededLeft++;
+        this.quests[questNum].playersNeededLeft = playersNeededLeft;
         console.log('players needed left: ' + playersNeededLeft);
         break;
       }
     }
-    return playersNeededLeft;
+    // return playersNeededLeft;
   }
 
   deletePlayer(socketID) {

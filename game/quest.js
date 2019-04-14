@@ -27,8 +27,9 @@ module.exports = class Quest {
   constructor(questNum, totalNumPlayers) {
     this.questNum = questNum;
     this.totalNumPlayers = totalNumPlayers;
-    this.playersNeeded = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
+    this.playersRequired = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
     this.playersOnQuest = { size: 0, players: new Set([]) };
+    this.playersNeededLeft = this.playersRequired;
     this.voteTrack = 1;
     this.questLeader = '';
     this.questTeamDecisions = {
