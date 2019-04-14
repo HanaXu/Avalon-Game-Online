@@ -133,8 +133,11 @@ io.on('connection', socket => {
 
     //update player cards
     emitSanitizedPlayers(GameList[roomCode].players);
+
     io.in(roomCode).emit('gameStarted');
-    startQuest(roomCode);
+
+    //quest leader chooses players to go on quest
+    chooseQuestTeam(roomCode);
   });
 
   socket.on('addPlayerToQuest', function (name) {
@@ -229,40 +232,11 @@ io.on('connection', socket => {
 
       //quest Rejected
       if (currentQuest.questTeamDecisions.reject.length >= GameList[roomCode].players.length / 2) {
-        currentQuest.voteTrack++;
-
-        //check if voteTrack has exceeded 5 (game over)
-        if (currentQuest.voteTrack > 5) {
-          var msg = "Quest " + currentQuest.questNum + " had 5 failed team votes.";
-          GameList[roomCode].endGameEvilWins(msg);
-
-          io.in(roomCode).emit('gameOver', msg);
-
-        }
-        else {
-          //choose next quest leader
-          GameList[roomCode].assignNextLeader(currentQuest.questNum);
-
-
-          //update player cards
-          emitSanitizedPlayers(GameList[roomCode].players);
-
-          startQuest(roomCode);
-        }
+        questTeamRejectedStuff(roomCode, currentQuest);
       }
+      //quest accepted
       else {
-        //set to empty (DecideQuestTeam shows approval message)
-        io.in(roomCode).emit('updateQuestMsg', '');
-
-        let questTeam = currentQuest.playersOnQuest.players;
-
-        console.log("Quest team is: ");
-        for (let player in questTeam) {
-          let onGoodTeam = (player.team) == "Good";
-          io.to(player.socketID).emit("goOnQuest", onGoodTeam);
-          console.log(player);
-        }
-
+        questTeamAcceptedStuff(roomCode, currentQuest);
       }
     }
   });
@@ -328,7 +302,7 @@ function emitLeaderIsChoosingTeam(roomCode, currentQuest) {
   );
 }
 
-function startQuest(roomCode) {
+function chooseQuestTeam(roomCode) {
   let currentQuest = GameList[roomCode].getCurrentQuest();
   //update quest cards
   io.in(roomCode).emit('updateQuests', {
@@ -344,4 +318,40 @@ function startQuest(roomCode) {
 
   //only let the quest leader choose players
   io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', true);
+}
+
+function questTeamAcceptedStuff(roomCode, currentQuest) {
+  //set to empty (DecideQuestTeam shows approval message)
+  io.in(roomCode).emit('updateQuestMsg', '');
+
+  let questTeam = currentQuest.playersOnQuest.players;
+
+  console.log("Quest team is: ");
+  for (let player in questTeam) {
+    let onGoodTeam = (player.team) == "Good";
+    io.to(player.socketID).emit("goOnQuest", onGoodTeam);
+    console.log(player);
+  }
+}
+
+function questTeamRejectedStuff(roomCode, currentQuest) {
+  currentQuest.voteTrack++;
+
+  //check if voteTrack has exceeded 5 (game over)
+  if (currentQuest.voteTrack > 5) {
+    var msg = "Quest " + currentQuest.questNum + " had 5 failed team votes.";
+
+    GameList[roomCode].endGameEvilWins(msg);
+    io.in(roomCode).emit('gameOver', msg);
+  }
+  else {
+    //choose next quest leader
+    GameList[roomCode].assignNextLeader(currentQuest.questNum);
+
+    //update player cards
+    emitSanitizedPlayers(GameList[roomCode].players);
+
+    //quest leader chooses players to go on quest
+    chooseQuestTeam(roomCode);
+  }
 }

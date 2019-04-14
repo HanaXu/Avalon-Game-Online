@@ -45,6 +45,15 @@ export class Quest {
     this.success = null;
   }
 
+  //resets all values relating to players on quest & quest votes to original values
+  resetQuest() {
+    this.playersNeededLeft = this.playersRequired;
+    this.playersOnQuest.clear();
+    this.questTeamDecisions.voted = [];
+    this.questTeamDecisions.accept = [];
+    this.questTeamDecisions.reject = [];
+  }
+
   // getter for PlayerIdentities
   static get PLAYERS_ON_QUEST() {
     return PLAYERS_ON_QUEST;

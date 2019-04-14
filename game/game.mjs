@@ -154,8 +154,6 @@ export class Game {
         this.quests[1].leader.socketID = this.players[i].socketID;
         this.quests[1].currentQuest = true;
         break;
-        // console.log("Current leader is:");
-        // console.log(this.players[i]);
       }
     }
   }
@@ -225,16 +223,12 @@ export class Game {
 
   //resets all values relating to players on quest & quest votes to original values
   resetPlayersOnQuest(questNum) {
-    var currentQuest = this.quests[questNum];
     for (let i in this.players) {
       this.players[i].onQuest = false;
     }
-    currentQuest.playersNeededLeft = currentQuest.playersRequired;
-    currentQuest.playersOnQuest.clear();
-    currentQuest.questTeamDecisions.voted = [];
-    currentQuest.questTeamDecisions.accept = [];
-    currentQuest.questTeamDecisions.reject = [];
 
+    let currentQuest = this.quests[questNum];
+    currentQuest.resetQuest();
   }
 
   //end the game in favor of evil

@@ -17,7 +17,6 @@ export class Player {
     this.name = name;
     this.roomCode = roomCode;
     this.role = role;
-    this.turn = false;
     this.team = 'undecided';
     this.character = 'undecided';
     this.leader = false;

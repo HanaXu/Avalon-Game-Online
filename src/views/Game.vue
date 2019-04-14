@@ -7,8 +7,7 @@
       </h4>
     </div>
     <div class="container game">
-      <EndGameOverlay v-if="gameOver" />
-
+      <EndGameOverlay v-if="gameOver"/>
 
       <b-row>
         <b-col cols="10">
