@@ -96,12 +96,11 @@ export default {
   methods: {
     clickedSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
-      console.log("selectedOptions emitted");
       this.optionalCharacters = data;
-      console.log(this.optionalCharacters);
+      console.log(`optional characters: ${this.optionalCharacters}`);
     },
     startGame() {
-      console.log("starting game in room: " + this.roomCode);
+      console.log(`starting game in room: ${this.roomCode}`);
       //emit startGame with roomcode & optional character choices
       this.$socket.emit("startGame", {
         roomCode: this.roomCode,

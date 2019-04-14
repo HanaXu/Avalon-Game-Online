@@ -21,8 +21,8 @@ io.on('connection', socket => {
 
     //validation
     if (name.length < 1 || name.length > 20) {
-      console.log('name does not meet length requirements: ' + name);
-      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
+      console.log(`Name does not meet length requirements: ${name}`);
+      socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
     }
 
@@ -65,8 +65,8 @@ io.on('connection', socket => {
 
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
-      console.log('error joining room. room does not exist: ' + roomCode);
-      socket.emit('errorMsg', "Error: Room code '" + roomCode + "' does not exist.");
+      console.log(`error joining room. room does not exist: ${roomCode}`);
+      socket.emit('errorMsg', `Error: Room code '${roomCode}' does not exist.`);
       return;
     }
     else if (GameList[roomCode].gameIsStarted) {
@@ -75,13 +75,13 @@ io.on('connection', socket => {
       return;
     }
     else if (name.length < 1 || name.length > 20) {
-      console.log('name does not meet length requirements: ' + name);
-      socket.emit('errorMsg', 'Error: Name must be between 1-20 characters: ' + name);
+      console.log(`Name does not meet length requirements: ${name}`);
+      socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
     }
     else if (GameList[roomCode].hasPlayerWithName(name)) {
-      console.log('error someone already has name: ' + name);
-      socket.emit('errorMsg', "Error: Name '" + name + "' is already taken.");
+      console.log(`Error, someone already has the name: ${name}`);
+      socket.emit('errorMsg', `Error: Name '${name}' is already taken.`);
       return;
     }
 
@@ -148,7 +148,7 @@ io.on('connection', socket => {
       emitLeaderIsChoosingTeam(roomCode, currentQuest);
     } else {
       io.in(roomCode).emit('updateQuestMsg',
-        'Waiting for ' + currentQuest.leader.name + ' to confirm team.'
+        `Waiting for ${currentQuest.leader.name} to confirm team.`
       );
       //show confirm button to quest leader
       socket.emit('confirmQuestTeam', showConfirmButton = true);
@@ -204,8 +204,9 @@ io.on('connection', socket => {
     } else {
       currentQuest.questTeamDecisions.reject.push(name);
     }
+
     currentQuest.questTeamDecisions.voted.push(name);
-    console.log('received decision from: ' + name);
+    console.log(`received decision from: ${name}`);
 
     io.in(roomCode).emit('updateQuestMsg', 'Waiting for all players to Accept or Reject team.');
 
@@ -301,9 +302,9 @@ function emitSanitizedPlayers(roomCode, players) {
 
 function emitLeaderIsChoosingTeam(roomCode, currentQuest) {
   io.in(roomCode).emit('updateQuestMsg',
-    currentQuest.leader.name + ' is choosing ' +
-    currentQuest.playersNeededLeft + ' more players to go on quest ' +
-    currentQuest.questNum
+    `${currentQuest.leader.name} is choosing 
+    ${currentQuest.playersNeededLeft} more players to go on quest 
+    ${currentQuest.questNum}`
   );
 }
 

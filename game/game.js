@@ -55,7 +55,7 @@ module.exports = class Game {
   }
 
   initializeQuests() {
-    console.log('initializing quests. total players: ' + this.players.length);
+    console.log(`initializing quests. total players: ${this.players.length}`);
     this.quests = {
       1: new Quest(1, this.players.length),
       2: new Quest(2, this.players.length),
@@ -180,14 +180,16 @@ module.exports = class Game {
     let playersNeededLeft =
       this.quests[questNum].playersRequired -
       this.quests[questNum].playersOnQuest.size;
+
     for (let i in this.players) {
       if (this.players[i].name === name && playersNeededLeft > 0) {
         this.players[i].onQuest = true;
-        console.log(name + ' is now on the quest');
         this.quests[questNum].playersOnQuest.add(name);
         playersNeededLeft--;
+
+        console.log(`${name} is now on the quest`);
         this.quests[questNum].playersNeededLeft = playersNeededLeft;
-        console.log('players needed left: ' + playersNeededLeft);
+        console.log(`players needed left: ${playersNeededLeft}`);
         break;
       }
     }
@@ -197,14 +199,16 @@ module.exports = class Game {
     let playersNeededLeft =
       this.quests[questNum].playersRequired -
       this.quests[questNum].playersOnQuest.size;
+
     for (let i in this.players) {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
-        console.log(name + ' is no longer on the quest');
         this.quests[questNum].playersOnQuest.delete(name);
         playersNeededLeft++;
+
+        console.log(`${name} is no longer on the quest`);
         this.quests[questNum].playersNeededLeft = playersNeededLeft;
-        console.log('players needed left: ' + playersNeededLeft);
+        console.log(`players needed left: ${playersNeededLeft}`);
         break;
       }
     }
@@ -213,7 +217,7 @@ module.exports = class Game {
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
-        console.log('removing player from room: ' + this.roomCode);
+        console.log(`removing player from room: ${this.roomCode}`);
         this.players.splice(i, 1); //delete 1 player element at index i
         break;
       }
@@ -236,7 +240,6 @@ module.exports = class Game {
 
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
-      console.log('assigning first leader: ' + this.players[i].name)
       if (this.players[i] != null) {
         this.players[i].leader = true;
         this.leaderIndex = i;
@@ -336,7 +339,8 @@ module.exports = class Game {
       ((characters.includes("Mordred") && characters.includes("Oberon")) ||
         characters.includes("Mordred") && characters.includes("Morgana")) ||
       characters.includes("Oberon") && characters.includes("Morgana")) {
-      return "Error: game with 5 or 6 players can only include 1 of Mordred, Oberon, or Morgana. Please select only one then click Start Game again.";
+      return `Error: game with 5 or 6 players can only include 1 of Mordred, 
+              Oberon, or Morgana. Please select only one then click Start Game again.`;
     }
     else if (
       this.players.length > 6 &&
@@ -345,7 +349,8 @@ module.exports = class Game {
       characters.includes("Oberon") &&
       characters.includes("Morgana")
     ) {
-      return "Error: game with 7, 8, or 9 players can only include 2 of Mordred, Oberon, or Morgana. Please de-select one then click Start Game again.";
+      return `Error: game with 7, 8, or 9 players can only include 2 of Mordred, 
+              Oberon, or Morgana. Please de-select one then click Start Game again.`;
     } else {
       return ""
     }
