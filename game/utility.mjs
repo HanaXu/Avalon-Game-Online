@@ -2,80 +2,88 @@ import { GoodTeam } from './game.mjs';
 
 // hide all player team and character info but yourself
 export function sanitizeForGoodTeam(yourSocketID, players) {
-    for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(players));
+
+    for (const i in clonedPlayers) {
+        if (clonedPlayers[i].socketID === yourSocketID) {
             // dont hide your own info
             continue;
         } else {
             // hide everyone else's info
-            players[i].character = 'hidden';
-            players[i].team = 'hidden';
+            clonedPlayers[i].character = 'hidden';
+            clonedPlayers[i].team = 'hidden';
         }
     }
-    return players;
+    return clonedPlayers;
 }
 
 export function sanitizeForPercival(yourSocketID, players) {
-    for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(players));
+
+    for (const i in clonedPlayers) {
+        if (clonedPlayers[i].socketID === yourSocketID) {
             // dont hide your own info
             continue;
         } else if (
-            players[i].character == 'Merlin' ||
-            players[i].character == 'Morgana'
+            clonedPlayers[i].character == 'Merlin' ||
+            clonedPlayers[i].character == 'Morgana'
         ) {
             //Merlin & Morgana both appear to be Merlin
-            players[i].character = 'Merlin';
-            players[i].team = 'Good';
+            clonedPlayers[i].character = 'Merlin';
+            clonedPlayers[i].team = 'Good';
         } else {
             // hide everyone else's info
-            players[i].character = 'hidden';
-            players[i].team = 'hidden';
+            clonedPlayers[i].character = 'hidden';
+            clonedPlayers[i].team = 'hidden';
         }
     }
-    return players;
+    return clonedPlayers;
 }
 
 // hide identities of good team & Oberon
 export function sanitizeForEvilTeam(yourSocketID, players) {
-    for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(players));
+
+    for (const i in clonedPlayers) {
+        if (clonedPlayers[i].socketID === yourSocketID) {
             // dont hide your own info
             continue;
         } else if (
-            GoodTeam.has(players[i].character) ||
-            players[i].character == 'Oberon'
+            GoodTeam.has(clonedPlayers[i].character) ||
+            clonedPlayers[i].character == 'Oberon'
         ) {
             // hide good team's info (& Oberon)
-            players[i].character = 'hidden';
-            players[i].team = 'hidden';
+            clonedPlayers[i].character = 'hidden';
+            clonedPlayers[i].team = 'hidden';
         } else {
             //just hide character of your teammates
-            players[i].character = 'hidden';
+            clonedPlayers[i].character = 'hidden';
         }
     }
-    return players;
+    return clonedPlayers;
 }
 
 // hide identities of good team & Morgana
 export function sanitizeForMerlin(yourSocketID, players) {
-    for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
+    const clonedPlayers = JSON.parse(JSON.stringify(players));
+
+    for (const i in clonedPlayers) {
+        if (clonedPlayers[i].socketID === yourSocketID) {
             // dont hide your own info
             continue;
         } else if (
-            GoodTeam.has(players[i].character) ||
-            players[i].character == 'Mordred'
+            GoodTeam.has(clonedPlayers[i].character) ||
+            clonedPlayers[i].character == 'Mordred'
         ) {
             // hide good team's info (& Oberon)
-            players[i].character = 'hidden';
-            players[i].team = 'hidden';
+            clonedPlayers[i].character = 'hidden';
+            clonedPlayers[i].team = 'hidden';
         } else {
             //just hide character of your teammates
-            players[i].character = 'hidden';
+            clonedPlayers[i].character = 'hidden';
         }
     }
-    return players;
+    return clonedPlayers;
 }
 
 //check to make sure chosen optional characters works for number of players
