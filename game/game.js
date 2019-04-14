@@ -256,7 +256,7 @@ module.exports = class Game {
     //reset prev leader Player object
     this.players[this.leaderIndex].leader = false;
     //reset players on quest
-    this.resetPlayersOnQuest();
+    this.resetPlayersOnQuest(questNum);
 
     //increment leaderIndex (mod by playerLength so it wraps around)
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
@@ -313,11 +313,18 @@ module.exports = class Game {
     }
   }
 
-  //sets onQuest to false for every player
-  resetPlayersOnQuest() {
+  //resets all values relating to players on quest & quest votes to original values
+  resetPlayersOnQuest(questNum) {
+    var currentQuest = this.quests[questNum];
     for(let i in this.players) {
       this.players[i].onQuest = false;
     }
+    currentQuest.playersOnQuest.players.clear();
+    currentQuest.playersOnQuest.size = 0;
+    currentQuest.questTeamDecisions.voted = [];
+    currentQuest.questTeamDecisions.accept = [];
+    currentQuest.questTeamDecisions.reject = [];
+
   }
 
   //check to make sure chosen optional characters works for number of players

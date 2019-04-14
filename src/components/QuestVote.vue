@@ -19,8 +19,16 @@
 
   <div v-if="localShowAcceptRejectButtons">
     <div class="row justify-content-md-center">
-      <b-button class="avalon-btn-lg" @click="questTeamDecision('accept')">Accept Team</b-button>
+      <b-button class="avalon-btn-lg" @click="questTeamDecision('accept')" :disabled="onGoodTeam">Accept Team</b-button>
       <b-button class="avalon-btn-lg" @click="questTeamDecision('reject')">Reject Team</b-button>
+    </div>
+  </div>
+
+
+  <div v-if="showSucceedFailButtons">
+    <div class="row justify-content-md-center">
+      <b-button class="avalon-btn-lg" @click="questDecision('succeed')">Succeed Quest</b-button>
+      <b-button class="avalon-btn-lg" @click="questDecision('fail')">Fail Quest</b-button>
     </div>
   </div>
 
@@ -34,13 +42,20 @@ export default {
     "showAcceptRejectButtons",
     "yourName"
   ],
+  watch: {
+    showAcceptRejectButtons: function(value) {
+      localShowAcceptRejectButtons = value;
+    }
+  },
   data: function() {
     return {
       showConfirmTeamButton: false,
       showHasVoted: false,
       showTeamVoteResults: false,
       teamVotes: null,
-      localShowAcceptRejectButtons: this.showAcceptRejectButtons
+      localShowAcceptRejectButtons: this.showAcceptRejectButtons,
+      showSucceedFailButtons: false,
+      onGoodTeam: false
     }
   },
   methods: {
@@ -51,12 +66,16 @@ export default {
     },
     questTeamDecision: function(decision) {
       this.localShowAcceptRejectButtons = false;
+      //this.$socket.emit("toggleAcceptRejectButtons", true);
+
       this.$socket.emit("questTeamDecision", {
         name: this.yourName,
         decision: decision
       });
+    },
+    questDecision: function(decision) {
+      this.showSucceedFailButtons = false;
     }
-
   },
   sockets: {
     confirmQuestTeam: function(bool) {
@@ -64,6 +83,7 @@ export default {
     },
     teamVotes: function(voted) {
       this.teamVotes = voted.join(", "); //make array look nicer
+      this.showTeamVoteResults = false;
       this.showHasVoted = true;
     },
     revealTeamVotes: function(votes) {
@@ -73,8 +93,14 @@ export default {
       this.teamVotes.reject = votes.reject.join(", ");
       this.showHasVoted = false;
       this.showTeamVoteResults = true;
-
-
+    },
+    hideTeamVotes: function() {
+      this.showHasVoted = false;
+      this.showTeamVoteResults = false;
+    },
+    goOnQuest: function(onGoodTeam) {
+      this.showSucceedFailButtons = true;
+      this.onGoodTeam = data;
     }
   }
 };

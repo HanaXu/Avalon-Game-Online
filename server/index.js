@@ -163,6 +163,9 @@ io.on('connection', socket => {
     //update player cards
     emitSanitizedPlayers(roomCode, GameList[roomCode].players);
 
+    //get rid of results from last vote if it's still showing
+    io.in(roomCode).emit('hideTeamVotes');
+
     //update quest message
     if (playersNeededLeft > 0) {
       io.in(roomCode).emit('updateQuestMsg', {
@@ -171,7 +174,8 @@ io.on('connection', socket => {
           ' is choosing ' +
           playersNeededLeft +
           ' more player(s) to go on quest ' +
-          currentQuest.questNum
+          currentQuest.questNum+
+          '.'
       });
     } else {
       io.in(roomCode).emit('updateQuestMsg', {
@@ -216,6 +220,11 @@ io.on('connection', socket => {
     let decision = data.decision;
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
+    //make sure same player can't vote multiple times
+    if(currentQuest.questTeamDecisions.voted.includes(name)) {
+      return;
+    }
+
     if (decision === 'accept') {
       currentQuest.questTeamDecisions.voted.push(name);
       currentQuest.questTeamDecisions.accept.push(name);
@@ -241,18 +250,23 @@ io.on('connection', socket => {
         currentQuest.voteTrack++;
 
         questMsg = "Vote Results: quest team was Rejected. Vote results are below. New quest leader has been chosen.";
-
         startQuest(leaderSocketID, roomCode, questMsg);
       }
       else {
         //quest Approved
-        //team going on quest:
-        let questTeam = currentQuest.playersOnQuest;
-        console.log("Quest Team is " + questTeam);
-
-
         questMsg = "Vote Results: quest team was Approved. Waiting for quest team to go on quest.";
+
         io.in(roomCode).emit('updateQuestMsg', questMsg);
+
+        let questTeam = currentQuest.playersOnQuest.players;
+
+        console.log("Quest team is: ");
+        for(let player in questTeam) {
+          let onGoodTeam = (player.team) == "Good";
+          io.to(player.socketID).emit("goOnQuest", onGoodTeam);
+          console.log(player);
+        }
+
       }
     }
   });
@@ -327,11 +341,14 @@ function startQuest(leaderSocketID, roomCode, msg) {
   //update quest message
   io.in(roomCode).emit('updateQuestMsg', {
     questMsg:
-    msg +
-    "\n" +
-    currentQuest.playersNeeded +
-    ' more player(s) needed to go on quest ' +
-    currentQuest.questNum
+      msg +
+      " <br> " +
+      currentQuest.questLeader +
+      ' is choosing ' +
+      currentQuest.playersNeeded +
+      ' player(s) to go on quest ' +
+      currentQuest.questNum +
+      '.'
   });
 
   io.to(leaderSocketID).emit('choosePlayersForQuest'); //only let the quest leader choose players
