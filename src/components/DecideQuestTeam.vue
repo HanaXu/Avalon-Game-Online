@@ -40,15 +40,17 @@
 
 <script>
 export default {
-  name: "QuestTeamVotes",
-  props: [
-    "showConfirmTeamButton",
-    "yourName",
-    "showHasVoted",
-    "showTeamVoteResults",
-    "teamVotes",
-    "showAcceptRejectButtons"
-  ],
+  name: "DecideQuestTeam",
+  data() {
+    return {
+      showConfirmTeamButton: false,
+      showAcceptRejectButtons: false,
+      teamVotes: null,
+      showHasVoted: false,
+      showTeamVoteResults: false
+    };
+  },
+  props: ["yourName"],
   methods: {
     questTeamConfirmed() {
       this.$socket.emit("questTeamConfirmed");
@@ -58,6 +60,26 @@ export default {
         name: this.yourName,
         decision: decision
       });
+    }
+  },
+  sockets: {
+    confirmQuestTeam(bool) {
+      this.showConfirmTeamButton = bool;
+    },
+    acceptOrRejectTeam(bool) {
+      this.showAcceptRejectButtons = bool;
+    },
+    votedOnTeam(votes) {
+      this.teamVotes = votes.join(", ");
+      this.showHasVoted = true;
+      this.showTeamVoteResults = false;
+    },
+    revealTeamVotes(votes) {
+      this.teamVotes = votes;
+      this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
+      this.teamVotes.reject = votes.reject.join(", ");
+      this.showHasVoted = false;
+      this.showTeamVoteResults = true;
     }
   }
 };

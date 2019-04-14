@@ -236,14 +236,16 @@ module.exports = class Game {
 
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
+      console.log('assigning first leader: ' + this.players[i].name)
       if (this.players[i] != null) {
         this.players[i].leader = true;
         this.leaderIndex = i;
-        this.quests[1].questLeader = this.players[i].name;
+        this.quests[1].leader.name = this.players[i].name;
+        this.quests[1].leader.socketID = this.players[i].socketID;
         this.quests[1].currentQuest = true;
+        break;
         // console.log("Current leader is:");
         // console.log(this.players[i]);
-        return this.players[i].socketID; //return quest leader socketID
       }
     }
   }
@@ -266,9 +268,9 @@ module.exports = class Game {
     }
     //assign new leader to correct Player
     this.players[this.leaderIndex].leader = true;
-    this.quests[questNum].questLeader = this.players[this.leaderIndex].name;
+    this.quests[questNum].leader.name = this.players[this.leaderIndex].name;
+    this.quests[questNum].leader.socketID = this.players[this.leaderIndex].socketID;
     this.quests[questNum].currentQuest = true;
-    return this.players[this.leaderIndex].socketID;
   }
 
   assignIdentities(optionalCharacters) {

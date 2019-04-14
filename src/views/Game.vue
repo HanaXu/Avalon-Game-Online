@@ -33,18 +33,15 @@
         :showAddPlayerButton="showAddPlayerButton"
         :showRemovePlayerButton="showRemovePlayerButton"
       />
-      <div v-if="showQuestMsg" class="row justify-content-md-center" style="padding: 1rem;">
+      <div
+        v-if="showQuestMsg && questMsg.length > 0"
+        class="row justify-content-md-center"
+        style="padding: 1rem;"
+      >
         <span class="text-dark">{{ questMsg }}</span>
       </div>
 
-      <DecideQuestTeam
-        :showConfirmTeamButton="showConfirmTeamButton"
-        :yourName="yourName"
-        :showAcceptRejectButtons="showAcceptRejectButtons"
-        :showHasVoted="showHasVoted"
-        :showTeamVoteResults="showTeamVoteResults"
-        :teamVotes="teamVotes"
-      />
+      <DecideQuestTeam :yourName="yourName"/>
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -86,12 +83,6 @@ export default {
       gameStarted: false,
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
-      showConfirmTeamButton: false,
-      showAcceptRejectButtons: false,
-
-      showHasVoted: false,
-      teamVotes: null,
-      showTeamVoteResults: false,
 
       showSetupOptions: false,
       error: false,
@@ -134,43 +125,19 @@ export default {
     gameReady() {
       this.showStartButton = true;
     },
-    showHostSetupOptions() {
-      this.showSetupOptions = true;
-    },
     gameStarted() {
       this.gameStarted = true;
       this.error = false;
       this.showSetupOptions = false;
     },
-    //choose player for quest stuff
-    choosePlayersForQuest() {
-      this.showAddPlayerButton = true;
-      this.showRemovePlayerButton = true;
+    //choose player to go on quest
+    choosePlayersForQuest(bool) {
+      this.showAddPlayerButton = bool;
+      this.showRemovePlayerButton = bool;
     },
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
-    },
-    confirmQuestTeam(bool) {
-      this.showConfirmTeamButton = bool;
-    },
-    //vote on the quest team
-    acceptOrRejectTeam(bool) {
-      this.showAddPlayerButton = false;
-      this.showRemovePlayerButton = false;
-      this.showAcceptRejectButtons = bool;
-    },
-    votedOnTeam(votes) {
-      this.teamVotes = votes.join(", ");
-      this.showHasVoted = true;
-      this.showTeamVoteResults = false;
-    },
-    revealTeamVotes(votes) {
-      this.teamVotes = votes;
-      this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
-      this.teamVotes.reject = votes.reject.join(", ");
-      this.showHasVoted = false;
-      this.showTeamVoteResults = true;
     },
     //etc
     showHostSetupOptions() {

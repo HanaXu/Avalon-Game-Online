@@ -31,7 +31,10 @@ module.exports = class Quest {
     this.playersOnQuest = new Set([]);
     this.playersNeededLeft = this.playersRequired;
     this.voteTrack = 1;
-    this.questLeader = '';
+    this.leader = {
+      'name': '',
+      'socketID': null
+    };
     this.questTeamDecisions = {
       'voted': [],
       'accept': [],
