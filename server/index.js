@@ -210,7 +210,6 @@ io.on('connection', socket => {
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
-      io.in(roomCode).emit('updateQuestMsg', 'The votes results are: ');
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
 
       //quest Rejected
@@ -225,10 +224,6 @@ io.on('connection', socket => {
         startQuest(roomCode, leaderSocketID);
       }
       else {
-        //quest Approved
-        questMsg = "Vote Results: Quest team was Approved. Waiting for quest team to go on quest.";
-        io.in(roomCode).emit('updateQuestMsg', questMsg);
-
         let questTeam = currentQuest.playersOnQuest.players;
 
         console.log("Quest team is: ");
