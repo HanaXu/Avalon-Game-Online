@@ -23,7 +23,7 @@
         variant="danger"
       >Quest team was Rejected. New quest leader has been chosen.</b-alert>
       <b-alert
-        v-if="teamVotes.reject.length < teamVotes.accept.length"
+        v-if="teamVotes.reject.length <= teamVotes.accept.length"
         show
         variant="success"
       >Quest team was Approved. Waiting for quest team to go on quest.</b-alert>

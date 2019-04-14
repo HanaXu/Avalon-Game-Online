@@ -7,6 +7,9 @@
       </h4>
     </div>
     <div class="container game">
+      <EndGameOverlay v-if="gameOver" />
+
+
       <b-row>
         <b-col cols="10">
           <div style="text-align: left; align-items: left; justify-content: left">
@@ -56,6 +59,7 @@ import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
+import EndGameOverlay from "@/components/EndGameOverlay.vue";
 
 export default {
   name: "Game",
@@ -65,7 +69,8 @@ export default {
     QuestCards,
     VoteTrack,
     SetupOptions,
-    DecideQuestTeam
+    DecideQuestTeam,
+    EndGameOverlay
   },
   data() {
     return {
@@ -86,7 +91,10 @@ export default {
 
       showSetupOptions: false,
       error: false,
-      errorMsg: null
+      errorMsg: null,
+
+      gameOver: false,
+      endGameMsg: false
     };
   },
   created() {
@@ -146,6 +154,11 @@ export default {
       this.error = true;
       this.errorMsg = msg;
       this.showStartButton = true;
+    },
+    //game is over
+    gameOver(msg) {
+      this.gameOver = true;
+      this.endGameMsg = msg;
     }
   }
 };

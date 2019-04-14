@@ -222,14 +222,26 @@ io.on('connection', socket => {
 
       //quest Rejected
       if (currentQuest.questTeamDecisions.reject.length >= GameList[roomCode].players.length / 2) {
-        //choose next quest leader
-        GameList[roomCode].assignNextLeader(currentQuest.questNum);
         currentQuest.voteTrack++;
 
-        //update player cards
-        emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+        //check if voteTrack has exceeded 5 (game over)
+        if(currentQuest.voteTrack > 5) {
+          var msg = "Quest " + currentQuest.questNum + " had 5 failed team votes.";
+          GameList[roomCode].endGameEvilWins(msg);
 
-        startQuest(roomCode);
+          io.in(roomCode).emit('gameOver', msg);
+
+        }
+        else {
+          //choose next quest leader
+          GameList[roomCode].assignNextLeader(currentQuest.questNum);
+
+
+          //update player cards
+          emitSanitizedPlayers(roomCode, GameList[roomCode].players);
+
+          startQuest(roomCode);
+        }
       }
       else {
         //set to empty (DecideQuestTeam shows approval message)
@@ -248,6 +260,7 @@ io.on('connection', socket => {
     }
   });
 
+  //TODO: update disconnect to turn a player into a bot if the game has been started already
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && GameList[roomCode] != undefined) {
       GameList[roomCode].deletePlayer(socket.id);

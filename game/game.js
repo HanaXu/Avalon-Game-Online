@@ -356,6 +356,18 @@ module.exports = class Game {
     }
   }
 
+
+
+  //end the game in favor of evil
+  //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin
+  endGameEvilWins(msg) {
+    //reset everything
+    console.log("Evil Wins: " + msg);
+  }
+
+
+
+
   // Fisher-Yates shuffle
   shuffle(array) {
     let currentIndex = array.length;
