@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="showConfirmTeamButton">
-      <b-button class="avalon-btn-lg" @click="questTeamConfirmed">Confirm Team</b-button>
+      <b-button class="avalon-btn-lg" id="confirm-team-btn" @click="questTeamConfirmed">Confirm Team</b-button>
     </div>
 
     <div v-if="showHasVoted && !showTeamVoteResults">
@@ -11,8 +11,16 @@
 
     <div v-if="showAcceptRejectButtons">
       <div class="row justify-content-md-center">
-        <b-button class="avalon-btn-lg" @click="questTeamDecision('accept')">Accept Team</b-button>
-        <b-button class="avalon-btn-lg" @click="questTeamDecision('reject')">Reject Team</b-button>
+        <b-button
+          class="avalon-btn-lg"
+          id="accept-team-btn"
+          @click="questTeamDecision('accept')"
+        >Accept Team</b-button>
+        <b-button
+          class="avalon-btn-lg"
+          id="reject-team-btn"
+          @click="questTeamDecision('reject')"
+        >Reject Team</b-button>
       </div>
     </div>
 
