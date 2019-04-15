@@ -9,12 +9,12 @@
         placeholder="name"
         v-model="name"
       ></b-input>
-      <b-button @click="createRoom" class="avalon-btn-lg">Create Room</b-button>
+      <b-button @click="createRoom" id="createRoom" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
-    <div style="margin: .5rem" v-if="error">{{ errorMsg }}</div>
+    <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
   </div>
 </template>
 
