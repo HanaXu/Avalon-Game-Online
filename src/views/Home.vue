@@ -9,11 +9,11 @@
       </div>
       <div v-if="createToggled">
         <CreateForm class="jumbo"></CreateForm>
-        <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-right">Back</b-button>
+        <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
       <div v-if="joinToggled">
         <JoinForm class="jumbo"></JoinForm>
-        <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-right">Back</b-button>
+        <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
     </section>
   </div>
