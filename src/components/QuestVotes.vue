@@ -7,6 +7,19 @@
   </div>
 
   <div v-if="showQuestVoteResults">
+    <b-alert
+      v-if="voteFail > 0"
+      show
+      variant="danger"
+    >Quest failed. </b-alert>
+    <b-alert
+      v-if="voteFail == 0"
+      show
+      variant="success"
+    >Quest succeeded.</b-alert>
+  </div>
+
+  <div v-if="showQuestVoteResults">
     <strong>Quest Vote Results:</strong>
     <br>
     <strong>Succeed:</strong> {{ voteSucceed }}
