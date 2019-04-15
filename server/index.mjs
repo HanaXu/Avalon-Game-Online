@@ -303,18 +303,14 @@ io.on('connection', socket => {
           let players = GameList[roomCode].players;
           for (let i = 0; i < players.length; i++) {
             if (players[i] != null) {
-              io.to(players[i].socketID).emit('waitForAssassin', `Good has triumphed over Evil by succeeding ${tallyQuestWins.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
               if (players[i].character === "Assassin") {
-
-                io.to(players[i].socketID).emit('beginAssassination');
-
-
-
-
+                io.to(players[i].socketID).emit('beginAssassination', "You are the assassin. Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.");
+              }
+              else {
+                io.to(players[i].socketID).emit('waitForAssassin', `Good has triumphed over Evil by succeeding ${tallyQuestWins.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
               }
               //update Player Cards
               emitSanitizedPlayers(players);
-
             }
           }
         }
@@ -326,7 +322,11 @@ io.on('connection', socket => {
   socket.on('assassinatePlayer', function(name) {
     console.log(`Attempting to assassinate ${name}.`);
     //next step: check if name is the name of merlin
-    GameList[roomCode].checkIfMerlin(name);
+    let result = GameList[roomCode].checkIfMerlin(name);
+
+
+    io.in(roomCode).emit('gameOver', result);
+
   });
 
   //TODO: update disconnect to turn a player into a bot if the game has been started already

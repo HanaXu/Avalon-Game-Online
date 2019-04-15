@@ -280,17 +280,18 @@ export class Game {
 
   }
 
-
+  //check if Assassinated player is Merlin
   checkIfMerlin(name) {
     for (let i = 0; i < this.players.length; i++) {
-      if(this.players[i].name == name && this.players[i].role == "Merlin") {
-        //successful assassination!
-        console.log("Merlin is dead");
-        break;
+      if(this.players[i].name == name && this.players[i].character == "Merlin") {
+        //successful assassination, evil wins
+        this.endGameEvilWins(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
+        return(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
       }
     }
+    //failed assassination, good wins
+    return(`Assassin failed to discover and kill Merlin. Good Wins!`);
   }
-
 
   //end the game in favor of evil
   //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin

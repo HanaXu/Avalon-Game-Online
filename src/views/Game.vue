@@ -7,7 +7,7 @@
       </h4>
     </div>
     <div class="container game">
-      <EndGameOverlay v-if="gameOver"/>
+      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg" />
 
       <b-row>
         <b-col cols="10">
@@ -50,8 +50,6 @@
 
       <QuestVotes :yourName="yourName" />
 
-      <Assassinate v-if="assassination" />
-
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
@@ -67,7 +65,6 @@ import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
-import Assassinate from "@/components/Assassinate.vue";
 
 export default {
   name: "Game",
@@ -79,8 +76,7 @@ export default {
     SetupOptions,
     DecideQuestTeam,
     EndGameOverlay,
-    QuestVotes,
-    Assassinate
+    QuestVotes
   },
   data() {
     return {
@@ -111,7 +107,7 @@ export default {
       errorMsg: null,
 
       gameOver: false,
-      endGameMsg: false
+      endGameMsg: null
     };
   },
   created() {
@@ -174,10 +170,11 @@ export default {
     },
 
     //assassination time
-    beginAssassination() {
+    beginAssassination(msg) {
       //update player cards to show Assassinate button
       //this.players = data["players"];
       this.assassination = true;
+      this.questMsg = msg;
     },
     waitForAssassin(msg) {
       //do nothing

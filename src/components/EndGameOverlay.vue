@@ -1,7 +1,7 @@
 <template>
   <div class="container" id="overlay">
     <h1 class="gameOverMessage">Game Over</h1>
-    <p class="message">{{ endGameMsg }}</p>
+   <span class="text-light">{{ endGameMsg }}</span>
   </div>
 </template>
 
