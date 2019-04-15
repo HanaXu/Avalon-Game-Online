@@ -226,7 +226,7 @@ io.on('connection', socket => {
 
         //check if voteTrack has exceeded 5 (game over)
         if(currentQuest.voteTrack > 5) {
-          var msg = "Quest " + currentQuest.questNum + " had 5 failed team votes.";
+          var msg = `Quest ${currentQuest.questNum} had 5 failed team votes.`;
           GameList[roomCode].endGameEvilWins(msg);
 
           io.in(roomCode).emit('gameOver', msg);
@@ -247,18 +247,26 @@ io.on('connection', socket => {
         //set to empty (DecideQuestTeam shows approval message)
         io.in(roomCode).emit('updateQuestMsg', '');
 
-        let questTeam = currentQuest.playersOnQuest.players;
-
         console.log("Quest team is: ");
-        for (let player in questTeam) {
+        //create array of players on quest
+        let questTeam = Array.from(currentQuest.playersOnQuest.players);
+        //send goOnQuest to each player on quest
+        for(let player in questTeam) {
           let onGoodTeam = (player.team) == "Good";
           io.to(player.socketID).emit("goOnQuest", onGoodTeam);
-          console.log(player);
+          console.log(player.name);
         }
 
       }
     }
   });
+
+  socket.on('questVote', function(data) {
+    console.log("Received vote");
+
+  });
+
+
 
   //TODO: update disconnect to turn a player into a bot if the game has been started already
   socket.on('disconnect', function () {

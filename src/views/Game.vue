@@ -46,6 +46,8 @@
 
       <DecideQuestTeam :yourName="yourName"/>
 
+      <QuestVotes v-if="onQuest" :onGoodTeam="onGoodTeam" />
+
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
@@ -60,6 +62,7 @@ import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
+import QuestVotes from "@/components/QuestVotes.vue";
 
 export default {
   name: "Game",
@@ -70,7 +73,8 @@ export default {
     VoteTrack,
     SetupOptions,
     DecideQuestTeam,
-    EndGameOverlay
+    EndGameOverlay,
+    QuestVotes
   },
   data() {
     return {
@@ -88,6 +92,9 @@ export default {
       gameStarted: false,
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
+
+      onQuest: false,
+      onGoodTeam: null,
 
       showSetupOptions: false,
       error: false,
@@ -145,6 +152,10 @@ export default {
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
+    },
+    //player is on a quest
+    goOnQuest(data) {
+      this.onGoodTeam = data;
     },
     //etc
     showHostSetupOptions() {
