@@ -24,9 +24,11 @@
                             <!--</div>-->
                         <!--</form>-->
                         <div class="input-group">
-                            <input type="text" name="" id="" cols="30" row="2" placeholder="Enter your message..." v-on:keyup.enter="sendMessage">
-                            <div class='input-group-append'>
-                                <button class='btn btn-primary' v-on:click="sendMessage">Send</button>
+                            <div style="width: auto">
+                                <input type="text" name="" id="" cols="30" row="2" placeholder="Enter your message..." v-on:keyup.enter="sendMessage">
+                                <div class='input-group-append'>
+                                    <button class='btn btn-primary' v-on:click="sendMessage">Send</button>
+                                </div>
                             </div>
                         </div>
 
@@ -157,6 +159,7 @@
     div.messages {
         height: 300px;
         width: 380px;
+        overflow-x: hidden;
         overflow-y: auto;
     }
     div.message {
@@ -164,7 +167,7 @@
         border: none;
     }
     textarea {
-        width: inherit;
+        width: auto;
         resize: none;
         word-wrap: normal;
     }
