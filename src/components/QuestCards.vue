@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="row justify-content-md-center" style="padding: 1rem;">
-      <div class="card" v-for="(quest, index) in quests" :key="index">
-        <div class="card-body">
+      <div class="card" v-for="(quest, index) in quests" :key="index" :class="{markRed: quest.success === 'false', markGreen: quest.success === 'true'}">
+        <div class="card-body" >
           <h5 class="card-title">
             Quest {{ quest.questNum }}
             <span
@@ -32,4 +32,13 @@ export default {
 .card-body {
   padding: 0.5rem 0rem;
 }
+
+
+.markRed {
+  border: 5px solid red;
+}
+.markGreen {
+  border: 5px solid green;
+}
+
 </style>

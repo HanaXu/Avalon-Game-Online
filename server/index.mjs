@@ -266,13 +266,22 @@ io.on('connection', socket => {
       //show quest vote results to all players
       io.in(roomCode).emit('revealVotes', currentQuest.votes);
 
+      if(currentQuest.votes.fail > 0) {
+        currentQuest.success = false;
+      }
+      else {
+        currentQuest.success = true;
+      }
+      //update Quest Cards to reveal success/fail
+      io.in(roomCode).emit('updateQuests', {
+        quests: GameList[roomCode].quests,
+        currentQuestNum: currentQuest.questNum
+      });
 
       //choose next leader and start next quest
       GameList[roomCode].startNextQuest(currentQuest.questNum);
-
       //update player cards
       emitSanitizedPlayers(GameList[roomCode].players);
-
       //quest leader chooses players to go on quest
       chooseQuestTeam(roomCode);
     }
@@ -368,15 +377,9 @@ function questTeamAcceptedStuff(roomCode, currentQuest) {
     //send goOnQuest to each player on quest
     if(players[i].onQuest == true) {
       let onGoodTeam = (players[i].team) == "Good";
-      io.to(GameList[roomCode].players[i].socketID).emit('goOnQuest', onGoodTeam); //WHY IS THIS LINE NOT RUNNING
+      io.to(GameList[roomCode].players[i].socketID).emit('goOnQuest', onGoodTeam);
       console.log(players[i].name);
     }
-/*    else {
-      io.to(players[i].socketID).emit('goOnQuest', {
-        onGoodTeam: false,
-        canVoteOnQuest: false
-      });
-    }*/
   }
 
 }
