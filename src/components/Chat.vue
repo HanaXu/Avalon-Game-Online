@@ -7,10 +7,9 @@
                     <div class="card-body">
                         <dl id="messageList"></dl>
                         <div class="messages">
-                                <h3>Messages</h3>
-                                <div class="message" v-for="message in messages">
-                                    <strong>{{message.name}}</strong>
-                                    <p>{{message.message}}</p>
+                                <div class="message" v-bind:key="message.id" v-for="message in messages">
+                                    <strong>{{message.username}}</strong>
+                                    {{message.text}}
                                 </div>
                             </div>
                         </div>
@@ -27,7 +26,7 @@
                         <div class="input-group">
                             <input type="text" name="" id="" cols="30" row="2" placeholder="Enter your message..." v-on:keyup.enter="sendMessage">
                             <div class='input-group-append'>
-                                <b-button class='btn btn-primary' @click="sendMessage">Send</b-button>
+                                <button class='btn btn-primary' v-on:click="sendMessage">Send</button>
                             </div>
                         </div>
 
@@ -53,7 +52,6 @@
 
 <script>
     import firebase from 'firebase';
-    //import Game from '../views/Game.vue';
 
     export default {
         name: "Chat",
@@ -63,52 +61,59 @@
                 messages: []
             }
         },
+        props: ["your-name", "room-code"],
         methods: {
-            // updateUsername() {
-            //     // e.preventDefault();
-            //     // if (e.target.value) {
-            //     //     this.username = e.target.value;
-            //     // }
-            //     this.username = Game.data().yourName;
-            // },
             sendMessage(e) {
                 e.preventDefault();
+
+                console.log("in sendMessage");
+
                 if (e.target.value) {
                     const message = {
-                        //username: this.username,
-                        username: "testUser",
+                        username: this.yourName,
+                        //username: "testUser",
                         text: e.target.value
                     }
+                    console.log("Your message is: ", message);
                     //Push message to firebase reference
-                    firebase.database().ref('chat/room-messages').push(message)
+                    firebase.database().ref('chat/room-messages/' + this.roomCode).push(message);
+                    console.log("Sent message");
                     e.target.value = ''
+                } else {
+                    console.log("Something went wrong...");
+                    console.log(e);
                 }
             }
         },
         mounted(){
             let vm = this;
-            const itemsRef = firebase.database().ref('chat/room-messages');
+            let username = this.yourName;
+            let roomCode = this.roomCode;
+
+            const itemsRef = firebase.database().ref('chat/room-messages/' + roomCode);
 
             itemsRef.on('value', snapshot => {
+                var messages = []
                 let data = snapshot.val() || null;
-                let messages = [];
-
-                if(data) {
-                    Object.keys(data).forEach(key => {
-                        messages.push({
-                            id: key,
-                            username: data[key].name,
-                            text: data[key].message
-                        });
-
-                        console.log("data: ", data,
-                            " | key: ", key,
-                            " | username: ", data[key].name,
-                            " | text: ", data[key].message);
-                    });
-                } else {
-                    console.log("data = null");
+                if (!data) {
+                    console.log('Warning: No chat rooms exist!')
                 }
+                console.log("Chat Name: ", username);
+                console.log("Chat Room Code: ", roomCode);
+
+                // display all messages in the current room
+                Object.keys(data).forEach(key => {
+                    messages.push({
+                        id: key,
+                        username: data[key].username,
+                        text: data[key].text
+                    });
+
+                    // console.log("data: ", data,
+                    //     " | key: ", this.id,
+                    //     " | username: ", this.username,
+                    //     " | text: ", this.text);
+                });
 
                 vm.messages = messages;
             });
@@ -150,11 +155,13 @@
         width: inherit;
     }
     div.messages {
-        width: inherit;
+        height: 300px;
+        width: 380px;
         overflow-y: auto;
     }
     div.message {
         width: inherit;
+        border: none;
     }
     textarea {
         width: inherit;

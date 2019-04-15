@@ -14,7 +14,7 @@
     </div>
     <div class="container chat">
       <div style="align: right">
-        <Chat></Chat>
+        <Chat :your-name="yourName" :room-code="roomCode"></Chat>
       </div>
     </div>
   </div>
