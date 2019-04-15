@@ -28,13 +28,16 @@
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
       </div>
+
       <PlayerCards
         v-if="gameStarted"
         :players="players"
         :yourName="yourName"
         :showAddPlayerButton="showAddPlayerButton"
         :showRemovePlayerButton="showRemovePlayerButton"
+        :assassination="assassination"
       />
+
       <div
         v-if="showQuestMsg && questMsg.length > 0"
         class="row justify-content-md-center"
@@ -46,6 +49,8 @@
       <DecideQuestTeam :yourName="yourName"/>
 
       <QuestVotes :yourName="yourName" />
+
+      <Assassinate v-if="assassination" />
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -62,6 +67,7 @@ import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
+import Assassinate from "@/components/Assassinate.vue";
 
 export default {
   name: "Game",
@@ -73,7 +79,8 @@ export default {
     SetupOptions,
     DecideQuestTeam,
     EndGameOverlay,
-    QuestVotes
+    QuestVotes,
+    Assassinate
   },
   data() {
     return {
@@ -95,6 +102,9 @@ export default {
       onQuest: false,
       canVoteOnQuest: false,
       onGoodTeam: null,
+
+      waitingForAssassin: false,
+      assassination: false,
 
       showSetupOptions: false,
       error: false,
@@ -162,6 +172,20 @@ export default {
       this.errorMsg = msg;
       this.showStartButton = true;
     },
+
+    //assassination time
+    beginAssassination() {
+      //update player cards to show Assassinate button
+      //this.players = data["players"];
+      this.assassination = true;
+    },
+    waitForAssassin(msg) {
+      //do nothing
+      this.waitingForAssassin = true;
+      this.questMsg = msg;
+      this.showQuestMsg = true;
+    },
+
     //game is over
     gameOver(msg) {
       this.gameOver = true;

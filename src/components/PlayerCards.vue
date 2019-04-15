@@ -42,6 +42,21 @@
             @click="removePlayerFromQuest(player.name)"
           >Drop from Quest</b-button>
         </div>
+
+        <div
+          v-if="assassination"
+          class="row justify-content-md-center"
+        >
+          <b-button
+            variant="danger"
+            class="mx-1"
+            :id="'assassinate-' + player.name"
+            v-if="player.team === 'good' || player.team === 'hidden'"
+            @click="assassinatePlayer(player.name)"
+          >Assassinate</b-button>
+
+        </div>
+
       </div>
     </div>
   </div>
@@ -54,7 +69,8 @@ export default {
     "players",
     "yourName",
     "showAddPlayerButton",
-    "showRemovePlayerButton"
+    "showRemovePlayerButton",
+    "assassination"
   ],
   methods: {
     addPlayerToQuest(playerName) {
@@ -62,6 +78,9 @@ export default {
     },
     removePlayerFromQuest(playerName) {
       this.$socket.emit("removePlayerFromQuest", playerName);
+    },
+    assassinatePlayer(playerName) {
+      this.$socket.emit("assassinatePlayer", playerName);
     }
   }
 };

@@ -278,14 +278,55 @@ io.on('connection', socket => {
         currentQuestNum: currentQuest.questNum
       });
 
-      //choose next leader and start next quest
-      GameList[roomCode].startNextQuest(currentQuest.questNum);
-      //update player cards
-      emitSanitizedPlayers(GameList[roomCode].players);
-      //quest leader chooses players to go on quest
-      chooseQuestTeam(roomCode);
+      //check if we just finished quest 5
+      if(currentQuest.questNum < 5) {
+        //choose next leader and start next quest
+        GameList[roomCode].startNextQuest(currentQuest.questNum);
+        //update player cards
+        emitSanitizedPlayers(GameList[roomCode].players);
+        //quest leader chooses players to go on quest
+        chooseQuestTeam(roomCode);
+      }
+      else {
+        //game is over
+        //get rid of On Quest tag from player cards
+        GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
+
+        //find out how many quests were succeeded/failed
+        let tallyQuestWins = GameList[roomCode].tallyQuestWins();
+        if(tallyQuestWins.evilWins) {
+          //game is over
+          io.in(roomCode).emit('gameOver', tallyQuestWins.msg);
+        }
+        else {
+          //good is on track to win, evil can assassinate
+          let players = GameList[roomCode].players;
+          for (let i = 0; i < players.length; i++) {
+            if (players[i] != null) {
+              io.to(players[i].socketID).emit('waitForAssassin', `Good has triumphed over Evil by succeeding ${tallyQuestWins.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
+              if (players[i].character === "Assassin") {
+
+                io.to(players[i].socketID).emit('beginAssassination');
+
+
+
+
+              }
+              //update Player Cards
+              emitSanitizedPlayers(players);
+
+            }
+          }
+        }
+      }
     }
 
+  });
+
+  socket.on('assassinatePlayer', function(name) {
+    console.log(`Attempting to assassinate ${name}.`);
+    //next step: check if name is the name of merlin
+    GameList[roomCode].checkIfMerlin(name);
   });
 
   //TODO: update disconnect to turn a player into a bot if the game has been started already

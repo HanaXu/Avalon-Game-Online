@@ -246,6 +246,51 @@ export class Game {
     }
   }
 
+  //called after 5 quests completed
+  //returns true if >=3 quests succeeded, false if >=3 quests failed
+  tallyQuestWins() {
+    //tally up quest successes/fails
+    let successCount = 0;
+    let failCount = 0;
+    for(let i = 1; i < 6; i++) {
+      if(this.quests[i].success) {
+        successCount++;
+      }
+      else {
+        failCount++;
+      }
+    }
+    //more succeeded quests than failed?
+    if(successCount > failCount) {
+      return({
+        successes: successCount,
+        msg: "",
+        evilWins: false
+      });
+    }
+    else {
+      let msg = `${failCount} quests failed.`;
+      this.endGameEvilWins(msg);
+      return({
+        successes: successCount,
+        msg: msg,
+        evilWins: true
+      });
+    }
+
+  }
+
+
+  checkIfMerlin(name) {
+    for (let i = 0; i < this.players.length; i++) {
+      if(this.players[i].name == name && this.players[i].role == "Merlin") {
+        //successful assassination!
+        console.log("Merlin is dead");
+        break;
+      }
+    }
+  }
+
 
   //end the game in favor of evil
   //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin
