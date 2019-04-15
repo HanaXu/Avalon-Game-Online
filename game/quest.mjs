@@ -12,7 +12,7 @@ const PLAYERS_ON_QUEST = [
   [3, 4, 4, 5, 5, 5]
 ];
 
-module.exports = class Quest {
+export class Quest {
   /**
    * Quest objects have:
    * @property {number} questNum - which quest players are on from 1 to 5
@@ -43,6 +43,15 @@ module.exports = class Quest {
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.success = null;
+  }
+
+  //resets all values relating to players on quest & quest votes to original values
+  resetQuest() {
+    this.playersNeededLeft = this.playersRequired;
+    this.playersOnQuest.clear();
+    this.questTeamDecisions.voted = [];
+    this.questTeamDecisions.accept = [];
+    this.questTeamDecisions.reject = [];
   }
 
   // getter for PlayerIdentities

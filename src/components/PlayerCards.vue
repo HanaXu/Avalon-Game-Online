@@ -30,12 +30,14 @@
           <b-button
             variant="success"
             class="mx-1"
+            :id="'add-player-' + player.name"
             v-if="!player.onQuest && showAddPlayerButton"
             @click="addPlayerToQuest(player.name)"
           >Add to Quest</b-button>
           <b-button
             variant="danger"
             class="mx-1"
+            :id="'remove-player-' + player.name"
             v-if="player.onQuest && showRemovePlayerButton"
             @click="removePlayerFromQuest(player.name)"
           >Drop from Quest</b-button>

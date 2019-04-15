@@ -9,7 +9,7 @@
         placeholder="name"
         v-model="name"
       ></b-input>
-      <b-button @click="createRoom" id="createRoom" class="avalon-btn-lg">Create Room</b-button>
+      <b-button @click="createRoom" id="create-room-btn" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>

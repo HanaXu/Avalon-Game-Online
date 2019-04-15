@@ -7,8 +7,7 @@
       </h4>
     </div>
     <div class="container game">
-      <EndGameOverlay v-if="gameOver" />
-
+      <EndGameOverlay v-if="gameOver"/>
 
       <b-row>
         <b-col cols="10">
@@ -27,7 +26,7 @@
       <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
 
       <div v-if="showStartButton">
-        <b-button class="avalon-btn-lg" @click="startGame">Start Game</b-button>
+        <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
       </div>
       <PlayerCards
         v-if="gameStarted"

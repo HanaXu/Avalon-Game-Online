@@ -4,8 +4,12 @@
       <div v-if="!(joinToggled || createToggled)" style="margin-top: 15%">
         <h1 class="title">Avalonline</h1>
         <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
-        <b-button :pressed.sync="createToggled" id="createRoom" class="avalon-btn-lg">Create Room</b-button>
-        <b-button :pressed.sync="joinToggled" id="joinRoom" class="avalon-btn-lg">Join Room</b-button>
+        <b-button
+          :pressed.sync="createToggled"
+          id="create-room-btn"
+          class="avalon-btn-lg"
+        >Create Room</b-button>
+        <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
       </div>
       <div v-if="createToggled">
         <CreateForm style="margin-top: 45%"></CreateForm>

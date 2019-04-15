@@ -1,4 +1,4 @@
-module.exports = class Player {
+export class Player {
   /**
    * Player objects have identity and info for each individual player:
    * @property {number} room - the 4-digit room code, same for all players in a game; identifies which game this player is in - this might not be necessary actually, uncertain
@@ -17,7 +17,6 @@ module.exports = class Player {
     this.name = name;
     this.roomCode = roomCode;
     this.role = role;
-    this.turn = false;
     this.team = 'undecided';
     this.character = 'undecided';
     this.leader = false;
