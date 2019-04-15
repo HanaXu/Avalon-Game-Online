@@ -231,11 +231,27 @@ export class Game {
     currentQuest.resetQuest();
   }
 
+  //move to next quest out of 5
+  startNextQuest(lastQuestNum) {
+    if(lastQuestNum < 5) {
+      this.quests[lastQuestNum].currentQuest = false;
+      this.quests[lastQuestNum + 1].currentQuest = true;
+
+      //assign a leader
+      this.assignNextLeader(lastQuestNum + 1);
+    }
+    else {
+      //last quest is over, move to endgame
+      console.log("Game over: Reached last quest.");
+    }
+  }
+
+
   //end the game in favor of evil
   //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin
   endGameEvilWins(msg) {
     //reset everything
-    console.log("Evil Wins: " + msg);
+    console.log(`Evil Wins: ${msg}`);
   }
 
 };

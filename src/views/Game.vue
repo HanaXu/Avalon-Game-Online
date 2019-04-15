@@ -45,7 +45,7 @@
 
       <DecideQuestTeam :yourName="yourName"/>
 
-      <QuestVotes v-if="onQuest" :onGoodTeam="onGoodTeam" />
+      <QuestVotes :yourName="yourName" />
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -93,6 +93,7 @@ export default {
       showRemovePlayerButton: false,
 
       onQuest: false,
+      canVoteOnQuest: false,
       onGoodTeam: null,
 
       showSetupOptions: false,
@@ -151,10 +152,6 @@ export default {
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
-    },
-    //player is on a quest
-    goOnQuest(data) {
-      this.onGoodTeam = data;
     },
     //etc
     showHostSetupOptions() {
