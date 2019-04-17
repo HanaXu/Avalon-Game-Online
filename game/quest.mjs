@@ -47,6 +47,7 @@ export class Quest {
       'fail': 0
     };
     this.success = null;
+    this.fail = null;
   }
 
   //resets all values relating to players on quest & quest votes to original values

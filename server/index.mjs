@@ -268,9 +268,11 @@ io.on('connection', socket => {
 
       if(currentQuest.votes.fail > 0) {
         currentQuest.success = false;
+        currentQuest.fail = true;
       }
       else {
         currentQuest.success = true;
+        currentQuest.fail = false;
       }
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
@@ -278,43 +280,9 @@ io.on('connection', socket => {
         currentQuestNum: currentQuest.questNum
       });
 
-      //check if we just finished quest 5
-      if(currentQuest.questNum < 5) {
-        //choose next leader and start next quest
-        GameList[roomCode].startNextQuest(currentQuest.questNum);
-        //update player cards
-        emitSanitizedPlayers(GameList[roomCode].players);
-        //quest leader chooses players to go on quest
-        chooseQuestTeam(roomCode);
-      }
-      else {
-        //game is over
-        //get rid of On Quest tag from player cards
-        GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
 
-        //find out how many quests were succeeded/failed
-        let tallyQuestWins = GameList[roomCode].tallyQuestWins();
-        if(tallyQuestWins.evilWins) {
-          //game is over
-          io.in(roomCode).emit('gameOver', tallyQuestWins.msg);
-        }
-        else {
-          //good is on track to win, evil can assassinate
-          let players = GameList[roomCode].players;
-          for (let i = 0; i < players.length; i++) {
-            if (players[i] != null) {
-              if (players[i].character === "Assassin") {
-                io.to(players[i].socketID).emit('beginAssassination', "You are the assassin. Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.");
-              }
-              else {
-                io.to(players[i].socketID).emit('waitForAssassin', `Good has triumphed over Evil by succeeding ${tallyQuestWins.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
-              }
-              //update Player Cards
-              emitSanitizedPlayers(players);
-            }
-          }
-        }
-      }
+      //check if quest results mean game is over (3 failed or 3 succeeded quests)
+      checkForGameOver(roomCode);
     }
 
   });
@@ -446,6 +414,41 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
     //update player cards
     emitSanitizedPlayers(GameList[roomCode].players);
 
+    //quest leader chooses players to go on quest
+    chooseQuestTeam(roomCode);
+  }
+}
+
+function checkForGameOver(roomCode) {
+  let tallyQuestWins = GameList[roomCode].tallyQuestResults();
+  let currentQuest = GameList[roomCode].getCurrentQuest();
+  if(tallyQuestWins.fails >= 3) {
+    //evil has won, game over
+    GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
+    io.in(roomCode).emit('gameOver', tallyQuestWins.msg);
+  }
+  else if(tallyQuestWins.successes >=3) {
+    //good is on track to win, evil can assassinate
+    let players = GameList[roomCode].players;
+    for (let i = 0; i < players.length; i++) {
+      if (players[i] != null) {
+        if (players[i].character === "Assassin") {
+          io.to(players[i].socketID).emit('beginAssassination', "You are the assassin. Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.");
+        }
+        else {
+          io.to(players[i].socketID).emit('waitForAssassin', `Good has triumphed over Evil by succeeding ${tallyQuestWins.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
+        }
+        //update Player Cards
+        emitSanitizedPlayers(players);
+      }
+    }
+  }
+  else {
+    //there have not been 3 successes or fails yet, continue to next quest
+    //choose next leader and start next quest
+    GameList[roomCode].startNextQuest(currentQuest.questNum);
+    //update player cards
+    emitSanitizedPlayers(GameList[roomCode].players);
     //quest leader chooses players to go on quest
     chooseQuestTeam(roomCode);
   }

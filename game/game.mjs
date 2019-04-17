@@ -247,8 +247,8 @@ export class Game {
   }
 
   //called after 5 quests completed
-  //returns true if >=3 quests succeeded, false if >=3 quests failed
-  tallyQuestWins() {
+  //returns count of successes, fails, and boolean evilWins
+  tallyQuestResults() {
     //tally up quest successes/fails
     let successCount = 0;
     let failCount = 0;
@@ -256,25 +256,41 @@ export class Game {
       if(this.quests[i].success) {
         successCount++;
       }
-      else {
+      else if(this.quests[i].fail) {
         failCount++;
       }
     }
+    console.log(`successCount: ${successCount}`);
+    console.log(`failCount: ${failCount}`);
     //more succeeded quests than failed?
-    if(successCount > failCount) {
+    if(successCount >= 3) {
       return({
         successes: successCount,
+        fails: failCount,
         msg: "",
+        gameOver: true,
         evilWins: false
       });
     }
-    else {
+    else if(failCount >=3) {
       let msg = `${failCount} quests failed.`;
-      this.endGameEvilWins(msg);
+      //this.endGameEvilWins(msg);
       return({
         successes: successCount,
+        fails: failCount,
         msg: msg,
+        gameOver: true,
         evilWins: true
+      });
+    }
+    else {
+      //game isn't over
+      return({
+        successes: successCount,
+        fails: failCount,
+        msg: "",
+        gameOver: false,
+        evilWins: false
       });
     }
 
