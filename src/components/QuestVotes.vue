@@ -1,40 +1,37 @@
 <template>
-<div>
+  <div>
+    <div class="row justify-content-md-center" v-if="canVoteOnQuest">
+      <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
+      <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
+    </div>
 
-  <div class="row justify-content-md-center" v-if="canVoteOnQuest">
-    <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
-    <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
+    <div v-if="showQuestVoteResults">
+      <b-alert v-if="voteFail > 0" show variant="danger">
+        <strong>Quest Vote Results:</strong>
+        <br>
+        <strong>Succeed:</strong>
+        {{ voteSucceed }}
+        <br>
+        <strong>Fail:</strong>
+        {{ voteFail }}
+      </b-alert>
+
+      <b-alert v-if="voteFail == 0" show variant="success">
+        <strong>Quest Vote Results:</strong>
+        <br>
+        <strong>Succeed:</strong>
+        {{ voteSucceed }}
+        <br>
+        <strong>Fail:</strong>
+        {{ voteFail }}
+      </b-alert>
+    </div>
   </div>
-
-  <div v-if="showQuestVoteResults">
-    <b-alert
-      v-if="voteFail > 0"
-      show
-      variant="danger"
-    >Quest failed. </b-alert>
-    <b-alert
-      v-if="voteFail == 0"
-      show
-      variant="success"
-    >Quest succeeded.</b-alert>
-  </div>
-
-  <div v-if="showQuestVoteResults">
-    <strong>Quest Vote Results:</strong>
-    <br>
-    <strong>Succeed:</strong> {{ voteSucceed }}
-    <br>
-    <strong>Fail:</strong> {{ voteFail }}
-  </div>
-
-</div>
 </template>
 <script>
 export default {
   name: "QuestVotes",
-  props: [
-    "yourName"
-  ],
+  props: ["yourName"],
   data() {
     return {
       canVoteOnQuest: false,
@@ -43,7 +40,7 @@ export default {
       votes: {},
       voteSucceed: 0,
       voteFail: 0
-    }
+    };
   },
   methods: {
     questVote(decision) {
@@ -72,5 +69,5 @@ export default {
       this.canVoteOnQuest = false;
     }
   }
-}
+};
 </script>

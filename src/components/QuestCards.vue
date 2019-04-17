@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="row justify-content-md-center" style="padding: 1rem;">
+    <div class="row justify-content-md-center mb-3">
       <div
         class="card"
         v-for="(quest, index) in quests"
@@ -35,13 +35,12 @@ export default {
   border-radius: 1rem !important;
 }
 .card-body {
-  padding: 0.5rem 0rem;
+  padding: 0rem;
 }
-
 .markRed {
-  border: 5px solid red;
+  border: 5px solid red !important;
 }
 .markGreen {
-  border: 5px solid green;
+  border: 5px solid green !important;
 }
 </style>

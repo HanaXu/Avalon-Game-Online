@@ -37,7 +37,7 @@
   color: #494949;
 }
 body {
-  padding: 20px 30px;
+  padding: 20px 0px;
   background: #d6cdc2 !important;
 }
 *,

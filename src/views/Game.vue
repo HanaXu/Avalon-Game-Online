@@ -6,8 +6,8 @@
         <span id="roomCode">{{ roomCode }}</span>
       </h4>
     </div>
-    <div class="container game">
-      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg" />
+    <div class="container game px-0">
+      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg"/>
 
       <b-row>
         <b-col cols="10">
@@ -38,17 +38,13 @@
         :assassination="assassination"
       />
 
-      <div
-        v-if="showQuestMsg && questMsg.length > 0"
-        class="row justify-content-md-center"
-        style="padding: 1rem;"
-      >
+      <div v-if="showQuestMsg && questMsg.length > 0" class="row justify-content-md-center py-2">
         <span class="text-dark">{{ questMsg }}</span>
       </div>
 
       <DecideQuestTeam :yourName="yourName"/>
 
-      <QuestVotes :yourName="yourName" />
+      <QuestVotes :yourName="yourName"/>
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -196,7 +192,6 @@ export default {
 .game {
   background: #eae7e3;
   border-radius: 3px;
-  padding: 1em;
   min-height: 75vh;
 }
 
