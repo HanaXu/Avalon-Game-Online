@@ -91,6 +91,11 @@ io.on('connection', socket => {
       socket.emit('errorMsg', `Error: Name '${name}' is already taken.`);
       return;
     }
+    else if (GameList[roomCode].players.length >= 10) {
+      console.log(`Error, Game is full`);
+      socket.emit('errorMsg', `Error: Room '${roomCode}' has reached a capacity of 10`);
+      return;
+    }
 
     socket.emit('passedValidation');
 
@@ -251,7 +256,7 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     console.log(`received quest vote from: ${name}`);
 
-    if(decision == 'succeed') {
+    if (decision == 'succeed') {
       currentQuest.votes.succeed++;
     }
     else {
@@ -259,14 +264,14 @@ io.on('connection', socket => {
     }
 
     //check if number of received votes is max needed
-    if((currentQuest.votes.succeed + currentQuest.votes.fail) == currentQuest.playersRequired) {
+    if ((currentQuest.votes.succeed + currentQuest.votes.fail) == currentQuest.playersRequired) {
       //get rid of team vote stuff from DecideQuestTeam component
       io.in(roomCode).emit('hideTeamVotes');
       console.log('All quest votes received.');
       //show quest vote results to all players
       io.in(roomCode).emit('revealVotes', currentQuest.votes);
 
-      if(currentQuest.votes.fail > 0) {
+      if (currentQuest.votes.fail > 0) {
         currentQuest.success = false;
         currentQuest.fail = true;
       }
@@ -287,7 +292,7 @@ io.on('connection', socket => {
 
   });
 
-  socket.on('assassinatePlayer', function(name) {
+  socket.on('assassinatePlayer', function (name) {
     console.log(`Attempting to assassinate ${name}.`);
     //next step: check if name is the name of merlin
     let result = GameList[roomCode].checkIfMerlin(name);
@@ -384,7 +389,7 @@ function questTeamAcceptedStuff(roomCode, currentQuest) {
   console.log("Quest team is: ");
   for (let i = 0; i < players.length; i++) {
     //send goOnQuest to each player on quest
-    if(players[i].onQuest == true) {
+    if (players[i].onQuest == true) {
       let onGoodTeam = (players[i].team) == "Good";
       io.to(GameList[roomCode].players[i].socketID).emit('goOnQuest', onGoodTeam);
       console.log(players[i].name);
@@ -422,12 +427,12 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 function checkForGameOver(roomCode) {
   let tallyQuestWins = GameList[roomCode].tallyQuestResults();
   let currentQuest = GameList[roomCode].getCurrentQuest();
-  if(tallyQuestWins.fails >= 3) {
+  if (tallyQuestWins.fails >= 3) {
     //evil has won, game over
     GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
     io.in(roomCode).emit('gameOver', tallyQuestWins.msg);
   }
-  else if(tallyQuestWins.successes >=3) {
+  else if (tallyQuestWins.successes >= 3) {
     //good is on track to win, evil can assassinate
     let players = GameList[roomCode].players;
     for (let i = 0; i < players.length; i++) {
