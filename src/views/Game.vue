@@ -18,6 +18,7 @@
 
         <b-col>
           <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
         </b-col>
       </b-row>
 
@@ -124,6 +125,10 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
+    },
+    createBot(){
+      console.log(`CreateBot function Called with room: ${this.roomCode}`);
+      this.$socket.emit("createBot", this.roomCode);
     }
   },
   sockets: {

@@ -2,6 +2,7 @@ import express from 'express';
 import socketIO from 'socket.io';
 import { Game } from '../game/game.mjs';
 import { Player } from '../game/player.mjs';
+import { gameBot } from '../game/gameBot.mjs';
 import {
   sanitizeForGoodTeam, sanitizeForPercival,
   sanitizeForEvilTeam, sanitizeForMerlin,
@@ -63,6 +64,13 @@ io.on('connection', socket => {
     io.in(roomCode).emit('updatePlayers', {
       players: game.players
     });
+  });
+
+  // Listen for the Client-Host's Call to Create a Bot
+  // Upon the Call, initaite an Instance of GameBot
+  socket.on('createBot', function(roomCode){
+    console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
+    gameBot.createBot(roomCode);
   });
 
   //join an existing room
