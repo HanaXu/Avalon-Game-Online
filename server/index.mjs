@@ -34,6 +34,7 @@ io.on('connection', socket => {
     }
 
     socket.emit('passedValidation');
+    socket.emit('roomCode', roomCode);
     socket.join(roomCode); //subscribe the socket to the roomcode
 
     //check if the room already exists in GameList
@@ -98,6 +99,7 @@ io.on('connection', socket => {
     }
 
     socket.emit('passedValidation');
+    socket.emit('roomCode', roomCode);
 
     let player = new Player(socket.id, name, roomCode, 'Guest');
     socket.join(roomCode); //subscribe the socket to the roomcode
