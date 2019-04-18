@@ -1,11 +1,11 @@
 <template>
   <div>
+
     <div class="container text-left" style="margin-top: .5rem">
-      <h4>
         {{ yourName }}, welcome to Avalonline Room:
         <span id="roomCode">{{ roomCode }}</span>
-      </h4>
     </div>
+
     <div class="container game">
       <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg" />
 
@@ -15,9 +15,8 @@
             <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
           </div>
         </b-col>
-
         <b-col>
-          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          <b-button v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
         </b-col>
       </b-row>
 
@@ -53,6 +52,10 @@
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
+
+    <b-navbar toggleable="lg" class="navbar-default footer" fixed="bottom">
+      Show/Hide Chat
+    </b-navbar>
   </div>
 </template>
 
@@ -195,12 +198,15 @@ export default {
 <style>
 .game {
   background: #eae7e3;
-  border-radius: 3px;
-  padding: 1em;
+  border-radius: 5px;
+  margin: 20px;
+  padding: 4px !important;
   min-height: 75vh;
+  max-width: 98vw;
+  box-shadow: 2px 2px 5px #c2ab8e;
 }
 
-.setupButton {
-  float: right;
+.footer {
+  box-shadow: 0 -2px 5px #c2ab8e;
 }
 </style>

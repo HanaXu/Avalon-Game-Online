@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Navbar -->
-    <b-navbar toggleable="lg" class="navbar-default container">
+    <b-navbar toggleable="lg" class="navbar-default" sticky="true">
       <b-navbar-brand to="/">Avalonline</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -12,11 +12,20 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <router-view/>
+    <router-view />
   </div>
 </template>
+<script>
+export default {
+  name: "Game",
+  components: {
+  }
+}
 
+</script>
 <style lang="scss">
+@import '/styles/styles.css';
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,7 +36,7 @@
 .navbar-default {
   background: #eae7e3;
   border-color: #e7e7e7;
-  border-radius: 3.5px;
+  box-shadow: 0 2px 5px #c2ab8e;
 }
 .navbar-default .navbar-brand {
   color: #777;
@@ -37,7 +46,6 @@
   color: #494949;
 }
 body {
-  padding: 20px 30px;
   background: #d6cdc2 !important;
 }
 *,

@@ -1,20 +1,20 @@
 <template>
   <div class="row justify-content-md-center" style="padding: 1rem;">
     <div
-      class="card"
+      class="card playerCard"
       :class="{darkerBG: player.name === yourName}"
       v-for="(player, index) in players"
       :key="index"
     >
       <div
-        class="card-body"
+        class="playerCardBody"
         :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
       >
-        <h5 class="card-title">
-          {{ player.role }}: {{ player.name }}
+        <p class="card-title">
+          {{ player.name }}
           <span style="color: #FFD700" v-if="player.leader">👑</span>
-        </h5>
-        <h6 class="card-subtitle mb-2 text-muted">
+        </p>
+        <p class="card-subtitle mb-2 text-muted">
           <b>Team:</b>
           {{ player.team }}
           <br>
@@ -22,7 +22,7 @@
           {{ player.character }}
           <br>
           <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
-        </h6>
+        </p>
         <div
           v-if="showAddPlayerButton || showRemovePlayerButton"
           class="row justify-content-md-center"
@@ -94,16 +94,25 @@ export default {
   border-top: 5px solid green;
 }
 .questBadge {
-  margin-top: 0.5rem;
+  margin: 0.5rem;
 }
-.card-body {
-  padding: 0.5rem 1rem;
-}
-.card {
+.playerCard {
   background: #f8f9fa; /* bootstrap 4 bg-light*/
-  margin: 5px;
-  width: 12rem;
+  margin: 2px;
+  width: 84px;
+  overflow: hidden;
 }
+
+
+.playerCardBody {
+  padding: 2px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .darkerBG {
   background: lightsteelblue !important;
 }
