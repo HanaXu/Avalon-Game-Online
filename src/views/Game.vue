@@ -41,8 +41,8 @@
         <span class="text-dark">{{ questMsg }}</span>
       </div>
 
-      <DecideQuestTeam :yourName="yourName"/>
       <QuestVotes :yourName="yourName"/>
+      <DecideQuestTeam :yourName="yourName"/>
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>

@@ -266,11 +266,16 @@ io.on('connection', socket => {
       currentQuest.votes.fail++;
     }
 
+    currentQuest.votes.voted.push(name);
+    //show that player has made some kind of vote
+    io.in(roomCode).emit('votedOnQuest', currentQuest.votes.voted);
+
     //check if number of received votes is max needed
     if ((currentQuest.votes.succeed + currentQuest.votes.fail) == currentQuest.playersRequired) {
       //get rid of team vote stuff from DecideQuestTeam component
       io.in(roomCode).emit('hideTeamVotes');
       console.log('All quest votes received.');
+
       //show quest vote results to all players
       io.in(roomCode).emit('revealVotes', currentQuest.votes);
 
