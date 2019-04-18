@@ -12,28 +12,28 @@
 
     <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
       Voted:
-      <strong>{{ votes }}</strong>
+      <strong>{{ voted }}</strong>
     </div>
 
     <div v-if="showQuestVoteResults">
-      <b-alert v-if="votes.fail > 0" show variant="danger">
+      <b-alert v-if="failCount > 0" show variant="danger">
         <strong>Quest Vote Results:</strong>
         <br>
         <strong>Succeed:</strong>
-        {{ votes.succeed }}
+        {{ successCount }}
         <br>
         <strong>Fail:</strong>
-        {{ votes.fail }}
+        {{ failCount }}
       </b-alert>
 
-      <b-alert v-if="votes.fail == 0" show variant="success">
+      <b-alert v-if="failCount == 0" show variant="success">
         <strong>Quest Vote Results:</strong>
         <br>
         <strong>Succeed:</strong>
-        {{ votes.succeed }}
+        {{ successCount }}
         <br>
         <strong>Fail:</strong>
-        {{ votes.fail }}
+        {{ failCount }}
       </b-alert>
     </div>
   </div>
@@ -49,7 +49,9 @@ export default {
       onGoodTeam: false,
       showHasVotedOnQuest: false,
       showQuestVoteResults: false,
-      votes: null
+      voted: null,
+      successCount: null,
+      failCount: null
     };
   },
   methods: {
@@ -68,15 +70,16 @@ export default {
       this.onGoodTeam = bool;
     },
     votedOnQuest(votes) {
-      this.votes = votes.join(", ");
+      this.voted = votes.join(", ");
       this.showHasVotedOnQuest = true;
       this.showQuestVoteResults = false;
     },
     revealVotes(data) {
       this.canVoteOnQuest = false;
       this.showHasVotedOnQuest = false;
+      this.successCount = data["success"];
+      this.failCount = data["fail"];
       this.showQuestVoteResults = true;
-      this.votes = data;
     },
     hideVotes() {
       this.showQuestVoteResults = false;

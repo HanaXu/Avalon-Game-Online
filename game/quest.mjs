@@ -44,21 +44,17 @@ export class Quest {
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.votes = {
       'voted': [],
-      'succeed': 0,
-      'fail': 0
+      'succeed': [],
+      'fail': []
     };
     this.success = null;
-    this.fail = null;
   }
 
-  assignQuestResult() {
+  assignResult() {
     if (this.votes.fail > 0) {
       this.success = false;
-      this.fail = true;
-    }
-    else {
+    } else {
       this.success = true;
-      this.fail = false;
     }
   }
 

@@ -259,27 +259,29 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     console.log(`received quest vote from: ${name}`);
 
+    let votes = currentQuest.votes;
+
     if (decision == 'succeed') {
-      currentQuest.votes.succeed++;
+      votes.succeed.push(name);
     }
     else {
-      currentQuest.votes.fail++;
+      votes.fail.push(name);
     }
 
-    currentQuest.votes.voted.push(name);
+    votes.voted.push(name);
     //show that player has made some kind of vote
-    io.in(roomCode).emit('votedOnQuest', currentQuest.votes.voted);
+    io.in(roomCode).emit('votedOnQuest', votes.voted);
 
     //check if number of received votes is max needed
-    if ((currentQuest.votes.succeed + currentQuest.votes.fail) == currentQuest.playersRequired) {
+    if ((votes.succeed.length + votes.fail.length) == currentQuest.playersRequired) {
       //get rid of team vote stuff from DecideQuestTeam component
       io.in(roomCode).emit('hideTeamVotes');
       console.log('All quest votes received.');
 
       //show quest vote results to all players
-      io.in(roomCode).emit('revealVotes', currentQuest.votes);
+      io.in(roomCode).emit('revealVotes', { success: votes.succeed.length, fail: votes.fail.length });
 
-      currentQuest.assignQuestResult(); //succeed or fail
+      currentQuest.assignResult(); //quest success or fail
 
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
@@ -300,7 +302,7 @@ io.on('connection', socket => {
 
     if (isMerlin) {
       GameList[roomCode].endGameEvilWins(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
-      msg = `Assassin successfully discovered and killed ${name}, who was Merlin.`;
+      msg = `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`;
     } else {
       msg = `Assassin failed to discover and kill Merlin. Good Wins!`;
     }
@@ -411,7 +413,7 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 
   //check if voteTrack has exceeded 5 (game over)
   if (currentQuest.voteTrack > 5) {
-    let msg = `Quest ${currentQuest.questNum} had 5 failed team votes.`;
+    let msg = `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`;
 
     GameList[roomCode].endGameEvilWins(msg);
     io.in(roomCode).emit('gameOver', msg);
@@ -438,7 +440,7 @@ function checkForGameOver(roomCode) {
   //evil has won, game over
   if (tallyQuests.fails >= 3) {
     GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
-    io.in(roomCode).emit('gameOver', `${tallyQuests.fails} quests failed.`);
+    io.in(roomCode).emit('gameOver', `${tallyQuests.fails} quests failed. Evil Wins!`);
   }
   //good is on track to win, evil can assassinate
   else if (tallyQuests.successes >= 3) {
