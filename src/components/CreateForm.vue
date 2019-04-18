@@ -20,7 +20,6 @@
 
 <script>
 import axios from "axios";
-
 export default {
   name: "CreateForm",
   data() {
@@ -42,10 +41,15 @@ export default {
         )
         .then(res => {
           this.roomCode = res.data;
-
+          console.log(this.roomCode);
+          console.log(this.name);
           this.$socket.emit("createRoom", {
             roomCode: this.roomCode,
             name: this.name
+          });
+          this.$router.push({
+            name: "game",
+            params: { yourName: this.name, roomCode: this.roomCode }
           });
         });
     }
