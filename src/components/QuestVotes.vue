@@ -1,8 +1,13 @@
 <template>
   <div>
     <div class="row justify-content-md-center" v-if="canVoteOnQuest">
-      <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
-      <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
+      <b-button class="avalon-btn-lg" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
+      <b-button
+        class="avalon-btn-lg"
+        id="fail-btn"
+        @click="questVote('fail')"
+        :disabled="onGoodTeam"
+      >Fail</b-button>
     </div>
 
     <div v-if="showQuestVoteResults">
@@ -28,6 +33,7 @@
     </div>
   </div>
 </template>
+
 <script>
 export default {
   name: "QuestVotes",
@@ -53,9 +59,9 @@ export default {
     }
   },
   sockets: {
-    goOnQuest(data) {
+    goOnQuest(bool) {
       this.canVoteOnQuest = true;
-      this.onGoodTeam = data;
+      this.onGoodTeam = bool;
     },
     revealVotes(data) {
       this.canVoteOnQuest = false;

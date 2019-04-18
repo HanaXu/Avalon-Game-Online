@@ -50,6 +50,17 @@ export class Quest {
     this.fail = null;
   }
 
+  assignQuestResult() {
+    if (this.votes.fail > 0) {
+      this.success = false;
+      this.fail = true;
+    }
+    else {
+      this.success = true;
+      this.fail = false;
+    }
+  }
+
   //resets all values relating to players on quest & quest votes to original values
   resetQuest() {
     this.playersNeededLeft = this.playersRequired;

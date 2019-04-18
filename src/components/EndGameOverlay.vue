@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="overlay">
+  <div v-if="gameOver" class="container" id="overlay">
     <h1 class="gameOverMessage">Game Over</h1>
     <span class="text-light">{{ endGameMsg }}</span>
   </div>
@@ -8,7 +8,18 @@
 <script>
 export default {
   name: "EndGameOverlay",
-  props: ["endGameMsg"]
+  data() {
+    return {
+      gameOver: false,
+      endGameMsg: null
+    };
+  },
+  sockets: {
+    gameOver(msg) {
+      this.gameOver = true;
+      this.endGameMsg = msg;
+    }
+  }
 };
 </script>
 

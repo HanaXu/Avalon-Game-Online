@@ -6,16 +6,15 @@
         <span id="roomCode">{{ roomCode }}</span>
       </h4>
     </div>
-    <div class="container game px-0">
-      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg"/>
 
+    <div class="container game px-0">
+      <EndGameOverlay/>
       <b-row>
         <b-col cols="10">
-          <div style="text-align: left; align-items: left; justify-content: left">
-            <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
+          <div style="text-align: left;">
+            <LobbyList v-if="!gameStarted" :players="players"/>
           </div>
         </b-col>
-
         <b-col>
           <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
         </b-col>
@@ -43,9 +42,7 @@
       </div>
 
       <DecideQuestTeam :yourName="yourName"/>
-
       <QuestVotes :yourName="yourName"/>
-
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
@@ -91,19 +88,12 @@ export default {
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
 
-      onQuest: false,
-      canVoteOnQuest: false,
-      onGoodTeam: null,
-
       waitingForAssassin: false,
       assassination: false,
 
       showSetupOptions: false,
       error: false,
-      errorMsg: null,
-
-      gameOver: false,
-      endGameMsg: null
+      errorMsg: null
     };
   },
   created() {
@@ -144,7 +134,6 @@ export default {
     gameStarted() {
       this.gameStarted = true;
       this.error = false;
-      this.showSetupOptions = false;
     },
     //choose player to go on quest
     choosePlayersForQuest(bool) {
@@ -156,19 +145,17 @@ export default {
       this.showQuestMsg = true;
     },
     //etc
-    showHostSetupOptions() {
-      this.showSetupOptions = true;
+    showHostSetupOptions(bool) {
+      this.showSetupOptions = bool;
     },
     errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.showStartButton = true;
     },
-
     //assassination time
     beginAssassination(msg) {
       //update player cards to show Assassinate button
-      //this.players = data["players"];
       this.assassination = true;
       this.questMsg = msg;
     },
@@ -177,12 +164,6 @@ export default {
       this.waitingForAssassin = true;
       this.questMsg = msg;
       this.showQuestMsg = true;
-    },
-
-    //game is over
-    gameOver(msg) {
-      this.gameOver = true;
-      this.endGameMsg = msg;
     }
   }
 };
