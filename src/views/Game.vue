@@ -37,9 +37,9 @@
 </template>
 
 <script>
-import LobbyList from "../components/LobbyList.vue";
-import PlayerCards from "../components/PlayerCards.vue";
-import Chat from "../components/Chat.vue";
+import LobbyList from "@/components/LobbyList.vue";
+import PlayerCards from "@/components/PlayerCards.vue";
+import Chat from "@/components/Chat.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
 
 export default {
@@ -113,7 +113,28 @@ export default {
   background: #eae7e3;
   border-radius: 3px;
   padding: 1em;
-  min-height: 75vh;
+  min-height: 70vh;
+  clear: none;
+}
+
+.container.game {
+  max-width: 50vw;
+  min-height: 70vh;
+  /* float: left; */
+  display: inline-block;
+  padding: 1em;
+  margin: 0;
+  clear: none;
+}
+
+.container.chat {
+  max-width: 30vw;
+  min-height: 70vh;
+  padding: 1em;
+  margin: 0;
+  /* float: right; */
+  display: inline-block;
+  clear: none;
 }
 
 .setupButton {
