@@ -6,7 +6,7 @@
           <div class="card-header">Chatroom</div>
           <div class="card-body">
             <dl id="messageList"></dl>
-            <div class="messages">
+            <div class="messages" v-chat-scroll>
               <div class="message" v-bind:key="message.id" v-for="message in messages">
                 <strong>{{message.username + " "}}</strong>
                 <font size="2" color="grey">({{message.time}})</font>
@@ -39,6 +39,10 @@
 
 <script>
 import firebase from "firebase";
+import { setInterval } from "timers";
+import Vue from "vue";
+import VueChatScroll from "vue-chat-scroll";
+Vue.use(VueChatScroll);
 
 export default {
   name: "Chat",

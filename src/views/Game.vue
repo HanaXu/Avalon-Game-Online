@@ -130,7 +130,7 @@ export default {
 .container.chat {
   max-width: 30vw;
   min-height: 70vh;
-  padding: 1em;
+  padding: 0;
   margin: 0;
   /* float: right; */
   display: inline-block;
