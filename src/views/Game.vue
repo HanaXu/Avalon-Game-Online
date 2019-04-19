@@ -18,7 +18,7 @@
           </b-col>
           <b-col>
             <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-          <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
+            <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
           </b-col>
         </b-row>
 
@@ -126,15 +126,15 @@ export default {
       });
       this.showStartButton = false;
     },
-    createBot(){
+    createBot() {
       console.log(`CreateBot function Called with room: ${this.roomCode}`);
       this.$socket.emit("createBot", this.roomCode);
     }
   },
   sockets: {
     //update overall game
-    updatePlayers(data) {
-      this.players = data["players"];
+    updatePlayers(players) {
+      this.players = players;
     },
     updateQuests(data) {
       this.quests = data["quests"];

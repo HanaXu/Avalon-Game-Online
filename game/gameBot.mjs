@@ -6,7 +6,7 @@ const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "
 
 export class gameBot {
     constructor() {
-        //this.socketID = socketID;
+        this.socketID = null;
         this.name = "";
         this.roomCode = null;
         this.role = null;
@@ -32,14 +32,19 @@ export class gameBot {
         var middleName = " The Bot ";
         var name = firstName;
         name = name.concat(middleName);
+        this.name = name;
         console.log("Name is :");
-        console.log(name);
+        console.log(this.name);
+
+        /*
+            Socket Connection Portion
+        */
         var clientIO = socketIO;
         var socket = clientIO.connect('http://localhost:3000');
 
         socket.on('connect', () => {
-            console.log("In gameBot Class: Socket ID:");
-            console.log(socket.id)
+            this.socketID = socket.id;
+            console.log(`In gameBot Class: Socket ID: ${this.socketID}`);
         });
         //socket.emit("connection", socket);
 
@@ -54,16 +59,16 @@ export class gameBot {
             socket.emit("connectPlayer");
         }
 
-        socket.on("assignIdentities", function (players) {
-            //gameScreen.assignIdentities = true;
+        socket.on("updatePlayers", function (players) {
             //updatePlayers(players, name);
-            //console.log("Players Object");
-            //console.log(players);
-            let i = 0;
-            for (i in players) {
+            console.log("in Bot Class on updatePlayers: ");
+            // console.log(players)
+            // console.log(`my socket id is: ${socket.id}`)
+
+            for (let i in players) {
                 if (players[i].socketID === socket.id) {
-                    //console.log("found my Socket ID: "+name);
-                    console.log("My Identity is: " + players[i].name + " " + players[i].character);
+                    console.log(`my identity is: ${players[i].name}`)
+                    console.log(`my character is ${players[i].character}`)
                 }
             }
         });
@@ -72,19 +77,7 @@ export class gameBot {
             console.log("Bot Ready for Game!");
         });
 
-        socket.on("SetUpTable", function (players) {
-            let i = 0;
-            for (i in players) {
-                if (players[i].socketID === socket.id) {
-                    console.log("found my Socket ID: "+name);
-                }
-
-            }
-            //gameScreen.showGameScreen = true;
-            //updatePlayers(players);
-        });
-
-        socket.on("acceptOrRejectTeam", function(){
+        socket.on("acceptOrRejectTeam", function () {
             let botDecision = botDecisionQuest();
             socket.emit("questTeamDecision", {
                 name: this.name,
@@ -92,19 +85,18 @@ export class gameBot {
             });
 
         });
-    }
 
-    botDecisionQuest(){
-        var decision;
+        function botDecisionQuest() {
+            var decision;
 
-        if(this.team === 'Evil'){
-            decision = 'reject';
+            if (this.team === 'Evil') {
+                decision = 'reject';
+            } else {
+                decision = 'accept';
+            }
+
+            return decision;
         }
-        else{
-            decision = 'accept';
-        }
-
-        return decision;
     }
 
 };

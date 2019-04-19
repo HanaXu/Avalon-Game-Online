@@ -1,8 +1,14 @@
 import express from 'express';
 import socketIO from 'socket.io';
-import { Game } from '../game/game.mjs';
-import { Player } from '../game/player.mjs';
-import { gameBot } from '../game/gameBot.mjs';
+import {
+  Game
+} from '../game/game.mjs';
+import {
+  Player
+} from '../game/player.mjs';
+import {
+  gameBot
+} from '../game/gameBot.mjs';
 import {
   sanitizeTeamView,
   validateOptionalCharacters
@@ -61,14 +67,12 @@ io.on('connection', socket => {
     io.to(socket.id).emit('showHostSetupOptions', true);
 
     //emit all the game players to client, client then updates the UI
-    io.in(roomCode).emit('updatePlayers', {
-      players: game.players
-    });
+    io.in(roomCode).emit('updatePlayers', game.players);
   });
 
   // Listen for the Client-Host's Call to Create a Bot
   // Upon the Call, initaite an Instance of GameBot
-  socket.on('createBot', function(roomCode){
+  socket.on('createBot', function (roomCode) {
     console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
     let Bot = new gameBot();
     Bot.createBot(roomCode);
@@ -84,23 +88,19 @@ io.on('connection', socket => {
       console.log(`error joining room. room does not exist: ${roomCode}`);
       socket.emit('errorMsg', `Error: Room code '${roomCode}' does not exist.`);
       return;
-    }
-    else if (GameList[roomCode].gameIsStarted) {
+    } else if (GameList[roomCode].gameIsStarted) {
       console.log('game has already started. cannot join');
       socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
-    }
-    else if (name.length < 1 || name.length > 20) {
+    } else if (name.length < 1 || name.length > 20) {
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
-    }
-    else if (GameList[roomCode].hasPlayerWithName(name)) {
+    } else if (GameList[roomCode].hasPlayerWithName(name)) {
       console.log(`Error, someone already has the name: ${name}`);
       socket.emit('errorMsg', `Error: Name '${name}' is already taken.`);
       return;
-    }
-    else if (GameList[roomCode].players.length >= 10) {
+    } else if (GameList[roomCode].players.length >= 10) {
       console.log(`Error, Game is full`);
       socket.emit('errorMsg', `Error: Room '${roomCode}' has reached a capacity of 10`);
       return;
@@ -116,9 +116,7 @@ io.on('connection', socket => {
     console.log(GameList);
 
     //emit all the game players to client, client then updates the UI
-    io.in(roomCode).emit('updatePlayers', {
-      players: GameList[roomCode].players
-    });
+    io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
 
     //check for game ready
     if (GameList[roomCode].players.length >= 5) {
@@ -271,8 +269,7 @@ io.on('connection', socket => {
 
     if (decision == 'succeed') {
       votes.succeed.push(name);
-    }
-    else {
+    } else {
       votes.fail.push(name);
     }
 
@@ -287,7 +284,10 @@ io.on('connection', socket => {
       console.log('All quest votes received.');
 
       //show quest vote results to all players
-      io.in(roomCode).emit('revealVotes', { success: votes.succeed.length, fail: votes.fail.length });
+      io.in(roomCode).emit('revealVotes', {
+        success: votes.succeed.length,
+        fail: votes.fail.length
+      });
 
       currentQuest.assignResult(); //quest success or fail
 
@@ -331,9 +331,7 @@ io.on('connection', socket => {
       //disconnection before game start
       else {
         //emit all the game players to client, client then updates the UI
-        io.in(roomCode).emit('updatePlayers', {
-          players: players
-        });
+        io.in(roomCode).emit('updatePlayers', players);
       }
     }
   });
@@ -344,9 +342,7 @@ io.on('connection', socket => {
 function emitSanitizedPlayers(players) {
   for (let i in players) {
     let sanitizedPlayers = sanitizeTeamView(players[i].socketID, players[i].character, players);
-    io.to(players[i].socketID).emit('updatePlayers', {
-      players: sanitizedPlayers
-    });
+    io.to(players[i].socketID).emit('updatePlayers', sanitizedPlayers);
   }
 }
 
@@ -404,8 +400,7 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 
     GameList[roomCode].endGameEvilWins(msg);
     io.in(roomCode).emit('gameOver', msg);
-  }
-  else {
+  } else {
     //reset current quest player data
     GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
 
