@@ -7,44 +7,52 @@
       </h4>
     </div>
 
-    <div class="container game px-0">
-      <EndGameOverlay/>
-      <b-row>
-        <b-col cols="10">
-          <div style="text-align: left;">
-            <LobbyList v-if="!gameStarted" :players="players"/>
-          </div>
-        </b-col>
-        <b-col>
-          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-        </b-col>
-      </b-row>
+    <div class="row justify-content-md-center mx-0">
+      <div class="container game col-8">
+        <EndGameOverlay/>
+        <b-row>
+          <b-col cols="10">
+            <div style="text-align: left;">
+              <LobbyList v-if="!gameStarted" :players="players"/>
+            </div>
+          </b-col>
+          <b-col>
+            <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          </b-col>
+        </b-row>
 
-      <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
+        <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
 
-      <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+        <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
 
-      <div v-if="showStartButton">
-        <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+        <div v-if="showStartButton">
+          <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+        </div>
+
+        <PlayerCards
+          v-if="gameStarted"
+          :players="players"
+          :yourName="yourName"
+          :showAddPlayerButton="showAddPlayerButton"
+          :showRemovePlayerButton="showRemovePlayerButton"
+          :assassination="assassination"
+        />
+
+        <div v-if="showQuestMsg && questMsg.length > 0" class="row justify-content-md-center py-2">
+          <span class="text-dark">{{ questMsg }}</span>
+        </div>
+
+        <QuestVotes :yourName="yourName"/>
+        <DecideQuestTeam :yourName="yourName"/>
+        <QuestCards v-if="gameStarted" :quests="quests"/>
+        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
       </div>
 
-      <PlayerCards
-        v-if="gameStarted"
-        :players="players"
-        :yourName="yourName"
-        :showAddPlayerButton="showAddPlayerButton"
-        :showRemovePlayerButton="showRemovePlayerButton"
-        :assassination="assassination"
-      />
-
-      <div v-if="showQuestMsg && questMsg.length > 0" class="row justify-content-md-center py-2">
-        <span class="text-dark">{{ questMsg }}</span>
+      <div class="container chat col-4">
+        <div style="align: right">
+          <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+        </div>
       </div>
-
-      <QuestVotes :yourName="yourName"/>
-      <DecideQuestTeam :yourName="yourName"/>
-      <QuestCards v-if="gameStarted" :quests="quests"/>
-      <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
   </div>
 </template>
@@ -52,6 +60,7 @@
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import Chat from "@/components/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
@@ -64,6 +73,7 @@ export default {
   components: {
     LobbyList,
     PlayerCards,
+    Chat,
     QuestCards,
     VoteTrack,
     SetupOptions,
@@ -173,7 +183,29 @@ export default {
 .game {
   background: #eae7e3;
   border-radius: 3px;
+  padding: 1em;
+  min-height: 70vh;
+  clear: none;
+}
+
+.container.game {
+  max-width: 50vw;
+  min-height: 70vh;
+  /* float: left; */
+  display: inline-block;
+  padding: 1em;
+  margin: 0;
+  clear: none;
+}
+
+.container.chat {
+  max-width: 30vw;
   min-height: 75vh;
+  padding: 0;
+  margin: 0;
+  /* float: right; */
+  display: inline-block;
+  clear: none;
 }
 
 .setupButton {
