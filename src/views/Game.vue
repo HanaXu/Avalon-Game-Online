@@ -22,7 +22,10 @@
 
       <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
 
-      <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+
+
+
+      <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
 
       <div v-if="showStartButton">
         <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
@@ -37,6 +40,10 @@
         :assassination="assassination"
       />
 
+      <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
+
+
+<!--
       <div
         v-if="showQuestMsg && questMsg.length > 0"
         class="row justify-content-md-center"
@@ -44,6 +51,7 @@
       >
         <span class="text-dark">{{ questMsg }}</span>
       </div>
+-->
 
       <DecideQuestTeam :yourName="yourName"/>
 
@@ -68,6 +76,7 @@ import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
+import GameStatus from "@/components/GameStatus.vue";
 
 export default {
   name: "Game",
@@ -79,7 +88,8 @@ export default {
     SetupOptions,
     DecideQuestTeam,
     EndGameOverlay,
-    QuestVotes
+    QuestVotes,
+    GameStatus
   },
   data() {
     return {
@@ -208,5 +218,6 @@ export default {
 
 .footer {
   box-shadow: 0 -2px 5px #c2ab8e;
+  text-align: center;
 }
 </style>
