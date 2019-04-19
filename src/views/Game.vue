@@ -38,10 +38,10 @@
         :showRemovePlayerButton="showRemovePlayerButton"
         :assassination="assassination"
       />
-      <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
+      <GameStatus v-if="gameStarted" :errorMsg="errorMsg" :questMsg="questMsg" />
+      <!-- removed so GameStatus always shows: v-if="(showQuestMsg && questMsg.length > 0) || error" -->
 
-
-      <PlayerVoteStatus  />
+      <PlayerVoteStatus v-if="showPlayerVoteStatus" />
 
       <DecideQuestTeam :yourName="yourName"/>
 
@@ -164,6 +164,7 @@ export default {
     },
     //this is passed up from ShowPlayerVoteStatus.vue
     togglePlayerVoteStatus(bool) {
+      console.log("togglePlayerVoteStatus");
       this.showPlayerVoteStatus = bool;
     },
     updateQuestMsg(msg) {

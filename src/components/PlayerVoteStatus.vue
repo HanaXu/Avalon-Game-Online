@@ -30,6 +30,29 @@
             </div>
           </div>
 
+      <!--quest team has voted-->
+          <div v-if="showQuestVoteResults">
+       <!--     <div v-if="voteFail > 0">
+              <strong>Quest Vote Results:</strong>
+              <br>
+              <strong>Succeed:</strong>
+              {{ voteSucceed }}
+              <br>
+              <strong>Fail:</strong>
+              {{ voteFail }}
+            </div>
+      -->
+            <div>
+              <strong>Quest Vote Results:</strong>
+              <br>
+              <strong>Succeed:</strong>
+              {{ voteSucceed }}
+              <br>
+              <strong>Fail:</strong>
+              {{ voteFail }}
+            </div>
+          </div>
+
    </b-col>
   </b-row>
 </div>
@@ -48,13 +71,14 @@ export default {
   ],
   sockets: {
     votedOnTeam(votes) {
-      this.$socket.emit('togglePlayerVoteStatus', true);
+      console.log("votedOnTeam()");
+      //this.$socket.emit('togglePlayerVoteStatus', true);
       this.teamVotes = votes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
     },
     revealTeamVotes(votes) {
-      this.$socket.emit('togglePlayerVoteStatus', true);
+      //this.$socket.emit('togglePlayerVoteStatus', true);
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
       this.teamVotes.reject = votes.reject.join(", ");
@@ -62,7 +86,7 @@ export default {
       this.showTeamVoteResults = true;
     },
     hideTeamVotes() {
-      this.$socket.emit('togglePlayerVoteStatus', false);
+      //this.$socket.emit('togglePlayerVoteStatus', false);
       this.showHasVoted = false;
       this.showTeamVoteResults = false;
     }

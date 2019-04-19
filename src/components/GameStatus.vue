@@ -13,8 +13,6 @@ export default {
     "questMsg",
     "errorMsg"
   ]
-
-
 }
 </script>
 <style>

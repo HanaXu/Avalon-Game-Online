@@ -4,28 +4,6 @@
       <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
       <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
     </div>
-
-    <div v-if="showQuestVoteResults">
-      <b-alert v-if="voteFail > 0" show variant="danger">
-        <strong>Quest Vote Results:</strong>
-        <br>
-        <strong>Succeed:</strong>
-        {{ voteSucceed }}
-        <br>
-        <strong>Fail:</strong>
-        {{ voteFail }}
-      </b-alert>
-
-      <b-alert v-if="voteFail == 0" show variant="success">
-        <strong>Quest Vote Results:</strong>
-        <br>
-        <strong>Succeed:</strong>
-        {{ voteSucceed }}
-        <br>
-        <strong>Fail:</strong>
-        {{ voteFail }}
-      </b-alert>
-    </div>
   </div>
 </template>
 <script>

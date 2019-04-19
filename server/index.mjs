@@ -240,7 +240,8 @@ io.on('connection', socket => {
     socket.emit('acceptOrRejectTeam', false);
 
     //show that player has made some kind of vote
-    io.in(roomCode).emit('votedOnTeam', currentQuest.questTeamDecisions.voted);
+    io.in(roomCode).emit('togglePlayerVoteStatus', true); //goes to Game.vue to display the element
+    io.in(roomCode).emit('votedOnTeam', currentQuest.questTeamDecisions.voted); //goes to PlayerVoteStatus to update content of element
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
