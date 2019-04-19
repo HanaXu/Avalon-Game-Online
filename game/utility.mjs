@@ -101,24 +101,23 @@ export function sanitizeForMerlin(yourSocketID, players) {
 //check to make sure chosen optional characters works for number of players
 //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
 export function validateOptionalCharacters(characters, numPlayers) {
-    console.log(characters);
-    console.log(numPlayers);
-    if (numPlayers <= 6 &&
-        ((characters.includes("Mordred") && characters.includes("Oberon")) ||
-            characters.includes("Mordred") && characters.includes("Morgana")) ||
-        characters.includes("Oberon") && characters.includes("Morgana")) {
+    console.log(`total num players: ${numPlayers}`);
+    console.log(`characters selected: ${characters}`)
+
+    let evilCharacters = characters.filter(function (character) {
+        return character != "Percival";
+    });
+    console.log(`evil characters are: ${evilCharacters}`);
+
+    if (numPlayers <= 6 && evilCharacters.length > 1) {
         return `Error: game with 5 or 6 players can only include 1 of Mordred, 
-              Oberon, or Morgana. Please select only one then click Start Game again.`;
-    } else if (
-        numPlayers > 6 &&
-        numPlayers < 10 &&
-        characters.includes("Mordred") &&
-        characters.includes("Oberon") &&
-        characters.includes("Morgana")
-    ) {
+                Oberon, or Morgana. Please select only one then click Start Game again.`;
+    }
+    else if ((numPlayers > 6 && numPlayers < 10) && evilCharacters.length > 2) {
         return `Error: game with 7, 8, or 9 players can only include 2 of Mordred, 
-              Oberon, or Morgana. Please de-select one then click Start Game again.`;
-    } else {
+                Oberon, or Morgana. Please de-select one then click Start Game again.`;
+    }
+    else {
         return ""
     }
 }
