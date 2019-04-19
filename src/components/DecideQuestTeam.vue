@@ -24,24 +24,25 @@
       </div>
     </div>
 
-    <div v-if="showTeamVoteResults">
-      <b-alert
-        v-if="teamVotes.reject.length >= teamVotes.accept.length"
-        show
-        variant="danger"
-      >Quest team was Rejected. New quest leader has been chosen.</b-alert>
-      <b-alert
-        v-if="teamVotes.reject.length < teamVotes.accept.length"
-        show
-        variant="success"
-      >Quest team was Approved. Waiting for quest team to go on quest.</b-alert>
-      <strong>Vote Results:</strong>
-      <br>
-      <strong>Accepted:</strong>
-      {{ teamVotes.accept }}
-      <br>
-      <strong>Rejected:</strong>
-      {{ teamVotes.reject }}
+    <div v-if="showTeamVoteResults" class="mt-2">
+      <b-alert v-if="teamVotes.reject.length >= teamVotes.accept.length" show variant="danger">
+        Quest team was Rejected. New quest leader has been chosen.
+        <br>
+        <strong>Accepted:</strong>
+        {{ teamVotes.accept }}
+        <br>
+        <strong>Rejected:</strong>
+        {{ teamVotes.reject }}
+      </b-alert>
+      <b-alert v-if="teamVotes.reject.length < teamVotes.accept.length" show variant="success">
+        Quest team was Approved. Waiting for quest team to go on quest.
+        <br>
+        <strong>Accepted:</strong>
+        {{ teamVotes.accept }}
+        <br>
+        <strong>Rejected:</strong>
+        {{ teamVotes.reject }}
+      </b-alert>
     </div>
   </div>
 </template>
@@ -58,9 +59,7 @@ export default {
       showTeamVoteResults: false
     };
   },
-  props: [
-    "yourName"
-  ],
+  props: ["yourName"],
   methods: {
     questTeamConfirmed() {
       this.$socket.emit("questTeamConfirmed");

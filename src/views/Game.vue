@@ -16,7 +16,8 @@
           </div>
         </b-col>
         <b-col>
-          <b-button v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
         </b-col>
       </b-row>
 
@@ -39,7 +40,6 @@
         :showRemovePlayerButton="showRemovePlayerButton"
         :assassination="assassination"
       />
-
       <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
 
 
@@ -55,7 +55,7 @@
 
       <DecideQuestTeam :yourName="yourName"/>
 
-      <QuestVotes :yourName="yourName" />
+      <QuestVotes :yourName="yourName"/>
 
       <QuestCards v-if="gameStarted" :quests="quests"/>
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
@@ -141,6 +141,10 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
+    },
+    createBot(){
+      console.log(`CreateBot function Called with room: ${this.roomCode}`);
+      this.$socket.emit("createBot", this.roomCode);
     }
   },
   sockets: {

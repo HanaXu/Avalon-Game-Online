@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-md-center" style="padding: 1rem;">
+  <div class="row justify-content-md-center">
     <span class="text-dark mx-2" style="margin-top: .7rem">Vote Track:</span>
     <div
       class="circle"
