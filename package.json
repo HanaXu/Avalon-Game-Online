@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "vue": "vue-cli-service serve",
-    "build": "vue-cli-service build",
     "node": "node --experimental-modules server/index.mjs",
     "start": "vue-cli-service serve | node --experimental-modules server/index.mjs"
   },
