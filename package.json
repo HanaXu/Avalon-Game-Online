@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "vue": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "start": "node server/index.js"
+    "node": "node --experimental-modules server/index.mjs",
+    "start": "vue-cli-service serve | node --experimental-modules server/index.mjs"
   },
   "dependencies": {
     "axios": "^0.18.0",

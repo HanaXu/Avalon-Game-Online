@@ -4,15 +4,19 @@
       <div v-if="!(joinToggled || createToggled)" style="margin-top: 15%">
         <h1 class="title">Avalonline</h1>
         <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
-        <b-button :pressed.sync="createToggled" id="createRoom" class="avalon-btn-lg">Create Room</b-button>
-        <b-button :pressed.sync="joinToggled" id="joinRoom" class="avalon-btn-lg">Join Room</b-button>
+        <b-button
+          :pressed.sync="createToggled"
+          id="create-room-btn"
+          class="avalon-btn-lg"
+        >Create Room</b-button>
+        <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
       </div>
       <div v-if="createToggled">
-        <CreateForm class="jumbo"></CreateForm>
+        <CreateForm style="margin-top: 45%"></CreateForm>
         <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
       <div v-if="joinToggled">
-        <JoinForm class="jumbo"></JoinForm>
+        <JoinForm style="margin-top: 31%"></JoinForm>
         <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-left">Back</b-button>
       </div>
     </section>
@@ -39,10 +43,6 @@ export default {
 </script>
 
 <style scoped>
-.jumbo {
-  margin-top: 30%;
-}
-
 .container {
   margin: 0 auto;
   display: flex;

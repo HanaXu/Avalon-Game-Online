@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
-      <b-navbar-brand to="/">Avalonline</b-navbar-brand>
+      <b-navbar-brand to="/">{{ navbarBrandMsg }}</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
@@ -15,6 +15,22 @@
     <router-view/>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      navbarBrandMsg: "Avalonline"
+    };
+  },
+  sockets: {
+    roomCode(roomCode) {
+      this.navbarBrandMsg = "Room " + roomCode;
+    }
+  }
+};
+</script>
+
 
 <style lang="scss">
 #app {
@@ -37,7 +53,7 @@
   color: #494949;
 }
 body {
-  padding: 20px 30px;
+  padding: 20px 0px;
   background: #d6cdc2 !important;
 }
 *,

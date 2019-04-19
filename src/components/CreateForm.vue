@@ -1,5 +1,5 @@
 <template>
-  <div class="jumbo">
+  <div>
     <b-form inline>
       <label class="sr-only" for="inline-form-input-name">Name</label>
       <b-input
@@ -9,7 +9,7 @@
         placeholder="name"
         v-model="name"
       ></b-input>
-      <b-button @click="createRoom" id="createRoom" class="avalon-btn-lg">Create Room</b-button>
+      <b-button @click="createRoom" id="create-room-btn" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
@@ -51,12 +51,12 @@ export default {
     }
   },
   sockets: {
-    errorMsg: function(msg) {
+    errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation: function() {
+    passedValidation() {
       this.$router.push({
         name: "game",
         params: { yourName: this.name, roomCode: this.roomCode }
