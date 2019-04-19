@@ -283,6 +283,9 @@ io.on('connection', socket => {
 
       currentQuest.assignResult(); //quest success or fail
 
+      //add quest to history log
+      GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
         quests: GameList[roomCode].quests,
@@ -409,6 +412,8 @@ function questTeamAcceptedStuff(roomCode) {
 }
 
 function questTeamRejectedStuff(roomCode, currentQuest) {
+  //add quest to history log
+  GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
   currentQuest.voteTrack++;
 
   //check if voteTrack has exceeded 5 (game over)
