@@ -140,6 +140,15 @@ export class Game {
     }
   }
 
+  getAssassinSocketID() {
+    for (let i in this.players) {
+      if (this.players[i].character === 'Assassin') {
+        console.log('Assassin socket found');
+        return this.players[i].socketID;
+      }
+    }
+  }
+
   // randomly assign a room leader in the player list.
   assignFirstLeader() {
     console.log('assignFirstLeader()');
@@ -233,7 +242,7 @@ export class Game {
 
   //move to next quest out of 5
   startNextQuest(lastQuestNum) {
-    if(lastQuestNum < 5) {
+    if (lastQuestNum < 5) {
       this.quests[lastQuestNum].currentQuest = false;
       this.quests[lastQuestNum + 1].currentQuest = true;
 
@@ -246,67 +255,35 @@ export class Game {
     }
   }
 
-  //called after 5 quests completed
-  //returns count of successes, fails, and boolean evilWins
-  tallyQuestResults() {
-    //tally up quest successes/fails
+  //called after each quest is completed
+  //tally all quests successes/fails
+  tallyQuests() {
     let successCount = 0;
     let failCount = 0;
-    for(let i = 1; i < 6; i++) {
-      if(this.quests[i].success) {
+    for (let i = 1; i < 6; i++) {
+      if (this.quests[i].success) {
         successCount++;
       }
-      else if(this.quests[i].fail) {
+      else if (this.quests[i].fail) {
         failCount++;
       }
     }
     console.log(`successCount: ${successCount}`);
     console.log(`failCount: ${failCount}`);
-    //more succeeded quests than failed?
-    if(successCount >= 3) {
-      return({
-        successes: successCount,
-        fails: failCount,
-        msg: "",
-        gameOver: true,
-        evilWins: false
-      });
-    }
-    else if(failCount >=3) {
-      let msg = `${failCount} quests failed.`;
-      //this.endGameEvilWins(msg);
-      return({
-        successes: successCount,
-        fails: failCount,
-        msg: msg,
-        gameOver: true,
-        evilWins: true
-      });
-    }
-    else {
-      //game isn't over
-      return({
-        successes: successCount,
-        fails: failCount,
-        msg: "",
-        gameOver: false,
-        evilWins: false
-      });
-    }
-
+    return ({
+      successes: successCount,
+      fails: failCount
+    });
   }
 
-  //check if Assassinated player is Merlin
+  //check if player is Merlin
   checkIfMerlin(name) {
     for (let i = 0; i < this.players.length; i++) {
-      if(this.players[i].name == name && this.players[i].character == "Merlin") {
-        //successful assassination, evil wins
-        this.endGameEvilWins(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
-        return(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
+      if (this.players[i].name == name && this.players[i].character == "Merlin") {
+        return true;
       }
     }
-    //failed assassination, good wins
-    return(`Assassin failed to discover and kill Merlin. Good Wins!`);
+    return false;
   }
 
   //end the game in favor of evil
