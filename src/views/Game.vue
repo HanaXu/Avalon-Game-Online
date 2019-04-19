@@ -17,13 +17,11 @@
         </b-col>
         <b-col>
           <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-          <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
+
         </b-col>
       </b-row>
 
-      <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
-
-
+      <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
 
 
       <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
@@ -43,15 +41,7 @@
       <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
 
 
-<!--
-      <div
-        v-if="showQuestMsg && questMsg.length > 0"
-        class="row justify-content-md-center"
-        style="padding: 1rem;"
-      >
-        <span class="text-dark">{{ questMsg }}</span>
-      </div>
--->
+      <PlayerVoteStatus  />
 
       <DecideQuestTeam :yourName="yourName"/>
 
@@ -61,7 +51,7 @@
       <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
 
-    <b-navbar toggleable="lg" class="navbar-default footer" fixed="bottom">
+    <b-navbar toggleable="lg" class="navbar-default footer" fixed="bottom" style="text-align: center;">
       Show/Hide Chat
     </b-navbar>
   </div>
@@ -77,6 +67,7 @@ import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
 import GameStatus from "@/components/GameStatus.vue";
+import PlayerVoteStatus from "@/components/PlayerVoteStatus.vue";
 
 export default {
   name: "Game",
@@ -89,7 +80,8 @@ export default {
     DecideQuestTeam,
     EndGameOverlay,
     QuestVotes,
-    GameStatus
+    GameStatus,
+    PlayerVoteStatus
   },
   data() {
     return {
@@ -111,6 +103,8 @@ export default {
       onQuest: false,
       canVoteOnQuest: false,
       onGoodTeam: null,
+
+      showPlayerVoteStatus: false,
 
       waitingForAssassin: false,
       assassination: false,
@@ -141,10 +135,6 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
-    },
-    createBot(){
-      console.log(`CreateBot function Called with room: ${this.roomCode}`);
-      this.$socket.emit("createBot", this.roomCode);
     }
   },
   sockets: {
@@ -171,6 +161,10 @@ export default {
     choosePlayersForQuest(bool) {
       this.showAddPlayerButton = bool;
       this.showRemovePlayerButton = bool;
+    },
+    //this is passed up from ShowPlayerVoteStatus.vue
+    togglePlayerVoteStatus(bool) {
+      this.showPlayerVoteStatus = bool;
     },
     updateQuestMsg(msg) {
       this.questMsg = msg;

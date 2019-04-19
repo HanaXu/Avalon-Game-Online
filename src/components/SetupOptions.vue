@@ -9,7 +9,9 @@
         <b-form-input id="bots" type="number" min="0" max="10" value="0"></b-form-input>
       </b-col>
     </b-row>
-
+    <b-row>
+      <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
+    </b-row>
     <b-row>
       <b-col sm="5">
         <label class="label" for="characters">Special Characters:</label>
@@ -44,7 +46,9 @@
 <script>
 export default {
   name: "SetupOptions",
-  props: [],
+  props: [
+    "roomCode"
+  ],
   data() {
     return {
       error: false,
@@ -82,6 +86,10 @@ export default {
           }
         }
       }
+    },
+    createBot(){
+      console.log(`CreateBot function Called with room: ${this.roomCode}`);
+      this.$socket.emit("createBot", this.roomCode);
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
