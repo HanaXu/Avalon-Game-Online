@@ -7,19 +7,22 @@ const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "
 export class gameBot {
     constructor() {
         this.socketID = null;
-        this.name = "";
+        this.name = null;
         this.roomCode = null;
         this.role = null;
         this.turn = false;
-        this.team = 'undecided';
-        this.character = 'undecided';
+        this.team = null;
+        this.character = null;
         this.leader = false;
-        this.questAction = 'undecided';
-        this.action = 'undecided';
+        this.questAction = null;
+        this.action = null;
     };
 
     createBot(roomCode) {
-        this.roomCode = roomCode;
+
+        let bot = new gameBot();
+
+        bot.roomCode = roomCode;
 
         /**
          * Lets get the Name of the bot,
@@ -31,10 +34,10 @@ export class gameBot {
         var lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
         var middleName = " The Bot ";
         var name = firstName;
-        name = name.concat(middleName);
-        this.name = name;
+        name.concat(middleName);
+        bot.name = name;
         console.log("Name is :");
-        console.log(this.name);
+        console.log(bot.name);
 
         /*
             Socket Connection Portion
@@ -43,8 +46,8 @@ export class gameBot {
         var socket = clientIO.connect('http://localhost:3000');
 
         socket.on('connect', () => {
-            this.socketID = socket.id;
-            console.log(`In gameBot Class: Socket ID: ${this.socketID}`);
+            bot.socketID = socket.id;
+            console.log(`In gameBot Class: Socket ID: ${bot.socketID}`);
         });
         //socket.emit("connection", socket);
 
@@ -68,7 +71,8 @@ export class gameBot {
             for (let i in players) {
                 if (players[i].socketID === socket.id) {
                     console.log(`my identity is: ${players[i].name}`)
-                    console.log(`my character is ${players[i].character}`)
+                    console.log(`my character is ${players[i].team}`)
+                    bot.team = players[i].team;
                 }
             }
         });
@@ -80,7 +84,7 @@ export class gameBot {
         socket.on("acceptOrRejectTeam", function () {
             let botDecision = botDecisionQuest();
             socket.emit("questTeamDecision", {
-                name: this.name,
+                name: bot.name,
                 decision: botDecision
             });
 
@@ -89,7 +93,7 @@ export class gameBot {
         function botDecisionQuest() {
             var decision;
 
-            if (this.team === 'Evil') {
+            if (bot.team === 'Evil') {
                 decision = 'reject';
             } else {
                 decision = 'accept';
