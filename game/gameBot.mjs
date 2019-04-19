@@ -8,8 +8,8 @@ export class gameBot {
     constructor() {
         //this.socketID = socketID;
         this.name = "";
-        this.roomCode = roomCode;
-        this.role = role;
+        this.roomCode = null;
+        this.role = null;
         this.turn = false;
         this.team = 'undecided';
         this.character = 'undecided';
@@ -18,7 +18,7 @@ export class gameBot {
         this.action = 'undecided';
     };
 
-    static createBot(roomCode) {
+    createBot(roomCode) {
         this.roomCode = roomCode;
 
         /**
@@ -83,6 +83,28 @@ export class gameBot {
             //gameScreen.showGameScreen = true;
             //updatePlayers(players);
         });
+
+        socket.on("acceptOrRejectTeam", function(){
+            let botDecision = botDecisionQuest();
+            socket.emit("questTeamDecision", {
+                name: this.name,
+                decision: botDecision
+            });
+
+        });
+    }
+
+    botDecisionQuest(){
+        var decision;
+
+        if(this.team === 'Evil'){
+            decision = 'reject';
+        }
+        else{
+            decision = 'accept';
+        }
+
+        return decision;
     }
 
 };

@@ -70,7 +70,8 @@ io.on('connection', socket => {
   // Upon the Call, initaite an Instance of GameBot
   socket.on('createBot', function(roomCode){
     console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
-    gameBot.createBot(roomCode);
+    let Bot = new gameBot();
+    Bot.createBot(roomCode);
   });
 
   //join an existing room
