@@ -4,7 +4,7 @@
       <div class="col-md-12">
       -->
         <div class="card">
-          <div class="card-header">Chatroom</div>
+          <div class="card-header">Chat Room: {{roomCode}}</div>
           <div class="card-body">
             <dl id="messageList"></dl>
             <div class="messages" v-chat-scroll>
