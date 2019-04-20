@@ -1,4 +1,4 @@
-<template>
+<template xmlns="">
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
@@ -6,18 +6,36 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item href="#">Game Play</b-nav-item>
-          <b-nav-item href="#">Roles</b-nav-item>
-          <b-nav-item href="#">Features</b-nav-item>
+          <b-nav-item v-b-modal.modal-rules>Rules</b-nav-item>
+          <b-nav-item v-b-modal.modal-roles>Roles</b-nav-item>
+          <b-nav-item v-b-modal.modal-history>Game History</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+
+    <div class="modals">
+      <RulesModal/>
+      <RolesModal/>
+      <HistoryModal/>
+    </div>
+
     <router-view/>
   </div>
 </template>
 
 <script>
+import Home from "./views/Home.vue";
+import RulesModal from "@/components/navbar/RulesModal.vue";
+import RolesModal from "@/components/navbar/RolesModal.vue";
+import HistoryModal from "@/components/navbar/HistoryModal.vue";
+
 export default {
+  components: {
+    Home,
+    RulesModal,
+    RolesModal,
+    HistoryModal
+  },
   data() {
     return {
       navbarBrandMsg: "Avalonline"
@@ -30,7 +48,6 @@ export default {
   }
 };
 </script>
-
 
 <style lang="scss">
 #app {
@@ -80,5 +97,11 @@ body {
   background: #ccc351 !important;
   border-color: #ccc351 !important;
   transition: all 0.4s ease 0s;
+}
+.heading {
+  color: #685035;
+}
+.modals {
+  text-align: left;
 }
 </style>
