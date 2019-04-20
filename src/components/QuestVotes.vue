@@ -10,10 +10,6 @@
       >Fail</b-button>
     </div>
 
-    <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
-      Voted:
-      <strong>{{ voted }}</strong>
-    </div>
   </div>
 </template>
 <script>
@@ -24,10 +20,6 @@ export default {
     return {
       canVoteOnQuest: false,
       onGoodTeam: false,
-      showQuestVoteResults: false,
-      voted: null,
-      successCount: null,
-      failCount: null
     };
   },
   methods: {
@@ -44,17 +36,6 @@ export default {
     goOnQuest(bool) {
       this.canVoteOnQuest = true;
       this.onGoodTeam = bool;
-    },
-    revealVotes(data) {
-      this.canVoteOnQuest = false;
-      this.showHasVotedOnQuest = false;
-      this.successCount = data["success"];
-      this.failCount = data["fail"];
-      this.showQuestVoteResults = true;
-    },
-    hideVotes() {
-      this.showQuestVoteResults = false;
-      this.canVoteOnQuest = false;
     }
   }
 };

@@ -52,6 +52,7 @@ export default {
 
 
 <style lang="scss">
+@import '/styles/styles.css';
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -83,25 +84,7 @@ body {
   box-sizing: border-box;
   margin: 0;
 }
-.avalon-btn-lg {
-  color: #ccc351 !important;
-  text-transform: uppercase;
-  background: #685035 !important;
-  padding: 20px !important;
-  border: 4px solid #6f5035 !important;
-  border-radius: 7px;
-  display: inline-block;
-  font-size: 20px !important;
-  margin: 5px;
-}
-.avalon-btn-lg:hover,
-.avalon-btn-lg:focus,
-.avalon-btn-lg:active {
-  color: #685035 !important;
-  background: #ccc351 !important;
-  border-color: #ccc351 !important;
-  transition: all 0.4s ease 0s;
-}
+
 .heading {
   color: #685035;
 }

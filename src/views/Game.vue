@@ -176,7 +176,7 @@ export default {
       this.showAddPlayerButton = bool;
       this.showRemovePlayerButton = bool;
     },
-    //this is passed up from ShowPlayerVoteStatus.vue
+    //
     togglePlayerVoteStatus(bool) {
       console.log("togglePlayerVoteStatus");
       this.showPlayerVoteStatus = bool;

@@ -11,8 +11,8 @@
       <!--all players have voted, show all results-->
           <div v-if="showTeamVoteResults" class="mt-2">
             <div v-if="teamVotes.reject.length >= teamVotes.accept.length">
-              Quest team was Rejected. New quest leader has been chosen.
-              <br>
+              <!--Quest team was Rejected. New quest leader has been chosen.<br>-->
+
               <strong>Accepted:</strong>
               {{ teamVotes.accept }}
               <br>
@@ -20,8 +20,8 @@
               {{ teamVotes.reject }}
             </div>
             <div v-if="teamVotes.reject.length < teamVotes.accept.length">
-              Quest team was Approved. Waiting for quest team to go on quest.
-              <br>
+              <!--Quest team was Approved. Waiting for quest team to go on quest.<br>-->
+
               <strong>Accepted:</strong>
               {{ teamVotes.accept }}
               <br>
@@ -30,26 +30,23 @@
             </div>
           </div>
 
-      <!--quest team has voted-->
+
+      <!--some of team has voted on quest but not all-->
+          <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
+            Voted:
+            <strong>{{ voted }}</strong>
+          </div>
+
+      <!--all of quest team has voted-->
           <div v-if="showQuestVoteResults">
-       <!--     <div v-if="voteFail > 0">
-              <strong>Quest Vote Results:</strong>
-              <br>
-              <strong>Succeed:</strong>
-              {{ voteSucceed }}
-              <br>
-              <strong>Fail:</strong>
-              {{ voteFail }}
-            </div>
-      -->
             <div>
               <strong>Quest Vote Results:</strong>
               <br>
               <strong>Succeed:</strong>
-              {{ voteSucceed }}
+              {{ successCount }}
               <br>
               <strong>Fail:</strong>
-              {{ voteFail }}
+              {{ failCount }}
             </div>
           </div>
 
@@ -62,9 +59,17 @@ export default {
   name: "GameStatus",
   data() {
     return {
+      //deciding team
       teamVotes: null,
       showHasVoted: false,
-      showTeamVoteResults: false
+      showTeamVoteResults: false,
+
+      //deciding outcome of quest
+      showHasVotedOnQuest: false,
+      showQuestVoteResults: false,
+      voted: null,
+      successCount: null,
+      failCount: null
     }
   },
   props: [
@@ -89,6 +94,17 @@ export default {
       //this.$socket.emit('togglePlayerVoteStatus', false);
       this.showHasVoted = false;
       this.showTeamVoteResults = false;
+    },
+    revealVotes(data) {
+      this.canVoteOnQuest = false;
+      this.showHasVotedOnQuest = false;
+      this.successCount = data["success"];
+      this.failCount = data["fail"];
+      this.showQuestVoteResults = true;
+    },
+    hideVotes() {
+      this.showQuestVoteResults = false;
+      this.canVoteOnQuest = false;
     }
   }
 }

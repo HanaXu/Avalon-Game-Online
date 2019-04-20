@@ -15,29 +15,27 @@
             {{ player.name }}
             <span style="color: #FFD700" v-if="player.leader">👑</span>
           </h5>
-          <h6 class="card-subtitle text-muted">
+          <h6 class=" player card-subtitle text-muted">
             <b>Team:</b>
             {{ player.team }}
             <br>
             <b>Character:</b>
             {{ player.character }}
             <br>
-            <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
+            <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
           </h6>
           <div
             v-if="showAddPlayerButton || showRemovePlayerButton"
             class="row justify-content-md-center"
           >
             <b-button
-              variant="success"
-              class="mx-1 mt-2"
+              class="mx-1 mt-2 questAddButton"
               :id="'add-player-' + player.name"
               v-if="!player.onQuest && showAddPlayerButton"
               @click="addPlayerToQuest(player.name)"
             >Add to Quest</b-button>
             <b-button
-              variant="danger"
-              class="mx-1 mt-1"
+              class="mx-1 mt-1 questRemoveButton"
               :id="'remove-player-' + player.name"
               v-if="player.onQuest && showRemovePlayerButton"
               @click="removePlayerFromQuest(player.name)"
@@ -46,7 +44,6 @@
 
           <div v-if="assassination" class="row justify-content-md-center">
             <b-button
-              variant="danger"
               class="mx-1 mt-1"
               :id="'assassinate-' + player.name"
               v-if="player.team === 'good' || player.team === 'hidden'"
