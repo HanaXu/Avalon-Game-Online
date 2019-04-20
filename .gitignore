@@ -20,4 +20,5 @@ yarn-error.log*
 *.sln
 *.sw*
 test/.ipynb_checkpoints
+test/UI_Automation.ipynb
 test/chromedriver.exe

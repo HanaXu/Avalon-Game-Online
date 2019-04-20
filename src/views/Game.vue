@@ -1,6 +1,6 @@
 <template>
 <div>
-<span id="roomCode" style="display:none">{{ roomCode }}</span>
+
 
 
 <div class="row justify-content-md-center mx-0">
@@ -10,18 +10,21 @@
   <div class="container gameSection" v-if="!gameStarted" >
 
           <b-row>
-            <b-col cols="10">
-              <div style="text-align: left;">
-                <LobbyList :players="players"/>
-              </div>
+            <b-col cols="12" md="8" align-self="start">
+              <h4 id="roomCode"> Welcome, {{ yourName }}, to game room {{ roomCode }}.</h4>
             </b-col>
-            <b-col>
+            <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
               <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+            </b-col>
+
+            <b-col md="6">
+                <LobbyList :players="players"/>
             </b-col>
           </b-row>
 
         <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
-        <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
+        <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+
         <div v-if="showStartButton">
           <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
         </div>
@@ -41,7 +44,7 @@
   </div>
 
   <div class="container gameSection">
-        <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
+        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
         <PlayerVoteStatus v-if="showPlayerVoteStatus" />
   </div>
 
