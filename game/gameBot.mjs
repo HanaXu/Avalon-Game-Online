@@ -4,6 +4,8 @@ import socketIO from 'socket.io-client';
 const firstNames = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "Wilson"];
 var nameStart = Math.floor(Math.random() * firstNames.length);
+
+
 const PLAYERS_ON_QUEST = [
     //5 6 7 8 9 10 players
     [2, 3, 2, 3, 3],
@@ -32,6 +34,8 @@ export class gameBot {
 
         let bot = new gameBot();
 
+        var playersToChoose;
+
         bot.roomCode = roomCode;
 
         bot.name = createBotName();
@@ -57,7 +61,7 @@ export class gameBot {
             //console.log("in Bot Class on updatePlayers: ");
             // console.log(players)
             // console.log(`my socket id is: ${socket.id}`)
-
+            playersToChoose = players;
             for (let i in players) {
                 if (players[i].socketID === socket.id) {
                     //console.log(`my identity is: ${players[i].name}`)
@@ -71,6 +75,8 @@ export class gameBot {
             console.log("Bot Ready for Game!");
         });
 
+        // Function For Bot to Decide Whether it Will
+        // Accept or Reject the Vote for Quest Teams
         socket.on("acceptOrRejectTeam", function () {
             let botDecision = botDecisionQuest();
             socket.emit("questTeamDecision", {
@@ -89,6 +95,8 @@ export class gameBot {
             });
         });
 
+        // Function For Bot to Decide Whether it Will
+        // Accept or Reject the Quest
         function botDecisionQuest() {
             var decision;
 
@@ -147,6 +155,10 @@ export class gameBot {
             return socket;
         }
 
+
+        // Bot Chooses Players For Quest
+        // Currently just dummy Version
+        // Algorithm Can be applied later via Functions
         socket.on('choosePlayersForQuest', function (data) {
             console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             bot.leader = true;
@@ -169,6 +181,17 @@ export class gameBot {
                 bot.leader = false;
                 socket.emit('questTeamConfirmed');
             }
+        });
+
+        // Bot Attempt at Assassination
+        // Again Currently just making a choice at Random
+        socket.on('beginAssassination', function (msg) {
+            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
+            var toAssassinate = Math.floor(Math.random() * playersToChoose.length);
+            console.log(`toAssassinate: ${toAssassinate}`);
+            console.log(`Players To Assassinate: ${playersToChoose[toAssassinate].name}`);
+
+            socket.emit('assassinatePlayer', playersToChoose[toAssassinate].name);
         })
     }
 
