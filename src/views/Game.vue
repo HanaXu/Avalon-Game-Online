@@ -6,49 +6,54 @@
         <span id="roomCode">{{ roomCode }}</span>
       </h4>
     </div>
-    <div class="container game px-0">
-      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg"/>
 
-      <b-row>
-        <b-col cols="10">
-          <div style="text-align: left; align-items: left; justify-content: left">
-            <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
-          </div>
-        </b-col>
+    <div class="row justify-content-md-center mx-0">
+      <div class="container game col-8">
+        <EndGameOverlay/>
+        <b-row>
+          <b-col cols="10">
+            <div style="text-align: left;">
+              <LobbyList v-if="!gameStarted" :players="players"/>
+            </div>
+          </b-col>
+          <b-col>
+            <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+            <b-button v-if="!gameStarted" class="setupButton" @click="createBot">Add Bot</b-button>
+          </b-col>
+        </b-row>
 
-        <b-col>
-          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-          <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
-        </b-col>
-      </b-row>
+        <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
 
-      <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
+        <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
 
-      <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+        <div v-if="showStartButton">
+          <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+        </div>
 
-      <div v-if="showStartButton">
-        <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+        <PlayerCards
+          v-if="gameStarted"
+          :players="players"
+          :yourName="yourName"
+          :showAddPlayerButton="showAddPlayerButton"
+          :showRemovePlayerButton="showRemovePlayerButton"
+          :assassination="assassination"
+        />
+
+        <div v-if="showQuestMsg && questMsg.length > 0" class="row justify-content-md-center py-2">
+          <span class="text-dark">{{ questMsg }}</span>
+        </div>
+
+        <QuestVotes :yourName="yourName"/>
+        <DecideQuestTeam :yourName="yourName"/>
+        <QuestCards v-if="gameStarted" :quests="quests"/>
+        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
       </div>
 
-      <PlayerCards
-        v-if="gameStarted"
-        :players="players"
-        :yourName="yourName"
-        :showAddPlayerButton="showAddPlayerButton"
-        :showRemovePlayerButton="showRemovePlayerButton"
-        :assassination="assassination"
-      />
-
-      <div v-if="showQuestMsg && questMsg.length > 0" class="row justify-content-md-center py-2">
-        <span class="text-dark">{{ questMsg }}</span>
+      <div class="container chat col-4">
+        <div style="align: right">
+          <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+        </div>
       </div>
-
-      <DecideQuestTeam :yourName="yourName"/>
-
-      <QuestVotes :yourName="yourName"/>
-
-      <QuestCards v-if="gameStarted" :quests="quests"/>
-      <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
     </div>
   </div>
 </template>
@@ -56,18 +61,21 @@
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import Chat from "@/components/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
+import { constants } from "crypto";
 
 export default {
   name: "Game",
   components: {
     LobbyList,
     PlayerCards,
+    Chat,
     QuestCards,
     VoteTrack,
     SetupOptions,
@@ -92,19 +100,12 @@ export default {
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
 
-      onQuest: false,
-      canVoteOnQuest: false,
-      onGoodTeam: null,
-
       waitingForAssassin: false,
       assassination: false,
 
       showSetupOptions: false,
       error: false,
-      errorMsg: null,
-
-      gameOver: false,
-      endGameMsg: null
+      errorMsg: null
     };
   },
   created() {
@@ -116,6 +117,7 @@ export default {
       //this is called after Okay is clicked from Setup Options window
       this.optionalCharacters = data;
       console.log(`optional characters: ${this.optionalCharacters}`);
+      console.log(`Data is: ${data}`);
     },
     startGame() {
       console.log(`starting game in room: ${this.roomCode}`);
@@ -126,15 +128,15 @@ export default {
       });
       this.showStartButton = false;
     },
-    createBot(){
+    createBot() {
       console.log(`CreateBot function Called with room: ${this.roomCode}`);
       this.$socket.emit("createBot", this.roomCode);
     }
   },
   sockets: {
     //update overall game
-    updatePlayers(data) {
-      this.players = data["players"];
+    updatePlayers(players) {
+      this.players = players;
     },
     updateQuests(data) {
       this.quests = data["quests"];
@@ -149,7 +151,6 @@ export default {
     gameStarted() {
       this.gameStarted = true;
       this.error = false;
-      this.showSetupOptions = false;
     },
     //choose player to go on quest
     choosePlayersForQuest(bool) {
@@ -161,19 +162,17 @@ export default {
       this.showQuestMsg = true;
     },
     //etc
-    showHostSetupOptions() {
-      this.showSetupOptions = true;
+    showHostSetupOptions(bool) {
+      this.showSetupOptions = bool;
     },
     errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.showStartButton = true;
     },
-
     //assassination time
     beginAssassination(msg) {
       //update player cards to show Assassinate button
-      //this.players = data["players"];
       this.assassination = true;
       this.questMsg = msg;
     },
@@ -182,12 +181,6 @@ export default {
       this.waitingForAssassin = true;
       this.questMsg = msg;
       this.showQuestMsg = true;
-    },
-
-    //game is over
-    gameOver(msg) {
-      this.gameOver = true;
-      this.endGameMsg = msg;
     }
   }
 };
@@ -197,7 +190,29 @@ export default {
 .game {
   background: #eae7e3;
   border-radius: 3px;
+  padding: 1em;
+  min-height: 70vh;
+  clear: none;
+}
+
+.container.game {
+  max-width: 50vw;
+  min-height: 70vh;
+  /* float: left; */
+  display: inline-block;
+  padding: 1em;
+  margin: 0;
+  clear: none;
+}
+
+.container.chat {
+  max-width: 30vw;
   min-height: 75vh;
+  padding: 0;
+  margin: 0;
+  /* float: right; */
+  display: inline-block;
+  clear: none;
 }
 
 .setupButton {

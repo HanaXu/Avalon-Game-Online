@@ -1,33 +1,44 @@
 <template>
   <div>
     <div class="row justify-content-md-center" v-if="canVoteOnQuest">
-      <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
-      <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
+      <b-button class="avalon-btn-lg" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
+      <b-button
+        class="avalon-btn-lg"
+        id="fail-btn"
+        @click="questVote('fail')"
+        :disabled="onGoodTeam"
+      >Fail</b-button>
+    </div>
+
+    <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
+      Voted:
+      <strong>{{ voted }}</strong>
     </div>
 
     <div v-if="showQuestVoteResults">
-      <b-alert v-if="voteFail > 0" show variant="danger">
+      <b-alert v-if="failCount > 0" show variant="danger">
         <strong>Quest Vote Results:</strong>
         <br>
         <strong>Succeed:</strong>
-        {{ voteSucceed }}
+        {{ successCount }}
         <br>
         <strong>Fail:</strong>
-        {{ voteFail }}
+        {{ failCount }}
       </b-alert>
 
-      <b-alert v-if="voteFail == 0" show variant="success">
+      <b-alert v-if="failCount == 0" show variant="success">
         <strong>Quest Vote Results:</strong>
         <br>
         <strong>Succeed:</strong>
-        {{ voteSucceed }}
+        {{ successCount }}
         <br>
         <strong>Fail:</strong>
-        {{ voteFail }}
+        {{ failCount }}
       </b-alert>
     </div>
   </div>
 </template>
+
 <script>
 export default {
   name: "QuestVotes",
@@ -36,10 +47,11 @@ export default {
     return {
       canVoteOnQuest: false,
       onGoodTeam: false,
+      showHasVotedOnQuest: false,
       showQuestVoteResults: false,
-      votes: {},
-      voteSucceed: 0,
-      voteFail: 0
+      voted: null,
+      successCount: null,
+      failCount: null
     };
   },
   methods: {
@@ -53,16 +65,21 @@ export default {
     }
   },
   sockets: {
-    goOnQuest(data) {
+    goOnQuest(bool) {
       this.canVoteOnQuest = true;
-      this.onGoodTeam = data;
+      this.onGoodTeam = bool;
+    },
+    votedOnQuest(votes) {
+      this.voted = votes.join(", ");
+      this.showHasVotedOnQuest = true;
+      this.showQuestVoteResults = false;
     },
     revealVotes(data) {
       this.canVoteOnQuest = false;
+      this.showHasVotedOnQuest = false;
+      this.successCount = data["success"];
+      this.failCount = data["fail"];
       this.showQuestVoteResults = true;
-      this.votes = data;
-      this.voteSucceed = data.succeed;
-      this.voteFail = data.fail;
     },
     hideVotes() {
       this.showQuestVoteResults = false;

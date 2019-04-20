@@ -6,7 +6,7 @@
         <label class="label" for="bots">AI players:</label>
       </b-col>
       <b-col sm="3">
-        <b-form-input id="bots" type="number" min="0" max="10" value="0"></b-form-input>
+        <b-form-input id="botCount" v-model="botCount" type="number" min="0" max="10" value="0"></b-form-input>
       </b-col>
     </b-row>
 
@@ -28,7 +28,7 @@
       </b-col>
     </b-row>
 
-<!-- <div> Selected: <strong>{{ selected }}</strong> </div> -->
+    <!-- <div> Selected: <strong>{{ selected }}</strong> </div> -->
 
     <p>
       <em>
@@ -49,6 +49,7 @@ export default {
     return {
       error: false,
       errorMsg: "",
+      botCount: document.getElementById("botCount").value,
       selected: [], // Must be an array reference!
       options: [
         {
@@ -77,7 +78,7 @@ export default {
         !this.selected.includes("Percival")
       ) {
         for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i] === 'Morgana') {
+          if (this.selected[i] === "Morgana") {
             this.selected.splice(i, 1);
           }
         }
@@ -85,6 +86,8 @@ export default {
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
+      console.log(`Selected Items: ${this.selected}`);
+      console.log(`Bots: ${this.botCount}`);
       this.$emit("clicked", this.selected);
     }
   }
