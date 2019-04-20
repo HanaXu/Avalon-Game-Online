@@ -368,8 +368,18 @@ function chooseQuestTeam(roomCode) {
   //update quest message
   emitLeaderIsChoosingTeam(roomCode, currentQuest);
 
+  console.log(`List of Players is: ${GameList[roomCode].players}`);
+  console.log(`Current Quest: ${currentQuest.questNum}`);
+
   //only let the quest leader choose players
-  io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', true);
+  io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', {
+
+    bool: true,
+    players: GameList[roomCode].players,
+    currentQuestNum: currentQuest.questNum
+
+  });
+
 }
 
 function questTeamAcceptedStuff(roomCode) {

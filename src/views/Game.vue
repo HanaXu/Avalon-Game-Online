@@ -18,7 +18,7 @@
           </b-col>
           <b-col>
             <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-            <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
+            <b-button v-if="!gameStarted" class="setupButton" @click="createBot">Add Bot</b-button>
           </b-col>
         </b-row>
 
@@ -68,6 +68,7 @@ import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
+import { constants } from "crypto";
 
 export default {
   name: "Game",
@@ -116,6 +117,7 @@ export default {
       //this is called after Okay is clicked from Setup Options window
       this.optionalCharacters = data;
       console.log(`optional characters: ${this.optionalCharacters}`);
+      console.log(`Data is: ${data}`);
     },
     startGame() {
       console.log(`starting game in room: ${this.roomCode}`);
