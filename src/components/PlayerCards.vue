@@ -1,56 +1,58 @@
 <template>
-  <div class="row justify-content-md-center">
-    <div
-      class="card"
-      :class="{darkerBG: player.name === yourName}"
-      v-for="(player, index) in players"
-      :key="index"
-    >
+  <div class="row justify-content-md-center playerCards">
+    <div class="" v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
       <div
-        class="card-body"
-        :class="{markRed: player.team === 'Evil', markGreen: player.team === 'Good'}"
+        class="player card"
+        :class="{darkerBG: player.name === yourName}"
+        v-for="(player, index) in players"
+        :key="index"
       >
-        <h5 class="card-title">
-          {{ player.role }}: {{ player.name }}
-          <span style="color: #FFD700" v-if="player.leader">👑</span>
-        </h5>
-        <h6 class="card-subtitle text-muted">
-          <b>Team:</b>
-          {{ player.team }}
-          <br>
-          <b>Character:</b>
-          {{ player.character }}
-          <br>
-          <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
-        </h6>
         <div
-          v-if="showAddPlayerButton || showRemovePlayerButton"
-          class="row justify-content-md-center"
+          class="player card-body"
+          :class="{markEvil: player.team === 'Evil', markGood: player.team === 'Good'}"
         >
-          <b-button
-            variant="success"
-            class="mx-1 mt-2"
-            :id="'add-player-' + player.name"
-            v-if="!player.onQuest && showAddPlayerButton"
-            @click="addPlayerToQuest(player.name)"
-          >Add to Quest</b-button>
-          <b-button
-            variant="danger"
-            class="mx-1 mt-1"
-            :id="'remove-player-' + player.name"
-            v-if="player.onQuest && showRemovePlayerButton"
-            @click="removePlayerFromQuest(player.name)"
-          >Drop from Quest</b-button>
-        </div>
+          <h5 class="card-title">
+            {{ player.name }}
+            <span style="color: #FFD700" v-if="player.leader">👑</span>
+          </h5>
+          <h6 class="card-subtitle text-muted">
+            <b>Team:</b>
+            {{ player.team }}
+            <br>
+            <b>Character:</b>
+            {{ player.character }}
+            <br>
+            <b-badge v-if="player.onQuest" variant="success" class="questBadge">On Quest</b-badge>
+          </h6>
+          <div
+            v-if="showAddPlayerButton || showRemovePlayerButton"
+            class="row justify-content-md-center"
+          >
+            <b-button
+              variant="success"
+              class="mx-1 mt-2"
+              :id="'add-player-' + player.name"
+              v-if="!player.onQuest && showAddPlayerButton"
+              @click="addPlayerToQuest(player.name)"
+            >Add to Quest</b-button>
+            <b-button
+              variant="danger"
+              class="mx-1 mt-1"
+              :id="'remove-player-' + player.name"
+              v-if="player.onQuest && showRemovePlayerButton"
+              @click="removePlayerFromQuest(player.name)"
+            >Drop from Quest</b-button>
+          </div>
 
-        <div v-if="assassination" class="row justify-content-md-center">
-          <b-button
-            variant="danger"
-            class="mx-1 mt-1"
-            :id="'assassinate-' + player.name"
-            v-if="player.team === 'good' || player.team === 'hidden'"
-            @click="assassinatePlayer(player.name)"
-          >Assassinate</b-button>
+          <div v-if="assassination" class="row justify-content-md-center">
+            <b-button
+              variant="danger"
+              class="mx-1 mt-1"
+              :id="'assassinate-' + player.name"
+              v-if="player.team === 'good' || player.team === 'hidden'"
+              @click="assassinatePlayer(player.name)"
+            >Assassinate</b-button>
+          </div>
         </div>
       </div>
     </div>
@@ -67,6 +69,12 @@ export default {
     "showRemovePlayerButton",
     "assassination"
   ],
+  data() {
+    return {
+      width : window.innerWidth
+
+    }
+  },
   methods: {
     addPlayerToQuest(playerName) {
       this.$socket.emit("addPlayerToQuest", playerName);
@@ -82,29 +90,5 @@ export default {
 </script>
 
 <style>
-.markRed {
-  border-top: 5px solid red;
-}
-.markGreen {
-  border-top: 5px solid green;
-}
-.questBadge {
-  margin: 0.5rem;
-}
-.card-title {
-  margin-top: 0.5rem;
-}
-.card-body {
-  padding: 0.5rem 1rem;
-  padding-top: 0 !important;
-}
-.card {
-  background: #f8f9fa; /* bootstrap 4 bg-light*/
-  margin: 5px;
-  width: 12rem;
-  border: none !important;
-}
-.darkerBG {
-  background: lightsteelblue !important;
-}
+@import '../styles/styles.css';
 </style>

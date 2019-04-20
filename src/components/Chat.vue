@@ -1,7 +1,8 @@
 <template>
-  <div id="app">
-    <div class="row">
-      <div class="col-md-8">
+  <div>
+ <!--   <div class="row">
+      <div class="col-md-12">
+      -->
         <div class="card">
           <div class="card-header">Chatroom</div>
           <div class="card-body">
@@ -32,8 +33,11 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+
+ <!--     </div>
+    </div> -->
+
   </div>
 </template>
 

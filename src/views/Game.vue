@@ -1,63 +1,70 @@
 <template>
   <div>
-    <div class="container text-left" style="margin-top: .5rem">
+ <!--   <div class="container text-left" style="margin-top: .5rem">
         {{ yourName }}, welcome to Avalonline Room:
-        <span id="roomCode">{{ roomCode }}</span>
     </div>
+-->
+    <span id="roomCode" style="display:none">{{ roomCode }}</span>
 
-    <div class="container game">
 
     <div class="row justify-content-md-center mx-0">
-      <div class="container game col-8">
-        <EndGameOverlay/>
-        <b-row>
-          <b-col cols="10">
-            <div style="text-align: left;">
-              <LobbyList v-if="!gameStarted" :players="players"/>
-            </div>
-          </b-col>
-          <b-col>
-            <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-          </b-col>
-        </b-row>
+      <div class="col col-12 col-md-8">
 
-      <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
+<div class="container game">
+          <EndGameOverlay/>
+          <b-row>
+            <b-col cols="10">
+              <div style="text-align: left;">
+                <LobbyList v-if="!gameStarted" :players="players"/>
+              </div>
+            </b-col>
+            <b-col>
+              <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+            </b-col>
+          </b-row>
+
+        <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
 
 
-      <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
+        <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
 
-      <div v-if="showStartButton">
-        <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
-      </div>
+        <div v-if="showStartButton">
+          <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+        </div>
 
-      <PlayerCards
-        v-if="gameStarted"
-        :players="players"
-        :yourName="yourName"
-        :showAddPlayerButton="showAddPlayerButton"
-        :showRemovePlayerButton="showRemovePlayerButton"
-        :assassination="assassination"
-      />
-      <GameStatus v-if="gameStarted" :errorMsg="errorMsg" :questMsg="questMsg" />
-      <!-- removed so GameStatus always shows: v-if="(showQuestMsg && questMsg.length > 0) || error" -->
+        <PlayerCards
+          v-if="gameStarted"
+          :players="players"
+          :yourName="yourName"
+          :showAddPlayerButton="showAddPlayerButton"
+          :showRemovePlayerButton="showRemovePlayerButton"
+          :assassination="assassination"
+        />
+        <GameStatus v-if="gameStarted" :errorMsg="errorMsg" :questMsg="questMsg" />
+        <!-- removed so GameStatus always shows: v-if="(showQuestMsg && questMsg.length > 0) || error" -->
 
-      <PlayerVoteStatus v-if="showPlayerVoteStatus" />
+        <PlayerVoteStatus v-if="showPlayerVoteStatus" />
 
-        <QuestVotes :yourName="yourName"/>
-        <DecideQuestTeam :yourName="yourName"/>
-        <QuestCards v-if="gameStarted" :quests="quests"/>
-        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
-      </div>
-
-      <div class="container chat col-4">
-        <div style="align: right">
-          <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+          <QuestVotes :yourName="yourName"/>
+          <DecideQuestTeam :yourName="yourName"/>
+          <QuestCards v-if="gameStarted" :quests="quests"/>
+          <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
         </div>
       </div>
+
+      <div class="col col-12 col-md-4">
+        <div class="container chat">
+          <div style="align: right">
+            <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <b-navbar toggleable="lg" class="navbar-default footer" fixed="bottom" style="text-align: center;">
-      Show/Hide Chat
+
+    <b-navbar class="navbar-default footer" fixed="bottom">
+      Show Chat
     </b-navbar>
   </div>
 </template>
@@ -211,45 +218,5 @@ export default {
 </script>
 
 <style>
-.game {
-  background: #eae7e3;
-  border-radius: 5px;
-  margin: 20px;
-  padding: 4px !important;
-  border-radius: 3px;
-  padding: 1em;
-  min-height: 70vh;
-  clear: none;
-}
 
-.container.game {
-  max-width: 50vw;
-  min-height: 70vh;
-  /* float: left; */
-  display: inline-block;
-  padding: 1em;
-  margin: 0;
-  clear: none;
-}
-
-.container.chat {
-  max-width: 30vw;
-  min-height: 75vh;
-  max-width: 98vw;
-  box-shadow: 2px 2px 5px #c2ab8e;
-  padding: 0;
-  margin: 0;
-  /* float: right; */
-  display: inline-block;
-  clear: none;
-}
-
-.setupButton {
-  float: right;
-}
-
-.footer {
-  box-shadow: 0 -2px 5px #c2ab8e;
-  text-align: center;
-}
 </style>
