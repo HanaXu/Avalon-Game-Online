@@ -3,8 +3,7 @@ import socketIO from 'socket.io';
 import { Game } from '../game/game.mjs';
 import { Player } from '../game/player.mjs';
 import {
-  sanitizeForGoodTeam, sanitizeForPercival,
-  sanitizeForEvilTeam, sanitizeForMerlin,
+  sanitizeTeamView,
   validateOptionalCharacters
 } from '../game/utility.mjs';
 
@@ -338,31 +337,10 @@ io.on('connection', socket => {
 //client's only job is to update the UI
 function emitSanitizedPlayers(players) {
   for (let i in players) {
-    if (players[i].character === 'Percival') {
-      let sanitizedPlayers = sanitizeForPercival(players[i].socketID, players);
-      //emit sanitized player list to client, client then updates the UI
-      io.to(players[i].socketID).emit('updatePlayers', {
-        players: sanitizedPlayers
-      });
-    } else if (players[i].character === 'Merlin') {
-      let sanitizedPlayers = sanitizeForMerlin(players[i].socketID, players);
-      //emit sanitized player list to client, client then updates the UI
-      io.to(players[i].socketID).emit('updatePlayers', {
-        players: sanitizedPlayers
-      });
-    } else if (players[i].character === 'Minion of Mordred' || players[i].character === 'Assassin' || players[i].character === 'Mordred' || players[i].character === 'Morgana') {
-      let sanitizedPlayers = sanitizeForEvilTeam(players[i].socketID, players);
-      //emit sanitized player list to client, client then updates the UI
-      io.to(players[i].socketID).emit('updatePlayers', {
-        players: sanitizedPlayers
-      });
-    } else {
-      let sanitizedPlayers = sanitizeForGoodTeam(players[i].socketID, players);
-      //emit sanitized player list to client, client then updates the UI
-      io.to(players[i].socketID).emit('updatePlayers', {
-        players: sanitizedPlayers
-      });
-    }
+    let sanitizedPlayers = sanitizeTeamView(players[i].socketID, players[i].character, players);
+    io.to(players[i].socketID).emit('updatePlayers', {
+      players: sanitizedPlayers
+    });
   }
 }
 
