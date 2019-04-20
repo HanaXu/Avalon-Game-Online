@@ -27,7 +27,7 @@ firebase.initializeApp(config);
 Vue.use(BootstrapVue);
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://localhost:3000',
+  connection: 'http://ec2-18-191-152-81.us-east-2.compute.amazonaws.com/',
   vuex: {
     store,
     actionPrefix: "SOCKET_",

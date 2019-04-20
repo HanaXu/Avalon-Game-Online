@@ -1,5 +1,6 @@
 import express from 'express';
 import socketIO from 'socket.io';
+import path from 'path';
 import { Game } from '../game/game.mjs';
 import { Player } from '../game/player.mjs';
 import {
@@ -8,9 +9,16 @@ import {
 } from '../game/utility.mjs';
 
 const app = express();
-const server = app.listen(3000, () => {
-  console.log('server running on port 3000');
+const server = app.listen(80, () => {
+  console.log('server running on port 80');
 });
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+app.use(express.static(__dirname + "/dist/"));
+app.get(/.*/, function (req, res) {
+  res.sendFile(__dirname + "/dist/index.html");
+});
+
 const io = socketIO(server);
 
 var GameList = {}; //keeps record of all game objects
