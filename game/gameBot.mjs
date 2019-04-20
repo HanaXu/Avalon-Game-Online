@@ -16,6 +16,7 @@ const PLAYERS_ON_QUEST = [
     [3, 4, 4, 5, 5]
 ];
 
+
 export class gameBot {
     constructor() {
         this.socketID = null;
