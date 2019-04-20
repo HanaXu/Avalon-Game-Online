@@ -1,5 +1,6 @@
 import { objectToArray, shuffle } from './utility.mjs';
 import { Quest } from './quest.mjs';
+import {GameBotMemory} from "./gameBotMemory";
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
@@ -44,6 +45,8 @@ const BaseCharacters = {
     'Minion of Mordred': 3
   }
 };
+
+let gameBotMemory = new GameBotMemory(this.players);
 
 export class Game {
   constructor(roomCode) {
