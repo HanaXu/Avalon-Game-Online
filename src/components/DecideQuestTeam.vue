@@ -5,7 +5,7 @@
     </div>
 
     <div v-if="showAcceptRejectButtons">
-      <div class="row justify-content-md-center">
+      <div class="row justify-content-center">
         <b-button
           class="avalon-btn-lg"
           id="accept-team-btn"

@@ -30,6 +30,7 @@
         </div>
   </div>
 
+
   <div class="container gameSection">
         <PlayerCards
           v-if="gameStarted"

@@ -1,7 +1,7 @@
 <template>
   <b-modal id="setupModal" class="setup" @ok="handleOk">
     <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
-    <b-row style="padding-bottom: 10px">
+<!--    <b-row style="padding-bottom: 10px">
       <b-col sm="5">
         <label class="label" for="bots">AI players:</label>
       </b-col>
@@ -9,6 +9,7 @@
         <b-form-input id="bots" type="number" min="0" max="10" value="0"></b-form-input>
       </b-col>
     </b-row>
+  -->
     <b-row>
       <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
     </b-row>

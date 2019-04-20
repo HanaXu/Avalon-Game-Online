@@ -159,7 +159,7 @@ body {
         /*max-width: 98vw;*/
         width: 100%;
         padding: 0;
-        margin: 0;
+        margin: 10px !important;
         display: inline-block;
         clear: none;
         overflow: hidden;
@@ -228,7 +228,7 @@ body {
     .card-title {
         margin-top: 5px;
         font-weight: bold;
-        font-size: 16px;
+        font-size: 15px;
         font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     }
     .card-subtitle {
@@ -238,7 +238,7 @@ body {
     .questCards {
         padding-top: 4px;
         overflow-x: auto;
-        margin: 0 -10px;
+        margin: 0 auto;
     }
     .player.card {
         background: #f8f9fa; /* bootstrap 4 bg-light*/
@@ -253,9 +253,9 @@ body {
         border-radius: 5px;
         background: #f8f9fa; /* bootstrap 4 bg-light*/
         margin: 2px;
-        width: 68px;
+        width: 64px;
         border: none;
-        padding: 2px !important;
+        padding: 1px !important;
     }
     .quest.card-body {
         padding: 2px;
@@ -297,7 +297,7 @@ body {
     }
 
     .row {
-        margin: 2% !important;
+        margin: 2px !important;
     }
 
     .section .sectionTitle {
@@ -319,6 +319,9 @@ body {
 @media screen and (min-width: 768px) {
     .section .sectionTitle {
         font-size: 14px;
+    }
+    .row {
+        margin: 10px !important;
     }
 }
 
