@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header">Chatroom</div>
+          <div class="card-header">Chat Room: {{roomCode}}</div>
           <div class="card-body">
             <dl id="messageList"></dl>
             <div class="messages" v-chat-scroll>

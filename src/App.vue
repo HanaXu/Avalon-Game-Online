@@ -43,7 +43,7 @@ export default {
   },
   sockets: {
     roomCode(roomCode) {
-      this.navbarBrandMsg = "Room " + roomCode;
+      this.navbarBrandMsg = "Avalonline Room " + roomCode;
     }
   }
 };
