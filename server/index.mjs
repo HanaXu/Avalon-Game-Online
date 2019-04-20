@@ -373,7 +373,6 @@ function chooseQuestTeam(roomCode) {
 
   //only let the quest leader choose players
   io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', {
-
     bool: true,
     players: GameList[roomCode].players,
     currentQuestNum: currentQuest.questNum
@@ -444,7 +443,7 @@ function checkForGameOver(roomCode) {
     io.to(assassinSocketID).emit('beginAssassination', `You are the assassin. 
     Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.`);
   }
-  //there have not been 3 successes or fails yet, continue to next quest
+  //there have not been 3 successes or fails yet, continue to next quest 
   else {
     //choose next leader and start next quest
     GameList[roomCode].startNextQuest(currentQuest.questNum);

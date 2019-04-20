@@ -153,9 +153,9 @@ export default {
       this.error = false;
     },
     //choose player to go on quest
-    choosePlayersForQuest(bool) {
-      this.showAddPlayerButton = bool;
-      this.showRemovePlayerButton = bool;
+    choosePlayersForQuest(data) {
+      this.showAddPlayerButton = data.bool;
+      this.showRemovePlayerButton = data.bool;
     },
     updateQuestMsg(msg) {
       this.questMsg = msg;
