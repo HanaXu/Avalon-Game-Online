@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="padding: 4px 0">
   <b-row class="section">
     <b-col class="sectionTitle" cols="3" md="2">Game Status</b-col>
    <b-col >{{ questMsg }} <br> {{ errorMsg }} </b-col>

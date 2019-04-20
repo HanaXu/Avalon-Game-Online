@@ -1,9 +1,8 @@
 <template>
-<div>
+<div style="padding: 4px 0">
   <b-row class="section">
     <b-col class="sectionTitle" cols="3" md="2">Player Votes</b-col>
    <b-col>
-      <!--players have begun to vote on quest team, but have not all confirmed yet-->
           <div v-if="showHasVoted && !showTeamVoteResults">
             Voted:
             <strong>{{ teamVotes }}</strong>
@@ -11,7 +10,6 @@
       <!--all players have voted, show all results-->
           <div v-if="showTeamVoteResults" class="mt-2">
             <div v-if="teamVotes.reject.length >= teamVotes.accept.length">
-              <!--Quest team was Rejected. New quest leader has been chosen.<br>-->
 
               <strong>Accepted:</strong>
               {{ teamVotes.accept }}

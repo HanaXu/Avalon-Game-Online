@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Navbar -->
-    <b-navbar toggleable="lg" class="navbar-default container" sticky="true">
+    <b-navbar toggleable="lg" class="navbar-default container" sticky>
       <b-navbar-brand >{{ navbarBrandMsg }}</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>

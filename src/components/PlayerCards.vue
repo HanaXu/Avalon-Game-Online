@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-md-center playerCards">
+  <div class="row justify-content-md-center playerCards" >
     <div class="" v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
       <div
         class="player card"

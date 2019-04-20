@@ -377,8 +377,7 @@ function chooseQuestTeam(roomCode) {
 }
 
 function questTeamAcceptedStuff(roomCode) {
-  //set to empty (DecideQuestTeam shows approval message)
-  io.in(roomCode).emit('updateQuestMsg', '');
+  io.in(roomCode).emit('updateQuestMsg', 'Quest team was Approved. Waiting for quest team to go on quest.');
 
   let players = GameList[roomCode].players;
   console.log("Quest team is: ");
@@ -396,6 +395,8 @@ function questTeamAcceptedStuff(roomCode) {
 }
 
 function questTeamRejectedStuff(roomCode, currentQuest) {
+  io.in(roomCode).emit('updateQuestMsg', 'Quest team was Rejected. New quest leader has been chosen.');
+
   currentQuest.voteTrack++;
 
   //check if voteTrack has exceeded 5 (game over)

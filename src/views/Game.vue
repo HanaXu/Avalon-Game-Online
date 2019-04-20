@@ -1,21 +1,18 @@
 <template>
-  <div>
- <!--   <div class="container text-left" style="margin-top: .5rem">
-        {{ yourName }}, welcome to Avalonline Room:
-    </div>
--->
-    <span id="roomCode" style="display:none">{{ roomCode }}</span>
+<div>
+<span id="roomCode" style="display:none">{{ roomCode }}</span>
 
 
-    <div class="row justify-content-md-center mx-0">
-      <div class="col col-12 col-md-8">
+<div class="row justify-content-md-center mx-0">
+<div class="col col-12 col-md-8">
+  <EndGameOverlay/>
 
-<div class="container game">
-          <EndGameOverlay/>
+  <div class="container gameSection" v-if="!gameStarted" >
+
           <b-row>
             <b-col cols="10">
               <div style="text-align: left;">
-                <LobbyList v-if="!gameStarted" :players="players"/>
+                <LobbyList :players="players"/>
               </div>
             </b-col>
             <b-col>
@@ -24,14 +21,13 @@
           </b-row>
 
         <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
-
-
         <!--<b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>-->
-
         <div v-if="showStartButton">
           <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
         </div>
+  </div>
 
+  <div class="container gameSection">
         <PlayerCards
           v-if="gameStarted"
           :players="players"
@@ -40,33 +36,38 @@
           :showRemovePlayerButton="showRemovePlayerButton"
           :assassination="assassination"
         />
-        <GameStatus v-if="gameStarted" :errorMsg="errorMsg" :questMsg="questMsg" />
-        <!-- removed so GameStatus always shows: v-if="(showQuestMsg && questMsg.length > 0) || error" -->
+        <QuestCards v-if="gameStarted" :quests="quests"/>
+        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
+  </div>
 
+  <div class="container gameSection">
+        <GameStatus v-if="(showQuestMsg && questMsg.length > 0) || error" :errorMsg="errorMsg" :questMsg="questMsg" />
         <PlayerVoteStatus v-if="showPlayerVoteStatus" />
+  </div>
 
-          <QuestVotes :yourName="yourName"/>
-          <DecideQuestTeam :yourName="yourName"/>
-          <QuestCards v-if="gameStarted" :quests="quests"/>
-          <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
-        </div>
-      </div>
+  <div class="container gameSection">
+        <QuestVotes :yourName="yourName"/>
+        <DecideQuestTeam :yourName="yourName"/>
+  </div>
 
-      <div class="col col-12 col-md-4">
-        <div class="container chat">
-          <div style="align: right">
-            <Chat :your-name="yourName" :room-code="roomCode"></Chat>
-          </div>
-        </div>
-      </div>
 
+</div>
+
+<div class="col col-12 col-md-4">
+  <div class="container chat">
+    <div style="align: right">
+      <Chat :your-name="yourName" :room-code="roomCode"></Chat>
     </div>
+  </div>
+</div>
+
+</div>
 
 
     <b-navbar class="navbar-default footer" fixed="bottom">
       Show Chat
     </b-navbar>
-  </div>
+</div>
 </template>
 
 <script>
