@@ -1,0 +1,280 @@
+/***********APP.VUE**************/
+
+@media screen and (min-width: 1px) {
+    .avalon-btn-lg {
+        color: #ccc351 !important;
+        text-transform: uppercase;
+        background: #685035 !important;
+        padding: 5px !important;
+        border: 4px solid #6f5035 !important;
+        border-radius: 7px;
+        display: inline-block;
+        font-size: 18px !important;
+        margin: 5px;
+        width: 100px;
+    }
+    .avalon-btn-lg:hover,
+    .avalon-btn-lg:focus,
+    .avalon-btn-lg:active {
+        color: #685035 !important;
+        background: #ccc351 !important;
+        border-color: #ccc351 !important;
+        transition: all 0.4s ease 0s;
+    }
+    .questAddButton,
+    .questRemoveButton:hover,
+    .questRemoveButton:focus,
+    .questRemoveButton:active {
+        color: #ccc351 !important;
+        background: #685035 !important;
+    }
+
+    .questRemoveButton,
+    .questAddButton:hover,
+    .questAddButton:focus,
+    .questAddButton:active {
+        color: #685035 !important;
+        background: #ccc351 !important;
+        border-color: #ccc351 !important;
+    }
+}
+@media screen and (min-width: 768px) {
+    .avalon-btn-lg {
+        padding: 10px !important;
+        font-size: 20px !important;
+        margin: 15px;
+        width: 200px;
+    }
+}
+
+
+
+
+/***********GAME.VUE*******************/
+.gameSection {
+    background: #eae7e3;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 0 4px !important;
+    /*min-height: 70vh;*/
+    clear: none;
+    /*box-shadow: 0 2px 5px #c2ab8e;*/
+}
+
+/****MOBILE SCREENS****/
+@media screen and (min-width: 1px) {
+    .col {
+        padding: 1%;
+    }
+    .container.game {
+        min-height: 70vh;
+        display: inline-block;
+        padding: 1%;
+        clear: none;
+        box-shadow: 2px 2px 5px #c2ab8e;
+    }
+    .container.chat {
+        visibility: visible;
+        min-height: 75vh;
+        /*max-width: 98vw;*/
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        display: inline-block;
+        clear: none;
+        overflow: hidden;
+    }
+
+
+    .footer {
+        box-shadow: 0 -2px 5px #c2ab8e;
+        text-align: center;
+        visibility: hidden;
+    }
+
+}
+/****NORMAL SCREENS****/
+@media screen and (min-width: 768px) {
+    .container.game {
+        /*max-width: 50vw;*/
+    }
+    .container.chat {
+        visibility: visible;
+        min-height: 75vh;
+        /*max-width: 98vw;*/
+        padding: 0;
+        margin: 0;
+        display: inline-block;
+        clear: none;
+        overflow: hidden;
+    }
+    .footer {
+        visibility: hidden;
+    }
+
+}
+
+
+
+
+.setupButton {
+    float: right;
+}
+
+
+
+/************PLAYER & QUEST CARDS**************/
+.markEvil {
+    border-top: 5px solid #A42323;
+}
+.markGood {
+    border-top: 5px solid #3C48BB;
+}
+.questBadge {
+    margin: 0.5rem;
+    background: #7D67AA !important;
+}
+.darkerBG {
+    background: #C7C2CF !important;
+}
+.markRed {
+    border: 5px solid red !important;
+}
+.markGreen {
+    border: 5px solid green !important;
+}
+/****MOBILE SCREENS****/
+@media screen and (min-width: 1px) {
+    .card-title {
+        margin-top: 5px;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    .card-subtitle {
+        font-size: 14px;
+    }
+    .playerCards,
+    .questCards {
+        padding-top: 4px;
+        overflow-x: auto;
+        margin: 0 -10px;
+    }
+    .player.card {
+        background: #f8f9fa; /* bootstrap 4 bg-light*/
+        margin: 5px;
+        width: 90px;
+        border: none;
+    }
+    .player.card-body {
+        padding: 2px;
+    }
+    .quest.card {
+        border-radius: 5px;
+        background: #f8f9fa; /* bootstrap 4 bg-light*/
+        margin: 2px;
+        width: 68px;
+        border: none;
+        padding: 2px !important;
+    }
+    .quest.card-body {
+        padding: 2px;
+    }
+    .quest.card-subtitle {
+        font-size: 14px;
+    }
+
+}
+/****NORMAL SCREENS****/
+@media screen and (min-width: 768px) {
+    .player.card {
+        width: 150px;
+    }
+    .player.card-body {
+        padding: 8px;
+    }
+    .card-title {
+        font-size: 20px;
+    }
+
+}
+
+
+
+/*************SECTION******************/
+/*used in PlayerVoteStatus, GameStatus*/
+.section {
+    border-radius: 5px;
+    min-height: 30px;
+    padding: 5px;
+    margin: 4px !important;
+    background: #F1F1F1;
+    box-shadow: 2px 2px 5px #c2ab8e;
+    font-size: 14px;
+}
+.row {
+    margin: 2% !important;
+}
+
+.section .sectionTitle {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: #8A7D6E;
+    /*border: 4px #8A7D6E;*/
+    color: #F1F1F1 !important;
+    font-weight: bold;
+    font-size: 18px;
+    float: left;
+    min-height: 30px;
+    vertical-align: middle;
+    /*height: 100% !important;*/
+    margin: -5px 0 -5px -5px; /*offset the padding of .section */
+    padding: 1%;
+}
+
+
+
+
+/*************VOTE TRACK ****************/
+/****MOBILE SCREENS****/
+@media screen and (min-width: 1px) {
+    .markBG {
+        background: #7D67AA !important;
+        color: white;
+    }
+    .circle {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        /*background: #f8f9fa; *//* bootstrap 4 bg-light*/
+        background: white;
+        padding-top: 8px;
+        margin-right: 2px;
+        font-size: 14px;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .section.voteTrack {
+        width: 290px;
+    }
+    .section.voteTrack .sectionTitle {
+        font-size: 14px;
+        vertical-align: middle;
+    }
+}
+
+/****NORMAL SCREENS****/
+@media screen and (min-width: 768px) {
+    .circle {
+        width: 50px;
+        height: 50px;
+        padding: 12px;
+        margin-right: 0.5rem;
+        font-size: 20px;
+
+    }
+
+    .section.voteTrack {
+        max-width: 500px;
+    }
+}
