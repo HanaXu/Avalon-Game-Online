@@ -46,11 +46,6 @@ export default {
             roomCode: this.roomCode,
             name: this.name
           });
-
-          this.$router.push({
-            name: "game",
-            params: { yourName: this.name, roomCode: this.roomCode }
-          });
         });
     }
   },

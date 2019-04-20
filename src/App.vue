@@ -1,4 +1,4 @@
-<template xmlns="">
+<template>
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
