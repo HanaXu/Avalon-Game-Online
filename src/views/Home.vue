@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div>
     <section class="container">
       <div v-if="!(joinToggled || createToggled)">
         <h1 class="title">Avalonline</h1>
@@ -20,8 +20,8 @@
 </template>
 
 <script>
-import JoinForm from "@/components/JoinForm.vue";
-import CreateForm from "@/components/CreateForm.vue";
+import JoinForm from "@/components/home/JoinForm.vue";
+import CreateForm from "@/components/home/CreateForm.vue";
 
 export default {
   name: "home",
@@ -60,7 +60,6 @@ export default {
   color: #503e2c;
   margin-bottom: 1rem;
 }
-
 .subtitle {
   font-size: 25px;
   color: #503e2c;

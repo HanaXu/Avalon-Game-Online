@@ -1,25 +1,25 @@
 <template>
   <div>
-
     <div class="container text-left" style="margin-top: .5rem">
         {{ yourName }}, welcome to Avalonline Room:
         <span id="roomCode">{{ roomCode }}</span>
     </div>
 
     <div class="container game">
-      <EndGameOverlay v-if="gameOver" :endGameMsg="endGameMsg" />
 
-      <b-row>
-        <b-col cols="10">
-          <div style="text-align: left; align-items: left; justify-content: left">
-            <LobbyList v-if="!gameStarted" :players="players" :yourName="yourName"/>
-          </div>
-        </b-col>
-        <b-col>
-          <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-
-        </b-col>
-      </b-row>
+    <div class="row justify-content-md-center mx-0">
+      <div class="container game col-8">
+        <EndGameOverlay/>
+        <b-row>
+          <b-col cols="10">
+            <div style="text-align: left;">
+              <LobbyList v-if="!gameStarted" :players="players"/>
+            </div>
+          </b-col>
+          <b-col>
+            <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+          </b-col>
+        </b-row>
 
       <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
 
@@ -43,12 +43,17 @@
 
       <PlayerVoteStatus v-if="showPlayerVoteStatus" />
 
-      <DecideQuestTeam :yourName="yourName"/>
+        <QuestVotes :yourName="yourName"/>
+        <DecideQuestTeam :yourName="yourName"/>
+        <QuestCards v-if="gameStarted" :quests="quests"/>
+        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
+      </div>
 
-      <QuestVotes :yourName="yourName"/>
-
-      <QuestCards v-if="gameStarted" :quests="quests"/>
-      <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
+      <div class="container chat col-4">
+        <div style="align: right">
+          <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+        </div>
+      </div>
     </div>
 
     <b-navbar toggleable="lg" class="navbar-default footer" fixed="bottom" style="text-align: center;">
@@ -60,6 +65,7 @@
 <script>
 import LobbyList from "@/components/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
+import Chat from "@/components/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import SetupOptions from "@/components/SetupOptions.vue";
@@ -74,6 +80,7 @@ export default {
   components: {
     LobbyList,
     PlayerCards,
+    Chat,
     QuestCards,
     VoteTrack,
     SetupOptions,
@@ -172,8 +179,8 @@ export default {
       this.showQuestMsg = true;
     },
     //etc
-    showHostSetupOptions() {
-      this.showSetupOptions = true;
+    showHostSetupOptions(bool) {
+      this.showSetupOptions = bool;
     },
     errorMsg(msg) {
       this.error = true;
@@ -184,7 +191,6 @@ export default {
     //assassination time
     beginAssassination(msg) {
       //update player cards to show Assassinate button
-      //this.players = data["players"];
       this.assassination = true;
       this.questMsg = msg;
     },
@@ -210,9 +216,36 @@ export default {
   border-radius: 5px;
   margin: 20px;
   padding: 4px !important;
+  border-radius: 3px;
+  padding: 1em;
+  min-height: 70vh;
+  clear: none;
+}
+
+.container.game {
+  max-width: 50vw;
+  min-height: 70vh;
+  /* float: left; */
+  display: inline-block;
+  padding: 1em;
+  margin: 0;
+  clear: none;
+}
+
+.container.chat {
+  max-width: 30vw;
   min-height: 75vh;
   max-width: 98vw;
   box-shadow: 2px 2px 5px #c2ab8e;
+  padding: 0;
+  margin: 0;
+  /* float: right; */
+  display: inline-block;
+  clear: none;
+}
+
+.setupButton {
+  float: right;
 }
 
 .footer {

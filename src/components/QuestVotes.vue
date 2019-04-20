@@ -1,8 +1,18 @@
 <template>
   <div>
     <div class="row justify-content-md-center" v-if="canVoteOnQuest">
-      <b-button class="avalon-btn-lg" @click="questVote('succeed')">Succeed</b-button>
-      <b-button class="avalon-btn-lg" @click="questVote('fail')" :disabled="onGoodTeam">Fail</b-button>
+      <b-button class="avalon-btn-lg" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
+      <b-button
+        class="avalon-btn-lg"
+        id="fail-btn"
+        @click="questVote('fail')"
+        :disabled="onGoodTeam"
+      >Fail</b-button>
+    </div>
+
+    <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
+      Voted:
+      <strong>{{ voted }}</strong>
     </div>
   </div>
 </template>
@@ -15,9 +25,9 @@ export default {
       canVoteOnQuest: false,
       onGoodTeam: false,
       showQuestVoteResults: false,
-      votes: {},
-      voteSucceed: 0,
-      voteFail: 0
+      voted: null,
+      successCount: null,
+      failCount: null
     };
   },
   methods: {
@@ -31,16 +41,16 @@ export default {
     }
   },
   sockets: {
-    goOnQuest(data) {
+    goOnQuest(bool) {
       this.canVoteOnQuest = true;
-      this.onGoodTeam = data;
+      this.onGoodTeam = bool;
     },
     revealVotes(data) {
       this.canVoteOnQuest = false;
+      this.showHasVotedOnQuest = false;
+      this.successCount = data["success"];
+      this.failCount = data["fail"];
       this.showQuestVoteResults = true;
-      this.votes = data;
-      this.voteSucceed = data.succeed;
-      this.voteFail = data.fail;
     },
     hideVotes() {
       this.showQuestVoteResults = false;
