@@ -27,7 +27,6 @@ export class GameBotMemory {
     this.quest5VoteDecision = [[],[]];
     this.quest5QuestDecision = [[],[]];
   }
-
 };
 
 
