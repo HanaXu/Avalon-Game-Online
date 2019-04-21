@@ -15,6 +15,7 @@ import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from '../game/utility.mjs';
+import util from "util";
 
 const app = express();
 const port = 80;
@@ -211,6 +212,7 @@ io.on('connection', socket => {
   socket.on('questTeamConfirmed', function () {
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
+
     //hide vote results from previous quest
     io.in(roomCode).emit('hideVotes');
 
@@ -223,8 +225,13 @@ io.on('connection', socket => {
     //update quest message
     io.in(roomCode).emit('updateQuestMsg', 'Waiting for all players to Accept or Reject team.');
 
-    //show accept/reject buttons to everyone
-    io.in(roomCode).emit('acceptOrRejectTeam', true);
+
+    let a = Array.from(currentQuest.playersOnQuest);
+    console.log("current quest players(server side): " + util.inspect(a, true, null, true));
+    io.in(roomCode).emit('acceptOrRejectTeam', {
+      bool: true,
+      onQuest: a
+    });
   });
 
   //players vote whether they like the team or not
@@ -250,7 +257,9 @@ io.on('connection', socket => {
     io.in(roomCode).emit('updateQuestMsg', 'Waiting for all players to Accept or Reject team.');
 
     //hide buttons if they already voted
-    socket.emit('acceptOrRejectTeam', false);
+    socket.emit('acceptOrRejectTeam', {
+      bool: false
+    });
 
     //show that player has made some kind of vote
     io.in(roomCode).emit('togglePlayerVoteStatus', true); //goes to Game.vue to display the element
@@ -280,7 +289,7 @@ io.on('connection', socket => {
 
     let votes = currentQuest.votes;
 
-    if (decision == 'succeed') {
+    if (decision === 'succeed') {
       votes.succeed.push(name);
     } else {
       votes.fail.push(name);
@@ -291,7 +300,7 @@ io.on('connection', socket => {
     io.in(roomCode).emit('votedOnQuest', votes.voted);
 
     //check if number of received votes is max needed
-    if ((votes.succeed.length + votes.fail.length) == currentQuest.playersRequired) {
+    if ((votes.succeed.length + votes.fail.length) === currentQuest.playersRequired) {
       //get rid of team vote stuff from DecideQuestTeam component
       io.in(roomCode).emit('hideTeamVotes');
       console.log('All quest votes received.');
@@ -405,9 +414,9 @@ function questTeamAcceptedStuff(roomCode) {
 
   //send goOnQuest to each player on quest
   for (let i = 0; i < players.length; i++) {
-    if (players[i].onQuest == true) {
+    if (players[i].onQuest === true) {
       //check if player is good so they can't fail quest
-      let onGoodTeam = (players[i].team) == "Good";
+      let onGoodTeam = (players[i].team) === "Good";
 
       io.to(GameList[roomCode].players[i].socketID).emit('goOnQuest', onGoodTeam);
       console.log(players[i].name);
