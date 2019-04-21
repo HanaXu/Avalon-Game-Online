@@ -5,34 +5,35 @@
       :key="questIndex"
       v-if="questHistory[questIndex][1].leader != null"
     >
+
+
       <h3>
         Quest #{{ questIndex }}
-
         <!-- put success/fail badge next to quest label -->
-
         <span class=""
           v-for="(voteTrackItem, voteTrackIndex) in questHistory"
           :key="voteTrackIndex"
-          v-if="questHistory[questIndex][voteTrackIndex].success != null"
+          v-if="questHistory[questIndex][voteTrackIndex] != null"
         >
-          <b-badge class="questResult success" v-if="questHistory[questIndex][voteTrackIndex].success">
-              Quest Success
-          </b-badge>
-          <b-badge class="questResult fail" v-if="!questHistory[questIndex][voteTrackIndex].success">
-              Quest Fail
-          </b-badge>
+          <span v-if="questHistory[questIndex][voteTrackIndex].success != null">
+              <b-badge class="questResult.succeed" v-if="questHistory[questIndex][voteTrackIndex].success">
+                  Success
+              </b-badge>
+              <b-badge class="questResult.fail" v-if="!questHistory[questIndex][voteTrackIndex].success">
+                  Fail
+              </b-badge>
           </span>
-        </b-badge>
-
-
+        </span>
       </h3>
+
+
       <div class=""
         v-for="(voteTrackItem, voteTrackIndex) in questHistory"
         :key="voteTrackIndex"
         v-if="questHistory[questIndex][voteTrackIndex] != null"
       >
         <b-row>
-          <b-col cols="6" md="2">
+          <b-col cols="6" md="4">
 
             <strong>Leader:</strong> {{ questHistory[questIndex][voteTrackIndex].leader }}
            </b-col>
@@ -87,9 +88,7 @@
                     Quest Fail
                 </b-badge>
             </b-row>
-
-
-        </span>
+      </span>
 
 
 
@@ -97,6 +96,10 @@
 
 
       </div>
+    </div>
+
+    <!--include footer so OK and Cancel buttons dont show up-->
+    <div slot="modal-footer">
     </div>
   </b-modal>
 </template>
@@ -140,6 +143,8 @@ h3 {
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   text-align: center;
   border-bottom: 2px solid #8A7D6E;
+  background: #eae7e3;
+  padding: 2px 0;
 }
 
 .voteResult,
@@ -152,14 +157,15 @@ h3 {
   font-size: 14px;
   padding: 8px;
   margin-bottom: 2px;
+  background: #8A7D6E !important;
 }
 
-.questResult.success {
-   background-color: green;
+.questResult.succeed {
+   color: green !important;
 }
 
 .questResult.fail {
-   background-color: red;
+   color: red !important;
 }
 
 </style>
