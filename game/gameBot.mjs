@@ -1,9 +1,18 @@
 import socketIO from 'socket.io-client';
-
+import util from 'util';
+// import {
+//     QuestHistory
+// } from '../game/history.mjs';
 //const name = "John The Bot";
 const firstNames = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "Wilson"];
 var nameStart = Math.floor(Math.random() * firstNames.length);
+
+// const questHistory1 = new QuestHistory();
+// const questHistory2 = new QuestHistory();
+// const questHistory3 = new QuestHistory();
+// const questHistory4 = new QuestHistory();
+// const questHistory5 = new QuestHistory();
 
 
 const PLAYERS_ON_QUEST = [
@@ -15,6 +24,7 @@ const PLAYERS_ON_QUEST = [
     [3, 3, 4, 5, 5],
     [3, 4, 4, 5, 5]
 ];
+
 
 
 export class gameBot {
@@ -94,6 +104,10 @@ export class gameBot {
                 name: bot.name,
                 decision: botDecision
             });
+        });
+
+        socket.on('updateHistoryModal', function (data) {
+            console.log(util.inspect(data, false, null, true));
         });
 
         // Function For Bot to Decide Whether it Will
