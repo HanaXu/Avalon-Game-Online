@@ -1,77 +1,70 @@
 <template>
-<div>
+  <div>
+    <div class="row justify-content-md-center mx-0">
+      <div class="col-12 col-md-7">
+        <EndGameOverlay/>
 
-
-
-<div class="row justify-content-md-center mx-0">
-<div class="col col-12 col-md-8">
-  <EndGameOverlay/>
-
-  <div class="container gameSection" v-if="!gameStarted" >
-
+        <div class="container gameSection" style="min-height: 70vh" v-if="!gameStarted">
+          <h4>
+            Welcome, {{ yourName }}, to game room
+            <span id="roomCode">{{ roomCode }}</span>.
+          </h4>
           <b-row>
-            <b-col cols="12" md="8" align-self="start">
-              <h4 id="roomCode"> Welcome, {{ yourName }}, to game room {{ roomCode }}.</h4>
+            <b-col md="7" offset="1">
+              <LobbyList :players="players"/>
             </b-col>
             <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
-              <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-            </b-col>
-
-            <b-col md="6">
-                <LobbyList :players="players"/>
+              <b-button
+                class="setupButton"
+                v-b-modal.setupModal
+                v-if="showSetupOptions"
+              >Setup Options</b-button>
             </b-col>
           </b-row>
 
-        <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
-        <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+          <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
+          <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
 
-        <div v-if="showStartButton">
-          <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+          <div v-if="showStartButton">
+            <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+          </div>
         </div>
-  </div>
 
+        <div class="container gameSection">
+          <PlayerCards
+            v-if="gameStarted"
+            :players="players"
+            :yourName="yourName"
+            :showAddPlayerButton="showAddPlayerButton"
+            :showRemovePlayerButton="showRemovePlayerButton"
+            :assassination="assassination"
+          />
+          <QuestCards v-if="gameStarted" :quests="quests"/>
+          <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
+        </div>
 
-  <div class="container gameSection">
-        <PlayerCards
-          v-if="gameStarted"
-          :players="players"
-          :yourName="yourName"
-          :showAddPlayerButton="showAddPlayerButton"
-          :showRemovePlayerButton="showRemovePlayerButton"
-          :assassination="assassination"
-        />
-        <QuestCards v-if="gameStarted" :quests="quests"/>
-        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
-  </div>
+        <div class="container gameSection">
+          <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
+          <PlayerVoteStatus v-if="showPlayerVoteStatus"/>
+        </div>
 
-  <div class="container gameSection">
-        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
-        <PlayerVoteStatus v-if="showPlayerVoteStatus" />
-  </div>
+        <div class="container gameSection">
+          <QuestVotes :yourName="yourName"/>
+          <DecideQuestTeam :yourName="yourName"/>
+        </div>
+      </div>
 
-  <div class="container gameSection">
-        <QuestVotes :yourName="yourName"/>
-        <DecideQuestTeam :yourName="yourName"/>
-  </div>
-
-
-</div>
-
-<div class="col col-12 col-md-4">
-  <div class="container chat">
-    <div style="align: right">
-      <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+      <div class="col-12 col-md-3">
+        <div class="container chat">
+          <div style="align: right">
+            <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <b-navbar class="navbar-default footer" fixed="bottom">Show Chat</b-navbar>
   </div>
-</div>
-
-</div>
-
-
-    <b-navbar class="navbar-default footer" fixed="bottom">
-      Show Chat
-    </b-navbar>
-</div>
 </template>
 
 <script>
@@ -223,5 +216,13 @@ export default {
 </script>
 
 <style>
-
+.gameSection {
+  background: #eae7e3;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 0 4px !important;
+  /* min-height: 70vh; */
+  clear: none;
+  box-shadow: 0 2px 5px #c2ab8e;
+}
 </style>

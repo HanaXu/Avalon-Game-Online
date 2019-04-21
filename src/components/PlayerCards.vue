@@ -1,6 +1,6 @@
 <template>
-  <div class="row justify-content-md-center playerCards" >
-    <div class="" v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
+  <div class="row justify-content-md-center playerCards">
+    <div class v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
       <div
         class="player card"
         :class="{darkerBG: player.name === yourName}"
@@ -15,7 +15,7 @@
             {{ player.name }}
             <span style="color: #FFD700" v-if="player.leader">👑</span>
           </h5>
-          <h6 class=" player card-subtitle text-muted">
+          <h6 class="player card-subtitle text-muted">
             <b>Team:</b>
             {{ player.team }}
             <br>
@@ -68,9 +68,8 @@ export default {
   ],
   data() {
     return {
-      width : window.innerWidth
-
-    }
+      width: window.innerWidth
+    };
   },
   methods: {
     addPlayerToQuest(playerName) {
@@ -87,5 +86,5 @@ export default {
 </script>
 
 <style>
-@import '../styles/styles.css';
+@import "../styles/styles.css";
 </style>

@@ -35,7 +35,7 @@ io.on('connection', socket => {
     let game;
 
     //validation
-    if (name.length < 1 || name.length > 20) {
+    if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
@@ -76,7 +76,7 @@ io.on('connection', socket => {
 
   // Listen for the Client-Host's Call to Create a Bot
   // Upon the Call, initaite an Instance of GameBot
-  socket.on('createBot', function(roomCode){
+  socket.on('createBot', function (roomCode) {
     console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
     gameBot.createBot(roomCode);
   });
@@ -97,7 +97,7 @@ io.on('connection', socket => {
       socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
     }
-    else if (name.length < 1 || name.length > 20) {
+    else if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
@@ -430,8 +430,11 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 }
 
 function checkForGameOver(roomCode) {
-  let tallyQuests = GameList[roomCode].tallyQuests();
   let currentQuest = GameList[roomCode].getCurrentQuest();
+  let tallyQuests = GameList[roomCode].tallyQuests();
+
+  console.log(`tally quests success: ${tallyQuests.successes}`)
+  console.log(`tally quests fails: ${tallyQuests.fails}`)
 
   //evil has won, game over
   if (tallyQuests.fails >= 3) {

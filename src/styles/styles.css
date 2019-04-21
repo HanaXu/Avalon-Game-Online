@@ -128,19 +128,6 @@ body {
     }
 }
 
-
-
-/***********GAME.VUE*******************/
-.gameSection {
-    background: #eae7e3;
-    border-radius: 5px;
-    margin: 10px;
-    padding: 0 4px !important;
-    /*min-height: 70vh;*/
-    clear: none;
-    /*box-shadow: 0 2px 5px #c2ab8e;*/
-}
-
 /****MOBILE SCREENS****/
 @media screen and (min-width: 1px) {
     .col {
@@ -336,7 +323,6 @@ body {
         width: 34px;
         height: 34px;
         border-radius: 50%;
-        /*background: #f8f9fa; *//* bootstrap 4 bg-light*/
         background: white;
         padding-top: 8px;
         margin-right: 2px;
@@ -362,7 +348,7 @@ body {
     .circle {
         width: 50px;
         height: 50px;
-        padding: 12px;
+        padding-top: 10px;
         margin-right: 0.5rem;
         font-size: 20px;
     }
