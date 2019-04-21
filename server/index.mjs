@@ -10,7 +10,6 @@ import {
 import {
   gameBot
 } from '../game/gameBot.mjs';
-
 import {
   sanitizeTeamView,
   validateOptionalCharacters
