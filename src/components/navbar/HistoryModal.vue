@@ -4,7 +4,7 @@
       class
       v-for="(questItem, questIndex) in questHistory"
       :key="questIndex"
-      v-if="questHistory[questIndex][1].leader != null"
+      v-if="questItem[1].leader != null"
     >
       <h3>
         Quest #{{ questIndex }}
@@ -13,17 +13,17 @@
           class
           v-for="(voteTrackItem, voteTrackIndex) in questHistory"
           :key="voteTrackIndex"
-          v-if="questHistory[questIndex][voteTrackIndex] != null"
+          v-if="questItem[voteTrackIndex] != null"
         >
-          <span v-if="questHistory[questIndex][voteTrackIndex].success != null">
+          <span v-if="questItem[voteTrackIndex].success != null">
             <b-badge
               class="questResult.succeed"
-              v-if="questHistory[questIndex][voteTrackIndex].success"
-            >Success {{questHistory[questIndex][voteTrackIndex].votes.succeed}}/{{questHistory[questIndex][voteTrackIndex].playersOnQuest.length}}</b-badge>
+              v-if="questItem[voteTrackIndex].success"
+            >Success {{questItem[voteTrackIndex].votes.succeed}}/{{questItem[voteTrackIndex].playersOnQuest.length}}</b-badge>
             <b-badge
               class="questResult.fail"
-              v-if="!questHistory[questIndex][voteTrackIndex].success"
-            >Fail {{questHistory[questIndex][voteTrackIndex].votes.fail}}/{{questHistory[questIndex][voteTrackIndex].playersOnQuest.length}}</b-badge>
+              v-if="!questItem[voteTrackIndex].success"
+            >Fail {{questItem[voteTrackIndex].votes.fail}}/{{questItem[voteTrackIndex].playersOnQuest.length}}</b-badge>
           </span>
         </span>
       </h3>
@@ -32,16 +32,16 @@
         class
         v-for="(voteTrackItem, voteTrackIndex) in questHistory"
         :key="voteTrackIndex"
-        v-if="questHistory[questIndex][voteTrackIndex] != null"
+        v-if="questItem[voteTrackIndex] != null"
       >
         <b-row>
           <b-col cols="6" md="4">
             <strong>Leader:</strong>
-            {{ questHistory[questIndex][voteTrackIndex].leader }}
+            {{ questItem[voteTrackIndex].leader }}
           </b-col>
           <b-col cols="12" md="6">
             <strong>Proposed Team:</strong>
-            <span>{{ " " + questHistory[questIndex][voteTrackIndex].playersOnQuest.join(", ") }}</span>
+            <span>{{ " " + questItem[voteTrackIndex].playersOnQuest.join(", ") }}</span>
           </b-col>
         </b-row>
 
@@ -52,11 +52,11 @@
             <br>
             <b-badge
               class="voteResult teamRejected"
-              v-if="questHistory[questIndex][voteTrackIndex].questTeamDecisions.result === 'rejected'"
+              v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'rejected'"
             >Team Rejected</b-badge>
             <b-badge
               class="voteResult teamAccepted"
-              v-if="questHistory[questIndex][voteTrackIndex].questTeamDecisions.result === 'accepted'"
+              v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'accepted'"
             >Team Accepted</b-badge>
           </b-col>
           <b-col cols="9">
@@ -64,8 +64,10 @@
               <b-col cols="6">
                 <strong>Accepted Team:</strong>
                 <br>
+
                 <span
-                  v-for="playerName in questHistory[questIndex][voteTrackIndex].questTeamDecisions.accept"
+                  v-for="(playerName, index) in questItem[voteTrackIndex].questTeamDecisions.accept"
+                  :key="index"
                 >
                   {{ playerName }}
                   <br>
@@ -75,9 +77,10 @@
                 <strong>Rejected Team:</strong>
                 <br>
                 <span
-                  v-for="playerRejectedTeam in questHistory[questIndex][voteTrackIndex].questTeamDecisions.reject"
+                  v-for="(playerName, index) in questItem[voteTrackIndex].questTeamDecisions.reject"
+                  :key="index"
                 >
-                  {{ playerRejectedTeam }}
+                  {{ playerName }}
                   <br>
                 </span>
               </b-col>
@@ -102,7 +105,7 @@ export default {
   methods: {
     getLastVoteTrackIndex(questObj) {
       /*
-      //questHistory[questIndex][voteTrackIndex].success
+      //questItem[voteTrackIndex].success
 
       for(let n = 1; n < 6; n++) {
         if(questObj.hasOwnProperty(n)) {
