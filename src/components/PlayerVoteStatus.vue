@@ -9,7 +9,7 @@
         </div>
 
         <!--all players have voted, show all results-->
-        <div v-if="showTeamVoteResults" class="ml-2 text-left">
+        <div v-if="showTeamVoteResults" class="ml4 col-md-6 text-left offset-md-3">
           <div v-if="teamVotes.reject.length >= teamVotes.accept.length">
             <strong>Accepted:</strong>
             {{ teamVotes.accept }}
