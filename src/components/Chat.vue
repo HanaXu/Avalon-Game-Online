@@ -34,6 +34,21 @@
           </div>
         </div>
       </div>
+      <hr>
+      <div class="input-group">
+        <div style="width: auto">
+          <textarea
+            type="text"
+            name
+            id
+            cols="30"
+            row="4"
+            wrap="hard"
+            placeholder="Press Enter to send your message..."
+            v-on:keyup.enter="sendMessage"
+          ></textarea>
+        </div>
+      </div>
     </div>
   </div>
 </template>

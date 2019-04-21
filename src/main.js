@@ -25,11 +25,14 @@ var config = {
 
 firebase.initializeApp(config);
 
+const awsURL = "http://ec2-18-191-152-81.us-east-2.compute.amazonaws.com/";
+const devURL = "http://localhost:80";
+
 Vue.use(BootstrapVue);
 Vue.use(
   new VueSocketIO({
     debug: true,
-    connection: "http://localhost:3000",
+    connection: devURL,
     vuex: {
       store,
       actionPrefix: "SOCKET_",

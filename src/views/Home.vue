@@ -1,7 +1,7 @@
 <template>
-  <div class="home">
-    <section class="container">
-      <div v-if="!(joinToggled || createToggled)" style="margin-top: 15%">
+  <div>
+    <section class="container" style="margin-top: 10%">
+      <div v-if="!(joinToggled || createToggled)">
         <h1 class="title">Avalonline</h1>
         <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
         <b-button
@@ -12,20 +12,20 @@
         <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
       </div>
       <div v-if="createToggled">
-        <CreateForm style="margin-top: 45%"></CreateForm>
-        <b-button :pressed.sync="createToggled" class="avalon-btn-lg float-left">Back</b-button>
+        <CreateForm></CreateForm>
+        <b-button :pressed.sync="createToggled" class="avalon-btn-lg">Back</b-button>
       </div>
       <div v-if="joinToggled">
-        <JoinForm style="margin-top: 31%"></JoinForm>
-        <b-button :pressed.sync="joinToggled" class="avalon-btn-lg float-left">Back</b-button>
+        <JoinForm></JoinForm>
+        <b-button :pressed.sync="joinToggled" class="avalon-btn-lg">Back</b-button>
       </div>
     </section>
   </div>
 </template>
 
 <script>
-import JoinForm from "@/components/JoinForm.vue";
-import CreateForm from "@/components/CreateForm.vue";
+import JoinForm from "@/components/home/JoinForm.vue";
+import CreateForm from "@/components/home/CreateForm.vue";
 
 export default {
   name: "home",
@@ -49,13 +49,11 @@ export default {
   justify-content: center;
   text-align: center;
 }
-
 .title {
   font-size: 50px;
   color: #503e2c;
   margin-bottom: 1rem;
 }
-
 .subtitle {
   font-size: 25px;
   color: #503e2c;

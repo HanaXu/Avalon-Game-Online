@@ -51,7 +51,7 @@ export class Quest {
   }
 
   assignResult() {
-    if (this.votes.fail > 0) {
+    if (this.votes.fail.length > 0) {
       this.success = false;
     } else {
       this.success = true;
