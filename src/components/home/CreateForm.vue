@@ -24,7 +24,7 @@ export default {
   name: "CreateForm",
   data() {
     return {
-      name: "1",
+      name: null,
       roomCode: null,
       loading: false,
       error: false,

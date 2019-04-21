@@ -35,7 +35,7 @@ export default {
   name: "JoinForm",
   data() {
     return {
-      name: "2",
+      name: null,
       roomCode: null,
       error: false,
       loading: false,

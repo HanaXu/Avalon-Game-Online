@@ -10,8 +10,8 @@ export function sanitizeTeamView(yourSocketID, yourCharacter, players) {
     else if (yourCharacter === 'Merlin') {
         return sanitizeForMerlin(yourSocketID, clonedPlayers);
     }
-    //loyal servant of arthur
-    else if (GoodTeam.has(yourCharacter)) {
+    //loyal servant of arthur or Oberon
+    else if (GoodTeam.has(yourCharacter) || yourCharacter === 'Oberon') {
         return sanitizeForGoodTeam(yourSocketID, clonedPlayers);
     }
     //evil team
@@ -87,7 +87,7 @@ export function sanitizeForMerlin(yourSocketID, players) {
             GoodTeam.has(players[i].character) ||
             players[i].character == 'Mordred'
         ) {
-            // hide good team's info (& Oberon)
+            // hide good team's info (& Mordred)
             players[i].character = 'hidden';
             players[i].team = 'hidden';
         } else {

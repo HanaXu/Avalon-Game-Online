@@ -301,18 +301,19 @@ export class Game {
   //called after each quest is completed
   //tally all quests successes/fails
   tallyQuests() {
+    console.log('tally quests');
     let successCount = 0;
     let failCount = 0;
-    for (let i = 1; i < 6; i++) {
+
+    for (let i in this.quests) {
+      if (this.quests[i].success === null) continue;
       if (this.quests[i].success) {
         successCount++;
       }
-      else if (this.quests[i].fail) {
+      else if (!this.quests[i].success) {
         failCount++;
       }
     }
-    console.log(`successCount: ${successCount}`);
-    console.log(`failCount: ${failCount}`);
     return ({
       successes: successCount,
       fails: failCount
