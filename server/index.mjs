@@ -10,17 +10,18 @@ import {
 import {
   gameBot
 } from '../game/gameBot.mjs';
-import {
-  GameBotMemory
-} from "../game/gameBotMemory";
+// import {
+//   GameBotMemory
+// } from "../game/gameBotMemory";
 import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from '../game/utility.mjs';
 
 const app = express();
-const server = app.listen(80, () => {
-  console.log('server running on port 80');
+const port = 80;
+const server = app.listen(port, () => {
+  console.log(`server running on port ${port}`);
 });
 
 const __dirname = path.dirname(new URL(
@@ -33,7 +34,7 @@ app.get(/.*/, function (req, res) {
 const io = socketIO(server);
 
 var GameList = {}; //keeps record of all game objects
-var GameBotMemoryList = {}; // keeps record of all game bot memory List
+//var GameBotMemoryList = {}; // keeps record of all game bot memory List
 
 io.on('connection', socket => {
   var roomCode; //make roomCode available to socket
@@ -88,7 +89,7 @@ io.on('connection', socket => {
   socket.on('createBot', function (roomCode) {
     console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
     let Bot = new gameBot();
-    Bot.createBot(roomCode);
+    Bot.createBot(roomCode, port);
   });
 
   //join an existing room
@@ -150,7 +151,7 @@ io.on('connection', socket => {
       socket.emit('errorMsg', errorMsg);
       return;
     }
-    GameBotMemoryList[roomCode] = new GameBotMemory(this.players);
+    //GameBotMemoryList[roomCode] = new GameBotMemory(this.players);
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].initializeQuests();
@@ -477,4 +478,3 @@ function checkForGameOver(roomCode) {
     chooseQuestTeam(roomCode);
   }
 }
-

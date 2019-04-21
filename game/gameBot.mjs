@@ -31,7 +31,7 @@ export class gameBot {
         this.action = 'undecided';
     };
 
-    createBot(roomCode) {
+    createBot(roomCode, port) {
 
         let bot = new gameBot();
 
@@ -41,7 +41,7 @@ export class gameBot {
 
         bot.name = createBotName();
 
-        var socket = createSocketConnection();
+        var socket = createSocketConnection(port);
 
         bot.socketID = socket.id;
         //socket.emit("connection", socket);
@@ -142,12 +142,12 @@ export class gameBot {
             return name;
         }
 
-        function createSocketConnection() {
+        function createSocketConnection(port) {
             /*
             Socket Connection Portion
         */
             var clientIO = socketIO;
-            var socket = clientIO.connect('http://localhost:3000');
+            var socket = clientIO.connect(`http://localhost:${port}`);
 
             socket.on('connect', () => {
                 console.log(`In gameBot Class: Socket ID: ${socket.id}`);
@@ -187,13 +187,21 @@ export class gameBot {
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
         socket.on('beginAssassination', function (msg) {
-            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
-            var toAssassinate = Math.floor(Math.random() * playersToChoose.length);
-            console.log(`toAssassinate: ${toAssassinate}`);
-            console.log(`Players To Assassinate: ${playersToChoose[toAssassinate].name}`);
+            let assassinArr = playersToChoose;
+            console.log(`AssassinArr: ${assassinArr}`);
 
-            socket.emit('assassinatePlayer', playersToChoose[toAssassinate].name);
-        })
+            for (let i in assassinArr) {
+                if (assassinArr[i].team === 'Evil')
+                    assassinArr.splice(i, 1);
+            }
+            console.log(`After Slice AssassinArr: ${assassinArr}`);
+            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
+            var toAssassinate = Math.floor(Math.random() * assassinArr.length);
+            console.log(`toAssassinate: ${toAssassinate}`);
+            console.log(`Players To Assassinate: ${assassinArr[toAssassinate].name}`);
+
+            socket.emit('assassinatePlayer', assassinArr[toAssassinate].name);
+        });
     }
 
 };

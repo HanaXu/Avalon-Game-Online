@@ -52,7 +52,7 @@ export default {
     return {
       error: false,
       errorMsg: "",
-      botCount: document.getElementById("botCount").value,
+      botCount: 0,
       selected: [], // Must be an array reference!
       options: [
         {
@@ -90,6 +90,7 @@ export default {
     createBot() {
       console.log(`CreateBot function Called with room: ${this.roomCode}`);
       this.$socket.emit("createBot", this.roomCode);
+      this.botCount++;
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
