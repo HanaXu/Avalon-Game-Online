@@ -3,24 +3,15 @@
  * ex: PLAYERS_ON_QUEST[0][0] = the first quest, with a 5 player game, will have 2 people on the Quest
  * @const {[][]}
  */
-// const PLAYERS_ON_QUEST = [
-//   //5 6 7 8 9 10 players
-//   [2, 2, 2, 3, 3, 3],
-//   [3, 3, 3, 4, 4, 4],
-//   [2, 4, 3, 4, 4, 4],
-//   [3, 3, 4, 5, 5, 5],
-//   [3, 4, 4, 5, 5, 5]
-// ];
-
 const PLAYERS_ON_QUEST = [
   //5 6 7 8 9 10 players
-  [2, 3, 2, 3, 3],
-  [2, 3, 4, 3, 4],
-  [2, 3, 3, 4, 4],
-  [3, 4, 4, 5, 5],
-  [3, 3, 4, 5, 5],
-  [3, 4, 4, 5, 5]
+  [2, 2, 2, 3, 3, 3],
+  [3, 3, 3, 4, 4, 4],
+  [2, 4, 3, 4, 4, 4],
+  [3, 3, 4, 5, 5, 5],
+  [3, 4, 4, 5, 5, 5]
 ];
+
 
 export class Quest {
   /**
