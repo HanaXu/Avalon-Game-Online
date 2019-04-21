@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="row justify-content-md-center mb-3 questCards">
-      <div class="" v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
+      <div
+        class
+        v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}"
+      >
         <div
           class="quest card"
           v-for="(quest, index) in quests"
@@ -19,7 +22,6 @@
             <h6 class="card-subtitle mb-2 text-muted">{{ quest.playersRequired }} players</h6>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -31,8 +33,8 @@ export default {
   props: ["quests"],
   data() {
     return {
-      width : window.innerWidth
-    }
+      width: window.innerWidth
+    };
   }
 };
 </script>

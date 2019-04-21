@@ -1,9 +1,6 @@
 <template>
   <ul class="lobbyList">
-    <li
-      v-for="(player, index) in players"
-      :key="index"
-    >{{ player.role }}: {{ player.name }}</li>
+    <li v-for="(player, index) in players" :key="index">{{ player.role }}: {{ player.name }}</li>
   </ul>
 </template>
 

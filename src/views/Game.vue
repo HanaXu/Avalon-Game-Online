@@ -4,7 +4,7 @@
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
 
-        <div class="container gameSection" style="min-height: 70vh" v-if="!gameStarted">
+        <div class="container main-board" v-if="!gameStarted">
           <h4>
             Welcome, {{ yourName }}, to game room
             <span id="roomCode">{{ roomCode }}</span>.
@@ -21,16 +21,14 @@
               >Setup Options</b-button>
             </b-col>
           </b-row>
-
           <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
           <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-
           <div v-if="showStartButton">
             <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
           </div>
         </div>
 
-        <div class="container gameSection">
+        <div class="container main-board" v-if="gameStarted">
           <PlayerCards
             v-if="gameStarted"
             :players="players"
@@ -43,15 +41,11 @@
           <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
         </div>
 
-        <div class="container gameSection">
-          <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
-          <PlayerVoteStatus v-if="showPlayerVoteStatus"/>
-        </div>
+        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
+        <PlayerVoteStatus v-if="showPlayerVoteStatus"/>
 
-        <div class="container gameSection">
-          <QuestVotes :yourName="yourName"/>
-          <DecideQuestTeam :yourName="yourName"/>
-        </div>
+        <QuestVotes :yourName="yourName"/>
+        <DecideQuestTeam :yourName="yourName"/>
       </div>
 
       <div class="col-12 col-md-3">
@@ -216,12 +210,12 @@ export default {
 </script>
 
 <style>
-.gameSection {
+.main-board {
   background: #eae7e3;
   border-radius: 5px;
   margin: 10px;
-  padding: 0 4px !important;
-  /* min-height: 70vh; */
+  min-height: 40vh;
+  padding: 4px !important;
   clear: none;
   box-shadow: 0 2px 5px #c2ab8e;
 }

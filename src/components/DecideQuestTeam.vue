@@ -1,11 +1,15 @@
 <template>
-  <div>
-    <div v-if="showConfirmTeamButton">
-      <b-button class="avalon-btn-lg" id="confirm-team-btn" @click="questTeamConfirmed">Confirm Team</b-button>
-    </div>
-
-    <div v-if="showAcceptRejectButtons">
-      <div class="row justify-content-center">
+  <b-row class="section" v-if="showConfirmTeamButton || showAcceptRejectButtons">
+    <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
+    <b-col class="py-0">
+      <div v-if="showConfirmTeamButton">
+        <b-button
+          class="avalon-btn-lg"
+          id="confirm-team-btn"
+          @click="questTeamConfirmed"
+        >Confirm Team</b-button>
+      </div>
+      <div v-if="showAcceptRejectButtons">
         <b-button
           class="avalon-btn-lg"
           id="accept-team-btn"
@@ -17,10 +21,8 @@
           @click="questTeamDecision('reject')"
         >Reject Team</b-button>
       </div>
-    </div>
-
-
-  </div>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
@@ -35,9 +37,7 @@ export default {
       showTeamVoteResults: false
     };
   },
-  props: [
-    "yourName"
-  ],
+  props: ["yourName"],
   methods: {
     questTeamConfirmed() {
       this.$socket.emit("questTeamConfirmed");

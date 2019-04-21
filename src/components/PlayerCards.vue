@@ -15,6 +15,7 @@
             {{ player.name }}
             <span style="color: #FFD700" v-if="player.leader">👑</span>
           </h5>
+
           <h6 class="player card-subtitle text-muted">
             <b>Team:</b>
             {{ player.team }}
@@ -24,10 +25,8 @@
             <br>
             <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
           </h6>
-          <div
-            v-if="showAddPlayerButton || showRemovePlayerButton"
-            class="row justify-content-md-center"
-          >
+
+          <div v-if="showAddPlayerButton || showRemovePlayerButton">
             <b-button
               class="mx-1 mt-2 questAddButton"
               :id="'add-player-' + player.name"
@@ -39,7 +38,7 @@
               :id="'remove-player-' + player.name"
               v-if="player.onQuest && showRemovePlayerButton"
               @click="removePlayerFromQuest(player.name)"
-            >Drop from Quest</b-button>
+            >Remove</b-button>
           </div>
 
           <div v-if="assassination" class="row justify-content-md-center">

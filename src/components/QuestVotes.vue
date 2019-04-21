@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <div class="row justify-content-md-center" v-if="canVoteOnQuest">
+  <b-row class="section" v-if="canVoteOnQuest">
+    <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
+    <b-col class="py-0">
       <b-button class="avalon-btn-lg" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
       <b-button
         class="avalon-btn-lg"
@@ -8,10 +9,10 @@
         @click="questVote('fail')"
         :disabled="onGoodTeam"
       >Fail</b-button>
-    </div>
-
-  </div>
+    </b-col>
+  </b-row>
 </template>
+
 <script>
 export default {
   name: "QuestVotes",
@@ -19,7 +20,7 @@ export default {
   data() {
     return {
       canVoteOnQuest: false,
-      onGoodTeam: false,
+      onGoodTeam: false
     };
   },
   methods: {
