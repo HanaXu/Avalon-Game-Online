@@ -89,7 +89,7 @@ export class gameBot {
                     console.log(`acceptOrRejectTeamBot Data On bot ${bot.name}: ${util.inspect(data.onQuest[i], true, null, true)}`);
                 }
 
-                let botDecision = botDecisionQuest();
+                let botDecision = botDecisionQuest(data.onQuest);
                 socket.emit("questTeamDecision", {
                     name: bot.name,
                     decision: botDecision
@@ -117,7 +117,7 @@ export class gameBot {
 
         // Function For Bot to Decide Whether it Will
         // Accept or Reject the Quest
-        function botDecisionQuest() {
+        function botDecisionQuest(playersOnQuest) {
             var decision;
 
             if (bot.team === 'Evil') {
