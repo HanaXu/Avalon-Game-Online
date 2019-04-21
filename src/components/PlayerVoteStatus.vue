@@ -36,7 +36,7 @@
 
         <!--all of quest team has voted-->
         <div class="row justify-content-center" v-if="showQuestVoteResults">
-          <div class="col-2">
+          <div class="col-3">
             <strong>Quest Vote Results:</strong>
           </div>
           <div class="col-2">

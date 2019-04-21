@@ -266,10 +266,10 @@ export class Game {
   }
 
   saveQuestHistory(questNum, currentQuest) {
-    console.log(this.questHistory[questNum][currentQuest.voteTrack])
+    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
     if (this.questHistory[questNum][currentQuest.voteTrack] === undefined) {
-      console.log('exceeded 1 votetrack, creating new history obj')
-      this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum)
+      console.log('exceeded 1 votetrack, creating new history obj');
+      this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
     }
     this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
     this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
