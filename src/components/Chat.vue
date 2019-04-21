@@ -1,55 +1,41 @@
 <template>
   <div id="app">
-    <div class="row">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-header">Chatroom</div>
-          <div class="card-body">
-            <dl id="messageList"></dl>
-            <div class="messages" v-chat-scroll>
-              <div class="message" v-bind:key="message.id" v-for="message in messages">
-                <template v-if="message.type==='join'">
-                  <font color="red">{{message.text}}</font>
-                </template>
-                <template v-else>
-                  <strong>{{message.username + " "}}</strong>
-                  <font size="2" color="grey">({{message.time}})</font>
-                  <br>
-                  {{message.text}}
-                </template>
-              </div>
-            </div>
-          </div>
-          <hr>
-          <div class="input-group">
-            <div style="width: inherit">
-              <textarea
-                type="text"
-                rows="1"
-                wrap="hard"
-                placeholder="Press Enter to send your message..."
-                v-on:keyup.enter="sendMessage"
-              ></textarea>
-            </div>
+    <!-- <div class="row">
+    <div class="col-md-8">-->
+    <div class="card">
+      <div class="card-header">Chatroom</div>
+      <div class="card-body">
+        <dl id="messageList"></dl>
+        <div class="messages" v-chat-scroll>
+          <div class="message" v-bind:key="message.id" v-for="message in messages">
+            <template v-if="message.type==='join'">
+              <font color="red">{{message.text}}</font>
+            </template>
+            <template v-else>
+              <strong>{{message.username + " "}}</strong>
+              <font size="2" color="grey">({{message.time}})</font>
+              <br>
+              {{message.text}}
+            </template>
           </div>
         </div>
       </div>
       <hr>
       <div class="input-group">
-        <div style="width: auto">
+        <div style="width: inherit">
           <textarea
             type="text"
-            name
-            id
-            cols="30"
-            row="4"
+            rows="1"
             wrap="hard"
-            placeholder="Press Enter to send your message..."
+            placeholder="Press Enter to send..."
             v-on:keyup.enter="sendMessage"
           ></textarea>
         </div>
       </div>
     </div>
+    <!-- </div> -->
+    <!-- <hr> -->
+    <!-- </div> -->
   </div>
 </template>
 
@@ -188,18 +174,35 @@ export default {
   color: #2c3e50;
   margin-top: 0;
 }
+div.card {
+  /* width: auto; */
+  /* height: auto; */
+}
+div.card-body {
+  padding: 5px;
+}
+textarea {
+  width: 93%;
+  resize: none;
+  word-wrap: normal;
+  padding: 5px;
+  margin: 1px;
+  display: inline-block;
+}
 .messages {
   text-align: left;
-  /* width: auto; */
   width: inherit;
+  max-height: 35vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .message {
-  border: #000 solid 2px;
   padding: 2px;
   margin: 5px;
-  /* width: 200px; */
   width: inherit;
 }
+/* 
+
 div.row {
   width: 30vw;
   padding: 0;
@@ -207,37 +210,22 @@ div.row {
 div.col-md-8 {
   width: inherit;
 }
-div.card {
-  width: inherit;
-}
+
 div.card-header {
   width: inherit;
+  position: relative;
 }
-div.card-body {
-  padding: 5px;
-}
-div.messages {
-  min-height: 50vh;
-  max-height: 50vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
+
+
 div.message {
   border: none;
 }
 div.input-group {
   width: inherit;
 }
-textarea {
-  width: 95%;
-  resize: none;
-  word-wrap: normal;
-  padding: 5px;
-  margin: 5px;
-  display: inline-block;
-}
+
 * {
   margin: 0;
   padding: 0;
-}
+} */
 </style>
