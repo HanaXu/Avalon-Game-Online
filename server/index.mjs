@@ -1,6 +1,6 @@
 import express from 'express';
 import socketIO from 'socket.io';
-<<<<<<< HEAD
+import path from 'path';
 import {
   Game
 } from '../game/game.mjs';
@@ -10,12 +10,6 @@ import {
 import {
   gameBot
 } from '../game/gameBot.mjs';
-=======
-import path from 'path';
-import { Game } from '../game/game.mjs';
-import { Player } from '../game/player.mjs';
-import { gameBot } from '../game/gameBot.mjs';
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
 import {
   sanitizeTeamView,
   validateOptionalCharacters
@@ -26,7 +20,8 @@ const server = app.listen(80, () => {
   console.log('server running on port 80');
 });
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(
+  import.meta.url).pathname);
 app.use(express.static(__dirname + "/dist/"));
 app.get(/.*/, function (req, res) {
   res.sendFile(__dirname + "/dist/index.html");
@@ -106,12 +101,7 @@ io.on('connection', socket => {
       console.log('game has already started. cannot join');
       socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
-<<<<<<< HEAD
-    } else if (name.length < 1 || name.length > 20) {
-=======
-    }
-    else if (name === null || name.length < 1 || name.length > 20) {
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
+    } else if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;

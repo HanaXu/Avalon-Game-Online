@@ -1,38 +1,8 @@
 <template>
   <div>
-<<<<<<< HEAD
-    <div class="container text-left" style="margin-top: .5rem">
-      <h4>
-        {{ yourName }}, welcome to Avalonline Room:
-        <span id="roomCode">{{ roomCode }}</span>
-      </h4>
-    </div>
-
-=======
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
     <div class="row justify-content-md-center mx-0">
       <div class="container game col-8">
         <EndGameOverlay/>
-<<<<<<< HEAD
-        <b-row>
-          <b-col cols="10">
-            <div style="text-align: left;">
-              <LobbyList v-if="!gameStarted" :players="players"/>
-            </div>
-          </b-col>
-          <b-col>
-            <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
-            <b-button v-if="!gameStarted" class="setupButton" @click="createBot">Add Bot</b-button>
-          </b-col>
-        </b-row>
-
-        <SetupOptions @clicked="clickedSetupOptions"></SetupOptions>
-
-        <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-
-        <div v-if="showStartButton">
-          <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
-=======
 
         <div class="container main-board" v-if="!gameStarted">
           <h4>
@@ -56,7 +26,6 @@
           <div v-if="showStartButton">
             <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
           </div>
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
         </div>
 
         <div class="container main-board" v-if="gameStarted">
@@ -77,11 +46,6 @@
 
         <QuestVotes :yourName="yourName"/>
         <DecideQuestTeam :yourName="yourName"/>
-<<<<<<< HEAD
-        <QuestCards v-if="gameStarted" :quests="quests"/>
-        <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
-=======
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
       </div>
 
       <div class="col-12 col-md-3">
@@ -107,12 +71,8 @@ import SetupOptions from "@/components/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
-<<<<<<< HEAD
-import { constants } from "crypto";
-=======
 import GameStatus from "@/components/GameStatus.vue";
 import PlayerVoteStatus from "@/components/PlayerVoteStatus.vue";
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
 
 export default {
   name: "Game",
@@ -182,13 +142,6 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
-<<<<<<< HEAD
-    },
-    createBot() {
-      console.log(`CreateBot function Called with room: ${this.roomCode}`);
-      this.$socket.emit("createBot", this.roomCode);
-=======
->>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
     }
   },
   sockets: {
