@@ -1,5 +1,6 @@
 import express from 'express';
 import socketIO from 'socket.io';
+<<<<<<< HEAD
 import {
   Game
 } from '../game/game.mjs';
@@ -9,15 +10,28 @@ import {
 import {
   gameBot
 } from '../game/gameBot.mjs';
+=======
+import path from 'path';
+import { Game } from '../game/game.mjs';
+import { Player } from '../game/player.mjs';
+import { gameBot } from '../game/gameBot.mjs';
+>>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
 import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from '../game/utility.mjs';
 
 const app = express();
-const server = app.listen(3000, () => {
-  console.log('server running on port 3000');
+const server = app.listen(80, () => {
+  console.log('server running on port 80');
 });
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+app.use(express.static(__dirname + "/dist/"));
+app.get(/.*/, function (req, res) {
+  res.sendFile(__dirname + "/dist/index.html");
+});
+
 const io = socketIO(server);
 
 var GameList = {}; //keeps record of all game objects
@@ -33,7 +47,7 @@ io.on('connection', socket => {
     let game;
 
     //validation
-    if (name.length < 1 || name.length > 20) {
+    if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
@@ -92,7 +106,12 @@ io.on('connection', socket => {
       console.log('game has already started. cannot join');
       socket.emit('errorMsg', 'Error: Cannot join a game that has already started');
       return;
+<<<<<<< HEAD
     } else if (name.length < 1 || name.length > 20) {
+=======
+    }
+    else if (name === null || name.length < 1 || name.length > 20) {
+>>>>>>> b79c119030c0fccce5de39c317e441b5d1005200
       console.log(`Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
@@ -241,7 +260,8 @@ io.on('connection', socket => {
     socket.emit('acceptOrRejectTeam', false);
 
     //show that player has made some kind of vote
-    io.in(roomCode).emit('votedOnTeam', currentQuest.questTeamDecisions.voted);
+    io.in(roomCode).emit('togglePlayerVoteStatus', true); //goes to Game.vue to display the element
+    io.in(roomCode).emit('votedOnTeam', currentQuest.questTeamDecisions.voted); //goes to PlayerVoteStatus to update content of element
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
@@ -290,6 +310,10 @@ io.on('connection', socket => {
       });
 
       currentQuest.assignResult(); //quest success or fail
+
+      //add quest to history log
+      GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+      io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
 
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
@@ -382,8 +406,7 @@ function chooseQuestTeam(roomCode) {
 }
 
 function questTeamAcceptedStuff(roomCode) {
-  //set to empty (DecideQuestTeam shows approval message)
-  io.in(roomCode).emit('updateQuestMsg', '');
+  io.in(roomCode).emit('updateQuestMsg', 'Quest team was Approved. Waiting for quest team to go on quest.');
 
   let players = GameList[roomCode].players;
   console.log("Quest team is: ");
@@ -401,6 +424,11 @@ function questTeamAcceptedStuff(roomCode) {
 }
 
 function questTeamRejectedStuff(roomCode, currentQuest) {
+  //add quest to history log
+  GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+  io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+  io.in(roomCode).emit('updateQuestMsg', 'Quest team was Rejected. New quest leader has been chosen.');
+
   currentQuest.voteTrack++;
 
   //check if voteTrack has exceeded 5 (game over)
@@ -425,8 +453,11 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 }
 
 function checkForGameOver(roomCode) {
-  let tallyQuests = GameList[roomCode].tallyQuests();
   let currentQuest = GameList[roomCode].getCurrentQuest();
+  let tallyQuests = GameList[roomCode].tallyQuests();
+
+  console.log(`tally quests success: ${tallyQuests.successes}`)
+  console.log(`tally quests fails: ${tallyQuests.fails}`)
 
   //evil has won, game over
   if (tallyQuests.fails >= 3) {

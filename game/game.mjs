@@ -1,5 +1,6 @@
 import { objectToArray, shuffle } from './utility.mjs';
 import { Quest } from './quest.mjs';
+import { QuestHistory } from './history.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
@@ -52,6 +53,7 @@ export class Game {
     this.gameStage = 0;
     this.players = [];
     this.quests = null;
+    this.questHistory = null;
     this.leaderIndex = 0;
   }
 
@@ -65,6 +67,29 @@ export class Game {
       5: new Quest(5, this.players.length)
     };
     this.quests[1].currentQuest = true;
+    this.initializeQuestHistory();
+  }
+
+  initializeQuestHistory() {
+    this.questHistory = {
+      //key: quest
+      1: {
+        //key: vote track
+        1: new QuestHistory(1),
+      },
+      2: {
+        1: new QuestHistory(2),
+      },
+      3: {
+        1: new QuestHistory(3),
+      },
+      4: {
+        1: new QuestHistory(4),
+      },
+      5: {
+        1: new QuestHistory(5),
+      },
+    }
   }
 
   getCurrentQuest() {
@@ -240,6 +265,29 @@ export class Game {
     currentQuest.resetQuest();
   }
 
+  saveQuestHistory(questNum, currentQuest) {
+    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
+    if (this.questHistory[questNum][currentQuest.voteTrack] === undefined) {
+      console.log('exceeded 1 votetrack, creating new history obj');
+      this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
+    }
+    this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
+    this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
+    this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leader.name;
+    if (currentQuest.questTeamDecisions.accept >= currentQuest.questTeamDecisions.reject) {
+      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'accepted';
+    } else {
+      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'rejected';
+    }
+    this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.accept = currentQuest.questTeamDecisions.accept;
+    this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.reject = currentQuest.questTeamDecisions.reject;
+    this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
+    this.questHistory[questNum][currentQuest.voteTrack].votes.fail = currentQuest.votes.fail.length;
+    this.questHistory[questNum][currentQuest.voteTrack].success = currentQuest.success;
+    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `)
+    console.log(this.questHistory[questNum][currentQuest.voteTrack])
+  }
+
   //move to next quest out of 5
   startNextQuest(lastQuestNum) {
     if (lastQuestNum < 5) {
@@ -258,18 +306,19 @@ export class Game {
   //called after each quest is completed
   //tally all quests successes/fails
   tallyQuests() {
+    console.log('tally quests');
     let successCount = 0;
     let failCount = 0;
-    for (let i = 1; i < 6; i++) {
+
+    for (let i in this.quests) {
+      if (this.quests[i].success === null) continue;
       if (this.quests[i].success) {
         successCount++;
       }
-      else if (this.quests[i].fail) {
+      else if (!this.quests[i].success) {
         failCount++;
       }
     }
-    console.log(`successCount: ${successCount}`);
-    console.log(`failCount: ${failCount}`);
     return ({
       successes: successCount,
       fails: failCount
