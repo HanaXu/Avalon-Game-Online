@@ -189,9 +189,8 @@ export default {
 }
 
 .container.game {
-  max-width: 50vw;
+  max-width: 60vw;
   min-height: 70vh;
-  /* float: left; */
   display: inline-block;
   padding: 1em;
   margin: 0;
@@ -199,11 +198,9 @@ export default {
 }
 
 .container.chat {
-  max-width: 30vw;
-  min-height: 75vh;
+  min-height: 70vh;
   padding: 0;
   margin: 0;
-  /* float: right; */
   display: inline-block;
   clear: none;
 }

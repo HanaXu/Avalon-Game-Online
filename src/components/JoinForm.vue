@@ -30,6 +30,7 @@
 
 <script>
 import Chat from "@/components/Chat.vue";
+import { bus } from "@/main.js";
 
 export default {
   name: "JoinForm",
@@ -50,6 +51,8 @@ export default {
         roomCode: this.roomCode,
         name: this.name
       });
+
+      bus.$emit("joinChat");
     }
   },
   sockets: {

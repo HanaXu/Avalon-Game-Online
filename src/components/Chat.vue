@@ -8,23 +8,24 @@
             <dl id="messageList"></dl>
             <div class="messages" v-chat-scroll>
               <div class="message" v-bind:key="message.id" v-for="message in messages">
-                <strong>{{message.username + " "}}</strong>
-                <font size="2" color="grey">({{message.time}})</font>
-                <strong>:</strong>
-                <br>
-                {{message.text}}
+                <template v-if="message.type==='join'">
+                  <font color="red">{{message.text}}</font>
+                </template>
+                <template v-else>
+                  <strong>{{message.username + " "}}</strong>
+                  <font size="2" color="grey">({{message.time}})</font>
+                  <br>
+                  {{message.text}}
+                </template>
               </div>
             </div>
           </div>
           <hr>
           <div class="input-group">
-            <div style="width: auto">
+            <div style="width: inherit">
               <textarea
                 type="text"
-                name
-                id
-                cols="30"
-                row="4"
+                rows="1"
                 wrap="hard"
                 placeholder="Press Enter to send your message..."
                 v-on:keyup.enter="sendMessage"
@@ -39,6 +40,7 @@
 
 <script>
 import firebase from "firebase";
+import { bus } from "@/main.js";
 import { setInterval } from "timers";
 import Vue from "vue";
 import VueChatScroll from "vue-chat-scroll";
@@ -57,8 +59,6 @@ export default {
     sendMessage(e) {
       e.preventDefault();
 
-      // console.log("in sendMessage");
-
       // Trim newline from message
       e.target.value = e.target.value.replace(/^\s+|\s+$/g, "");
 
@@ -70,13 +70,15 @@ export default {
           text: e.target.value,
           time: timeStamp
         };
-        console.log("Your message is: ", message);
+        // console.log("Your message is: ", message);
+
         // Push message to firebase reference
         firebase
           .database()
           .ref("chat/room-messages/" + this.roomCode)
           .push(message);
-        console.log("Message sent");
+        // console.log("Message sent");
+
         e.target.value = "";
       } else {
         console.log("Something went wrong...");
@@ -90,14 +92,15 @@ export default {
       const message = {
         username: "",
         text: joined,
-        time: timeStamp
+        time: timeStamp,
+        type: "join"
       };
 
       firebase
         .database()
         .ref("chat/room-messages/" + this.roomCode)
         .push(message);
-      console.log("Join message sent");
+      // console.log("Join message sent");
     },
     timeStamp() {
       // Create Date object with current time
@@ -120,13 +123,17 @@ export default {
         time[1] = "0" + time[1];
       }
 
-      return time.join(":") + period;
+      let currentTime = time.join(":") + period;
+
+      return currentTime;
     }
   },
   mounted() {
     let vm = this;
     let username = this.yourName;
     let roomCode = this.roomCode;
+
+    bus.$on("joinChat", this.joinMessage());
 
     const itemsRef = firebase.database().ref("chat/room-messages/" + roomCode);
 
@@ -180,6 +187,7 @@ export default {
 }
 div.row {
   width: 30vw;
+  padding: 0;
 }
 div.col-md-8 {
   width: inherit;
@@ -191,28 +199,27 @@ div.card-header {
   width: inherit;
 }
 div.card-body {
-  /* width: inherit; */
   padding: 5px;
 }
 div.messages {
-  /* height: 300px; */
   min-height: 50vh;
   max-height: 50vh;
-  /* width: 380px; */
   overflow-x: hidden;
   overflow-y: auto;
 }
 div.message {
-  /* width: 320px; */
   border: none;
 }
+div.input-group {
+  width: inherit;
+}
 textarea {
-  /* width: inherit; */
-  min-width: 100px;
+  width: 95%;
   resize: none;
   word-wrap: normal;
   padding: 5px;
   margin: 5px;
+  display: inline-block;
 }
 * {
   margin: 0;
