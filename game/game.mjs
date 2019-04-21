@@ -274,6 +274,11 @@ export class Game {
     this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
     this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
     this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leader.name;
+    if (currentQuest.questTeamDecisions.accept >= currentQuest.questTeamDecisions.reject) {
+      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'accepted';
+    } else {
+      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'rejected';
+    }
     this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.accept = currentQuest.questTeamDecisions.accept;
     this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.reject = currentQuest.questTeamDecisions.reject;
     this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
