@@ -11,6 +11,9 @@ import {
   gameBot
 } from '../game/gameBot.mjs';
 import {
+  GameBotMemory
+} from "../game/gameBotMemory";
+import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from '../game/utility.mjs';
@@ -30,6 +33,7 @@ app.get(/.*/, function (req, res) {
 const io = socketIO(server);
 
 var GameList = {}; //keeps record of all game objects
+var GameBotMemoryList = {}; // keeps record of all game bot memory List
 
 io.on('connection', socket => {
   var roomCode; //make roomCode available to socket
@@ -146,7 +150,7 @@ io.on('connection', socket => {
       socket.emit('errorMsg', errorMsg);
       return;
     }
-
+    GameBotMemoryList[roomCode] = new GameBotMemory(this.players);
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].gameStage = 1;
     GameList[roomCode].initializeQuests();
@@ -390,7 +394,6 @@ function chooseQuestTeam(roomCode) {
     bool: true,
     players: GameList[roomCode].players,
     currentQuestNum: currentQuest.questNum
-
   });
 
 }
@@ -474,3 +477,4 @@ function checkForGameOver(roomCode) {
     chooseQuestTeam(roomCode);
   }
 }
+
