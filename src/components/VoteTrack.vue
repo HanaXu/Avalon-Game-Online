@@ -1,8 +1,12 @@
 <template>
-  <div class="row justify-content-md-center" style="padding: 1rem;">
-    <span class="text-light mx-2" style="margin-top: .7rem">Vote Track:</span>
-    <div class="circle" :class="{markBG: index === currentVoteTrack}"
-    v-for="index in 5" :key="index">{{ index }}</div>
+  <div class="row justify-content-md-center">
+    <span class="text-dark mx-2" style="margin-top: .7rem">Vote Track:</span>
+    <div
+      class="circle"
+      :class="{markBG: index === currentVoteTrack}"
+      v-for="index in 5"
+      :key="index"
+    >{{ index }}</div>
   </div>
 </template>
 
@@ -15,7 +19,7 @@ export default {
 
 <style scoped>
 .markBG {
-  background: #9370DB !important;
+  background: #9370db !important;
 }
 .circle {
   width: 50px;
