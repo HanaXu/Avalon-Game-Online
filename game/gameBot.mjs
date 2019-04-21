@@ -16,7 +16,6 @@ const PLAYERS_ON_QUEST = [
     [3, 4, 4, 5, 5]
 ];
 
-
 export class gameBot {
     constructor() {
         this.socketID = null;
@@ -190,13 +189,17 @@ export class gameBot {
             let assassinArr = playersToChoose;
             console.log(`AssassinArr: ${assassinArr}`);
 
-            for (let i in assassinArr) {
-                if (assassinArr[i].team === 'Evil')
+            for (let i = 0; i < assassinArr.length; i++) {
+                console.log(`My Name is: ${assassinArr[i].name} and Team is: ${assassinArr[i].team}`);
+                if (assassinArr[i].team === 'Evil') {
                     assassinArr.splice(i, 1);
+                    i--;
+                }
             }
             console.log(`After Slice AssassinArr: ${assassinArr}`);
             console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
             var toAssassinate = Math.floor(Math.random() * assassinArr.length);
+            console.log(`AssassinArr.lenth: ${assassinArr.length()}`);
             console.log(`toAssassinate: ${toAssassinate}`);
             console.log(`Players To Assassinate: ${assassinArr[toAssassinate].name}`);
 
