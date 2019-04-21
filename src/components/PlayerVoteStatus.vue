@@ -9,7 +9,7 @@
         </div>
 
         <!--all players have voted, show all results-->
-        <div v-if="showTeamVoteResults" class="mt-2">
+        <div v-if="showTeamVoteResults" class="ml-2 text-left">
           <div v-if="teamVotes.reject.length >= teamVotes.accept.length">
             <strong>Accepted:</strong>
             {{ teamVotes.accept }}
@@ -36,10 +36,10 @@
 
         <!--all of quest team has voted-->
         <div class="row justify-content-center" v-if="showQuestVoteResults">
-          <div class="col-3">
+          <div class="col-6 col-md-3">
             <strong>Quest Vote Results:</strong>
           </div>
-          <div class="col-2">
+          <div class="col-6 col-md-2 text-left">
             <strong>Succeed:</strong>
             {{ successCount }}
             <br>

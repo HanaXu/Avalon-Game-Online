@@ -13,10 +13,6 @@
     box-shadow: 0 2px 5px #c2ab8e;
     width: 100%;
 }
-.navbar-default .navbar-brand {
-    color: #777;
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-}
 .navbar-default .navbar-brand:hover,
 .navbar-default .navbar-nav .nav-link:hover {
     color: #494949;
@@ -45,6 +41,12 @@ body {
 }
 
 @media screen and (min-width: 1px) {
+    .navbar-default .navbar-brand {
+        color: #777;
+        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+        font-size: 18px;
+    }
+
     /*get rid of padding on all columns */
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
     .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7,
@@ -105,14 +107,17 @@ body {
     }
 }
 @media screen and (min-width: 768px) {
+
+    .navbar-default .navbar-brand {
+        font-size: 20px;
+    }
+
     .avalon-btn-lg {
         padding: 10px !important;
         font-size: 20px !important;
         width: 200px;
     }
-}
-/****NORMAL SCREENS****/
-@media screen and (min-width: 768px) {
+
     /*get rid of padding on all columns */
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
     .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7,
@@ -204,7 +209,7 @@ body {
     background: #C7C2CF !important;
 }
 .markRed {
-    border: 5px solid red !important;
+    border: 5px solid #A42323 !important;
 }
 .markGreen {
     border: 5px solid green !important;

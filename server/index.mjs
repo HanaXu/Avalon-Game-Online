@@ -159,6 +159,9 @@ io.on('connection', socket => {
     io.in(roomCode).emit('gameStarted');
     io.to(socket.id).emit('showHostSetupOptions', false);
 
+    //empty the history modal in case player is still in same session from a previous game
+    io.in(roomCode).emit('updateHistoryModal', []);
+
     //quest leader chooses players to go on quest
     chooseQuestTeam(roomCode);
   });
