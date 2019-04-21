@@ -147,10 +147,9 @@ body {
     .container.chat {
         visibility: visible;
         min-height: 75vh;
-        /*max-width: 98vw;*/
+         margin: 10px 0;
         width: 100%;
         padding: 0;
-        margin: 10px !important;
         display: inline-block;
         clear: none;
         overflow: hidden;
@@ -172,9 +171,8 @@ body {
     .container.chat {
         visibility: visible;
         min-height: 75vh;
-        /*max-width: 98vw;*/
+        margin: 10px !important;
         padding: 0;
-        margin: 0;
         display: inline-block;
         clear: none;
         overflow: hidden;

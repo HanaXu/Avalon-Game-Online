@@ -35,7 +35,7 @@
         v-if="questItem[voteTrackIndex] != null"
       >
         <b-row>
-          <b-col cols="6" md="4">
+          <b-col cols="12" md="6">
             <strong>Leader:</strong>
             {{ questItem[voteTrackIndex].leader }}
           </b-col>
@@ -59,7 +59,7 @@
               v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'accepted'"
             >Accepted Team</b-badge>
           </b-col>
-          <b-col cols="9">
+          <b-col cols="12" md="9">
             <b-row>
               <b-col cols="6">
                 <span class="subheader">Accepted Team</span>
@@ -142,6 +142,11 @@ h3 {
   margin: 0;
 }
 
+.col-6 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .voteTrackItem {
   border-top: 2px solid #8a7d6e;
 }
@@ -150,7 +155,6 @@ h3 {
 .voteResult.teamRejected,
 .voteResult.teamAccepted {
   background: #7d67aa;
-  word-wrap: break-word;
 }
 
 .subheader {
