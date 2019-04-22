@@ -121,6 +121,7 @@ export class gameBot {
                     name: bot.name,
                     decision: botDecision
                 });
+                console.log(`${bot.name} Sent ${botDecision}`);
             }
         });
 
@@ -131,7 +132,11 @@ export class gameBot {
 
             if (bot.team === 'Evil') {
                 decision = 'reject';
+                console.log(`My Name is ${bot.name} with ${bot.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
             } else if (bot.team === 'Good') {
+                console.log(`My Name is ${bot.name} with ${bot.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
+
+
                 decision = 'accept';
             }
 
@@ -293,7 +298,7 @@ export class gameBot {
                                 tallyPlayerCounter(0, 2);
 
                                 // Now We can go ahead and start pushing to Server the Players We want on Quest
-
+                                console.log(`definiteAdd.length: ${definitelyAdd.length}`);
                                 for (let i in definitelyAdd) {
                                     if (playersOnQuestNum != 0) {
                                         addToQuestByName(definitelyAdd[i]);
@@ -325,9 +330,9 @@ export class gameBot {
 
 
 
-                                // for (let i in playerCounters) {
-                                //     console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
-                                // }
+                                for (let i in playerCounters) {
+                                    console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                                }
                                 // for (let i in questHistory1) {
                                 //     if (questHistory1.success === true)
                                 //         console.log(`questHistory1.sucess: ${questHistory1.success}`);
@@ -383,6 +388,11 @@ export class gameBot {
                                     }
                                 }
                                 console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in playerCounters) {
+                                    console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                                }
+
                                 break;
                             case 4:
                                 console.log(`In Case 4:`)
@@ -433,6 +443,10 @@ export class gameBot {
                                     }
                                 }
                                 console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in playerCounters) {
+                                    console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                                }
                                 break;
                             case 5:
                                 console.log(`In Case 5:`)
@@ -483,18 +497,23 @@ export class gameBot {
                                     }
                                 }
                                 console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in playerCounters) {
+                                    console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                                }
+
                                 break;
                         }
-                    } else {
-                        for (var i = 0; i < playersOnQuestNum; i++) {
-                            //console.log(`Chose: ${players[i].name}`);
-                            players[i].onQuest = true;
-                            socket.emit("addPlayerToQuest", players[i].name);
-                            socket.emit('updatePlayers')
-                            //console.log(`QuestHistory1: ${util.inspect(questHistory1,true, null, true)}`)
+                    } //else {
+                    //     for (var i = 0; i < playersOnQuestNum; i++) {
+                    //         //console.log(`Chose: ${players[i].name}`);
+                    //         players[i].onQuest = true;
+                    //         socket.emit("addPlayerToQuest", players[i].name);
+                    //         socket.emit('updatePlayers')
+                    //         //console.log(`QuestHistory1: ${util.inspect(questHistory1,true, null, true)}`)
 
-                        }
-                    }
+                    //     }
+                    // }
                     bot.leader = false;
                     socket.emit('questTeamConfirmed');
                 }
@@ -506,10 +525,11 @@ export class gameBot {
         // Succeeding or Failing Quests
         socket.on('goOnQuest', function () {
             let botDecision = botQuestVote();
-            socket.emit("questVote", {
+            socket.emit('questVote', {
                 name: bot.name,
                 decision: botDecision
             });
+            console.log(`In Quest: ${bot.name} Sent ${botDecision}`);
         });
 
 
