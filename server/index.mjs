@@ -238,7 +238,8 @@ io.on('connection', socket => {
     console.log("current quest players(server side): " + util.inspect(a, true, null, true));
     io.in(roomCode).emit('acceptOrRejectTeam', {
       bool: true,
-      onQuest: a
+      onQuest: a,
+      players: GameList[roomCode].players
     });
   });
 
