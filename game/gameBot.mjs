@@ -577,25 +577,60 @@ export class gameBot {
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
         socket.on('beginAssassination', function (msg) {
-            let assassinArr = playersToChoose;
-            console.log(`AssassinArr: ${assassinArr}`);
+            let merlinGuess = mostLikelyMerlin();
+            socket.emit('assassinatePlayer', merlinGuess);
+        });
 
-            for (let i = 0; i < assassinArr.length; i++) {
-                console.log(`My Name is: ${assassinArr[i].name} and Team is: ${assassinArr[i].team}`);
-                if (assassinArr[i].team === 'Evil') {
-                    assassinArr.splice(i, 1);
-                    i--;
+        function mostLikelyMerlin(){
+            let leadersOfSucceedQuest = [[],[]];
+            let playersOnSucceedQuest = [];
+            let merlinName;
+            let count = 0;
+            if(questHistory1.success === true){
+                leadersOfSucceedQuest.push(questHistory1.leader);
+                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
+                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
                 }
             }
-            console.log(`After Slice AssassinArr: ${assassinArr}`);
-            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
-            var toAssassinate = Math.floor(Math.random() * assassinArr.length);
-            console.log(`AssassinArr.lenth: ${assassinArr.length()}`);
-            console.log(`toAssassinate: ${toAssassinate}`);
-            console.log(`Players To Assassinate: ${assassinArr[toAssassinate].name}`);
-
-            socket.emit('assassinatePlayer', assassinArr[toAssassinate].name);
-        });
+            if(questHistory2.success === true){
+                leadersOfSucceedQuest.push(questHistory1.leader);
+                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
+                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
+                }
+            }
+            if(questHistory3.success === true){
+                leadersOfSucceedQuest.push(questHistory1.leader);
+                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
+                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
+                }
+            }
+            if(questHistory4.success === true){
+                leadersOfSucceedQuest.push(questHistory1.leader);
+                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
+                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
+                }
+            }
+            if(questHistory5.success === true){
+                leadersOfSucceedQuest.push(questHistory1.leader);
+                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
+                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
+                }
+            }
+            for(let i = 0; i < leadersOfSucceedQuest.length; i++){
+                for(let x = 0; x < playersOnSucceedQuest.length; x++){
+                    if(leadersOfSucceedQuest[i] === playersOnSucceedQuest[x]){
+                        leadersOfSucceedQuest[i].push(playersOnSucceedQuest[x]);
+                    }
+                }
+            }
+            for(let i = 0; i < leadersOfSucceedQuest.length; i++){
+                if(leadersOfSucceedQuest[i].length > count){
+                    merlinName = leadersOfSucceedQuest[i].name;
+                    count = leadersOfSucceedQuest[i].length;
+                }
+            }
+            return merlinName;
+        }
 
         function addToQuestAtIndex(value) {
             socket.emit("addPlayerToQuest", playersToChoose[value].name);
