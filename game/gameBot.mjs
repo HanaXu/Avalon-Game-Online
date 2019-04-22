@@ -229,7 +229,7 @@ export class gameBot {
                     var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
                     //console.log(`Current Quest Number: ${currentQuestNum}`);
 
-                    if (currentQuestNum <= 2) {
+                    if (currentQuestNum <= 5) {
                         switch (currentQuestNum) {
                             case 1:
                                 // Since First Quest I will always nominate myself for Quest and Other Person/Persons
@@ -289,7 +289,6 @@ export class gameBot {
                                 iterateQuest1();
                                 // Now that the Tallies are Made lets See who we Should add
                                 // Iterate PlayerCounter
-
                                 for (let i in playerCounters) {
                                     // Check to see if Below 0. Means they Rejected First Quest and/Vote
                                     if (playerCounters[i].value < 0)
@@ -341,10 +340,181 @@ export class gameBot {
                                 //         console.log(`questHistory1.sucess: ${questHistory1.success}`);
                                 // }
                                 break;
+
                             case 3:
+                                console.log(`In Case 3:`)
+                                console.log(`players to Add: ${playersOnQuestNum}`);
 
+                                // I Need to re-Initialize the 'Add' Arrays 
+                                // Because This Case will have different Weight Criteria
+                                definitelyAdd = [];
+                                possibleAdd = [];
+                                doNotAdd = [];
+
+                                iterateQuest2();
+
+                                // Now that the Tallies are Made lets See who we Should add
+                                // Iterate PlayerCounter
+                                for (let i in playerCounters) {
+                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
+                                    if (playerCounters[i].value < 2)
+                                        doNotAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 2 && playerCounters[i].value < 4)
+                                        possibleAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 4)
+                                        definitelyAdd.push(playerCounters[i].name);
+                                }
+
+                                // Now We can go ahead and start pushing to Server the Players We want on Quest
+
+                                for (let i in definitelyAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(definitelyAdd[i]);
+                                        console.log(`DefiniteAdd${i}: ${definitelyAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in possibleAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(possibleAdd[i]);
+                                        console.log(`possibleAdd${i}: ${possibleAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                //Last Case Resort I will have to Pick from this Array
+                                // Smarter implementation is to use 'sort()'
+                                // It will rearrange array from least to greatest
+                                // I can get get length - i for the remainder of the Selects
+                                doNotAdd.sort();
+                                for (let i in doNotAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(doNotAdd[doNotAdd.length - i]);
+                                        console.log(`doNotAdd${doNotAdd.length-i}: ${doNotAdd[doNotAdd.length-i]}`);
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
                                 break;
+                            case 4:
+                                console.log(`In Case 4:`)
+                                console.log(`players to Add: ${playersOnQuestNum}`);
 
+                                // I Need to re-Initialize the 'Add' Arrays 
+                                // Because This Case will have different Weight Criteria
+                                definitelyAdd = [];
+                                possibleAdd = [];
+                                doNotAdd = [];
+
+                                iterateQuest3();
+
+                                // Now that the Tallies are Made lets See who we Should add
+                                // Iterate PlayerCounter
+                                for (let i in playerCounters) {
+                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
+                                    if (playerCounters[i].value < 4)
+                                        doNotAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 4 && playerCounters[i].value < 6)
+                                        possibleAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 6)
+                                        definitelyAdd.push(playerCounters[i].name);
+                                }
+
+                                // Now We can go ahead and start pushing to Server the Players We want on Quest
+
+                                for (let i in definitelyAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(definitelyAdd[i]);
+                                        console.log(`DefiniteAdd${i}: ${definitelyAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in possibleAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(possibleAdd[i]);
+                                        console.log(`possibleAdd${i}: ${possibleAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                //Last Case Resort I will have to Pick from this Array
+                                // Smarter implementation is to use 'sort()'
+                                // It will rearrange array from least to greatest
+                                // I can get get length - i for the remainder of the Selects
+                                doNotAdd.sort();
+                                for (let i in doNotAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(doNotAdd[doNotAdd.length - i]);
+                                        console.log(`doNotAdd${doNotAdd.length-i}: ${doNotAdd[doNotAdd.length-i]}`);
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+                                break;
+                            case 5:
+                                console.log(`In Case 5:`)
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                // I Need to re-Initialize the 'Add' Arrays 
+                                // Because This Case will have different Weight Criteria
+                                definitelyAdd = [];
+                                possibleAdd = [];
+                                doNotAdd = [];
+
+                                iterateQuest4();
+
+                                // Now that the Tallies are Made lets See who we Should add
+                                // Iterate PlayerCounter
+                                for (let i in playerCounters) {
+                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
+                                    if (playerCounters[i].value < 6)
+                                        doNotAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 6 && playerCounters[i].value < 8)
+                                        possibleAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 8)
+                                        definitelyAdd.push(playerCounters[i].name);
+                                }
+
+                                // Now We can go ahead and start pushing to Server the Players We want on Quest
+
+                                for (let i in definitelyAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(definitelyAdd[i]);
+                                        console.log(`DefiniteAdd${i}: ${definitelyAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in possibleAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(possibleAdd[i]);
+                                        console.log(`possibleAdd${i}: ${possibleAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                //Last Case Resort I will have to Pick from this Array
+                                // Smarter implementation is to use 'sort()'
+                                // It will rearrange array from least to greatest
+                                // I can get get length - i for the remainder of the Selects
+                                doNotAdd.sort();
+                                for (let i in doNotAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(doNotAdd[doNotAdd.length - i]);
+                                        console.log(`doNotAdd${doNotAdd.length-i}: ${doNotAdd[doNotAdd.length-i]}`);
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+                                break;
                         }
                     } else {
                         for (var i = 0; i < playersOnQuestNum; i++) {
@@ -457,6 +627,144 @@ export class gameBot {
                     i++
                 } else {
                     punishPlayer(questHistory1.questTeamDecisions.reject[i])
+                }
+            }
+        }
+
+
+        function iterateQuest2() {
+            // Iterate Through Quest History to Award Trust or Punish
+            // Based on People Who Went to Quest 
+            for (let i in questHistory2.playersOnQuest) {
+                if (questHistory2.playersOnQuest[i] === bot.name) {
+                    i++
+                } else {
+                    if (questHistory2.success === true)
+                        awardPlayer(questHistory2.playersOnQuest[i])
+                    else
+                        punishPlayer(questHistory2.playersOnQuest[i])
+                }
+            }
+
+
+            // Now Iterate to Award and Punish
+            // Based on Voting
+            for (let i in questHistory2.questTeamDecisions.accept) {
+                if (questHistory2.questTeamDecisions.accept[i] === bot.name) {
+                    i++
+                } else {
+                    awardPlayer(questHistory1.questTeamDecisions.accept[i])
+                }
+            }
+
+            for (let i in questHistory2.questTeamDecisions.reject) {
+                if (questHistory2.questTeamDecisions.reject[i] === bot.name) {
+                    i++
+                } else {
+                    punishPlayer(questHistory2.questTeamDecisions.reject[i])
+                }
+            }
+        }
+
+
+        function iterateQuest3() {
+            // Iterate Through Quest History to Award Trust or Punish
+            // Based on People Who Went to Quest 
+            for (let i in questHistory3.playersOnQuest) {
+                if (questHistory3.playersOnQuest[i] === bot.name) {
+                    i++
+                } else {
+                    if (questHistory3.success === true)
+                        awardPlayer(questHistory3.playersOnQuest[i])
+                    else
+                        punishPlayer(questHistory3.playersOnQuest[i])
+                }
+            }
+
+
+            // Now Iterate to Award and Punish
+            // Based on Voting
+            for (let i in questHistory3.questTeamDecisions.accept) {
+                if (questHistory3.questTeamDecisions.accept[i] === bot.name) {
+                    i++
+                } else {
+                    awardPlayer(questHistory3.questTeamDecisions.accept[i])
+                }
+            }
+
+            for (let i in questHistory3.questTeamDecisions.reject) {
+                if (questHistory3.questTeamDecisions.reject[i] === bot.name) {
+                    i++
+                } else {
+                    punishPlayer(questHistory3.questTeamDecisions.reject[i])
+                }
+            }
+        }
+
+        function iterateQuest4() {
+            // Iterate Through Quest History to Award Trust or Punish
+            // Based on People Who Went to Quest 
+            for (let i in questHistory4.playersOnQuest) {
+                if (questHistory4.playersOnQuest[i] === bot.name) {
+                    i++
+                } else {
+                    if (questHistory4.success === true)
+                        awardPlayer(questHistory4.playersOnQuest[i])
+                    else
+                        punishPlayer(questHistory4.playersOnQuest[i])
+                }
+            }
+
+
+            // Now Iterate to Award and Punish
+            // Based on Voting
+            for (let i in questHistory4.questTeamDecisions.accept) {
+                if (questHistory4.questTeamDecisions.accept[i] === bot.name) {
+                    i++
+                } else {
+                    awardPlayer(questHistory4.questTeamDecisions.accept[i])
+                }
+            }
+
+            for (let i in questHistory4.questTeamDecisions.reject) {
+                if (questHistory4.questTeamDecisions.reject[i] === bot.name) {
+                    i++
+                } else {
+                    punishPlayer(questHistory4.questTeamDecisions.reject[i])
+                }
+            }
+        }
+
+        function iterateQuest5() {
+            // Iterate Through Quest History to Award Trust or Punish
+            // Based on People Who Went to Quest 
+            for (let i in questHistory5.playersOnQuest) {
+                if (questHistory5.playersOnQuest[i] === bot.name) {
+                    i++
+                } else {
+                    if (questHistory5.success === true)
+                        awardPlayer(questHistory5.playersOnQuest[i])
+                    else
+                        punishPlayer(questHistory5.playersOnQuest[i])
+                }
+            }
+
+
+            // Now Iterate to Award and Punish
+            // Based on Voting
+            for (let i in questHistory5.questTeamDecisions.accept) {
+                if (questHistory5.questTeamDecisions.accept[i] === bot.name) {
+                    i++
+                } else {
+                    awardPlayer(questHistory5.questTeamDecisions.accept[i])
+                }
+            }
+
+            for (let i in questHistory5.questTeamDecisions.reject) {
+                if (questHistory5.questTeamDecisions.reject[i] === bot.name) {
+                    i++
+                } else {
+                    punishPlayer(questHistory5.questTeamDecisions.reject[i])
                 }
             }
         }
