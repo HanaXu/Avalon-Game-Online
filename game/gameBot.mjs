@@ -11,7 +11,6 @@ let questHistory3;
 let questHistory4;
 let questHistory5;
 
-
 //Trust Factor Object
 // {@property} name:
 // {@propery} value:
@@ -46,6 +45,7 @@ export class gameBot {
         this.onQuest = false;
         this.questAction = 'undecided';
         this.action = 'undecided';
+        this.questHistory = [];
     };
 
     createBot(roomCode, port) {
@@ -147,7 +147,7 @@ export class gameBot {
             // console.log(`On Quest: ${currentfQuestNum}`);
             // console.log(`Players: ${players}`);
             //console.log(`number of players: ${players.length}`);
-            var playersOnQuestNum = PLAYERS_ON_QUEST[currentQuestNum - 1][players.length - 5];
+            var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
             console.log(`Choosing ${playersOnQuestNum} players for quest #${currentQuestNum} with ${players.length} players.`);
             //choose only one evil player to go on quest
             for (let i = 0; i < players.length; i++) {
@@ -204,7 +204,7 @@ export class gameBot {
         function botQuestVote() {
             var decision;
             if (bot.team === 'Evil') {
-                decision = makeEvilVoteDecision();;
+                decision = makeEvilVoteDecision();
             } else if (bot.team === 'Good') {
                 decision = 'succeed';
             }
@@ -246,14 +246,17 @@ export class gameBot {
         }
 
         socket.on('updateHistoryModal', function (data) {
-            if(data.length > 0) {
-                questHistory1 = data[1][1];
-                questHistory2 = data[2][1];
-                questHistory3 = data[3][1];
-                questHistory4 = data[4][1];
-                questHistory5 = data[5][1];
-            }
-            //console.log(`Quest History 1 is: ${util.inspect(questHistory1, false, null, true)}`);
+
+            this.questHistory = data;
+        /*    if(data.length > 0) {
+                questHistory1 = data[1];
+                questHistory2 = data[2];
+                questHistory3 = data[3];
+                questHistory4 = data[4];
+                questHistory5 = data[5];
+
+            }*/
+            // console.log(`Quest History 1 is: ${util.inspect(questHistory1, false, null, true)}`);
         });
 
         // Bot Chooses Players For Quest
@@ -328,8 +331,15 @@ export class gameBot {
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
         socket.on('beginAssassination', function (msg) {
-            let merlinGuess = mostLikelyMerlin();
-            socket.emit('assassinatePlayer', merlinGuess);
+            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
+            var toAssassinate = Math.floor(Math.random() * playersToChoose.length);
+            while(playersToChoose[toAssassinate].team === 'Evil'){
+                toAssassinate = Math.floor(Math.random() * playersToChoose.length);
+            }
+            console.log(`toAssassinate: ${toAssassinate}`);
+            console.log(`Players To Assassinate: ${playersToChoose[toAssassinate].name}`);
+
+            socket.emit('assassinatePlayer', playersToChoose[toAssassinate].name);;
         });
 
         function makeGoodLeaderPicks(data){
@@ -558,7 +568,7 @@ export class gameBot {
                         }
                         break;
                     case 5:
-                        console.log(`In Case 5:`)
+                        console.log(`In Case 5:`);
                         console.log(`players to Add: ${playersOnQuestNum}`);
 
                         // I Need to re-Initialize the 'Add' Arrays
@@ -628,54 +638,107 @@ export class gameBot {
         }
 
         function mostLikelyMerlin(){
-            let leadersOfSucceedQuest = [[],[]];
-            let playersOnSucceedQuest = [];
-            let merlinName;
-            let count = 0;
-            if(questHistory1.success === true){
-                leadersOfSucceedQuest.push(questHistory1.leader);
-                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
-                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
-                }
-            }
-            if(questHistory2.success === true){
-                leadersOfSucceedQuest.push(questHistory1.leader);
-                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
-                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
-                }
-            }
-            if(questHistory3.success === true){
-                leadersOfSucceedQuest.push(questHistory1.leader);
-                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
-                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
-                }
-            }
-            if(questHistory4.success === true){
-                leadersOfSucceedQuest.push(questHistory1.leader);
-                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
-                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
-                }
-            }
-            if(questHistory5.success === true){
-                leadersOfSucceedQuest.push(questHistory1.leader);
-                for(let i = 0; i < questHistory1.playersOnQuest.length; i++){
-                    playersOnSucceedQuest.push(questHistory1.playersOnQuest[i]);
-                }
-            }
-            for(let i = 0; i < leadersOfSucceedQuest.length; i++){
-                for(let x = 0; x < playersOnSucceedQuest.length; x++){
-                    if(leadersOfSucceedQuest[i] === playersOnSucceedQuest[x]){
-                        leadersOfSucceedQuest[i].push(playersOnSucceedQuest[x]);
-                    }
-                }
-            }
-            for(let i = 0; i < leadersOfSucceedQuest.length; i++){
-                if(leadersOfSucceedQuest[i].length > count){
-                    merlinName = leadersOfSucceedQuest[i].name;
-                    count = leadersOfSucceedQuest[i].length;
-                }
-            }
-            return merlinName;
+
+            // let leadersOfSucceedQuest = [[],[]];
+            // let playersOnSucceedQuest = [];
+            // let merlinName;
+            // let count = 0;
+            // let foundTrack = false;
+            // let trackNum = 1;
+            //
+            // /*while(!foundTrack){
+            //     if(questHistory1[trackNum] !== null){
+            //         foundTrack = true;
+            //     }else{
+            //         trackNum++;
+            //     }
+            // }
+            // if(questHistory1[trackNum].success){
+            //     leadersOfSucceedQuest.push(questHistory1[trackNum].leader);
+            //     for(let i = 0; i < questHistory1[trackNum].playersOnQuest.length; i++){
+            //         playersOnSucceedQuest.push(questHistory1[trackNum].playersOnQuest[i]);
+            //     }
+            // }*/
+            //
+            //
+            //
+            // /*foundTrack = false;
+            // trackNum = 1;
+            // while(!foundTrack){
+            //     if(questHistory2[trackNum] !== null){
+            //         foundTrack = true;
+            //     }else{
+            //         trackNum++;
+            //     }
+            // }
+            // if(questHistory2[trackNum].success){
+            //     leadersOfSucceedQuest.push(questHistory2[trackNum].leader);
+            //     for(let i = 0; i < questHistory2[trackNum].playersOnQuest.length; i++){
+            //         playersOnSucceedQuest.push(questHistory2[trackNum].playersOnQuest[i]);
+            //     }
+            // }
+            //
+            // foundTrack = false;
+            // trackNum = 1;
+            // while(!foundTrack){
+            //     if(questHistory3[trackNum] !== null){
+            //         foundTrack = true;
+            //     }else{
+            //         trackNum++;
+            //     }
+            // }
+            // if(questHistory3[trackNum].success){
+            //     leadersOfSucceedQuest.push(questHistory3[trackNum].leader);
+            //     for(let i = 0; i < questHistory3[trackNum].playersOnQuest.length; i++){
+            //         playersOnSucceedQuest.push(questHistory3[trackNum].playersOnQuest[i]);
+            //     }
+            // }
+            //
+            // foundTrack = false;
+            // trackNum = 1;
+            // while(!foundTrack){
+            //     if(questHistory4[trackNum] !== null){
+            //         foundTrack = true;
+            //     }else{
+            //         trackNum++;
+            //     }
+            // }
+            // if(questHistory4[trackNum].success){
+            //     leadersOfSucceedQuest.push(questHistory4[trackNum].leader);
+            //     for(let i = 0; i < questHistory4[trackNum].playersOnQuest.length; i++){
+            //         playersOnSucceedQuest.push(questHistory4[trackNum].playersOnQuest[i]);
+            //     }
+            // }
+            //
+            // foundTrack = false;
+            // trackNum = 1;
+            // while(!foundTrack){
+            //     if(questHistory5[trackNum] !== null){
+            //         foundTrack = true;
+            //     }else{
+            //         trackNum++;
+            //     }
+            // }
+            // if(questHistory5[trackNum].success){
+            //     leadersOfSucceedQuest.push(questHistory5[trackNum].leader);
+            //     for(let i = 0; i < questHistory5[trackNum].playersOnQuest.length; i++){
+            //         playersOnSucceedQuest.push(questHistory5[trackNum].playersOnQuest[i]);
+            //     }
+            // }*/
+            // for(let i = 0; i < leadersOfSucceedQuest.length; i++){
+            //     for(let x = 0; x < playersOnSucceedQuest.length; x++){
+            //         if(leadersOfSucceedQuest[i] === playersOnSucceedQuest[x]){
+            //             leadersOfSucceedQuest[i].push(playersOnSucceedQuest[x]);
+            //         }
+            //     }
+            // }
+            // for(let i = 0; i < leadersOfSucceedQuest.length; i++){
+            //     if(leadersOfSucceedQuest[i].length > count){
+            //         merlinName = leadersOfSucceedQuest[i].name;
+            //         count = leadersOfSucceedQuest[i].length;
+            //     }
+            // }
+            // return merlinName;
         }
 
         function addToQuestAtIndex(value) {
