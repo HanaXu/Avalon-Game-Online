@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row justify-content-md-center mx-0">
-      <div class="container game col-8">
+      <div class="col-12 col-md-7">
         <EndGameOverlay/>
 
         <div class="container main-board" v-if="!gameStarted">
