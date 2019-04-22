@@ -19,6 +19,11 @@ let questHistory5;
 // Value will decrement likewise for Reject or Failure of Quest
 var playerCounters = {};
 
+// The Following Arrays are for the Adding and Not adding of Clients to Quest Teams
+var definitelyAdd = [];
+var possibleAdd = [];
+var doNotAdd = [];
+
 const PLAYERS_ON_QUEST = [
     //5 6 7 8 9 10 players
     [2, 3, 2, 3, 3],
@@ -78,13 +83,13 @@ export class gameBot {
 
             playersToChoose = players;
             for (let i in players) {
-                console.log(`Players Name: ${players[i].name}`);
+                //console.log(`Players Name: ${players[i].name}`);
                 playerCounters[i] = {
                     name: players[i].name,
                     value: 0
                 };
                 //
-                console.log(`PlayersCounter Name: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                //console.log(`PlayersCounter Name: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
                 if (players[i].socketID === socket.id) {
                     //console.log(`my identity is: ${players[i].name}`)
                     //console.log(`my character is ${players[i].team}`)
@@ -108,7 +113,7 @@ export class gameBot {
         socket.on("acceptOrRejectTeam", function (data) {
             if (data.bool === true) {
                 for (let i in data.onQuest) {
-                    console.log(`acceptOrRejectTeamBot Data On bot ${bot.name}: ${util.inspect(data.onQuest[i], true, null, true)}`);
+                    //console.log(`acceptOrRejectTeamBot Data On bot ${bot.name}: ${util.inspect(data.onQuest[i], true, null, true)}`);
                 }
 
                 let botDecision = botDecisionQuest(data.onQuest);
@@ -192,9 +197,9 @@ export class gameBot {
         // Currently just dummy Version
         // Algorithm Can be applied later via Functions
         socket.on('choosePlayersForQuest', function (data) {
-            console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
+            //console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             bot.leader = true;
-            console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
+            //console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             if (bot.leader === true && data.bool === true) {
                 if (bot.team === 'Evil') {
                     var currentQuestNum = data.currentQuestNum;
@@ -202,11 +207,11 @@ export class gameBot {
 
                     // console.log(`On Quest: ${currentQuestNum}`);
                     // console.log(`Players: ${players}`);
-                    console.log(`number of players: ${players.length}`);
+                    //console.log(`number of players: ${players.length}`);
                     var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
 
                     for (var i = 0; i < playersOnQuestNum; i++) {
-                        console.log(`Chose: ${players[i].name}`);
+                        //console.log(`Chose: ${players[i].name}`);
                         players[i].onQuest = true;
                         socket.emit("addPlayerToQuest", players[i].name);
                         socket.emit('updatePlayers')
@@ -217,16 +222,139 @@ export class gameBot {
                     var currentQuestNum = data.currentQuestNum;
                     var players = data.players;
 
+
                     // console.log(`On Quest: ${currentQuestNum}`);
                     // console.log(`Players: ${players}`);
                     console.log(`number of players: ${players.length}`);
                     var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
+                    //console.log(`Current Quest Number: ${currentQuestNum}`);
 
-                    for (var i = 0; i < playersOnQuestNum; i++) {
-                        console.log(`Chose: ${players[i].name}`);
-                        players[i].onQuest = true;
-                        socket.emit("addPlayerToQuest", players[i].name);
-                        socket.emit('updatePlayers')
+                    if (currentQuestNum <= 2) {
+                        switch (currentQuestNum) {
+                            case 1:
+                                // Since First Quest I will always nominate myself for Quest and Other Person/Persons
+                                console.log(`In Case 1`)
+                                socket.emit("addPlayerToQuest", bot.name);
+
+                                //Iterate through object to remove self
+                                for (i in players) {
+                                    if (players[i].name === bot.name)
+                                        players.splice(i, 1);
+                                }
+
+                                // Iterate remaining List to pick people
+                                for (var i = 0; i < playersOnQuestNum - 1; i++) {
+                                    //console.log(`Chose: ${players[i].name}`);
+                                    players[i].onQuest = true;
+                                    addToQuestAtIndex(i);
+                                    socket.emit('updatePlayers')
+                                }
+                                break;
+                            case 2:
+                                //console.log(`QuestHistory1: ${util.inspect(questHistory1.playersOnQuest[0],true, null, true)}`)
+                                console.log(`In Case 2:`)
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+                                // Iterate Through Quest History to Award Trust or Punish
+                                // Based on People Who Went to Quest
+                                // for (let i in questHistory1.playersOnQuest) {
+                                //     if (questHistory1.playersOnQuest[i] === bot.name) {
+                                //         i++
+                                //     } else {
+                                //         if (questHistory1.success === true)
+                                //             awardPlayer(questHistory1.playersOnQuest[i])
+                                //         else
+                                //             punishPlayer(questHistory1.playersOnQuest[i])
+                                //     }
+                                // }
+
+                                // // Now Iterate to Award and Punish
+                                // // Based on Voting 
+                                // for (let i in questHistory1.questTeamDecisions.accept) {
+                                //     if (questHistory1.questTeamDecisions.accept[i] === bot.name) {
+                                //         i++
+                                //     } else {
+                                //         awardPlayer(questHistory1.questTeamDecisions.accept[i])
+                                //     }
+                                // }
+
+                                // for (let i in questHistory1.questTeamDecisions.reject) {
+                                //     if (questHistory1.questTeamDecisions.reject[i] === bot.name) {
+                                //         i++
+                                //     } else {
+                                //         punishPlayer(questHistory1.questTeamDecisions.reject[i])
+                                //     }
+                                // }
+
+
+                                iterateQuest1();
+                                // Now that the Tallies are Made lets See who we Should add
+                                // Iterate PlayerCounter
+
+                                for (let i in playerCounters) {
+                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
+                                    if (playerCounters[i].value < 0)
+                                        doNotAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 0 && playerCounters[i].value < 2)
+                                        possibleAdd.push(playerCounters[i].name);
+                                    else if (playerCounters[i].value >= 2)
+                                        definitelyAdd.push(playerCounters[i].name);
+                                }
+
+                                // Now We can go ahead and start pushing to Server the Players We want on Quest
+
+                                for (let i in definitelyAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(definitelyAdd[i]);
+                                        console.log(`DefiniteAdd${i}: ${definitelyAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                for (let i in possibleAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        addToQuestByName(possibleAdd[i]);
+                                        console.log(`possibleAdd${i}: ${possibleAdd[i]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+                                //Last Case Resort I will have to Pick from this Array
+                                for (let i in doNotAdd) {
+                                    if (playersOnQuestNum != 0) {
+                                        var maxIndex = maxValueIndex(doNotAdd);
+                                        addToQuestByName(doNotAdd[maxIndex]);
+                                        console.log(`doNotAdd${maxIndex}: ${doNotAdd[maxIndex]}`)
+                                        playersOnQuestNum--;
+                                    }
+                                }
+                                console.log(`players to Add: ${playersOnQuestNum}`);
+
+
+
+                                // for (let i in playerCounters) {
+                                //     console.log(`PlayerName: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
+                                // }
+                                // for (let i in questHistory1) {
+                                //     if (questHistory1.success === true)
+                                //         console.log(`questHistory1.sucess: ${questHistory1.success}`);
+                                // }
+                                break;
+                            case 3:
+
+                                break;
+
+                        }
+                    } else {
+                        for (var i = 0; i < playersOnQuestNum; i++) {
+                            //console.log(`Chose: ${players[i].name}`);
+                            players[i].onQuest = true;
+                            socket.emit("addPlayerToQuest", players[i].name);
+                            socket.emit('updatePlayers')
+                            //console.log(`QuestHistory1: ${util.inspect(questHistory1,true, null, true)}`)
+
+                        }
                     }
                     bot.leader = false;
                     socket.emit('questTeamConfirmed');
@@ -269,8 +397,87 @@ export class gameBot {
 
             socket.emit('assassinatePlayer', assassinArr[toAssassinate].name);
         });
+
+        function addToQuestAtIndex(value) {
+            socket.emit("addPlayerToQuest", playersToChoose[value].name);
+        }
+
+        function addToQuestByName(name) {
+            for (let i in playersToChoose) {
+                if (playersToChoose[i].name === name) {
+                    socket.emit("addPlayerToQuest", playersToChoose[i].name);
+                    console.log(`emitted ${playersToChoose[i].name} to Server`);
+                }
+            }
+        }
+
+        function awardPlayer(name) {
+            for (let i in playerCounters) {
+                if (playerCounters[i].name === name) {
+                    playerCounters[i].value++;
+                }
+            }
+        }
+
+        function punishPlayer(name) {
+            for (let i in playerCounters) {
+                if (playerCounters[i].name === name) {
+                    playerCounters[i].value--;
+                }
+            }
+        }
+
+        function iterateQuest1() {
+            // Iterate Through Quest History to Award Trust or Punish
+            // Based on People Who Went to Quest 
+            for (let i in questHistory1.playersOnQuest) {
+                if (questHistory1.playersOnQuest[i] === bot.name) {
+                    i++
+                } else {
+                    if (questHistory1.success === true)
+                        awardPlayer(questHistory1.playersOnQuest[i])
+                    else
+                        punishPlayer(questHistory1.playersOnQuest[i])
+                }
+            }
+
+
+            // Now Iterate to Award and Punish
+            // Based on Voting
+            for (let i in questHistory1.questTeamDecisions.accept) {
+                if (questHistory1.questTeamDecisions.accept[i] === bot.name) {
+                    i++
+                } else {
+                    awardPlayer(questHistory1.questTeamDecisions.accept[i])
+                }
+            }
+
+            for (let i in questHistory1.questTeamDecisions.reject) {
+                if (questHistory1.questTeamDecisions.reject[i] === bot.name) {
+                    i++
+                } else {
+                    punishPlayer(questHistory1.questTeamDecisions.reject[i])
+                }
+            }
+        }
+
+        function maxValueIndex(array) {
+            if (array.length === 0) {
+                return -1;
+            }
+
+            var max = arr[0];
+            var maxIndex = 0;
+
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i] > max) {
+                    maxIndex = i;
+                    max = arr[i];
+                }
+            }
+
+            return maxIndex;
+        }
     }
-
-
 
 };
