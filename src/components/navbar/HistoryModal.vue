@@ -17,11 +17,11 @@
         >
           <span v-if="questItem[voteTrackIndex].success != null">
             <b-badge
-              class="questResult.succeed"
+              class="questResult succeed"
               v-if="questItem[voteTrackIndex].success"
             >Success {{questItem[voteTrackIndex].votes.succeed}}/{{questItem[voteTrackIndex].playersOnQuest.length}}</b-badge>
             <b-badge
-              class="questResult.fail"
+              class="questResult fail"
               v-if="!questItem[voteTrackIndex].success"
             >Fail {{questItem[voteTrackIndex].votes.fail}}/{{questItem[voteTrackIndex].playersOnQuest.length}}</b-badge>
           </span>
@@ -29,13 +29,13 @@
       </h3>
 
       <div
-        class
+        class="voteTrackItem"
         v-for="(voteTrackItem, voteTrackIndex) in questHistory"
         :key="voteTrackIndex"
         v-if="questItem[voteTrackIndex] != null"
       >
         <b-row>
-          <b-col cols="6" md="4">
+          <b-col cols="12" md="6">
             <strong>Leader:</strong>
             {{ questItem[voteTrackIndex].leader }}
           </b-col>
@@ -47,22 +47,22 @@
 
         <!-- decide quest team outcome -->
         <b-row>
-          <b-col cols="3">
+          <b-col cols="12" md="3">
             <strong>Team Vote Results:</strong>
-            <br>
+
             <b-badge
               class="voteResult teamRejected"
               v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'rejected'"
-            >Team Rejected</b-badge>
+            >Rejected Team</b-badge>
             <b-badge
               class="voteResult teamAccepted"
               v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'accepted'"
-            >Team Accepted</b-badge>
+            >Accepted Team</b-badge>
           </b-col>
-          <b-col cols="9">
+          <b-col cols="12" md="9">
             <b-row>
               <b-col cols="6">
-                <strong>Accepted Team:</strong>
+                <span class="subheader">Accepted Team</span>
                 <br>
 
                 <span
@@ -74,7 +74,7 @@
                 </span>
               </b-col>
               <b-col cols="6">
-                <strong>Rejected Team:</strong>
+                <span class="subheader">Rejected Team</span>
                 <br>
                 <span
                   v-for="(playerName, index) in questItem[voteTrackIndex].questTeamDecisions.reject"
@@ -128,25 +128,45 @@ export default {
 };
 </script>
 <style scoped>
+#modal-history {
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
+
 h3 {
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   text-align: center;
-  border-bottom: 2px solid #8a7d6e;
   background: #eae7e3;
   padding: 2px 0;
+  margin: 0;
+}
+
+.col-6 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.voteTrackItem {
+  border-top: 2px solid #8a7d6e;
 }
 
 .voteResult,
-.voteResult.teamRejected,
 .voteResult.teamAccepted {
   background: #7d67aa;
 }
 
+.voteResult.teamRejected {
+  background: #a42323;
+}
+
+.subheader {
+  font-weight: bold;
+  /* text-decoration: underline; */
+  border-bottom: 2px solid #8a7d6e;
+}
+
 .questResult {
-  font-size: 14px;
-  padding: 8px;
-  margin-bottom: 2px;
-  background: #8a7d6e !important;
+  background: #c7c2cf;
 }
 
 .questResult.succeed {
@@ -154,6 +174,6 @@ h3 {
 }
 
 .questResult.fail {
-  color: red !important;
+  color: #a42323 !important;
 }
 </style>

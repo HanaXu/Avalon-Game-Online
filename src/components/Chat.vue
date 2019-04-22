@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="card">
-      <div class="card-header">Chat</div>
+      <div class="card-header p-2">Chat</div>
       <div class="card-body">
         <dl id="messageList"></dl>
         <div class="messages" v-chat-scroll>
@@ -15,20 +15,11 @@
         </div>
       </div>
       <hr>
-      <div class="input-group">
-        <div style="width: auto">
-          <textarea
-            type="text"
-            name
-            id
-            cols="30"
-            row="4"
-            wrap="hard"
-            placeholder="Press Enter to send your message..."
-            v-on:keyup.enter="sendMessage"
-          ></textarea>
-        </div>
-      </div>
+      <textarea
+        type="text"
+        placeholder="Press Enter to send your message..."
+        v-on:keyup.enter="sendMessage"
+      ></textarea>
     </div>
   </div>
 </template>
@@ -164,14 +155,12 @@ export default {
 }
 .messages {
   text-align: left;
-  /* width: auto; */
   width: inherit;
 }
 .message {
   border: #000 solid 2px;
   padding: 2px;
   margin: 5px;
-  /* width: 200px; */
   width: inherit;
 }
 div.row {
@@ -187,23 +176,19 @@ div.card-header {
   width: inherit;
 }
 div.card-body {
-  /* width: inherit; */
   padding: 5px;
 }
 div.messages {
-  /* height: 300px; */
   min-height: 50vh;
   max-height: 50vh;
-  /* width: 380px; */
   overflow-x: hidden;
   overflow-y: auto;
 }
 div.message {
-  /* width: 320px; */
   border: none;
 }
 textarea {
-  /* width: inherit; */
+  overflow: hidden;
   min-width: 100px;
   resize: none;
   word-wrap: normal;
