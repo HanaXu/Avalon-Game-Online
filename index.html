@@ -1,0 +1,1650 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Avalonline</title>
+    <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+            crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="client/styles.css" type="text/css" />
+
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+    <script src="https://unpkg.com/vue@2.6.8/dist/vue.js"></script>
+
+    <!-- chat stuff added below -->
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+    <!-- Firechat -->
+    <link rel="stylesheet" href="client/firechat.css" />
+    <script src="client/firechat.js"></script>
+</head>
+
+<body>
+<script src="https://www.gstatic.com/firebasejs/5.9.0/firebase.js"></script>
+<script>
+    // Initialize Firebase
+    var config = {
+        apiKey: "AIzaSyC_0DpX0DNsW0WqtBq88BlQc1MntzEL3ZY",
+        authDomain: "avalonline-a8a5b.firebaseapp.com",
+        databaseURL: "https://avalonline-a8a5b.firebaseio.com",
+        projectId: "avalonline-a8a5b",
+        storageBucket: "avalonline-a8a5b.appspot.com",
+        messagingSenderId: "932679206673"
+    };
+    firebase.initializeApp(config);
+</script>
+<script src="client/chat.js"></script>
+
+<div id="game">
+    <button
+            class="btnCreate"
+            v-if="showButtons"
+            onclick="createGameClicked()"
+    >
+        Create New Game
+    </button>
+    <button
+            class="btnJoin"
+            v-if="showButtons"
+            onclick="connectToGameClicked()"
+    >
+        Join Game
+    </button>
+
+    <h3 v-cloak v-if="createNewGame">
+        {{ enterName }}
+        <input type="text" id="username" value="" />
+        <button
+                class="btnCreate"
+                onclick="createGame('username','playerName','logonMsgId')"
+        >
+            Create Game
+        </button>
+        <p style="color:red;" id="logonMsgId"></p>
+        <br />
+        <button class="btnBack" onclick="back()">Back</button>
+    </h3>
+
+    <h3 v-cloak v-if="connectToGame">
+        {{ enterGameCode }}
+        <input type="text" id="gameCode" value="" />
+        {{ enterName }}
+        <input type="text" id="username2" value="" />
+        <button
+                class="btnJoin"
+                onclick="connectToGame('username2','gameCode','playerName','logonMsgId')"
+        >
+            Join Game
+        </button>
+        <p style="color:red;" id="logonMsgId"></p>
+        <br />
+        <button class="btnBack" onclick="back()">Back</button>
+    </h3>
+
+    <h1 id="playerName"></h1>
+
+    <div v-cloak
+         v-if="showStartGameInRoom">
+        <button
+                onclick="startGameInRoomClicked()"
+        >
+            Start Game
+        </button>
+    </div>
+    <div v-cloak
+         v-if="showAddBot">
+        <button
+                onclick="addBotClicked()"
+        >
+            Add Bot
+        </button>
+    </div>
+    <div id="showLeaderPlayersId" >
+
+    </div>
+    <div v-cloak
+         v-if="showTeamVote">
+        <button
+                onclick="teamVoteClicked(true)"
+        >
+            Approve
+        </button>
+        <button
+                onclick="teamVoteClicked(false)"
+        >
+            Reject
+        </button>
+    </div>
+    <div v-cloak
+         v-if="showDecideQuest">
+        <button
+                onclick="decideQuestClicked(true)"
+        >
+            Success
+        </button>
+        <button
+                onclick="decideQuestClicked(false)"
+        >
+            Fail
+        </button>
+    </div>
+</div>
+<div id="game-board" class="row">
+    <div id="firechat-wrapper" style="width: 30%; float: right"></div>
+
+</div>
+
+<div id="firebaseui-auth-container"></div>
+
+<div id="rules" class="row" style="padding: 5px; padding-left: 15px;">
+    <a href="/client/AvalonRules.pdf" target="_blank">Avalon Rules</a>
+</div>
+
+<script>
+    const playersCanvasPositions = [
+        [300, 20],
+        [850, 270],
+        [300, 500],
+        [20, 250],
+        [850, 100],
+        [40, 100],
+        [40, 400],
+        [850, 400],
+        [700, 20],
+        [700, 500]
+    ];
+    var game = new Vue({
+        el: "#game",
+        data: {
+            enterName: "Enter Your Name",
+            enterGameCode: "Enter Room Code",
+            gameCodeExist: false,
+            createNewGame: false,
+            connectToGame: false,
+            showButtons: true,
+            showStartGameInRoom: false,
+            startGameInRoom: false,
+            showLeaderChoice: false,
+            showTeamVote: false,
+            showDecideQuest: false,
+            showAddBot: false,
+            playerName: ""
+        }
+    });
+    function createGameClicked() {
+        game.createNewGame = true;
+        game.connectToGame = false;
+        game.showButtons = false;
+    }
+    function connectToGameClicked() {
+        game.connectToGame = true;
+        game.createNewGame = false;
+        game.showButtons = false;
+    }
+    function back() {
+        game.connectToGame = false;
+        game.createNewGame = false;
+        game.showButtons = true;
+    }
+    var socket;
+    var gamePlayer;
+    var gamePlayerTeam;
+    var currentLeaderPosition;
+    var currentQuest;
+    var passToServer = {};
+    function startGameInRoomClicked() {
+        game.showStartGameInRoom = false;
+        game.showAddBot = false;
+        socket.emit("startGameRoom");
+    }
+    function addBotClicked() {
+        socket.emit("addBot");
+    }
+    //used to know which player is voting and making decisions in the client side
+    function currentPlayer(player, team, leaderPosition, quest){
+        currentQuest = quest;
+        gamePlayer = player;
+        gamePlayerTeam = team;
+        currentLeaderPosition = leaderPosition;
+    }
+    //records player decision when making a vote and sends it to the server
+    function teamVoteClicked(decision){
+        game.showTeamVote = false;
+        passToServer[0] = decision;
+        passToServer[1] = currentLeaderPosition;
+        if(currentQuest === 1){
+            socket.emit('teamDecision1',passToServer);
+        }else if(currentQuest === 2){
+            socket.emit('teamDecision2',passToServer);
+        }else if(currentQuest === 3){
+            socket.emit('teamDecision3',passToServer);
+        }else if(currentQuest === 4){
+            socket.emit('teamDecision4',passToServer);
+        }else if(currentQuest === 5){
+            socket.emit('teamDecision5',passToServer);
+        }
+    }
+    function BotVoteClicked(){
+        var decision = true;
+        passToServer[0] = decision;
+        passToServer[1] = currentLeaderPosition;
+        if(currentQuest === 1){
+            socket.emit('teamDecision1',passToServer);
+        }else if(currentQuest === 2){
+            socket.emit('teamDecision2',passToServer);
+        }else if(currentQuest === 3){
+            socket.emit('teamDecision3',passToServer);
+        }else if(currentQuest === 4){
+            socket.emit('teamDecision4',passToServer);
+        }else if(currentQuest === 5){
+            socket.emit('teamDecision5',passToServer);
+        }
+    }
+    //records player quest decision and sends it to the server
+    function decideQuestClicked(decision){
+        if(gamePlayerTeam === "Evil"){
+            game.showDecideQuest = false;
+            passToServer[0] = decision;
+            passToServer[1] = currentLeaderPosition;
+            if(currentQuest === 1){
+                socket.emit('chosenDecision1', passToServer);
+            }else if(currentQuest === 2){
+                socket.emit('chosenDecision2', passToServer);
+            }else if(currentQuest === 3){
+                socket.emit('chosenDecision3', passToServer);
+            }else if(currentQuest === 4){
+                socket.emit('chosenDecision4', passToServer);
+            }else if(currentQuest === 5){
+                socket.emit('chosenDecision5', passToServer);
+            }
+        }else if(gamePlayerTeam === "Good" && decision === true){
+            game.showDecideQuest = false;
+            passToServer[0] = decision;
+            passToServer[1] = currentLeaderPosition;
+            if(currentQuest === 1){
+                socket.emit('chosenDecision1', passToServer);
+            }else if(currentQuest === 2){
+                socket.emit('chosenDecision2', passToServer);
+            }else if(currentQuest === 3){
+                socket.emit('chosenDecision3', passToServer);
+            }else if(currentQuest === 4){
+                socket.emit('chosenDecision4', passToServer);
+            }else if(currentQuest === 5){
+                socket.emit('chosenDecision5', passToServer);
+            }
+        }
+    }
+    /**
+     *This will be used to calculate the total "risk" of a player
+     * Low risk means the player has a higher probability of being good
+     * High means the player has a higher probability of being bad
+     */
+
+    function playerRisk(players, playerCount){
+        var numPlayers = playerCount;
+        //var risk = new Array(numPlayers);
+        //console.log(risk);
+        //if player was on a quest with 1 fail, +3 to risk score
+
+        //if player was on a quest with 2 fails, +5 to risk score
+
+        //if player was on a quest with 3 fails, +10 to risk score
+
+        //if player was on a second quest that failed, +5 to risk score
+
+        //if player was on a quest that succeeded, -1 ro risk score if score > 0
+
+        //if player rejected a team, +0.5 to risk score
+
+
+        //if bot identity = merlin, add +25 to special risk score variable for only merlin
+
+    }
+    function botDecideQuest(botTeam){
+        var decision;
+        if(botTeam === "Evil"){
+            decision = false;
+            passToServer[0] = decision;
+            passToServer[1] = currentLeaderPosition;
+            if(currentQuest === 1) {
+                if (voteTrack === 4) {
+                    passToServer[0] = false;
+                } else if (voteTrack === 3) {
+                    passToServer[0] = false;
+                }
+                else
+                {
+                    passToServer[0] = true;
+                }
+                socket.emit('chosenDecision1', passToServer);
+            }
+            else if(currentQuest === 2){
+                if (voteTrack === 4) {
+                    passToServer[0] = false;
+                } else if (voteTrack === 3) {
+                    passToServer[0] = false;
+                }
+                else
+                {
+                    passToServer[0] = true;
+                }
+                socket.emit('chosenDecision2', passToServer);
+            }else if(currentQuest === 3){
+                if (voteTrack === 4) {
+                    passToServer[0] = false;
+                } else if (voteTrack === 3) {
+                    passToServer[0] = false;
+                }
+                else if (playerRisk > 4) {
+                    passToServer[0] = true;
+                }
+                else
+                {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision3', passToServer);
+            }else if(currentQuest === 4){
+                if (voteTrack === 4) {
+                    passToServer[0] = false;
+                } else if (voteTrack === 3) {
+                    passToServer[0] = false;
+                }
+                else if (playerRisk > 4) {
+                    passToServer[0] = true;
+                }
+                else
+                {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision4', passToServer);
+            }else if(currentQuest === 5){
+                if (voteTrack === 4) {
+                    passToServer[0] = false;
+                } else if (voteTrack === 3) {
+                    passToServer[0] = false;
+                }
+                else if (playerRisk > 4) {
+                    passToServer[0] = true;
+                }
+                else
+                {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision5', passToServer);
+            }
+        }else if(botTeam === "Good"){
+            decision = true;
+            passToServer[0] = decision;
+            passToServer[1] = currentLeaderPosition;
+            if(currentQuest === 1) {
+                socket.emit('chosenDecision1', passToServer);
+            }else if(currentQuest === 2){
+                if(playerRisk > 3) {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision2', passToServer);
+            }else if(currentQuest === 3){
+                if(playerRisk > 3) {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision3', passToServer);
+            }else if(currentQuest === 4){
+                if(playerRisk > 5) {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision4', passToServer);
+            }else if(currentQuest === 5){
+                if(playerRisk > 10) {
+                    passToServer[0] = false;
+                }
+                socket.emit('chosenDecision5', passToServer);
+            }
+        }
+    }
+    //Shows the leader his choices when trying to pick who goes on a quest
+    function showLeaderChoosesPlayersOnQuest(players, playerCount, quest){
+        var picksAllowed = playersOnQuests(playerCount)[quest-1];
+        var boxesChecked = 0;
+        var playersChosen = [players.length];
+        document.getElementById("showLeaderPlayersId").innerHTML = '';
+        var desc = document.createElement("label");
+        var text = document.createTextNode("Choose " + picksAllowed + " players to go on a quest: ");
+        desc.appendChild(text);
+        document.getElementById("showLeaderPlayersId").appendChild(desc);
+        for(var i = 0; i < players.length; i++){
+            var label= document.createElement("label");
+            var description = document.createTextNode(players[i].name);
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "slct[]";
+            checkbox.value = players[i].name;
+            label.appendChild(checkbox);
+            label.appendChild(description);
+            (function(index) {
+                checkbox.addEventListener('change', function() {
+                    if(this.checked) {
+                        if(boxesChecked >= picksAllowed){
+                            this.checked = false;
+                        }else{
+                            playersChosen[index] = players[index].name;
+                            boxesChecked++;
+                        }
+                    } else {
+                        playersChosen[index] = "";
+                        boxesChecked--;
+                    }
+                })
+            })(i);
+            document.getElementById("showLeaderPlayersId").appendChild(label);
+        }
+        var choose = document.createElement("input");
+        //Assign different attributes to the element.
+        choose.setAttribute("type", "button");
+        choose.setAttribute("value", "Choose");
+        choose.setAttribute("name", "leaderChoices");
+        document.getElementById("showLeaderPlayersId").appendChild(choose);
+        choose.addEventListener("click", function(){
+            if(boxesChecked === picksAllowed){
+                document.getElementById("showLeaderPlayersId").innerHTML = '';
+                if(currentQuest === 1){
+                    socket.emit("leaderDecision1", playersChosen);
+                }else if(currentQuest === 2){
+                    socket.emit("leaderDecision2", playersChosen);
+                }else if(currentQuest === 3){
+                    socket.emit("leaderDecision3", playersChosen);
+                }else if(currentQuest === 4){
+                    socket.emit("leaderDecision4", playersChosen);
+                }else if(currentQuest === 5){
+                    socket.emit("leaderDecision5", playersChosen);
+                }
+            }
+        });
+    }
+    function botLeaderChoosesPlayersOnQuest(players, playerCount, quest) {
+        var picksAllowed = playersOnQuests(playerCount)[quest-1];
+        var playersChosen = [players.length];
+        for(var i = 0; i < picksAllowed; i++){
+            playersChosen[i] = players[i].name;
+        }
+        if(currentQuest === 1){
+            socket.emit("leaderDecision1", playersChosen);
+        }else if(currentQuest === 2){
+            socket.emit("leaderDecision2", playersChosen);
+        }else if(currentQuest === 3){
+            socket.emit("leaderDecision3", playersChosen);
+        }else if(currentQuest === 4){
+            socket.emit("leaderDecision4", playersChosen);
+        }else if(currentQuest === 5){
+            socket.emit("leaderDecision5", playersChosen);
+        }
+    }
+    //shows the assassin his choices when trying to pick who is merlin
+    function assassinChooseMerlin(players){
+        var picksAllowed = 1;
+        var boxesChecked = 0;
+        var playerChosen = {};
+        document.getElementById("showLeaderPlayersId").innerHTML = '';
+        var desc = document.createElement("label");
+        var text = document.createTextNode("Who is Merlin? ");
+        desc.appendChild(text);
+        document.getElementById("showLeaderPlayersId").appendChild(desc);
+        for(var i = 0; i < players.length; i++){
+            var label= document.createElement("label");
+            var description = document.createTextNode(players[i].name);
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "slct[]";
+            checkbox.value = players[i].name;
+            label.appendChild(checkbox);
+            label.appendChild(description);
+            (function(index) {
+                checkbox.addEventListener('change', function() {
+                    if(this.checked) {
+                        if(boxesChecked >= picksAllowed){
+                            this.checked = false;
+                        }else{
+                            playerChosen[0] = players[index].name;
+                            boxesChecked++;
+                        }
+                    } else {
+                        boxesChecked--;
+                    }
+                })
+            })(i);
+            document.getElementById("showLeaderPlayersId").appendChild(label);
+        }
+        var choose = document.createElement("input");
+        //Assign different attributes to the element.
+        choose.setAttribute("type", "button");
+        choose.setAttribute("value", "Choose");
+        choose.setAttribute("name", "leaderChoices");
+        document.getElementById("showLeaderPlayersId").appendChild(choose);
+        choose.addEventListener("click", function(){
+            if(boxesChecked === picksAllowed){
+                document.getElementById("showLeaderPlayersId").innerHTML = '';
+                socket.emit("merlinPicked", playerChosen);
+            }
+        });
+    }
+    //returns number of players that has to go on which quest based on how many players are in the game
+    function playersOnQuests(numberOfPlayers){
+        var i;
+        if(numberOfPlayers === 5){
+            i = 0;
+        }else if(numberOfPlayers ===6){
+            i = 1;
+        }
+        else if(numberOfPlayers ===7){
+            i = 2;
+        }
+        else if(numberOfPlayers ===8){
+            i = 3;
+        }
+        else if(numberOfPlayers ===9){
+            i = 4;
+        }
+        else if(numberOfPlayers ===10){
+            i = 5;
+        }
+        const PLAYERS_ON_QUEST = [
+            [2,3,2,3,3],
+            [2,3,4,3,4],
+            [2,3,3,4,4],
+            [3,4,4,5,5],
+            [3,4,4,5,5],
+            [3,4,4,5,5]
+        ];
+        return PLAYERS_ON_QUEST[i];
+    }
+    //updates the canvas based on what the game state is
+    function updateTable(data, ctx, playerName) {
+        ctx.font = "25px Arial";
+        ctx.clearRect(0, 0, 900, 600);
+        var playerCharacter;
+        var playerTeam;
+        var leader;
+        var turn;
+        var quest1, quest2, quest3, quest4, quest5;
+        var numFails;
+        var numSuccess;
+        var voteTrack;
+        var endGameWin, endGameLoss, endGameWin2,endGameLoss2;
+        for (var j = 0; j < data.length; j++) {
+            if (data[j].name === playerName) {
+                playerTeam = data[j].team;
+                playerCharacter = data[j].character;
+                leader = data[j].leader;
+                turn = data[j].turn;
+                quest1 = data[j].quest1;
+                quest2 = data[j].quest2;
+                quest3 = data[j].quest3;
+                quest4 = data[j].quest4;
+                quest5 = data[j].quest5;
+                numFails = data[j].numFails;
+                numSuccess = data[j].numSuccess;
+                voteTrack = data[j].currentQuestFails;
+                endGameWin = data[j].endGameWin;
+                endGameLoss = data[j].endGameLoss;
+                endGameWin2 = data[j].endGameWin2;
+                endGameLoss2 = data[j].endGameLoss2;
+            }
+        }
+        if((numFails + numSuccess) > 0){
+            ctx.fillStyle = "black";
+            ctx.fillText("Successes: "+numSuccess, 450, 325);
+            ctx.fillText("Fails: "+numFails, 450, 345);
+        }
+        if(voteTrack === 0){
+            ctx.fillStyle = "black";
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(600, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(625, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(650, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(675, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(700, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }else if(voteTrack === 1){
+            ctx.fillStyle = "black";
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(600, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(625, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(650, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(675, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(700, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }else if(voteTrack === 2){
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(600, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(625, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(650, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(675, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(700, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }else if(voteTrack === 3){
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(410, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(425, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(440, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(455, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(470, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }else if(voteTrack === 4){
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(600, 293, 5, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(625, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(650, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(675, 293, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(700, 293, 10, 0, 2 * Math.PI);
+            ctx.stroke();
+        }else if(voteTrack === 5){
+            ctx.fillText("Vote Track:", 450, 300);
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.arc(600, 296, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(625, 296, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(650, 296, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(675, 296, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(700, 296, 10, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        if(quest1 === "approved" || quest1 === "on") {
+            ctx.beginPath();
+            ctx.strokeStyle = "orange";
+            ctx.rect(350, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "orange";
+            ctx.fillText("Q1", 350, 245);
+        } else if(quest1 === true) {
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.rect(350, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("Q1", 350, 245);
+        } else if (quest1 === false) {
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.rect(350, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fillText("Q1", 350, 245);
+        } else {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.rect(350, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.fillText("Q1", 350, 245);
+        }
+        if (quest2 === "approved" || quest2 === "on") {
+            ctx.beginPath();
+            ctx.strokeStyle = "orange";
+            ctx.rect(425, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "orange";
+            ctx.fillText("Q2", 425, 245);
+        } else if (quest2 === true) {
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.rect(425, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("Q2", 425, 245);
+        } else if (quest2 === false) {
+            ctx.beginPath();
+            ctx.rect(425, 220, 75, 50);
+            ctx.strokeStyle = "red";
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fillText("Q2", 425, 245);
+        } else {
+            ctx.beginPath();
+            ctx.rect(425, 220, 75, 50);
+            ctx.strokeStyle = "black";
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.fillText("Q2", 425, 245);
+        }
+        if (quest3 === "approved" || quest3 ==="on") {
+            ctx.beginPath();
+            ctx.strokeStyle = "orange";
+            ctx.rect(500, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "orange";
+            ctx.fillText("Q3", 500, 245);
+        } else if (quest3 === true) {
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.rect(500, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("Q3", 500, 245);
+        } else if (quest3 === false) {
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.rect(500, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fillText("Q3", 500, 245);
+        } else {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.rect(500, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.fillText("Q3", 500, 245);
+        }
+        if (quest4 === "approved" || quest4 ==="on") {
+            ctx.beginPath();
+            ctx.strokeStyle = "orange";
+            ctx.rect(575, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "orange";
+            ctx.fillText("Q4", 575, 245);
+        } else if (quest4 === true) {
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.rect(575, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("Q4", 575, 245);
+        } else if (quest4 === false) {
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.rect(575, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fillText("Q4", 575, 245);
+        } else {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.rect(575, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.fillText("Q4", 575, 245);
+        }
+        if (quest5 === "approved" || quest5 ==="on") {
+            ctx.beginPath();
+            ctx.strokeStyle = "orange";
+            ctx.rect(650, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "orange";
+            ctx.fillText("Q5", 650, 245);
+        } else if (quest5 === true) {
+            ctx.beginPath();
+            ctx.strokeStyle = "green";
+            ctx.rect(650, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "green";
+            ctx.fillText("Q5", 650, 245);
+        } else if (quest5 === false) {
+            ctx.beginPath();
+            ctx.strokeStyle = "red";
+            ctx.rect(650, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fillText("Q5", 650, 245);
+        } else {
+            ctx.beginPath();
+            ctx.strokeStyle = "black";
+            ctx.rect(650, 220, 75, 50);
+            ctx.stroke();
+            ctx.fillStyle = "black";
+            ctx.fillText("Q5", 650, 245);
+        }
+        if (playerTeam === "Good" && playerCharacter !== "Merlin") {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].name !== playerName) {
+                    ctx.fillStyle = "black";
+                    ctx.fillText(
+                        data[i].role + ": " + data[i].name,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1]
+                    );
+                    ctx.fillText(
+                        "Team: Hidden",
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 25
+                    );
+                    ctx.fillText(
+                        "Character: Hidden",
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 50
+                    );
+                    if (data[i].leader === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 10,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    }
+                    if(data[i].turn === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 30,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                    }
+                } else {
+                    ctx.fillStyle = "green";
+                    ctx.fillText(
+                        data[i].role + ": " + data[i].name,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1]
+                    );
+                    ctx.fillText(
+                        "Team: " + data[i].team,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 25
+                    );
+                    ctx.fillText(
+                        "Character: " + data[i].character,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 50
+                    );
+                    if (leader) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 10,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    }
+                    if(turn === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 30,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                    }
+                }
+            }
+        } else if (playerTeam === "Good" && playerCharacter === "Merlin") {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].name !== playerName) {
+                    ctx.fillStyle = "black";
+                    ctx.fillText(
+                        data[i].role + ": " + data[i].name,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1]
+                    );
+                    ctx.fillText(
+                        "Team: " + data[i].team,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 25
+                    );
+                    ctx.fillText(
+                        "Character: " + data[i].character,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 50
+                    );
+                    if (data[i].leader === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 10,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    }
+                    if(data[i].turn === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 30,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                    }
+                } else {
+                    ctx.fillStyle = "green";
+                    ctx.fillText(
+                        data[i].role + ": " + data[i].name,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1]
+                    );
+                    ctx.fillText(
+                        "Team: " + data[i].team,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 25
+                    );
+                    ctx.fillText(
+                        "Character: " + data[i].character,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 50
+                    );
+                    if (leader === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 10,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    }
+                    if(turn === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 30,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                    }
+                }
+            }
+        } else if (playerTeam === "Evil") {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].name !== playerName) {
+                    if (data[i].team === "Evil") {
+                        ctx.fillStyle = "black";
+                        ctx.fillText(
+                            data[i].role + ": " + data[i].name,
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1]
+                        );
+                        ctx.fillText(
+                            "Team: " + data[i].team,
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1] + 25
+                        );
+                        ctx.fillText(
+                            "Character: " + data[i].character,
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1] + 50
+                        );
+                        if (data[i].leader === true) {
+                            ctx.beginPath();
+                            ctx.arc(
+                                playersCanvasPositions[i][0] + 10,
+                                playersCanvasPositions[i][1] + 65,
+                                10,
+                                0,
+                                2 * Math.PI
+                            );
+                            ctx.fillStyle = "red";
+                            ctx.fill();
+                        }
+                        if(data[i].turn === true) {
+                            ctx.beginPath();
+                            ctx.arc(
+                                playersCanvasPositions[i][0] + 30,
+                                playersCanvasPositions[i][1] + 65,
+                                10,
+                                0,
+                                2 * Math.PI
+                            );
+                            ctx.fillStyle = "green";
+                            ctx.fill();
+                        }
+                    } else {
+                        ctx.fillStyle = "black";
+                        ctx.fillText(
+                            data[i].role + ": " + data[i].name,
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1]
+                        );
+                        ctx.fillText(
+                            "Team: Hidden",
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1] + 25
+                        );
+                        ctx.fillText(
+                            "Character: Hidden",
+                            playersCanvasPositions[i][0],
+                            playersCanvasPositions[i][1] + 50
+                        );
+                        if (data[i].leader === true) {
+                            ctx.beginPath();
+                            ctx.arc(
+                                playersCanvasPositions[i][0] + 10,
+                                playersCanvasPositions[i][1] + 65,
+                                10,
+                                0,
+                                2 * Math.PI
+                            );
+                            ctx.fillStyle = "red";
+                            ctx.fill();
+                        }
+                        if(data[i].turn === true) {
+                            ctx.beginPath();
+                            ctx.arc(
+                                playersCanvasPositions[i][0] + 30,
+                                playersCanvasPositions[i][1] + 65,
+                                10,
+                                0,
+                                2 * Math.PI
+                            );
+                            ctx.fillStyle = "green";
+                            ctx.fill();
+                        }
+                    }
+                } else {
+                    ctx.fillStyle = "green";
+                    ctx.fillText(
+                        data[i].role + ": " + data[i].name,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1]
+                    );
+                    ctx.fillText(
+                        "Team: " + data[i].team,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 25
+                    );
+                    ctx.fillText(
+                        "Character: " + data[i].character,
+                        playersCanvasPositions[i][0],
+                        playersCanvasPositions[i][1] + 50
+                    );
+                    if (leader === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 10,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "red";
+                        ctx.fill();
+                    }
+                    if(turn === true) {
+                        ctx.beginPath();
+                        ctx.arc(
+                            playersCanvasPositions[i][0] + 30,
+                            playersCanvasPositions[i][1] + 65,
+                            10,
+                            0,
+                            2 * Math.PI
+                        );
+                        ctx.fillStyle = "green";
+                        ctx.fill();
+                    }
+                }
+            }
+        } else {
+            for (var i = 0; i < data.length; i++) {
+                ctx.fillText(
+                    data[i].role + ": " + data[i].name,
+                    playersCanvasPositions[i][0],
+                    playersCanvasPositions[i][1]
+                );
+                ctx.fillText(
+                    "Team: " + data[i].team,
+                    playersCanvasPositions[i][0],
+                    playersCanvasPositions[i][1] + 25
+                );
+                ctx.fillText(
+                    "Character: " + data[i].character,
+                    playersCanvasPositions[i][0],
+                    playersCanvasPositions[i][1] + 50
+                );
+                if (data[i].leader === true) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        playersCanvasPositions[i][0] + 10,
+                        playersCanvasPositions[i][1] + 65,
+                        10,
+                        0,
+                        2 * Math.PI
+                    );
+                    ctx.fillStyle = "red";
+                    ctx.fill();
+                }
+                if(data[i].turn === true) {
+                    ctx.beginPath();
+                    ctx.arc(
+                        playersCanvasPositions[i][0] + 30,
+                        playersCanvasPositions[i][1] + 65,
+                        10,
+                        0,
+                        2 * Math.PI
+                    );
+                    ctx.fillStyle = "green";
+                    ctx.fill();
+                }
+            }
+        }
+        if(endGameWin === true){
+            ctx.fillStyle = "Green";
+            ctx.font = "40px Verdana";
+            ctx.fillText("GOOD GUYS WIN: Merlin Assassination... ", 200, 200);
+        }else if(endGameLoss === true){
+            ctx.fillStyle = "red";
+            ctx.font = "40px Verdana";
+            ctx.fillText("GAME OVER: EVIL WINS", 200, 200);
+        }else if(endGameWin2 === true){
+            ctx.fillStyle = "Green";
+            ctx.font = "40px Verdana";
+            ctx.fillText("GOOD GUYS WIN: Assassin Failed ", 200, 200);
+        }else if(endGameLoss2){
+            ctx.fillStyle = "red";
+            ctx.font = "40px Verdana";
+            ctx.fillText("GAME OVER: Merlin Was Assassinated", 200, 200);
+        }
+    }
+    function createGame(userName, playerName, MsgId) {
+        var role = "Host";
+        var name = document.getElementById(userName).value;
+        var msg;
+        if (name === "") {
+            msg = "*enter a name";
+            document.getElementById(MsgId).innerHTML = msg;
+        } else {
+            var roomCode;
+            //get random 6 digit number from random api
+            var client = new HttpClient();
+            client.get(
+                "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new",
+                function(response) {
+                    console.log("random roomcode: " + response);
+                    roomCode = response.trim(); //remove /n, etc
+                    document.getElementById(playerName).innerHTML =
+                        name + ", Welcome to Avalonline Room: " + roomCode;
+                    game.createNewGame = false;
+                    startGame(name, roomCode, role);
+                    createNewChat(name, roomCode);
+                }
+            );
+        }
+    }
+    function connectToGame(username, gameCode, playerName, MsgId) {
+        var gameCode = document.getElementById(gameCode).value;
+        var username = document.getElementById(username).value;
+        var role = "Guest";
+        var msg;
+        //roomCodes.includes(gameCode
+        if (username === "" || gameCode === "") {
+            msg = "Enter Name and Code";
+            document.getElementById(MsgId).innerHTML = msg;
+        } else {
+            game.connectToGame = false;
+            document.getElementById(playerName).innerHTML =
+                username + ", Welcome to Avalonline Room: " + gameCode;
+            startGame(username, gameCode, role);
+            joinChat(username, gameCode);
+        }
+    }
+</script>
+
+<script>
+    //creates a variable to the canvas created in html
+    //var ctx = document.getElementById("ctx").getContext("2d");
+    function startGame(playerName, roomCode, role) {
+        let gameReady = false;
+        //creates a variable to the canvas created in html
+        var canv = document.createElement("canvas");
+        canv.setAttribute("width", 1250);
+        canv.setAttribute("height", 600);
+        canv.setAttribute("id", roomCode);
+        canv.setAttribute("style", "border:1px solid #000000; width: 70%");
+        document.getElementById("game-board").appendChild(canv);
+        var ctx = document.getElementById(roomCode).getContext("2d");
+        ctx.font = "25px Arial";
+        //creates a socket variable to be used to communicate with the server
+        socket = io();
+        socket.emit("roomCode", { code: roomCode });
+        socket.emit("startGame");
+        socket.emit("playerName", { name: playerName });
+        if (role === "Host") {
+            game.showAddBot = true;
+            socket.emit("createPlayer");
+        } else {
+            socket.emit("connectPlayer");
+        }
+        //listens to new positions from the server and updates the client canvas
+        socket.on(roomCode + "setUpTable", function(data) {
+            if (data.length >= 5) {
+                gameReady = true;
+            } else {
+                gameReady = false;
+                game.showStartGameInRoom = false;
+            }
+            let x = 50;
+            let y = 0;
+            ctx.clearRect(0, 0, 1250, 600);
+            for (var i = 0; i < data.length; i++) {
+                y = y + 50;
+                ctx.fillText(data[i].role + ": " + data[i].name, x, y);
+            }
+        });
+        socket.on(roomCode + "gameReady", function() {
+            if (gameReady) {
+                game.showStartGameInRoom = true;
+            }
+        });
+        //updates the canvas for all players
+        socket.on(roomCode + "updateTable", function(data) {
+            updateTable(data, ctx, playerName);
+        });
+        //lets leader choose who go on quest for quest 1
+        socket.on(roomCode+"leaderDecision1", function(data) {
+            currentQuest = 1;
+            showLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+            game.showStartGameInRoom = false;
+            game.showAddBot = false;
+        });
+        //players choose to approve or reject quest 1 leader decision
+        socket.on(roomCode+"teamDecision1", function(data) {
+            currentQuest = 1;
+            var playerTeam;
+            var playerLeaderPosition;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+            game.showTeamVote = true;
+        });
+        //players chosen to go on quest succeed or reject quest
+        socket.on(roomCode+"chosenDecision1", function(data) {
+            currentQuest = 1;
+            var playerTeam;
+            var playerLeaderPosition;
+            var chosenPlayer = false;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                    if(data[j].turn === true){
+                        chosenPlayer = true
+                    }
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            if(chosenPlayer){
+                currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+                game.showDecideQuest = true;
+            }
+        });
+        //lets leader choose who go on quest for quest 2
+        socket.on(roomCode+"leaderDecision2", function(data) {
+            currentQuest = 2;
+            showLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        //players choose to approve or reject quest 2 leader decision
+        socket.on(roomCode+"teamDecision2", function(data) {
+            currentQuest = 2;
+            var playerTeam;
+            var playerLeaderPosition;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+            game.showTeamVote = true;
+        });
+        //players chosen to go on quest succeed or reject quest
+        socket.on(roomCode+"chosenDecision2", function(data) {
+            currentQuest = 2;
+            var playerTeam;
+            var playerLeaderPosition;
+            var chosenPlayer = false;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                    if(data[j].turn === true){
+                        chosenPlayer = true
+                    }
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            if(chosenPlayer){
+                currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+                game.showDecideQuest = true;
+            }
+        });
+        //lets leader choose who go on quest for quest 3
+        socket.on(roomCode+"leaderDecision3", function(data) {
+            currentQuest = 3;
+            showLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        //players choose to approve or reject quest 3 leader decision
+        socket.on(roomCode+"teamDecision3", function(data) {
+            currentQuest = 3;
+            var playerTeam;
+            var playerLeaderPosition;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+            game.showTeamVote = true;
+        });
+        //players chosen to go on quest succeed or reject quest
+        socket.on(roomCode+"chosenDecision3", function(data) {
+            currentQuest = 3;
+            var playerTeam;
+            var playerLeaderPosition;
+            var chosenPlayer = false;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                    if(data[j].turn === true){
+                        chosenPlayer = true
+                    }
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            if(chosenPlayer){
+                currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+                game.showDecideQuest = true;
+            }
+        });
+        //lets leader choose who go on quest for quest 4
+        socket.on(roomCode+"leaderDecision4", function(data) {
+            currentQuest = 4;
+            showLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        //players choose to approve or reject quest 4 leader decision
+        socket.on(roomCode+"teamDecision4", function(data) {
+            currentQuest = 4;
+            var playerTeam;
+            var playerLeaderPosition;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+            game.showTeamVote = true;
+        });
+        //players chosen to go on quest succeed or reject quest
+        socket.on(roomCode+"chosenDecision4", function(data) {
+            currentQuest = 4;
+            var playerTeam;
+            var playerLeaderPosition;
+            var chosenPlayer = false;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                    if(data[j].turn === true){
+                        chosenPlayer = true
+                    }
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            if(chosenPlayer){
+                currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+                game.showDecideQuest = true;
+            }
+        });
+        //lets leader choose who go on quest for quest 5
+        socket.on(roomCode+"leaderDecision5", function(data) {
+            currentQuest = 5;
+            showLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        //players choose to approve or reject quest 5 leader decision
+        socket.on(roomCode+"teamDecision5", function(data) {
+            currentQuest = 5;
+            var playerTeam;
+            var playerLeaderPosition;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+            game.showTeamVote = true;
+        });
+        //players chosen to go on quest succeed or reject quest
+        socket.on(roomCode+"chosenDecision5", function(data) {
+            currentQuest = 5;
+            var playerTeam;
+            var playerLeaderPosition;
+            var chosenPlayer = false;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName) {
+                    playerTeam = data[j].team;
+                    if(data[j].turn === true){
+                        chosenPlayer = true
+                    }
+                }
+                if(data[j].leader === true){
+                    playerLeaderPosition = j;
+                }
+            }
+            updateTable(data, ctx, playerName);
+            if(chosenPlayer){
+                currentPlayer(playerName, playerTeam, playerLeaderPosition,currentQuest);
+                game.showDecideQuest = true;
+            }
+        });
+        socket.on(roomCode+"leaderBotDecision1", function(data) {
+            currentQuest = 1;
+            botLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+            game.showStartGameInRoom = false;
+            game.showAddBot = false;
+        });
+        socket.on(roomCode+"botTeamDecision1", function(data) {
+            currentQuest = 1;
+            BotVoteClicked();
+        });
+        socket.on(roomCode+"botChosenDecision1", function(data) {
+            currentQuest = 1;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].bot === true && data[j].turn === true) {
+                    botDecideQuest(data[j].team);
+                }
+            }
+        });
+        socket.on(roomCode+"leaderBotDecision2", function(data) {
+            currentQuest = 2;
+            botLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        socket.on(roomCode+"botTeamDecision2", function(data) {
+            currentQuest = 2;
+            BotVoteClicked();
+        });
+        socket.on(roomCode+"botChosenDecision2", function(data) {
+            currentQuest = 2;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].bot === true && data[j].turn === true) {
+                    botDecideQuest(data[j].team);
+                }
+            }
+        });
+        socket.on(roomCode+"leaderBotDecision3", function(data) {
+            currentQuest = 3;
+            botLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        socket.on(roomCode+"botTeamDecision3", function(data) {
+            currentQuest = 3;
+            BotVoteClicked();
+        });
+        socket.on(roomCode+"botChosenDecision3", function(data) {
+            currentQuest = 3;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].bot === true && data[j].turn === true) {
+                    botDecideQuest(data[j].team);
+                }
+            }
+        });
+        socket.on(roomCode+"leaderBotDecision4", function(data) {
+            currentQuest = 4;
+            botLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        socket.on(roomCode+"botTeamDecision4", function(data) {
+            currentQuest = 4;
+            BotVoteClicked();
+        });
+        socket.on(roomCode+"botChosenDecision4", function(data) {
+            currentQuest = 4;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].bot === true && data[j].turn === true) {
+                    botDecideQuest(data[j].team);
+                }
+            }
+        });
+        socket.on(roomCode+"leaderBotDecision5", function(data) {
+            currentQuest = 5;
+            botLeaderChoosesPlayersOnQuest(data, data.length, currentQuest);
+        });
+        socket.on(roomCode+"botTeamDecision5", function(data) {
+            currentQuest = 5;
+            BotVoteClicked();
+        });
+        socket.on(roomCode+"botChosenDecision5", function(data) {
+            currentQuest = 5;
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].bot === true && data[j].turn === true) {
+                    botDecideQuest(data[j].team);
+                }
+            }
+        });
+        //if good wins assassin chooses who merlin is
+        socket.on(roomCode+"endGameWin", function(data){
+            updateTable(data, ctx, playerName);
+            for (var j = 0; j < data.length; j++) {
+                if (data[j].name === playerName && data[j].character === "Assassin") {
+                    assassinChooseMerlin(data);
+                }
+            }
+        });
+        //evil wins and update table to let everyone know
+        socket.on(roomCode+"endGameLoss", function(data){
+            updateTable(data, ctx, playerName);
+        });
+        //assassin fails to pick merlin and good guys win
+        socket.on(roomCode+"endGameWin2", function(data){
+            updateTable(data, ctx, playerName);
+        });
+        //assassin succeeds to pick merlin and evil win
+        socket.on(roomCode+"endGameLoss2", function(data){
+            updateTable(data, ctx, playerName);
+        });
+    }
+</script>
+</body>
+</html>
+

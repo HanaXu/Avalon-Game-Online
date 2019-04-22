@@ -1,5 +1,31 @@
 import { GoodTeam } from './game.mjs';
 
+/*
+example teamObj
+10: {
+    'Merlin': 1,
+    'Assassin': 1,
+    'Loyal Servant of Arthur': 5,
+    'Minion of Mordred': 3
+  }
+*/
+export function populateRoleList(teamObj) {
+    let roleList = {
+        "good": {},
+        "evil": {}
+    };
+    for (let character in teamObj) {
+        if (teamObj[character] === 0) continue;
+        if (GoodTeam.has(character)) {
+            roleList["good"][character] = teamObj[character];
+        } else {
+            roleList["evil"][character] = teamObj[character];
+        }
+    }
+    // console.log(roleList);
+    return roleList;
+}
+
 // hide all player team and character info but yourself
 export function sanitizeTeamView(yourSocketID, yourCharacter, players) {
     const clonedPlayers = JSON.parse(JSON.stringify(players));
@@ -21,7 +47,7 @@ export function sanitizeTeamView(yourSocketID, yourCharacter, players) {
 }
 
 // hide all player team and character info but yourself
-export function sanitizeForGoodTeam(yourSocketID, players) {
+function sanitizeForGoodTeam(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
             // dont hide your own info
@@ -35,7 +61,7 @@ export function sanitizeForGoodTeam(yourSocketID, players) {
     return players;
 }
 
-export function sanitizeForPercival(yourSocketID, players) {
+function sanitizeForPercival(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
             // dont hide your own info
@@ -57,7 +83,7 @@ export function sanitizeForPercival(yourSocketID, players) {
 }
 
 // hide identities of good team & Oberon
-export function sanitizeForEvilTeam(yourSocketID, players) {
+function sanitizeForEvilTeam(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
             // dont hide your own info
@@ -78,7 +104,7 @@ export function sanitizeForEvilTeam(yourSocketID, players) {
 }
 
 // hide identities of good team & Morgana
-export function sanitizeForMerlin(yourSocketID, players) {
+function sanitizeForMerlin(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
             // dont hide your own info

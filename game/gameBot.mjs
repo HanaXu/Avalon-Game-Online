@@ -30,7 +30,7 @@ const PLAYERS_ON_QUEST = [
     [2, 3, 4, 3, 4],
     [2, 3, 3, 4, 4],
     [3, 4, 4, 5, 5],
-    [3, 3, 4, 5, 5],
+    [3, 4, 4, 5, 5],
     [3, 4, 4, 5, 5]
 ];
 
@@ -146,8 +146,9 @@ export class gameBot {
 
             // console.log(`On Quest: ${currentfQuestNum}`);
             // console.log(`Players: ${players}`);
-            console.log(`number of players: ${players.length}`);
-            var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
+            //console.log(`number of players: ${players.length}`);
+            var playersOnQuestNum = PLAYERS_ON_QUEST[currentQuestNum - 1][players.length - 5];
+            console.log(`Choosing ${playersonQuestNum} players for quest #${currentQuestNum} with ${players.length} players.`);
             //choose only one evil player to go on quest
             for (let i = 0; i < players.length; i++) {
                 if(players[i].team === 'Evil' && players[i].name !== bot.name){
@@ -222,8 +223,7 @@ export class gameBot {
             var lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
             var middleName = " The Bot ";
 
-            var name = firstName;
-            name.concat(middleName);
+            var name = firstName.concat(middleName);
 
             console.log("Name is :");
             console.log(name);
@@ -246,11 +246,13 @@ export class gameBot {
         }
 
         socket.on('updateHistoryModal', function (data) {
-            questHistory1 = data[1][1];
-            questHistory2 = data[2][1];
-            questHistory3 = data[3][1];
-            questHistory4 = data[4][1];
-            questHistory5 = data[5][1];
+            if(data.length > 0) {
+                questHistory1 = data[1][1];
+                questHistory2 = data[2][1];
+                questHistory3 = data[3][1];
+                questHistory4 = data[4][1];
+                questHistory5 = data[5][1];
+            }
             //console.log(`Quest History 1 is: ${util.inspect(questHistory1, false, null, true)}`);
         });
 
@@ -726,9 +728,9 @@ export class gameBot {
                     i++
                 } else {
                     if (questHistory1.success === true)
-                        awardPlayer(questHistory1.playersOnQuest[i])
+                        awardPlayer(questHistory1.playersOnQuest[i]);
                     else
-                        punishPlayer(questHistory1.playersOnQuest[i])
+                        punishPlayer(questHistory1.playersOnQuest[i]);
                 }
             }
 
@@ -739,15 +741,15 @@ export class gameBot {
                 if (questHistory1.questTeamDecisions.accept[i] === bot.name) {
                     i++
                 } else {
-                    awardPlayer(questHistory1.questTeamDecisions.accept[i])
+                    awardPlayer(questHistory1.questTeamDecisions.accept[i]);
                 }
             }
 
             for (let i in questHistory1.questTeamDecisions.reject) {
                 if (questHistory1.questTeamDecisions.reject[i] === bot.name) {
-                    i++
+                    i++;
                 } else {
-                    punishPlayer(questHistory1.questTeamDecisions.reject[i])
+                    punishPlayer(questHistory1.questTeamDecisions.reject[i]);
                 }
             }
         }
@@ -758,12 +760,12 @@ export class gameBot {
             // Based on People Who Went to Quest 
             for (let i in questHistory2.playersOnQuest) {
                 if (questHistory2.playersOnQuest[i] === bot.name) {
-                    i++
+                    i++;
                 } else {
                     if (questHistory2.success === true)
-                        awardPlayer(questHistory2.playersOnQuest[i])
+                        awardPlayer(questHistory2.playersOnQuest[i]);
                     else
-                        punishPlayer(questHistory2.playersOnQuest[i])
+                        punishPlayer(questHistory2.playersOnQuest[i]);
                 }
             }
 
