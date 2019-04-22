@@ -12,6 +12,13 @@ let questHistory4;
 let questHistory5;
 
 
+//Trust Factor Object
+// {@property} name:
+// {@propery} value:
+// As the Player Accepts Votes or Succeeds Quests Value will increment
+// Value will decrement likewise for Reject or Failure of Quest
+var playerCounters = {};
+
 const PLAYERS_ON_QUEST = [
     //5 6 7 8 9 10 players
     [2, 3, 2, 3, 3],
@@ -67,14 +74,29 @@ export class gameBot {
             //console.log("in Bot Class on updatePlayers: ");
             // console.log(players)
             // console.log(`my socket id is: ${socket.id}`)
+
+
             playersToChoose = players;
             for (let i in players) {
+                console.log(`Players Name: ${players[i].name}`);
+                playerCounters[i] = {
+                    name: players[i].name,
+                    value: 0
+                };
+                //
+                console.log(`PlayersCounter Name: ${playerCounters[i].name} And Value: ${playerCounters[i].value}`);
                 if (players[i].socketID === socket.id) {
                     //console.log(`my identity is: ${players[i].name}`)
                     //console.log(`my character is ${players[i].team}`)
                     bot.team = players[i].team;
                 }
             }
+            // for (let i in playerCounters) {
+            //     console.log(`PlayerCounters: ${playerCounters[i].name}`);
+            //     console.log(`PlayerCounters: ${playerCounters[i].value}`);
+            // }
+
+
         });
 
         socket.on("gameReady", function () {
@@ -84,8 +106,8 @@ export class gameBot {
         // Function For Bot to Decide Whether it Will
         // Accept or Reject the Vote for Quest Teams
         socket.on("acceptOrRejectTeam", function (data) {
-            if(data.bool === true){
-                for(let i in data.onQuest){
+            if (data.bool === true) {
+                for (let i in data.onQuest) {
                     console.log(`acceptOrRejectTeamBot Data On bot ${bot.name}: ${util.inspect(data.onQuest[i], true, null, true)}`);
                 }
 
@@ -163,8 +185,8 @@ export class gameBot {
 
         function createSocketConnection(port) {
             /*
-            Socket Connection Portion
-        */
+                Socket Connection Portion
+            */
             var clientIO = socketIO;
             var socket = clientIO.connect(`http://localhost:${port}`);
 
@@ -184,7 +206,7 @@ export class gameBot {
             bot.leader = true;
             console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             if (bot.leader === true && data.bool === true) {
-                if(bot.team === 'Evil'){
+                if (bot.team === 'Evil') {
                     var currentQuestNum = data.currentQuestNum;
                     var players = data.players;
 
@@ -201,7 +223,7 @@ export class gameBot {
                     }
                     bot.leader = false;
                     socket.emit('questTeamConfirmed');
-                }else if (bot.team === 'Good'){
+                } else if (bot.team === 'Good') {
                     var currentQuestNum = data.currentQuestNum;
                     var players = data.players;
 
