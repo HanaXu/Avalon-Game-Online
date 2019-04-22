@@ -158,9 +158,10 @@ export class gameBot {
                     break;
                 }
             }
-            //the rest of the players are good
-            for (let i = 0; i < playersOnQuestNum - 1; i++) {
-                if(players[i].team !== 'Evil'){
+            var count = 0;
+            for (let i = 0; i < players.length; i++) {
+                if(players[i].team !== 'Evil' && count < playersOnQuestNum - 1){
+                    count++;
                     console.log(`Chose: ${players[i].name}`);
                     players[i].onQuest = true;
                     socket.emit("addPlayerToQuest", players[i].name);
@@ -272,14 +273,39 @@ export class gameBot {
                     // console.log(`Players: ${players}`);
                     console.log(`number of players: ${players.length}`);
                     var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
-                    for (let i = 0; i < playersOnQuestNum; i++) {
-                        console.log(`Chose: ${players[i].name}`);
-                        players[i].onQuest = true;
-                        socket.emit("addPlayerToQuest", players[i].name);
-                        socket.emit('updatePlayers');
+                    if(currentQuestNum === 1){
+                        for (let i = 0; i < playersOnQuestNum; i++) {
+                            console.log(`Chose: ${players[i].name}`);
+                            players[i].onQuest = true;
+                            socket.emit("addPlayerToQuest", players[i].name);
+                            socket.emit('updatePlayers');
+                        }
+                        bot.leader = false;
+                        socket.emit('questTeamConfirmed');
+                    }else if (currentQuestNum === 2){
+                        for (let i = 0; i < playersOnQuestNum; i++) {
+                            console.log(`Chose: ${players[i].name}`);
+                            players[i].onQuest = true;
+                            socket.emit("addPlayerToQuest", players[i].name);
+                            socket.emit('updatePlayers');
+                        }
+                        bot.leader = false;
+                        socket.emit('questTeamConfirmed');
+                    }else{
+                        var count = 0;
+                        for (let i = 0; i < players.length; i++) {
+                            if(players[i].team === 'Good' && count < playersOnQuestNum){
+                                count++;
+                                console.log(`Chose: ${players[i].name}`);
+                                players[i].onQuest = true;
+                                socket.emit("addPlayerToQuest", players[i].name);
+                                socket.emit('updatePlayers');
+                            }
+                        }
+                        bot.leader = false;
+                        socket.emit('questTeamConfirmed');
                     }
-                    bot.leader = false;
-                    socket.emit('questTeamConfirmed');
+
                 }
             }
         });
