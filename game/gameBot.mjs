@@ -119,24 +119,6 @@ export class gameBot {
             }
         });
 
-        // Succeeding or Failing Quests
-        socket.on('goOnQuest', function () {
-            let botDecision = botQuestVote();
-            socket.emit("questVote", {
-                name: bot.name,
-                decision: botDecision
-            });
-        });
-
-        socket.on('updateHistoryModal', function (data) {
-            questHistory1 = data[1][1];
-            questHistory2 = data[2][1];
-            questHistory3 = data[3][1];
-            questHistory4 = data[4][1];
-            questHistory5 = data[5][1];
-            //console.log(`Quest History 1 is: ${util.inspect(questHistory1, false, null, true)}`);
-        });
-
         // Function For Bot to Decide Whether it Will
         // Accept or Reject the Quest
         function botDecisionQuest(playersOnQuest) {
@@ -197,6 +179,14 @@ export class gameBot {
             return socket;
         }
 
+        socket.on('updateHistoryModal', function (data) {
+            questHistory1 = data[1][1];
+            questHistory2 = data[2][1];
+            questHistory3 = data[3][1];
+            questHistory4 = data[4][1];
+            questHistory5 = data[5][1];
+            //console.log(`Quest History 1 is: ${util.inspect(questHistory1, false, null, true)}`);
+        });
 
         // Bot Chooses Players For Quest
         // Currently just dummy Version
@@ -244,6 +234,18 @@ export class gameBot {
 
             }
         });
+
+
+        // Succeeding or Failing Quests
+        socket.on('goOnQuest', function () {
+            let botDecision = botQuestVote();
+            socket.emit("questVote", {
+                name: bot.name,
+                decision: botDecision
+            });
+        });
+
+
 
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
