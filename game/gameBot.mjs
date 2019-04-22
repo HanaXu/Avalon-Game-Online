@@ -148,7 +148,7 @@ export class gameBot {
             // console.log(`Players: ${players}`);
             //console.log(`number of players: ${players.length}`);
             var playersOnQuestNum = PLAYERS_ON_QUEST[currentQuestNum - 1][players.length - 5];
-            console.log(`Choosing ${playersonQuestNum} players for quest #${currentQuestNum} with ${players.length} players.`);
+            console.log(`Choosing ${playersOnQuestNum} players for quest #${currentQuestNum} with ${players.length} players.`);
             //choose only one evil player to go on quest
             for (let i = 0; i < players.length; i++) {
                 if(players[i].team === 'Evil' && players[i].name !== bot.name){
