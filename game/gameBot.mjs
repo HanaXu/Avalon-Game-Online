@@ -161,7 +161,7 @@ export class gameBot {
             }
             var count = 0;
             for (let i = 0; i < players.length; i++) {
-                if(players[i].team !== 'Evil' && count < playersOnQuestNum - 1){
+                if(players[i].team !== 'Evil' && count < playersOnQuestNum){
                     count++;
                     console.log(`Chose: ${players[i].name}`);
                     players[i].onQuest = true;
