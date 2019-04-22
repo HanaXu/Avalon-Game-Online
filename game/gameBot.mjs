@@ -347,9 +347,9 @@ export class gameBot {
 
                                 // I Need to re-Initialize the 'Add' Arrays 
                                 // Because This Case will have different Weight Criteria
-                                definitelyAdd = [];
-                                possibleAdd = [];
-                                doNotAdd = [];
+                                definitelyAdd.length = 0;
+                                possibleAdd.length = 0;
+                                doNotAdd.length = 0;
 
                                 iterateQuest2();
 
@@ -405,9 +405,9 @@ export class gameBot {
 
                                 // I Need to re-Initialize the 'Add' Arrays 
                                 // Because This Case will have different Weight Criteria
-                                definitelyAdd = [];
-                                possibleAdd = [];
-                                doNotAdd = [];
+                                definitelyAdd.length = 0;
+                                possibleAdd.length = 0;
+                                doNotAdd.length = 0;
 
                                 iterateQuest3();
 
@@ -463,9 +463,9 @@ export class gameBot {
 
                                 // I Need to re-Initialize the 'Add' Arrays 
                                 // Because This Case will have different Weight Criteria
-                                definitelyAdd = [];
-                                possibleAdd = [];
-                                doNotAdd = [];
+                                definitelyAdd.length = 0;
+                                possibleAdd.length = 0;
+                                doNotAdd.length = 0;
 
                                 iterateQuest4();
 
