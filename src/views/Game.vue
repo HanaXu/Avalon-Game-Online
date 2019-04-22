@@ -50,8 +50,8 @@
       </div>
 
       <div class="col-12 col-md-3">
-        <RoleList v-if="gameStarted"/>
-        <div class="chat">
+        <div class="container chat">
+          <RoleList v-if="gameStarted"/>
           <div style="align: right">
             <Chat :your-name="yourName" :room-code="roomCode"></Chat>
           </div>
