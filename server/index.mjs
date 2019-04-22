@@ -226,11 +226,12 @@ io.on('connection', socket => {
 
 
     let a = Array.from(currentQuest.playersOnQuest);
-    a.push(currentQuest.questNum);
+    //a.push(currentQuest.questNum);
     console.log("current quest players(server side): " + util.inspect(a, true, null, true));
     io.in(roomCode).emit('acceptOrRejectTeam', {
       bool: true,
-      onQuest: a
+      onQuest: a,
+      players: GameList[roomCode].players
     });
   });
 
