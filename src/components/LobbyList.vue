@@ -1,10 +1,6 @@
 <template>
-  <ul style="list-style-type: none;">
-    <li
-      style="font-size: 27px;"
-      v-for="(player, index) in players"
-      :key="index"
-    >{{ player.role }}: {{ player.name }}</li>
+  <ul class="lobbyList">
+    <li v-for="(player, index) in players" :key="index">{{ player.role }}: {{ player.name }}</li>
   </ul>
 </template>
 

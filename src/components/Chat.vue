@@ -1,36 +1,32 @@
 <template>
-  <div id="app">
-    <div class="row">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-header">Chatroom</div>
-          <div class="card-body">
-            <dl id="messageList"></dl>
-            <div class="messages" v-chat-scroll>
-              <div class="message" v-bind:key="message.id" v-for="message in messages">
-                <strong>{{message.username + " "}}</strong>
-                <font size="2" color="grey">({{message.time}})</font>
-                <strong>:</strong>
-                <br>
-                {{message.text}}
-              </div>
-            </div>
+  <div>
+    <div class="card">
+      <div class="card-header">Chat</div>
+      <div class="card-body">
+        <dl id="messageList"></dl>
+        <div class="messages" v-chat-scroll>
+          <div class="message" v-bind:key="message.id" v-for="message in messages">
+            <strong>{{message.username + " "}}</strong>
+            <font size="2" color="grey">({{message.time}})</font>
+            <strong>:</strong>
+            <br>
+            {{message.text}}
           </div>
-          <hr>
-          <div class="input-group">
-            <div style="width: auto">
-              <textarea
-                type="text"
-                name
-                id
-                cols="30"
-                row="4"
-                wrap="hard"
-                placeholder="Press Enter to send your message..."
-                v-on:keyup.enter="sendMessage"
-              ></textarea>
-            </div>
-          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="input-group">
+        <div style="width: auto">
+          <textarea
+            type="text"
+            name
+            id
+            cols="30"
+            row="4"
+            wrap="hard"
+            placeholder="Press Enter to send your message..."
+            v-on:keyup.enter="sendMessage"
+          ></textarea>
         </div>
       </div>
     </div>

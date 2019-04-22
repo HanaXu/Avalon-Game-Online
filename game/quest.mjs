@@ -12,6 +12,7 @@ const PLAYERS_ON_QUEST = [
   [3, 4, 4, 5, 5, 5]
 ];
 
+
 export class Quest {
   /**
    * Quest objects have:
@@ -51,7 +52,7 @@ export class Quest {
   }
 
   assignResult() {
-    if (this.votes.fail > 0) {
+    if (this.votes.fail.length > 0) {
       this.success = false;
     } else {
       this.success = true;
