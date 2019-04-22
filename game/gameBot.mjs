@@ -118,7 +118,7 @@ export class gameBot {
         // Function For Bot to Decide Whether it Will
         // Accept or Reject the Quest
         function botDecisionQuest(playersOnQuest) {
-            var decision;
+            var decision = makeEvilQuestDecision(playersOnQuest);
 
             if (bot.team === 'Evil') {
                 decision = 'reject';
@@ -129,11 +129,51 @@ export class gameBot {
             return decision;
         }
 
+        function makeEvilLeaderPicks(data){
+            var currentQuestNum = data.currentQuestNum;
+            var players = data.players;
+
+            // console.log(`On Quest: ${currentQuestNum}`);
+            // console.log(`Players: ${players}`);
+            console.log(`number of players: ${players.length}`);
+            var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
+
+            for (var i = 0; i < playersOnQuestNum; i++) {
+                console.log(`Chose: ${players[i].name}`);
+                players[i].onQuest = true;
+                socket.emit("addPlayerToQuest", players[i].name);
+                socket.emit('updatePlayers')
+            }
+            bot.leader = false;
+            socket.emit('questTeamConfirmed');
+        }
+
+        function makeEvilQuestDecision(playersOnQuest){
+            let questNum = playersOnQuest[playersOnQuest.length-1];
+            let onQuest = [];
+            for(let i in playersOnQuest){
+                if(i < playersOnQuest.length-1){
+                    onQuest.push(playersOnQuest[i]);
+                }
+            }
+            if(questNum === 1){
+                return 'reject';
+            }else{
+
+            }
+
+            return null;
+        }
+
+        function makeEvilVoteDecision(){
+            return 'fail';
+        }
+
         function botQuestVote() {
             var decision;
 
             if (bot.team === 'Evil') {
-                decision = 'fail';
+                decision = makeEvilVoteDecision();;
             } else if (bot.team === 'Good') {
                 decision = 'succeed';
             }
@@ -185,22 +225,7 @@ export class gameBot {
             console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             if (bot.leader === true && data.bool === true) {
                 if(bot.team === 'Evil'){
-                    var currentQuestNum = data.currentQuestNum;
-                    var players = data.players;
-
-                    // console.log(`On Quest: ${currentQuestNum}`);
-                    // console.log(`Players: ${players}`);
-                    console.log(`number of players: ${players.length}`);
-                    var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
-
-                    for (var i = 0; i < playersOnQuestNum; i++) {
-                        console.log(`Chose: ${players[i].name}`);
-                        players[i].onQuest = true;
-                        socket.emit("addPlayerToQuest", players[i].name);
-                        socket.emit('updatePlayers')
-                    }
-                    bot.leader = false;
-                    socket.emit('questTeamConfirmed');
+                    makeEvilLeaderPicks(data);
                 }else if (bot.team === 'Good'){
                     var currentQuestNum = data.currentQuestNum;
                     var players = data.players;
