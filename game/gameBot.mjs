@@ -762,7 +762,7 @@ export class gameBot {
             for (var i = 1; i < array.length; i++) {
                 if (array[i] > max) {
                     maxIndex = i;
-                    max = arr[i];
+                    max = array[i];
                 }
             }
 
