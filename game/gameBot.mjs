@@ -287,17 +287,10 @@ export class gameBot {
 
 
                                 iterateQuest1();
+
                                 // Now that the Tallies are Made lets See who we Should add
                                 // Iterate PlayerCounter
-                                for (let i in playerCounters) {
-                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
-                                    if (playerCounters[i].value < 0)
-                                        doNotAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 0 && playerCounters[i].value < 2)
-                                        possibleAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 2)
-                                        definitelyAdd.push(playerCounters[i].name);
-                                }
+                                tallyPlayerCounter(0, 2);
 
                                 // Now We can go ahead and start pushing to Server the Players We want on Quest
 
@@ -355,15 +348,7 @@ export class gameBot {
 
                                 // Now that the Tallies are Made lets See who we Should add
                                 // Iterate PlayerCounter
-                                for (let i in playerCounters) {
-                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
-                                    if (playerCounters[i].value < 2)
-                                        doNotAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 2 && playerCounters[i].value < 4)
-                                        possibleAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 4)
-                                        definitelyAdd.push(playerCounters[i].name);
-                                }
+                                tallyPlayerCounter(2, 4)
 
                                 // Now We can go ahead and start pushing to Server the Players We want on Quest
 
@@ -413,15 +398,7 @@ export class gameBot {
 
                                 // Now that the Tallies are Made lets See who we Should add
                                 // Iterate PlayerCounter
-                                for (let i in playerCounters) {
-                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
-                                    if (playerCounters[i].value < 4)
-                                        doNotAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 4 && playerCounters[i].value < 6)
-                                        possibleAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 6)
-                                        definitelyAdd.push(playerCounters[i].name);
-                                }
+                                tallyPlayerCounter(4, 6);
 
                                 // Now We can go ahead and start pushing to Server the Players We want on Quest
 
@@ -471,15 +448,7 @@ export class gameBot {
 
                                 // Now that the Tallies are Made lets See who we Should add
                                 // Iterate PlayerCounter
-                                for (let i in playerCounters) {
-                                    // Check to see if Below 0. Means they Rejected First Quest and/Vote
-                                    if (playerCounters[i].value < 6)
-                                        doNotAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 6 && playerCounters[i].value < 8)
-                                        possibleAdd.push(playerCounters[i].name);
-                                    else if (playerCounters[i].value >= 8)
-                                        definitelyAdd.push(playerCounters[i].name);
-                                }
+                                tallyPlayerCounter(6, 8);
 
                                 // Now We can go ahead and start pushing to Server the Players We want on Quest
 
@@ -594,6 +563,19 @@ export class gameBot {
                 if (playerCounters[i].name === name) {
                     playerCounters[i].value--;
                 }
+            }
+        }
+
+        // Iterate PlayerCounter Tallies Function
+        function tallyPlayerCounter(i, j) {
+            for (let i in playerCounters) {
+                // Check to see if Below 0. Means they Rejected First Quest and/Vote
+                if (playerCounters[i].value < i)
+                    doNotAdd.push(playerCounters[i].name);
+                else if (playerCounters[i].value >= i && playerCounters[i].value < j)
+                    possibleAdd.push(playerCounters[i].name);
+                else if (playerCounters[i].value >= j)
+                    definitelyAdd.push(playerCounters[i].name);
             }
         }
 
