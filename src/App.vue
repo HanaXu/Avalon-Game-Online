@@ -6,7 +6,7 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item to="/">Home</b-nav-item>
+          <!-- <b-nav-item to="/">Home</b-nav-item> -->
           <b-nav-item v-b-modal.modal-rules busy="true">Rules</b-nav-item>
           <b-nav-item v-b-modal.modal-roles busy="true">Roles</b-nav-item>
           <b-nav-item v-b-modal.modal-history busy="true">Game History</b-nav-item>

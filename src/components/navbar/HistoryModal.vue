@@ -48,7 +48,7 @@
         <!-- decide quest team outcome -->
         <b-row>
           <b-col cols="12" md="3">
-            <strong>Team Vote Results:  </strong>
+            <strong>Team Vote Results:</strong>
 
             <b-badge
               class="voteResult teamRejected"
@@ -133,7 +133,6 @@ export default {
   word-wrap: break-word;
 }
 
-
 h3 {
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   text-align: center;
@@ -152,20 +151,22 @@ h3 {
 }
 
 .voteResult,
-.voteResult.teamRejected,
 .voteResult.teamAccepted {
   background: #7d67aa;
 }
 
+.voteResult.teamRejected {
+  background: #a42323;
+}
+
 .subheader {
   font-weight: bold;
- /* text-decoration: underline; */
+  /* text-decoration: underline; */
   border-bottom: 2px solid #8a7d6e;
-
 }
 
 .questResult {
-  background: #C7C2CF;
+  background: #c7c2cf;
 }
 
 .questResult.succeed {
@@ -173,6 +174,6 @@ h3 {
 }
 
 .questResult.fail {
-  color: #A42323 !important;
+  color: #a42323 !important;
 }
 </style>
