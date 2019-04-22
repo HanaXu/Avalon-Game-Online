@@ -1,4 +1,4 @@
-import { objectToArray, shuffle } from './utility.mjs';
+import { objectToArray, shuffle, populateRoleList } from './utility.mjs';
 import { Quest } from './quest.mjs';
 import { QuestHistory } from './history.mjs';
 
@@ -51,6 +51,7 @@ export class Game {
     this.roomCode = roomCode;
     this.gameIsStarted = false;
     this.gameStage = 0;
+    this.roleList = null;
     this.players = [];
     this.quests = null;
     this.questHistory = null;
@@ -237,10 +238,12 @@ export class Game {
           newTeamObj['Morgana'] = 1;
         }
       }
+      this.roleList = populateRoleList(newTeamObj);
       shuffledIdentities = shuffle(objectToArray(newTeamObj));
       console.log(shuffledIdentities)
     } else {
       let teamObj = Game.BaseCharacters[this.players.length];
+      this.roleList = populateRoleList(teamObj);
       shuffledIdentities = shuffle(objectToArray(teamObj));
       console.log(shuffledIdentities)
     }
@@ -249,6 +252,7 @@ export class Game {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
       if (Game.GoodTeam.has(shuffledIdentities[i])) {
         this.players[i].team = 'Good'; // assign team based on character
+
       } else {
         this.players[i].team = 'Evil';
       }
