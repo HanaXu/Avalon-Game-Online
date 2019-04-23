@@ -285,7 +285,7 @@ h2.subtitle {
         border-radius: 5px;
         min-height: 30px;
         padding: 5px;
-        margin: 4px !important;
+        margin: 10px !important;
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
         font-size: 14px;
@@ -313,7 +313,7 @@ h2.subtitle {
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
     .section .sectionTitle {
-        font-size: 14px;
+        font-size: 15px;
     }
     .row {
         margin: 5px !important;
