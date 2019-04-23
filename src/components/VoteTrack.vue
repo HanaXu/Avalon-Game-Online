@@ -1,6 +1,6 @@
 <template>
-  <div style="padding-bottom: 4px">
-    <b-row class="mx-auto section voteTrack">
+  <div class="row justify-content-center">
+    <b-row class="d-flex flex-wrap section">
       <b-col class="sectionTitle" cols="3" md="2">Vote Track</b-col>
       <b-col class="circles">
         <div

@@ -4,7 +4,7 @@
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
 
-        <div class="container main-board" v-if="!gameStarted">
+        <div class="main-board" v-if="!gameStarted">
           <h4>
             Welcome, {{ yourName }}, to game room
             <span id="roomCode">{{ roomCode }}</span>.
