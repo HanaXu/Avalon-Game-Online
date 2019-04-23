@@ -18,9 +18,15 @@
     color: #494949;
 }
 body {
-    /* padding: 20px 0px;*/
-    background: #d6cdc2 !important;
+    background-color: #d6cdc2;
+    background: url("castle-tan.jpg") right 30% no-repeat !important;
 }
+
+h1.title,
+h2.subtitle {
+    text-shadow: 1px 1px 2px #8A7D6E;
+}
+
 *,
 *:before,
 *:after {
