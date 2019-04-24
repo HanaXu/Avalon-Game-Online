@@ -270,7 +270,7 @@ export class Game {
   }
 
   saveQuestHistory(questNum, currentQuest) {
-    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
+    //console.log(this.questHistory[questNum][currentQuest.voteTrack]);
     if (this.questHistory[questNum][currentQuest.voteTrack] === undefined) {
       console.log('exceeded 1 votetrack, creating new history obj');
       this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
@@ -288,8 +288,8 @@ export class Game {
     this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
     this.questHistory[questNum][currentQuest.voteTrack].votes.fail = currentQuest.votes.fail.length;
     this.questHistory[questNum][currentQuest.voteTrack].success = currentQuest.success;
-    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `)
-    console.log(this.questHistory[questNum][currentQuest.voteTrack])
+    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `);
+    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
   }
 
   //move to next quest out of 5

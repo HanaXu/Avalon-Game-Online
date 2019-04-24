@@ -1,5 +1,6 @@
 import socketIO from 'socket.io-client';
 import util from 'util';
+import { QuestHistory } from './history.mjs';
 
 const firstNames = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "Wilson"];
@@ -40,9 +41,10 @@ export class GameBot {
         this.onQuest = false;
         this.questAction = 'undecided';
         this.action = 'undecided';
-        this.questHistory = {};
+        this.lastQuest = 1;
+        this.lastVoteTrack = 1; // lastQuest and lastVoteTrack keep track of most recent quest history entry
 
-        this.gameObject = null; //a current copy of the game object
+        //this.gameObject = null; //a current copy of the game object
         this.players = []; //a list of all player objects (sanitized)
         this.playerRiskScores = []; //player name, identityKnown boolean, and riskScore
     };
@@ -69,6 +71,10 @@ export class GameBot {
         if (bot.role === "Guest") {
             bot.socket.emit("connectPlayer");
         }
+
+        bot.socket.on('gameStarted', function() {
+            bot.initializePlayerRiskScores();
+        });
 
         bot.socket.on("updatePlayers", function (players) {
             //updatePlayers(players, name);
@@ -110,8 +116,8 @@ export class GameBot {
 
         bot.socket.on('updateHistoryModal', function (data) {
             bot.questHistory = data;
-            //bot.logQuestHistory();
-            //console.log(`Quest History is: ${bot.questHistory}`);
+            bot.updatePlayerRiskScores(data);
+
         });
 
         bot.socket.on('choosePlayersForQuest', function (data) {
@@ -153,7 +159,6 @@ export class GameBot {
 
     /**************************************FUNCTIONS**********************************/
     //BELOW THIS LINE, REFERENCE TO ANY BOT OBJECT MEMBER VARIABLES/FUNCTIONS IS USING this KEYWORD, EX this.socket.emit()
-
 
     createSocketConnection(port) {
         /*
@@ -315,10 +320,38 @@ export class GameBot {
 
     makeGoodLeaderPicks(data){
         var currentQuestNum = data.currentQuestNum;
+        var players = data.players;
 
-        //TODO: select players
-
-
+        // console.log(`On Quest: ${currentfQuestNum}`);
+        // console.log(`Players: ${players}`);
+        //console.log(`number of players: ${ this.players.length}`);
+        var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
+        if(currentQuestNum === 1){
+            for (let i = 0; i < playersOnQuestNum; i++) {
+                console.log(`Chose: ${players[i].name}`);
+                this.players[i].onQuest = true;
+                this.socket.emit("addPlayerToQuest", players[i].name);
+                this.socket.emit('updatePlayers');
+            }
+        }else if (currentQuestNum === 2) {
+            for (let i = 0; i < playersOnQuestNum; i++) {
+                console.log(`Chose: ${players[i].name}`);
+                this.players[i].onQuest = true;
+                this.socket.emit("addPlayerToQuest", players[i].name);
+                this.socket.emit('updatePlayers');
+            }
+        }else {
+            var count = 0;
+            for (let i = 0; i < players.length; i++) {
+                if ( this.players[i].team === 'Good' && count < playersOnQuestNum) {
+                    count++;
+                    console.log(`Chose: ${players[i].name}`);
+                    this.players[i].onQuest = true;
+                    this.socket.emit("addPlayerToQuest", players[i].name);
+                    this.socket.emit('updatePlayers');
+                }
+            }
+        }
 
         this.leader = false;
         this.socket.emit('questTeamConfirmed');
@@ -330,17 +363,68 @@ export class GameBot {
 
     /******* bot intelligence functions (risk scores)*****/
 
-    logQuestHistory() {
-        console.log("------logging questHistory for gameBot------");
-        for(let questNum in this.questHistory) {
-            for(let voteTrack in questNum) {
-                console.log(`Quest #${questNum}, voteTrack ${voteTrack} had leader ${this.questHistory[questNum][voteTrack].leader}`);
+    initializePlayerRiskScores() {
+        console.log(`------initializing playerRiskScores for ${this.name}------`);
+        this.playerRiskScores = [];
+        for(let i = 0; i < this.players.length; i++) {
+            let known = false;
+            if(this.players[i].team !== 'hidden') {
+                known = true;
             }
+
+            // structure of playerRiskScore is player's name, boolean if we know who they are, and risk
+            let playerRiskScore = {
+                playerName: this.players[i].name,
+                knownIdentity: known,
+                risk: 0
+            };
+            this.playerRiskScores.push(playerRiskScore);
+            console.log(playerRiskScore);
         }
     }
 
     //called when quest history is updated
-    updatePlayerRiskScores() {
+    updatePlayerRiskScores(data) {
+        //this double for loop is just for testing/logging, not part of logic:
+        // console.log(`------logging questHistory for ${this.name}------`);
+        // for(let questNum in data) {
+        //     for(let voteTrack in data[questNum]) {
+        //         console.log(`Quest #${questNum}, voteTrack ${voteTrack} had leader ${this.questHistory[questNum][voteTrack].leader}`);
+        //     }
+        // }
+
+        //actual riskScore logic
+        if(this.questHistory[this.lastQuest] != undefined) {
+            let quest = this.questHistory[this.lastQuest][this.lastVoteTrack];
+            if (quest.success != null) { //only update player risk scores if quest actually happened
+                for (let i = 0; i < this.players.length; i++) {
+                    //check for quest leader
+                    if (quest.leader === this.players[i].name) {
+                        console.log(`Last Quest Leader was: ${this.players[i].name}`);
+                        if (quest.success == true) { //quest succeeded
+                            console.log(this.playerRiskScores[i]);
+                        }
+                        else { //quest failed
+                            this.playerRiskScores[i].risk++;
+                            console.log(this.playerRiskScores[i]);
+                        }
+                    }
+                    //check for player on quest
+                    if (quest.playersOnQuest.includes(this.players[i].name)) {
+                        console.log(`Last Quest Team included: ${this.players[i].name}`);
+                        //increment risk score by number of failed votes
+                        this.playerRiskScores[i].risk += quest.votes.fail;
+                        console.log(this.playerRiskScores[i]);
+                    }
+                }
+                //quest happened, increment lastQuest and reset lastvoteTrack
+                this.lastQuest++;
+                this.lastVoteTrack = 1;
+            } else {
+                //quest team was rejected, increment lastVoteTrack
+                this.lastVoteTrack++;
+            }
+        }
 
     }
 
