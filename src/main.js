@@ -30,7 +30,7 @@ const devURL = 'http://localhost:80';
 Vue.use(BootstrapVue);
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: awsURL,
+  connection: devURL,
   vuex: {
     store,
     actionPrefix: "SOCKET_",

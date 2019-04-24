@@ -8,7 +8,7 @@ import {
   Player
 } from '../game/player.mjs';
 import {
-  gameBot
+  GameBot
 } from '../game/gameBot.mjs';
 import {
   sanitizeTeamView,
@@ -86,7 +86,7 @@ io.on('connection', socket => {
   // Upon the Call, initaite an Instance of GameBot
   socket.on('createBot', function (roomCode) {
     console.log(`Server got call from Host to Create Bot for Room: ${roomCode}`);
-    let Bot = new gameBot();
+    let Bot = new GameBot();
     Bot.createBot(roomCode, port);
   });
 

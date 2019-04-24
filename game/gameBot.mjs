@@ -5,13 +5,7 @@ const firstNames = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey"
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "Wilson"];
 var nameStart = Math.floor(Math.random() * firstNames.length);
 
-let questHistory1;
-let questHistory2;
-let questHistory3;
-let questHistory4;
-let questHistory5;
-
-//Trust Factor Object
+/*//Trust Factor Object
 // {@property} name:
 // {@propery} value:
 // As the Player Accepts Votes or Succeeds Quests Value will increment
@@ -21,7 +15,7 @@ var playerCounters = {};
 // The Following Arrays are for the Adding and Not adding of Clients to Quest Teams
 var definitelyAdd = [];
 var possibleAdd = [];
-var doNotAdd = [];
+var doNotAdd = [];*/
 
 const PLAYERS_ON_QUEST = [
     //5 6 7 8 9 10 players
@@ -33,7 +27,7 @@ const PLAYERS_ON_QUEST = [
     [3, 4, 4, 5, 5]
 ];
 
-export class gameBot {
+export class GameBot {
     constructor() {
         this.socketID = null;
         this.socket = null;
@@ -54,13 +48,16 @@ export class gameBot {
     };
 
     //everything socket related goes here
+    //INSIDE THIS FUNCTION createbot(), REFERENCE TO THE BOT OBJECT IS ALWAYS USING bot.(variablename), ex bot.name
     createBot(roomCode, port) {
-        let bot = new gameBot();
+        let bot = new GameBot();
         bot.roomCode = roomCode;
-        bot.name = createBotName();
-        bot.socket = createSocketConnection(port);
-        bot.socketID = socket.id;
+        bot.name = GameBot.createBotName();
+        bot.socket = bot.createSocketConnection(port);
+        bot.socketID = bot.socket.id;
         //socket.emit("connection", socket);
+
+
 
         bot.socket.emit("joinRoom", {
             roomCode: bot.roomCode,
@@ -78,13 +75,13 @@ export class gameBot {
             //console.log("in Bot Class on updatePlayers: ");
             // console.log(players)
             // console.log(`my socket id is: ${socket.id}`)
-            this.players = players;
+            bot.players = players;
             for (let i in players) {
                 //console.log(`Players Name: ${players[i].name}`);
-                playerCounters[i] = {
-                    name: players[i].name,
-                    value: 0
-                };
+                // playerCounters[i] = {
+                //     name: players[i].name,
+                //     value: 0
+                // };
                 if (players[i].socketID === bot.socket.id) {
                     //console.log(`my identity is: ${players[i].name}`)
                     //console.log(`my character is ${players[i].team}`)
@@ -102,7 +99,7 @@ export class gameBot {
         // Accept or Reject the Vote for Quest Teams
         bot.socket.on("acceptOrRejectTeam", function (data) {
             if (data.bool === true) {
-                let botDecision = this.botQuestTeamVote(data.onQuest, data.players);
+                let botDecision = bot.botQuestTeamVote(data.onQuest);
                 bot.socket.emit("questTeamDecision", {
                     name: bot.name,
                     decision: botDecision
@@ -113,7 +110,8 @@ export class gameBot {
 
         bot.socket.on('updateHistoryModal', function (data) {
             bot.questHistory = data;
-            console.log(`Quest History is: ${bot.questHistory}`);
+            //bot.logQuestHistory();
+            //console.log(`Quest History is: ${bot.questHistory}`);
         });
 
         bot.socket.on('choosePlayersForQuest', function (data) {
@@ -148,12 +146,15 @@ export class gameBot {
             console.log(`toAssassinate: ${toAssassinate}`);
             console.log(`Players To Assassinate: ${playersToChoose[toAssassinate].name}`);
 
-            socket.emit('assassinatePlayer', bot.players[toAssassinate].name);
+            bot.socket.emit('assassinatePlayer', bot.players[toAssassinate].name);
         });
 
     }
 
     /**************************************FUNCTIONS**********************************/
+    //BELOW THIS LINE, REFERENCE TO ANY BOT OBJECT MEMBER VARIABLES/FUNCTIONS IS USING this KEYWORD, EX this.socket.emit()
+
+
     createSocketConnection(port) {
         /*
          Socket Connection Portion
@@ -181,15 +182,13 @@ export class gameBot {
 
         var name = firstName.concat(middleName);
 
-        console.log("Name is :");
-        console.log(name);
-
+        console.log(`Name is: ${name}`);
         return name;
     }
 
     //used so when bots iterate through player list it doesn't always start with same player
     getRandomStartingIndex() {
-        return Math.floor(Math.random() * this.length);
+        return Math.floor(Math.random() * this.players.length);
     }
 
     //bot is quest leader adding players
@@ -207,6 +206,8 @@ export class gameBot {
         }
     }
 
+    /***********generic bot decisions*********/
+
     botLeaderPicks(data) {
         if (this.team === 'Evil') {
             this.makeEvilLeaderPicks(data);
@@ -216,15 +217,15 @@ export class gameBot {
     }
 
     // Bot decides Whether it Will Accept or Reject the Quest Team
-    botQuestTeamVote(playersOnQuest, players) {
+    botQuestTeamVote(playersOnQuest) {
         var decision;
 
         if (this.team === 'Evil') {
             decision = this.makeEvilQuestTeamVote(playersOnQuest);
-            console.log(`My Name is ${bot.name} with ${bot.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
-        } else if (bot.team === 'Good') {
+            console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
+        } else if (this.team === 'Good') {
             decision = this.makeGoodQuestTeamVote(playersOnQuest);
-            console.log(`My Name is ${bot.name} with ${bot.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
+            console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
             decision = 'accept'; //TODO: get rid of this line once makeGoodTeamQuestVote works properly
         }
 
@@ -234,15 +235,15 @@ export class gameBot {
     // bot is on quest, deciding whether to succeed or fail
     botQuestVote() {
         var decision;
-        if (bot.team === 'Evil') {
+        if (this.team === 'Evil') {
             decision = this.makeEvilVoteDecision();
-        } else if (bot.team === 'Good') {
+        } else if (this.team === 'Good') {
             decision = 'succeed';
         }
         return decision;
     }
 
-    /*************************evil bot functions************************/
+    /*************************evil bot decisions************************/
 
     makeEvilLeaderPicks(data){
         var currentQuestNum = data.currentQuestNum;
@@ -254,11 +255,11 @@ export class gameBot {
         console.log(`Choosing ${playersOnQuestNum} players for quest #${currentQuestNum} with ${players.length} players.`);
         //choose only one evil player to go on quest
         for (let i = 0; i < players.length; i++) {
-            if(players[i].team === 'Evil' && players[i].name !== bot.name){
+            if(players[i].team === 'Evil' && players[i].name !== this.name){
                 console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
-                socket.emit("addPlayerToQuest", players[i].name);
-                socket.emit('updatePlayers');
+                this.socket.emit("addPlayerToQuest", players[i].name);
+                this.socket.emit('updatePlayers');
                 break;
             }
         }
@@ -268,12 +269,12 @@ export class gameBot {
                 count++;
                 console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
-                socket.emit("addPlayerToQuest", players[i].name);
-                socket.emit('updatePlayers');
+                this.socket.emit("addPlayerToQuest", players[i].name);
+                this.socket.emit('updatePlayers');
             }
         }
-        bot.leader = false;
-        socket.emit('questTeamConfirmed');
+        this.leader = false;
+        this.socket.emit('questTeamConfirmed');
     }
 
     makeEvilQuestTeamVote(playersOnQuest){
@@ -310,7 +311,7 @@ export class gameBot {
         //TODO: implement mostLikelyMerlin
     }
 
-    /*******good bot functions**********/
+    /*************************good bot decisions**********************/
 
     makeGoodLeaderPicks(data){
         var currentQuestNum = data.currentQuestNum;
@@ -320,7 +321,7 @@ export class gameBot {
 
 
         this.leader = false;
-        socket.emit('questTeamConfirmed');
+        this.socket.emit('questTeamConfirmed');
     }
 
     makeGoodQuestTeamVote(playersOnQuest) {
@@ -328,6 +329,15 @@ export class gameBot {
     }
 
     /******* bot intelligence functions (risk scores)*****/
+
+    logQuestHistory() {
+        console.log("------logging questHistory for gameBot------");
+        for(let questNum in this.questHistory) {
+            for(let voteTrack in questNum) {
+                console.log(`Quest #${questNum}, voteTrack ${voteTrack} had leader ${this.questHistory[questNum][voteTrack].leader}`);
+            }
+        }
+    }
 
     //called when quest history is updated
     updatePlayerRiskScores() {
