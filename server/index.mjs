@@ -158,6 +158,14 @@ io.on('connection', socket => {
 
     io.in(roomCode).emit('gameStarted');
     io.to(socket.id).emit('showHostSetupOptions', false);
+    //show what kind of characters are in the game
+    io.in(roomCode).emit('roleList', {
+      good: GameList[roomCode].roleList["good"],
+      evil: GameList[roomCode].roleList["evil"]
+    });
+
+    //empty the history modal in case player is still in same session from a previous game
+    io.in(roomCode).emit('updateHistoryModal', []);
 
     //quest leader chooses players to go on quest
     chooseQuestTeam(roomCode);
@@ -299,6 +307,10 @@ io.on('connection', socket => {
 
       currentQuest.assignResult(); //quest success or fail
 
+      //add quest to history log
+      GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+      io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
         quests: GameList[roomCode].quests,
@@ -403,6 +415,9 @@ function questTeamAcceptedStuff(roomCode) {
 }
 
 function questTeamRejectedStuff(roomCode, currentQuest) {
+  //add quest to history log
+  GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+  io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
   io.in(roomCode).emit('updateQuestMsg', 'Quest team was Rejected. New quest leader has been chosen.');
 
   currentQuest.voteTrack++;

@@ -22,6 +22,7 @@
             </b-col>
           </b-row>
           <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
+
           <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
           <div v-if="showStartButton">
             <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
@@ -50,6 +51,7 @@
 
       <div class="col-12 col-md-3">
         <div class="container chat">
+          <RoleList v-if="gameStarted"/>
           <div style="align: right">
             <Chat :your-name="yourName" :room-code="roomCode"></Chat>
           </div>
@@ -73,6 +75,7 @@ import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
 import GameStatus from "@/components/GameStatus.vue";
 import PlayerVoteStatus from "@/components/PlayerVoteStatus.vue";
+import RoleList from "@/components/RoleList.vue";
 
 export default {
   name: "Game",
@@ -87,7 +90,8 @@ export default {
     EndGameOverlay,
     QuestVotes,
     GameStatus,
-    PlayerVoteStatus
+    PlayerVoteStatus,
+    RoleList
   },
   data() {
     return {
@@ -126,6 +130,7 @@ export default {
   created() {
     this.yourName = this.$route.params.yourName;
     this.roomCode = this.$route.params.roomCode;
+    console.log(`in game.vue received roomCode: ${roomCode}`);
   },
   methods: {
     clickedSetupOptions(data) {
@@ -242,6 +247,12 @@ export default {
   min-height: 40vh;
   padding: 4px !important;
   clear: none;
+  box-shadow: 0 2px 5px #c2ab8e;
+}
+.game-section {
+  background: #eae7e3;
+  border-radius: 5px;
+  padding: 4px !important;
   box-shadow: 0 2px 5px #c2ab8e;
 }
 </style>

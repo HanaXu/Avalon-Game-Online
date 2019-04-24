@@ -15,38 +15,33 @@
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+    <Auth v-if="createRoomClicked" :name="name"></Auth>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import Auth from "@/components/Auth.vue";
+
 export default {
   name: "CreateForm",
+  components: {
+    Auth
+  },
   data() {
     return {
       name: null,
       roomCode: null,
       loading: false,
       error: false,
-      errorMsg: null
+      errorMsg: null,
+      createRoomClicked: false
     };
   },
   methods: {
     createRoom() {
       this.error = false;
-      this.loading = true;
-      axios
-        .get(
-          "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
-        )
-        .then(res => {
-          this.roomCode = res.data;
-
-          this.$socket.emit("createRoom", {
-            roomCode: this.roomCode,
-            name: this.name
-          });
-        });
+      // this.loading = true;
+      this.createRoomClicked = true;
     }
   },
   sockets: {
@@ -54,12 +49,6 @@ export default {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
-    },
-    passedValidation() {
-      this.$router.push({
-        name: "game",
-        params: { yourName: this.name, roomCode: this.roomCode }
-      });
     }
   }
 };

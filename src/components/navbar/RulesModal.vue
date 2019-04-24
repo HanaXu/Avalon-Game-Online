@@ -36,5 +36,10 @@
       will pick one good player as Merlin. If the named player is Merlin, then Evil players win.
       If the evil players do not name Merlin, then the Good players win.
     </p>
+
+
+    <!--include footer so OK and Cancel buttons dont show up-->
+    <div slot="modal-footer">
+    </div>
   </b-modal>
 </template>

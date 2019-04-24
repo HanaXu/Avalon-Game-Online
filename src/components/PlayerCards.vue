@@ -14,7 +14,14 @@
           <h5 class="card-title">
             {{ player.name }}
             <span style="color: #FFD700" v-if="player.leader">👑</span>
+
+            <span
+              v-b-modal="'memo-modal-' + player.name"
+              class="float-right"
+              style="cursor: pointer"
+            >📝</span>
           </h5>
+          <MemoModal :playerName="player.name"/>
 
           <h6 class="player card-subtitle text-muted">
             <b>Team:</b>
@@ -56,8 +63,13 @@
 </template>
 
 <script>
+import MemoModal from "@/components/MemoModal.vue";
+
 export default {
   name: "PlayerCards",
+  components: {
+    MemoModal
+  },
   props: [
     "players",
     "yourName",

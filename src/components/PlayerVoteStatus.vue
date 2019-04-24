@@ -4,42 +4,34 @@
       <b-col class="sectionTitle" cols="3" md="2">Player Votes</b-col>
       <b-col>
         <div v-if="showHasVoted && !showTeamVoteResults">
-          Voted:
-          <strong>{{ teamVotes }}</strong>
+          <strong>Voted:</strong>
+          {{ teamVotes }}
         </div>
 
         <!--all players have voted, show all results-->
-        <div v-if="showTeamVoteResults" class="mt-2">
-          <div v-if="teamVotes.reject.length >= teamVotes.accept.length">
-            <strong>Accepted:</strong>
+        <div v-if="showTeamVoteResults" class="row my-0 justify-content-center">
+          <div class="col-md-6 col-12 text-left">
+            <strong>Accepted Team:</strong>
             {{ teamVotes.accept }}
             <br>
-            <strong>Rejected:</strong>
+            <strong>Rejected Team:</strong>
             {{ teamVotes.reject }}
           </div>
-          <div v-if="teamVotes.reject.length < teamVotes.accept.length">
-            <!--Quest team was Approved. Waiting for quest team to go on quest.<br>-->
-
-            <strong>Accepted:</strong>
-            {{ teamVotes.accept }}
-            <br>
-            <strong>Rejected:</strong>
-            {{ teamVotes.reject }}
+          <!--some of team has voted on quest but not all-->
+          <div class="col-md-4 col-12 mt-2 text-left">
+            <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
+              <strong>Went on quest:</strong>
+              {{ questVotes }}
+            </div>
           </div>
-        </div>
-
-        <!--some of team has voted on quest but not all-->
-        <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
-          Voted:
-          <strong>{{ voted }}</strong>
         </div>
 
         <!--all of quest team has voted-->
         <div class="row justify-content-center" v-if="showQuestVoteResults">
-          <div class="col-2">
+          <div class="col-6 col-md-3">
             <strong>Quest Vote Results:</strong>
           </div>
-          <div class="col-2">
+          <div class="col-6 col-md-2 text-left">
             <strong>Succeed:</strong>
             {{ successCount }}
             <br>
@@ -62,6 +54,8 @@ export default {
       showHasVoted: false,
       showTeamVoteResults: false,
 
+      questVotes: null,
+
       //deciding outcome of quest
       showHasVotedOnQuest: false,
       showQuestVoteResults: false,
@@ -78,6 +72,10 @@ export default {
       this.teamVotes = votes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
+    },
+    votedOnQuest(votes) {
+      this.showHasVotedOnQuest = true;
+      this.questVotes = votes.join(", ");
     },
     revealTeamVotes(votes) {
       //this.$socket.emit('togglePlayerVoteStatus', true);

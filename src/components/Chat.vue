@@ -3,7 +3,7 @@
     <!-- <div class="row">
     <div class="col-md-8">-->
     <div class="card">
-      <div class="card-header">Chatroom</div>
+      <div class="card-header p-2">Chat</div>
       <div class="card-body">
         <dl id="messageList"></dl>
         <div class="messages" v-chat-scroll>
@@ -21,17 +21,11 @@
         </div>
       </div>
       <hr>
-      <div class="input-group">
-        <div style="width: inherit">
-          <textarea
-            type="text"
-            rows="1"
-            wrap="hard"
-            placeholder="Press Enter to send..."
-            v-on:keyup.enter="sendMessage"
-          ></textarea>
-        </div>
-      </div>
+      <textarea
+        type="text"
+        placeholder="Press Enter to send your message..."
+        v-on:keyup.enter="sendMessage"
+      ></textarea>
     </div>
     <!-- </div> -->
     <!-- <hr> -->
@@ -174,10 +168,60 @@ export default {
   color: #2c3e50;
   margin-top: 0;
 }
-div.card {
-  /* width: auto; */
-  /* height: auto; */
+.messages {
+  text-align: left;
+  width: inherit;
+  /* max-height: 35vh;
+  overflow-x: hidden;
+  overflow-y: auto; */
 }
+.message {
+  border: #000 solid 2px;
+  padding: 2px;
+  margin: 5px;
+  width: inherit;
+}
+div.row {
+  width: 30vw;
+}
+div.col-md-8 {
+  width: inherit;
+}
+div.card {
+  width: inherit;
+}
+div.card-header {
+  width: inherit;
+}
+div.card-body {
+  padding: 5px;
+}
+div.messages {
+  min-height: 50vh;
+  max-height: 50vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+div.message {
+  border: none;
+}
+textarea {
+  overflow: hidden;
+  min-width: 100px;
+  resize: none;
+  word-wrap: normal;
+  padding: 5px;
+  margin: 5px;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* div.card {
+  width: inherit;
+  /* height: auto; */
+/* }
 div.card-body {
   padding: 5px;
 }
@@ -189,18 +233,12 @@ textarea {
   margin: 1px;
   display: inline-block;
 }
-.messages {
-  text-align: left;
-  width: inherit;
-  max-height: 35vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
+
 .message {
   padding: 2px;
   margin: 5px;
   width: inherit;
-}
+} */
 /* 
 
 div.row {
@@ -215,13 +253,25 @@ div.card-header {
   width: inherit;
   position: relative;
 }
-
-
+div.card-body {
+  padding: 5px;
+}
+div.messages {
+  min-height: 50vh;
+  max-height: 50vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 div.message {
   border: none;
 }
-div.input-group {
-  width: inherit;
+textarea {
+  overflow: hidden;
+  min-width: 100px;
+  resize: none;
+  word-wrap: normal;
+  padding: 5px;
+  margin: 5px;
 }
 
 * {
