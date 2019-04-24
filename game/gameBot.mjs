@@ -28,6 +28,11 @@ const PLAYERS_ON_QUEST = [
     [3, 4, 4, 5, 5]
 ];
 
+
+// the risk score above which, Good players will always reject teams with player and not put player on quest tams
+//right now, the value 10 is based on nothing
+const RISK_THRESHOLD = 10;
+
 export class GameBot {
     constructor() {
         this.socketID = null;
@@ -41,8 +46,8 @@ export class GameBot {
         this.onQuest = false;
         this.questAction = 'undecided';
         this.action = 'undecided';
-        this.lastQuest = 1;
-        this.lastVoteTrack = 1; // lastQuest and lastVoteTrack keep track of most recent quest history entry
+        this.nextQuest = 1;
+        this.nextVoteTrack = 1; // nextQuest and nextVoteTrack keep track of most recent quest history entry
 
         //this.gameObject = null; //a current copy of the game object
         this.players = []; //a list of all player objects (sanitized)
@@ -108,7 +113,7 @@ export class GameBot {
                     name: bot.name,
                     decision: botDecision
                 });
-                console.log(`acceptOrRejectTeam: ${bot.name} Sent ${botDecision}`);
+                console.log(`-----acceptOrRejectTeam: ${bot.name} Sent ${botDecision}-----`);
             }
         });
 
@@ -121,7 +126,7 @@ export class GameBot {
         bot.socket.on('choosePlayersForQuest', function (data) {
             //console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             bot.leader = true;
-            console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
+            console.log(`-----Leader Bot: ${bot.leader}, ${bot.name}-----`);
             if (bot.leader === true && data.bool === true) {
                 bot.botLeaderPicks(data);
             }
@@ -181,7 +186,7 @@ export class GameBot {
          */
         var firstName = firstNames[(nameStart++) % (firstNames.length)];
         var lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        var middleName = " The Bot ";
+        var middleName = " The Bot";
 
         var name = firstName.concat(middleName);
 
@@ -341,7 +346,30 @@ export class GameBot {
     }
 
     makeGoodQuestTeamVote(playersOnQuest) {
-        return 'accept';
+        var response = 'accept';
+
+        //always accept team if voteTrack is at 5
+        if(this.nextVoteTrack == 5) {
+            return response;
+        }
+
+        //loop over risk scores to determine each player's risk
+        for(let i = 0; i < this.playerRiskScores.length; i++) {
+            if(playersOnQuest.includes(this.playerRiskScores[i].playerName)) {
+                console.log(`Quest Team member ${this.playerRiskScores[i].playerName} has risk of ${this.playerRiskScores[i].risk}`);
+                //check if you know for certain that they're evil
+                if(this.playerRiskScores[i].team === "Evil") {
+                    return 'reject';
+                }
+                //check for unknown player's risk score
+                else if(this.playerRiskScores[i].team === "hidden") {
+                    if(this.playerRiskScores[i].risk > RISK_THRESHOLD) {
+                        return 'reject';
+                    }
+                }
+            }
+        }
+        return response;
     }
 
     /******* bot intelligence functions (risk scores)*****/
@@ -361,7 +389,6 @@ export class GameBot {
                     risk = -100;
                 }
             }
-
             // structure of playerRiskScore is player's name, boolean if we know who they are, and risk
             let playerRiskScore = {
                 playerName: this.players[i].name,
@@ -376,13 +403,13 @@ export class GameBot {
     //called when quest history is updated
     updatePlayerRiskScores() {
         console.log(`------updating player risk score for ${this.name}------`);
-
-        if(this.questHistory[this.lastQuest] != undefined) {
+        if(this.questHistory[this.nextQuest] != undefined) {
             //the latest quest history object:
-            let quest = this.questHistory[this.lastQuest][this.lastVoteTrack];
+            let quest = this.questHistory[this.nextQuest][this.nextVoteTrack];
 
             if (quest.success != null) { //only update player risk scores if quest actually happened
                 for (let i = 0; i < this.players.length; i++) {
+
                     //check for quest leader
                     if (quest.leader === this.players[i].name && this.players[i].team === 'hidden') {
                         //console.log(`Last Quest Leader was: ${this.players[i].name}`);
@@ -395,6 +422,7 @@ export class GameBot {
                             console.log(this.playerRiskScores[i]);
                         }
                     }
+
                     //check for player on quest
                     if (quest.playersOnQuest.includes(this.players[i].name) && this.players[i].team === 'hidden') {
                         //console.log(`Last Quest Team included: ${this.players[i].name}`);
@@ -403,20 +431,46 @@ export class GameBot {
                             this.playerRiskScores[i].risk--;
                         } else {
                             //increment risk score by number of failed votes
+                            //this.playerRiskScores[i].risk += quest.votes.fail;
+                            this.playerRiskScores[i].risk += 10;
+                        }
+                        //console.log(this.playerRiskScores[i]);
+                    }
+
+                    //check for vote Accept
+                    if(quest.questTeamDecisions.accept.includes(this.players[i].name)) {
+                        //increment risk score if quest failed, decrement if succeeded
+                        if(quest.success) {
+                            //decrement risk score because quest succeeded
+                            this.playerRiskScores[i].risk--;
+                        } else {
+                            //increment risk score by number of failed votes
                             this.playerRiskScores[i].risk += quest.votes.fail;
                         }
-                        console.log(this.playerRiskScores[i]);
+                        //console.log(this.playerRiskScores[i]);
                     }
+                    //check for vote Reject
+                    else if(quest.questTeamDecisions.reject.includes(this.players[i].name)) {
+                        //decrement risk score if quest failed, increment if succeeded
+                        if(quest.success) {
+                            //decrement risk score because quest succeeded
+                            this.playerRiskScores[i].risk++;
+                        } else {
+                            //increment risk score by number of failed votes
+                            this.playerRiskScores[i].risk--;
+                        }
+                    }
+                    console.log(this.playerRiskScores[i]);
+
                 }
-                //quest happened, increment lastQuest and reset lastvoteTrack
-                this.lastQuest++;
-                this.lastVoteTrack = 1;
+                //quest happened, increment nextQuest and reset lastvoteTrack
+                this.nextQuest++;
+                this.nextVoteTrack = 1;
             } else {
-                //quest team was rejected, increment lastVoteTrack
-                this.lastVoteTrack++;
+                //quest team was rejected, increment nextVoteTrack
+                this.nextVoteTrack++;
             }
         }
-
     }
 
 
@@ -436,6 +490,15 @@ export class GameBot {
         }
         console.log(`The player with the lowest risk score is ${this.playerRiskScores[minIndex].playerName} with a risk of ${this.playerRiskScores[minIndex].risk}`);
         return minIndex;
+    }
+
+    //returns the numerical risk score of given player
+    getRiskScore(name) {
+        for(let i = 0; i < this.playerRiskScores.length; i++) {
+            if(this.playerRiskScores[i].playerName === name) {
+                return this.playerRiskScores[i].risk;
+            }
+        }
     }
 
 };
