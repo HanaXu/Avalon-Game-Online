@@ -340,7 +340,7 @@ io.on('connection', socket => {
 
   socket.on('assassinatePlayer', function (name) {
     console.log(`Attempting to assassinate ${name}.`);
-    let isMerlin = GameList[roomCode].checkIfMerlin(name)
+    let isMerlin = GameList[roomCode].checkIfMerlin(name);
     let msg;
 
     if (isMerlin) {

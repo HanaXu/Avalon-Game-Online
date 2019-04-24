@@ -227,11 +227,11 @@ export class GameBot {
 
         if (this.team === 'Evil') {
             decision = this.makeEvilQuestTeamVote(playersOnQuest);
-            console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
+            //console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
         } else if (this.team === 'Good') {
             decision = this.makeGoodQuestTeamVote(playersOnQuest);
             console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
-            decision = 'accept'; //TODO: get rid of this line once makeGoodTeamQuestVote works properly
+            //decision = 'accept'; //TODO: get rid of this line once makeGoodTeamQuestVote works properly
         }
 
         return decision;
@@ -368,15 +368,22 @@ export class GameBot {
         this.playerRiskScores = [];
         for(let i = 0; i < this.players.length; i++) {
             let known = false;
+            let risk = 0;
             if(this.players[i].team !== 'hidden') {
                 known = true;
+                if(this.players[i].team === "Evil") {
+                    risk = 100;
+                }
+                else if(this.players[i].team === "Good") {
+                    risk = -100;
+                }
             }
 
             // structure of playerRiskScore is player's name, boolean if we know who they are, and risk
             let playerRiskScore = {
                 playerName: this.players[i].name,
-                knownIdentity: known,
-                risk: 0
+                team: this.players[i].team,
+                risk: risk
             };
             this.playerRiskScores.push(playerRiskScore);
             console.log(playerRiskScore);
@@ -386,22 +393,21 @@ export class GameBot {
     //called when quest history is updated
     updatePlayerRiskScores(data) {
         //this double for loop is just for testing/logging, not part of logic:
-        // console.log(`------logging questHistory for ${this.name}------`);
-        // for(let questNum in data) {
-        //     for(let voteTrack in data[questNum]) {
-        //         console.log(`Quest #${questNum}, voteTrack ${voteTrack} had leader ${this.questHistory[questNum][voteTrack].leader}`);
-        //     }
-        // }
+        console.log(`------updating player risk score for ${this.name}------`);
+
 
         //actual riskScore logic
         if(this.questHistory[this.lastQuest] != undefined) {
+            //the latest quest history object:
             let quest = this.questHistory[this.lastQuest][this.lastVoteTrack];
+
             if (quest.success != null) { //only update player risk scores if quest actually happened
                 for (let i = 0; i < this.players.length; i++) {
                     //check for quest leader
-                    if (quest.leader === this.players[i].name) {
-                        console.log(`Last Quest Leader was: ${this.players[i].name}`);
-                        if (quest.success == true) { //quest succeeded
+                    if (quest.leader === this.players[i].name && this.players[i].team === 'hidden') {
+                        //console.log(`Last Quest Leader was: ${this.players[i].name}`);
+                        if (quest.success) { //quest succeeded
+                            this.playerRiskScores[i].risk--;
                             console.log(this.playerRiskScores[i]);
                         }
                         else { //quest failed
@@ -410,10 +416,15 @@ export class GameBot {
                         }
                     }
                     //check for player on quest
-                    if (quest.playersOnQuest.includes(this.players[i].name)) {
-                        console.log(`Last Quest Team included: ${this.players[i].name}`);
-                        //increment risk score by number of failed votes
-                        this.playerRiskScores[i].risk += quest.votes.fail;
+                    if (quest.playersOnQuest.includes(this.players[i].name) && this.players[i].team === 'hidden') {
+                        //console.log(`Last Quest Team included: ${this.players[i].name}`);
+                        if(quest.success) {
+                            //decrement risk score because quest succeeded
+                            this.playerRiskScores[i].risk--;
+                        } else {
+                            //increment risk score by number of failed votes
+                            this.playerRiskScores[i].risk += quest.votes.fail;
+                        }
                         console.log(this.playerRiskScores[i]);
                     }
                 }
