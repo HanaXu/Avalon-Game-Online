@@ -59,8 +59,6 @@ export class GameBot {
         bot.socketID = bot.socket.id;
         //socket.emit("connection", socket);
 
-
-
         bot.socket.emit("joinRoom", {
             roomCode: bot.roomCode,
             name: bot.name
@@ -144,7 +142,7 @@ export class GameBot {
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
         bot.socket.on('beginAssassination', function (msg) {
-            console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
+            //console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
             var toAssassinate = Math.floor(Math.random() * bot.players.length);
             while(bot.players[toAssassinate].team === 'Evil'){
                 toAssassinate = Math.floor(Math.random() * bot.players.length);
@@ -230,8 +228,7 @@ export class GameBot {
             //console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
         } else if (this.team === 'Good') {
             decision = this.makeGoodQuestTeamVote(playersOnQuest);
-            console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
-            //decision = 'accept'; //TODO: get rid of this line once makeGoodTeamQuestVote works properly
+            //console.log(`My Name is ${this.name} with ${this.team} And I see ${util.inspect(playersOnQuest,true, null, true)}`);
         }
 
         return decision;
@@ -326,31 +323,17 @@ export class GameBot {
         // console.log(`Players: ${players}`);
         //console.log(`number of players: ${ this.players.length}`);
         var playersOnQuestNum = PLAYERS_ON_QUEST[players.length - 5][currentQuestNum - 1];
-        if(currentQuestNum === 1){
-            for (let i = 0; i < playersOnQuestNum; i++) {
-                console.log(`Chose: ${players[i].name}`);
-                this.players[i].onQuest = true;
-                this.socket.emit("addPlayerToQuest", players[i].name);
-                this.socket.emit('updatePlayers');
-            }
-        }else if (currentQuestNum === 2) {
-            for (let i = 0; i < playersOnQuestNum; i++) {
-                console.log(`Chose: ${players[i].name}`);
-                this.players[i].onQuest = true;
-                this.socket.emit("addPlayerToQuest", players[i].name);
-                this.socket.emit('updatePlayers');
-            }
-        }else {
-            var count = 0;
-            for (let i = 0; i < players.length; i++) {
-                if ( this.players[i].team === 'Good' && count < playersOnQuestNum) {
-                    count++;
-                    console.log(`Chose: ${players[i].name}`);
-                    this.players[i].onQuest = true;
-                    this.socket.emit("addPlayerToQuest", players[i].name);
-                    this.socket.emit('updatePlayers');
-                }
-            }
+
+        //find player with lowest risk score
+
+
+        let sentOnQuest = [];
+        for (let i = 0; i < playersOnQuestNum; i++) {
+            let playerIndex = this.getLowestRiskScore(sentOnQuest);
+            this.players[playerIndex].onQuest = true;
+            sentOnQuest.push(this.players[playerIndex].name);
+            this.socket.emit("addPlayerToQuest", players[playerIndex].name);
+            this.socket.emit("updatePlayers");
         }
 
         this.leader = false;
@@ -391,12 +374,9 @@ export class GameBot {
     }
 
     //called when quest history is updated
-    updatePlayerRiskScores(data) {
-        //this double for loop is just for testing/logging, not part of logic:
+    updatePlayerRiskScores() {
         console.log(`------updating player risk score for ${this.name}------`);
 
-
-        //actual riskScore logic
         if(this.questHistory[this.lastQuest] != undefined) {
             //the latest quest history object:
             let quest = this.questHistory[this.lastQuest][this.lastVoteTrack];
@@ -440,51 +420,22 @@ export class GameBot {
     }
 
 
-    awardPlayer(name) {
-        for (let i in playerCounters) {
-            if (playerCounters[i].name === name) {
-                playerCounters[i].value++;
+    //returns the index of the player with the lowest risk score, excluding any players passed in as params
+    getLowestRiskScore(excluding) {
+        let min = 100;
+        let minIndex = 0;
+
+        for(let i = 0; i < this.playerRiskScores.length; i++) {
+            //only compare a player to min if they weren't excluded (ie already selected for a quest)
+            if(!excluding.includes(this.playerRiskScores[i].playerName)) {
+                if (this.playerRiskScores[i].risk < min) {
+                    min = this.playerRiskScores[i].risk;
+                    minIndex = i;
+                }
             }
         }
-    }
-
-    punishPlayer(name) {
-        for (let i in playerCounters) {
-            if (playerCounters[i].name === name) {
-                playerCounters[i].value--;
-            }
-        }
-    }
-
-    // Iterate PlayerCounter Tallies Function
-    tallyPlayerCounter(i, j) {
-        for (let i in playerCounters) {
-            // Check to see if Below 0. Means they Rejected First Quest and/Vote
-            if (playerCounters[i].value < i)
-                doNotAdd.push(playerCounters[i].name);
-            else if (playerCounters[i].value >= i && playerCounters[i].value < j)
-                possibleAdd.push(playerCounters[i].name);
-            else if (playerCounters[i].value >= j)
-                definitelyAdd.push(playerCounters[i].name);
-        }
-    }
-
-    maxValueIndex(array) {
-        if (array.length === 0) {
-            return -1;
-        }
-
-        var max = array[0];
-        var maxIndex = 0;
-
-        for (var i = 1; i < array.length; i++) {
-            if (array[i] > max) {
-                maxIndex = i;
-                max = array[i];
-            }
-        }
-
-        return maxIndex;
+        console.log(`The player with the lowest risk score is ${this.playerRiskScores[minIndex].playerName} with a risk of ${this.playerRiskScores[minIndex].risk}`);
+        return minIndex;
     }
 
 };
