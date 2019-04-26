@@ -104,6 +104,11 @@ io.on('connection', socket => {
       //show game screen instead of lobby
       if (GameList[roomCode].gameIsStarted) {
         socket.emit('gameStarted');
+        //show what kind of characters are in the game
+        io.in(roomCode).emit('roleList', {
+          good: GameList[roomCode].roleList["good"],
+          evil: GameList[roomCode].roleList["evil"]
+        });
       }
       //update player cards
       emitSanitizedPlayers(GameList[roomCode].players);
