@@ -52,7 +52,8 @@ export class Game {
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,
-      acceptOrRejectTeam: false
+      acceptOrRejectTeam: false,
+      succeedOrFailQuest: false
     };
     this.roleList = null;
     this.players = [];
@@ -265,6 +266,18 @@ export class Game {
       } else {
         this.players[i].team = 'Evil';
       }
+    }
+  }
+
+  resetPlayersVotedOnTeam() {
+    for (let i in this.players) {
+      this.players[i].votedOnTeam = false;
+    }
+  }
+
+  resetPlayersOnQuestVote() {
+    for (let i in this.players) {
+      this.players[i].votedOnQuest = false;
     }
   }
 

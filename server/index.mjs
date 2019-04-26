@@ -96,6 +96,8 @@ io.on('connection', socket => {
       console.log(`reconnecting ${name} to room ${roomCode}`)
       existingPlayer.socketID = socket.id;
       existingPlayer.disconnected = false;
+
+      socket.emit('roomCode', roomCode);
       socket.emit('passedValidation');
       socket.join(roomCode); //subscribe the socket to the roomcode
 
@@ -132,9 +134,11 @@ io.on('connection', socket => {
       //reveal votes
       if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
         console.log('reveal votes');
-        GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
         //client does not seem to be getting revealTeamVotes
         io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
+      }
+      if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
+        questTeamAcceptedStuff(roomCode);
       }
       return;
     }
@@ -312,6 +316,7 @@ io.on('connection', socket => {
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
       GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
+      GameList[roomCode].resetPlayersVotedOnTeam();
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
 
       //quest Rejected
@@ -332,6 +337,7 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     console.log(`received quest vote from: ${name}`);
 
+    GameList[roomCode].getPlayer({ name: name }).votedOnQuest = true;
     let votes = currentQuest.votes;
 
     if (decision == 'succeed') {
@@ -347,6 +353,8 @@ io.on('connection', socket => {
 
     //check if number of received votes is max needed
     if ((votes.succeed.length + votes.fail.length) == currentQuest.playersRequired) {
+      GameList[roomCode].gameState['succeedOrFailQuest'] = false;
+
       //get rid of team vote stuff from DecideQuestTeam component
       io.in(roomCode).emit('hideTeamVotes');
       console.log('All quest votes received.');
@@ -365,6 +373,9 @@ io.on('connection', socket => {
         quests: GameList[roomCode].quests,
         currentQuestNum: currentQuest.questNum
       });
+
+      //reset voted on quest
+      GameList[roomCode].resetPlayersOnQuestVote();
 
       //check if quest results mean game is over (3 failed or 3 succeeded quests)
       checkForGameOver(roomCode);
@@ -451,12 +462,14 @@ function questTeamAcceptedStuff(roomCode) {
   GameList[roomCode].gameState['questMsg'] = 'Quest team was Approved. Waiting for quest team to go on quest.';
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 
+  GameList[roomCode].gameState['succeedOrFailQuest'] = true;
+
   let players = GameList[roomCode].players;
   console.log("Quest team is: ");
 
   //send goOnQuest to each player on quest
   for (let i = 0; i < players.length; i++) {
-    if (players[i].onQuest == true) {
+    if (players[i].onQuest == true && !players[i].votedOnQuest) {
       //check if player is good so they can't fail quest
       let onGoodTeam = (players[i].team) == "Good";
 
