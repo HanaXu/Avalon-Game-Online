@@ -14,8 +14,8 @@ export class gameBot {
         this.team = 'undecided';
         this.character = 'undecided';
         this.leader = false;
-        this.questAction = 'undecided';
-        this.action = 'undecided';
+        //this.questAction = 'undecided';
+        //this.action = 'undecided';
     };
 
     static createBot(roomCode) {

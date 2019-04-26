@@ -152,7 +152,7 @@ io.on('connection', socket => {
         io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', true);
         socket.emit('confirmQuestTeam', false);
       }
-      if (currentQuest.leader.name === name && currentQuest.playersNeededLeft <= 0) {
+      if (currentQuest.leader.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.questTeamConfirmed) {
         //show confirm button to quest leader
         socket.emit('confirmQuestTeam', true);
       }
