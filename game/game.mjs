@@ -50,7 +50,10 @@ export class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.gameIsStarted = false;
-    this.gameStage = 0;
+    this.gameState = {
+      questMsg: null,
+      acceptOrRejectTeam: false
+    };
     this.roleList = null;
     this.players = [];
     this.quests = null;
@@ -186,8 +189,6 @@ export class Game {
   // randomly assign a room leader in the player list.
   assignFirstLeader() {
     console.log('assignFirstLeader()');
-    this.gameStage = 2;
-
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
