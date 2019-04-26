@@ -23,5 +23,6 @@ export class Player {
     this.onQuest = false;
     this.questAction = 'undecided';
     this.action = 'undecided';
+    this.disconnected = false;
   }
 };

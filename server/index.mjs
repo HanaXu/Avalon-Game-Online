@@ -86,10 +86,40 @@ io.on('connection', socket => {
     let name = data.name;
     roomCode = data.roomCode;
 
+    let existingPlayer = GameList[roomCode].getPlayer({ name: name });
+
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
       console.log(`error joining room. room does not exist: ${roomCode}`);
       socket.emit('errorMsg', `Error: Room code '${roomCode}' does not exist.`);
+      return;
+    }
+    else if (GameList[roomCode].hasPlayerWithName(name) && existingPlayer.disconnected === true) {
+      //reconnect
+      console.log('reconnecting')
+      existingPlayer.socketID = socket.id;
+      existingPlayer.disconnected = false;
+      socket.emit('passedValidation');
+      socket.join(roomCode); //subscribe the socket to the roomcode
+
+      if (GameList[roomCode].gameIsStarted) {
+        socket.emit('gameStarted');
+      }
+
+      //update player cards
+      emitSanitizedPlayers(GameList[roomCode].players);
+
+      let currentQuest = GameList[roomCode].getCurrentQuest();
+      //update quest cards
+      io.in(roomCode).emit('updateQuests', {
+        quests: GameList[roomCode].quests,
+        currentQuestNum: currentQuest.questNum
+      });
+      //update vote track
+      io.in(roomCode).emit('updateVoteTrack', {
+        voteTrack: currentQuest.voteTrack
+      });
+
       return;
     }
     else if (GameList[roomCode].gameIsStarted) {
@@ -341,15 +371,18 @@ io.on('connection', socket => {
   //TODO: update disconnect to turn a player into a bot if the game has been started already
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && GameList[roomCode] != undefined) {
-      GameList[roomCode].deletePlayer(socket.id);
+
+      // GameList[roomCode].deletePlayer(socket.id);
       let players = GameList[roomCode].players;
 
       //disconnection after game start
       if (GameList[roomCode].gameIsStarted) {
+        GameList[roomCode].getPlayer({ socketID: socket.id }).disconnected = true;
         emitSanitizedPlayers(players);
       }
       //disconnection before game start
       else {
+        GameList[roomCode].deletePlayer(socket.id);
         //emit all the game players to client, client then updates the UI
         io.in(roomCode).emit('updatePlayers', {
           players: players

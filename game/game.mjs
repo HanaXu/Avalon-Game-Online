@@ -147,6 +147,14 @@ export class Game {
     }
   }
 
+  getPlayer({ socketID, name }) {
+    for (let i in this.players) {
+      if (this.players[i].socketID === socketID || this.players[i].name === name) {
+        return this.players[i];
+      }
+    }
+  }
+
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
