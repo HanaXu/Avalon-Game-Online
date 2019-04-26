@@ -23,8 +23,6 @@ export class Player {
     this.onQuest = false;
     this.votedOnTeam = false;
     this.votedOnQuest = false;
-    this.questAction = 'undecided';
-    this.action = 'undecided';
     this.disconnected = false;
   }
 };

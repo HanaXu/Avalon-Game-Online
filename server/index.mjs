@@ -137,8 +137,19 @@ io.on('connection', socket => {
         //client does not seem to be getting revealTeamVotes
         io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
       }
+
       if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
         questTeamAcceptedStuff(roomCode);
+      }
+      //show add/remove quest buttons if leader
+      if (currentQuest.leader.name === name && !currentQuest.questTeamConfirmed) {
+        currentQuest.leader.socketID = socket.id;
+        io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', true);
+        socket.emit('confirmQuestTeam', false);
+      }
+      if (currentQuest.leader.name === name && currentQuest.playersNeededLeft <= 0) {
+        //show confirm button to quest leader
+        socket.emit('confirmQuestTeam', true);
       }
       return;
     }
@@ -272,6 +283,7 @@ io.on('connection', socket => {
 
     //hide add/remove players from quest leader
     io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', false);
+    currentQuest.questTeamConfirmed = true;
 
     //update quest message
     GameList[roomCode].gameState['questMsg'] = 'Waiting for all players to Accept or Reject team.';
