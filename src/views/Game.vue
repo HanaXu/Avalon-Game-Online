@@ -130,7 +130,6 @@ export default {
   created() {
     this.yourName = this.$route.params.yourName;
     this.roomCode = this.$route.params.roomCode;
-    console.log(`in game.vue received roomCode: ${roomCode}`);
   },
   methods: {
     clickedSetupOptions(data) {

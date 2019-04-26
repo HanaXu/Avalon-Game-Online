@@ -1,22 +1,15 @@
 <template>
   <div id="app">
-    <!-- <div class="row">
-    <div class="col-md-8">-->
     <div class="card">
       <div class="card-header p-2">Chat</div>
       <div class="card-body">
         <dl id="messageList"></dl>
         <div class="messages" v-chat-scroll>
           <div class="message" v-bind:key="message.id" v-for="message in messages">
-            <template v-if="message.type==='join'">
-              <font color="red">{{message.text}}</font>
-            </template>
-            <template v-else>
-              <strong>{{message.username + " "}}</strong>
-              <font size="2" color="grey">({{message.time}})</font>
-              <br>
-              {{message.text}}
-            </template>
+            <strong>{{message.username + " "}}</strong>
+            <font size="2" color="grey">({{message.time}})</font>
+            <br>
+            {{message.text}}
           </div>
         </div>
       </div>
@@ -27,15 +20,12 @@
         v-on:keyup.enter="sendMessage"
       ></textarea>
     </div>
-    <!-- </div> -->
-    <!-- <hr> -->
-    <!-- </div> -->
   </div>
 </template>
 
 <script>
 import firebase from "firebase";
-import { bus } from "@/main.js";
+// import { bus } from "@/main.js";
 import { setInterval } from "timers";
 import Vue from "vue";
 import VueChatScroll from "vue-chat-scroll";
@@ -65,14 +55,12 @@ export default {
           text: e.target.value,
           time: timeStamp
         };
-        // console.log("Your message is: ", message);
 
         // Push message to firebase reference
         firebase
           .database()
           .ref("chat/room-messages/" + this.roomCode)
           .push(message);
-        // console.log("Message sent");
 
         e.target.value = "";
       } else {
@@ -80,23 +68,23 @@ export default {
         console.log(e);
       }
     },
-    joinMessage() {
-      let joined = this.yourName + " joined the room.";
-      let timeStamp = this.timeStamp();
+    // joinMessage() {
+    //   let joined = this.yourName + " joined the room.";
+    //   let timeStamp = this.timeStamp();
 
-      const message = {
-        username: "",
-        text: joined,
-        time: timeStamp,
-        type: "join"
-      };
+    //   const message = {
+    //     username: "",
+    //     text: joined,
+    //     time: timeStamp,
+    //     type: "join"
+    //   };
 
-      firebase
-        .database()
-        .ref("chat/room-messages/" + this.roomCode)
-        .push(message);
-      // console.log("Join message sent");
-    },
+    //   firebase
+    //     .database()
+    //     .ref("chat/room-messages/" + this.roomCode)
+    //     .push(message);
+    //   // console.log("Join message sent");
+    // },
     timeStamp() {
       // Create Date object with current time
       let now = new Date();
@@ -128,30 +116,25 @@ export default {
     let username = this.yourName;
     let roomCode = this.roomCode;
 
-    bus.$on("joinChat", this.joinMessage());
+    // bus.$on("joinChat", this.joinMessage());
 
     const itemsRef = firebase.database().ref("chat/room-messages/" + roomCode);
 
     itemsRef.on("value", snapshot => {
       var messages = [];
       let data = snapshot.val() || null;
-      if (!data) {
-        console.log("Warning: No chat rooms exist!");
-      }
-      // console.log("Chat Name: ", username);
-      // console.log("Chat Room Code: ", roomCode);
 
       // Display all messages in the current room
-      Object.keys(data).forEach(key => {
-        messages.push({
-          id: key,
-          username: data[key].username,
-          text: data[key].text,
-          time: data[key].time
+      if (data) {
+        Object.keys(data).forEach(key => {
+          messages.push({
+            id: key,
+            username: data[key].username,
+            text: data[key].text,
+            time: data[key].time
+          });
         });
-
-        // console.log("data: ", data, " | key: ", this.id, " | username: ", this.username, " | text: ", this.text);
-      });
+      }
 
       vm.messages = messages;
     });
@@ -217,65 +200,4 @@ textarea {
   margin: 0;
   padding: 0;
 }
-
-/* div.card {
-  width: inherit;
-  /* height: auto; */
-/* }
-div.card-body {
-  padding: 5px;
-}
-textarea {
-  width: 93%;
-  resize: none;
-  word-wrap: normal;
-  padding: 5px;
-  margin: 1px;
-  display: inline-block;
-}
-
-.message {
-  padding: 2px;
-  margin: 5px;
-  width: inherit;
-} */
-/* 
-
-div.row {
-  width: 30vw;
-  padding: 0;
-}
-div.col-md-8 {
-  width: inherit;
-}
-
-div.card-header {
-  width: inherit;
-  position: relative;
-}
-div.card-body {
-  padding: 5px;
-}
-div.messages {
-  min-height: 50vh;
-  max-height: 50vh;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-div.message {
-  border: none;
-}
-textarea {
-  overflow: hidden;
-  min-width: 100px;
-  resize: none;
-  word-wrap: normal;
-  padding: 5px;
-  margin: 5px;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-} */
 </style>

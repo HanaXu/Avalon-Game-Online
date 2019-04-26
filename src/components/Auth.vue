@@ -7,7 +7,7 @@ import firebase from "firebase";
 import firebaseui from "firebaseui";
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 import axios from "axios";
-import { bus } from "@/main.js";
+// import { bus } from "@/main.js";
 
 export default {
   name: "Auth",
@@ -57,7 +57,7 @@ export default {
         name: "game",
         params: { yourName: this.name, roomCode: this.roomCode }
       });
-      bus.$emit("joinChat");
+      // bus.$emit("joinChat");
     }
   }
 };
