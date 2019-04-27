@@ -53,8 +53,8 @@ export default {
     confirmQuestTeam(bool) {
       this.showConfirmTeamButton = bool;
     },
-    acceptOrRejectTeam(bool) {
-      this.showAcceptRejectButtons = bool;
+    acceptOrRejectTeam(data) {
+      this.showAcceptRejectButtons = data.bool;
     }
   }
 };

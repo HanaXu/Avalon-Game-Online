@@ -136,6 +136,7 @@ export default {
       //this is called after Okay is clicked from Setup Options window
       this.optionalCharacters = data;
       console.log(`optional characters: ${this.optionalCharacters}`);
+      console.log(`Data is: ${data}`);
     },
     startGame() {
       console.log(`starting game in room: ${this.roomCode}`);
@@ -149,8 +150,8 @@ export default {
   },
   sockets: {
     //update overall game
-    updatePlayers(data) {
-      this.players = data["players"];
+    updatePlayers(players) {
+      this.players = players;
     },
     updateQuests(data) {
       this.quests = data["quests"];
@@ -168,9 +169,9 @@ export default {
       this.showSetupOptions = false;
     },
     //choose player to go on quest
-    choosePlayersForQuest(bool) {
-      this.showAddPlayerButton = bool;
-      this.showRemovePlayerButton = bool;
+    choosePlayersForQuest(data) {
+      this.showAddPlayerButton = data.bool;
+      this.showRemovePlayerButton = data.bool;
     },
     //
     togglePlayerVoteStatus(bool) {

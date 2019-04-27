@@ -6,7 +6,7 @@
         <label class="label" for="bots">AI players:</label>
       </b-col>
       <b-col sm="3">
-        <b-form-input id="bots" type="number" min="0" max="10" value="0"></b-form-input>
+        <b-form-input id="botCount" v-model="botCount" type="number" min="0" max="10" value="0"></b-form-input>
       </b-col>
     </b-row>
     -->
@@ -52,6 +52,7 @@ export default {
     return {
       error: false,
       errorMsg: "",
+      botCount: 0,
       selected: [], // Must be an array reference!
       options: [
         {
@@ -89,9 +90,12 @@ export default {
     createBot() {
       console.log(`CreateBot function Called with room: ${this.roomCode}`);
       this.$socket.emit("createBot", this.roomCode);
+      this.botCount++;
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
+      console.log(`Selected Items: ${this.selected}`);
+      console.log(`Bots: ${this.botCount}`);
       this.$emit("clicked", this.selected);
     }
   }
