@@ -92,17 +92,16 @@ io.on('connection', socket => {
     let name = data.name;
     roomCode = data.roomCode;
 
-    let existingPlayer = GameList[roomCode].getPlayer({ name: name });
-
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
       console.log(`error joining room. room does not exist: ${roomCode}`);
       socket.emit('errorMsg', `Error: Room code '${roomCode}' does not exist.`);
       return;
     }
-    else if (GameList[roomCode].hasPlayerWithName(name) && existingPlayer.disconnected === true) {
+    else if (GameList[roomCode].hasPlayerWithName(name) && GameList[roomCode].getPlayer({ name: name }).disconnected === true) {
       //reconnect
       console.log(`reconnecting ${name} to room ${roomCode}`)
+      let existingPlayer = GameList[roomCode].getPlayer({ name: name });
       existingPlayer.socketID = socket.id;
       existingPlayer.disconnected = false;
 
