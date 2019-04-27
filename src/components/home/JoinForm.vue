@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import Chat from "@/components/Chat.vue";
+import Chat from "@/components/pregame/Chat.vue";
 
 export default {
   name: "JoinForm",

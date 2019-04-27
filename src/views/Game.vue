@@ -64,12 +64,12 @@
 </template>
 
 <script>
-import LobbyList from "@/components/LobbyList.vue";
+import LobbyList from "@/components/pregame/LobbyList.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
-import Chat from "@/components/Chat.vue";
+import Chat from "@/components/pregame/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
-import SetupOptions from "@/components/SetupOptions.vue";
+import SetupOptions from "@/components/pregame/SetupOptions.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
 import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";

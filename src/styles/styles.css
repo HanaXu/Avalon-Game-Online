@@ -20,6 +20,7 @@
 body {
     background-color: #d6cdc2;
     background: url("castle-tan.jpg") right 30% no-repeat !important;
+    background-attachment: fixed !important;
 }
 
 h1.title,
