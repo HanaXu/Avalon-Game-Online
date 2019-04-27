@@ -79,6 +79,12 @@ io.on('connection', socket => {
     io.in(roomCode).emit('updatePlayers', game.players);
   });
 
+  socket.on('challengeMode', function (mode) {
+    console.log(`received challenge mode: ${mode}.`)
+    GameList[roomCode].challengeMode = mode;
+    io.in(roomCode).emit('updateChallengeMode', mode);
+  });
+
   // Listen for the Client-Host's Call to Create a Bot
   // Upon the Call, initaite an Instance of GameBot
   socket.on('createBot', function (roomCode) {
@@ -196,10 +202,10 @@ io.on('connection', socket => {
     socket.join(roomCode); //subscribe the socket to the roomcode
 
     GameList[roomCode].players.push(player);
-    // console.log(GameList);
 
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
+    io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
 
     //check for game ready
     if (GameList[roomCode].players.length >= 5) {
@@ -406,7 +412,9 @@ io.on('connection', socket => {
 
       //add quest to history log
       GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
-      io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+      if (GameList[roomCode].challengeMode === "OFF") {
+        io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+      }
 
       //update Quest Cards to reveal success/fail
       io.in(roomCode).emit('updateQuests', {
@@ -529,7 +537,9 @@ function questTeamAcceptedStuff(roomCode) {
 function questTeamRejectedStuff(roomCode, currentQuest) {
   //add quest to history log
   GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
-  io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+  if (GameList[roomCode].challengeMode === "OFF") {
+    io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+  }
   GameList[roomCode].gameState['questMsg'] = 'Quest team was Rejected. New quest leader has been chosen.';
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 

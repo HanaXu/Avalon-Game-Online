@@ -9,6 +9,31 @@
             Welcome, {{ yourName }}, to game room
             <span id="roomCode">{{ roomCode }}</span>.
           </h4>
+
+          <b-row>
+            <b-col md="3" offset="2">
+              <p>Room Capacity: {{players.length}}/10</p>
+            </b-col>
+            <b-col md="5">
+              <b-form-checkbox
+                v-if="showSetupOptions"
+                id="checkbox-1"
+                v-model="challengeMode"
+                name="checkbox-1"
+                value="ON"
+                unchecked-value="OFF"
+                @change="emitChallengeMode($event)"
+              >
+                Challenge Mode (No History Saved):
+                <strong>{{ challengeMode }}</strong>
+              </b-form-checkbox>
+              <div v-if="!showSetupOptions">
+                Challenge Mode (No History Saved):
+                <strong>{{ challengeMode }}</strong>
+              </div>
+            </b-col>
+          </b-row>
+
           <b-row>
             <b-col md="7" offset="1">
               <LobbyList :players="players"/>
@@ -100,6 +125,7 @@ export default {
       players: [],
       quests: [],
       optionalCharacters: [],
+      challengeMode: "OFF",
 
       currentVoteTrack: null,
       questMsg: null,
@@ -146,9 +172,15 @@ export default {
         optionalCharacters: this.optionalCharacters
       });
       this.showStartButton = false;
+    },
+    emitChallengeMode(mode) {
+      this.$socket.emit("challengeMode", mode);
     }
   },
   sockets: {
+    updateChallengeMode(str) {
+      this.challengeMode = str;
+    },
     //update overall game
     updatePlayers(players) {
       this.players = players;

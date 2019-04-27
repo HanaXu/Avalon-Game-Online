@@ -49,6 +49,7 @@ const BaseCharacters = {
 export class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
+    this.challengeMode = "OFF";
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,

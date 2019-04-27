@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="setupModal" class="setup" @ok="handleOk">
+  <b-modal id="setupModal" class="setup" title="Setup Options" @ok="handleOk">
     <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
     <!--    <b-row style="padding-bottom: 10px">
       <b-col sm="5">
