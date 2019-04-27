@@ -17,7 +17,15 @@ export default new Router({
     {
       path: '/game',
       name: 'game',
-      component: Game
+      component: Game,
+      beforeEnter(to, from, next) {
+        //no roomcode or name
+        if (Object.keys(to.params).length === 0) {
+          next('/'); //go back to home
+        } else {
+          next(); //continue to game
+        }
+      }
     }
   ]
 })
