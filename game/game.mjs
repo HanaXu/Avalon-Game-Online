@@ -232,7 +232,7 @@ export class Game {
     let shuffledIdentities;
 
     if (optionalCharacters.length > 0) {
-      let newTeamObj = Game.BaseCharacters[this.players.length];
+      let newTeamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
 
       for (let i = 0; i < optionalCharacters.length; i++) {
         if (optionalCharacters[i] === 'Percival') {
@@ -251,19 +251,17 @@ export class Game {
       }
       this.roleList = populateRoleList(newTeamObj);
       shuffledIdentities = shuffle(objectToArray(newTeamObj));
-      console.log(shuffledIdentities)
     } else {
       let teamObj = Game.BaseCharacters[this.players.length];
       this.roleList = populateRoleList(teamObj);
       shuffledIdentities = shuffle(objectToArray(teamObj));
-      console.log(shuffledIdentities)
     }
+    console.log(shuffledIdentities)
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
       if (Game.GoodTeam.has(shuffledIdentities[i])) {
         this.players[i].team = 'Good'; // assign team based on character
-
       } else {
         this.players[i].team = 'Evil';
       }

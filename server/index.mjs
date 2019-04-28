@@ -220,7 +220,9 @@ io.on('connection', socket => {
   socket.on('startGame', function (data) {
     roomCode = data.roomCode;
     //an array containing names of selected optional characters
-    var optionalCharacters = data.optionalCharacters;
+    let optionalCharacters = data.optionalCharacters;
+    console.log("START GAME: OPTIONAL CHARACTERS: ")
+    console.log(optionalCharacters)
     let errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
     if (errorMsg.length > 0) {
       socket.emit('errorMsg', errorMsg);
