@@ -12,6 +12,7 @@ const PLAYERS_ON_QUEST = [
   [3, 4, 4, 5, 5, 5]
 ];
 
+
 export class Quest {
   /**
    * Quest objects have:
@@ -40,6 +41,7 @@ export class Quest {
       'accept': [],
       'reject': []
     };
+    this.questTeamConfirmed = false;
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.votes = {

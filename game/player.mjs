@@ -21,7 +21,8 @@ export class Player {
     this.character = 'undecided';
     this.leader = false;
     this.onQuest = false;
-    this.questAction = 'undecided';
-    this.action = 'undecided';
+    this.votedOnTeam = false;
+    this.votedOnQuest = false;
+    this.disconnected = false;
   }
 };

@@ -49,8 +49,13 @@ const BaseCharacters = {
 export class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
+    this.challengeMode = "OFF";
     this.gameIsStarted = false;
-    this.gameStage = 0;
+    this.gameState = {
+      questMsg: null,
+      acceptOrRejectTeam: false,
+      succeedOrFailQuest: false
+    };
     this.roleList = null;
     this.players = [];
     this.quests = null;
@@ -147,6 +152,14 @@ export class Game {
     }
   }
 
+  getPlayer({ socketID, name }) {
+    for (let i in this.players) {
+      if (this.players[i].socketID === socketID || this.players[i].name === name) {
+        return this.players[i];
+      }
+    }
+  }
+
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
@@ -178,8 +191,6 @@ export class Game {
   // randomly assign a room leader in the player list.
   assignFirstLeader() {
     console.log('assignFirstLeader()');
-    this.gameStage = 2;
-
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
@@ -221,7 +232,7 @@ export class Game {
     let shuffledIdentities;
 
     if (optionalCharacters.length > 0) {
-      let newTeamObj = Game.BaseCharacters[this.players.length];
+      let newTeamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
 
       for (let i = 0; i < optionalCharacters.length; i++) {
         if (optionalCharacters[i] === 'Percival') {
@@ -240,22 +251,32 @@ export class Game {
       }
       this.roleList = populateRoleList(newTeamObj);
       shuffledIdentities = shuffle(objectToArray(newTeamObj));
-      console.log(shuffledIdentities)
     } else {
       let teamObj = Game.BaseCharacters[this.players.length];
       this.roleList = populateRoleList(teamObj);
       shuffledIdentities = shuffle(objectToArray(teamObj));
-      console.log(shuffledIdentities)
     }
+    console.log(shuffledIdentities)
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
       if (Game.GoodTeam.has(shuffledIdentities[i])) {
         this.players[i].team = 'Good'; // assign team based on character
-
       } else {
         this.players[i].team = 'Evil';
       }
+    }
+  }
+
+  resetPlayersVotedOnTeam() {
+    for (let i in this.players) {
+      this.players[i].votedOnTeam = false;
+    }
+  }
+
+  resetPlayersOnQuestVote() {
+    for (let i in this.players) {
+      this.players[i].votedOnQuest = false;
     }
   }
 
@@ -270,7 +291,7 @@ export class Game {
   }
 
   saveQuestHistory(questNum, currentQuest) {
-    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
+    //console.log(this.questHistory[questNum][currentQuest.voteTrack]);
     if (this.questHistory[questNum][currentQuest.voteTrack] === undefined) {
       console.log('exceeded 1 votetrack, creating new history obj');
       this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
@@ -288,8 +309,8 @@ export class Game {
     this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
     this.questHistory[questNum][currentQuest.voteTrack].votes.fail = currentQuest.votes.fail.length;
     this.questHistory[questNum][currentQuest.voteTrack].success = currentQuest.success;
-    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `)
-    console.log(this.questHistory[questNum][currentQuest.voteTrack])
+    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `);
+    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
   }
 
   //move to next quest out of 5

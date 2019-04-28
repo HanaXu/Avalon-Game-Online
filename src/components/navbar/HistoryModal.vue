@@ -1,5 +1,6 @@
 <template>
   <b-modal id="modal-history" size="lg" scrollable title="Game History">
+    <h4 v-if="challengeMode === 'ON'">Challenge mode is on. No history is saved.</h4>
     <div
       class
       v-for="(questItem, questIndex) in questHistory"
@@ -99,34 +100,22 @@ export default {
   name: "HistoryModal",
   data() {
     return {
-      questHistory: null
+      questHistory: null,
+      challengeMode: "OFF"
     };
-  },
-  methods: {
-    getLastVoteTrackIndex(questObj) {
-      /*
-      //questItem[voteTrackIndex].success
-
-      for(let n = 1; n < 6; n++) {
-        if(questObj.hasOwnProperty(n)) {
-           console.log(`questObj ${questObj} has vote track index ${n}`);
-        }
-        else {
-          break;
-        }
-      }
-      n--;
-      return n; */
-    }
   },
   sockets: {
     updateHistoryModal(historyObj) {
       console.log(`updating History Modal`);
       this.questHistory = historyObj;
+    },
+    updateChallengeMode(str) {
+      this.challengeMode = str;
     }
   }
 };
 </script>
+
 <style scoped>
 #modal-history {
   overflow-x: hidden;

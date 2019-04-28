@@ -9,7 +9,7 @@
       >
         <div
           class="player card-body"
-          :class="{markEvil: player.team === 'Evil', markGood: player.team === 'Good'}"
+          :class="{markEvil: player.team === 'Evil', markGood: player.team === 'Good', disconnected: player.disconnected === true}"
         >
           <h5 class="card-title">
             {{ player.name }}
@@ -31,6 +31,7 @@
             {{ player.character }}
             <br>
             <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
+            <p v-if="player.disconnected === true" class="font-italic">Disconnected</p>
           </h6>
 
           <div v-if="showAddPlayerButton || showRemovePlayerButton">
@@ -98,4 +99,7 @@ export default {
 
 <style>
 @import "../styles/styles.css";
+.disconnected {
+  background: #f8d7da !important;
+}
 </style>

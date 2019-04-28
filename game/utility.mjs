@@ -15,7 +15,7 @@ export function populateRoleList(teamObj) {
         "evil": {}
     };
     for (let character in teamObj) {
-        if (teamObj[character] === 0) continue;
+        if (teamObj[character] <= 0) continue;
         if (GoodTeam.has(character)) {
             roleList["good"][character] = teamObj[character];
         } else {

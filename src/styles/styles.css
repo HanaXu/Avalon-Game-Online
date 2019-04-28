@@ -18,9 +18,16 @@
     color: #494949;
 }
 body {
-    /* padding: 20px 0px;*/
-    background: #d6cdc2 !important;
+    background-color: #d6cdc2;
+    background: url("castle-tan.jpg") right 30% no-repeat !important;
+    background-attachment: fixed !important;
 }
+
+h1.title,
+h2.subtitle {
+    text-shadow: 1px 1px 2px #8A7D6E;
+}
+
 *,
 *:before,
 *:after {
@@ -279,7 +286,7 @@ body {
         border-radius: 5px;
         min-height: 30px;
         padding: 5px;
-        margin: 4px !important;
+        margin: 10px !important;
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
         font-size: 14px;
@@ -307,7 +314,7 @@ body {
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
     .section .sectionTitle {
-        font-size: 14px;
+        font-size: 15px;
     }
     .row {
         margin: 5px !important;

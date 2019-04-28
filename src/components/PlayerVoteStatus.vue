@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="showPlayerVoteStatus">
     <b-row class="section">
       <b-col class="sectionTitle" cols="3" md="2">Player Votes</b-col>
       <b-col>
@@ -52,6 +52,7 @@ export default {
       //deciding team
       teamVotes: null,
       showHasVoted: false,
+      showPlayerVoteStatus: false,
       showTeamVoteResults: false,
 
       questVotes: null,
@@ -76,6 +77,9 @@ export default {
     votedOnQuest(votes) {
       this.showHasVotedOnQuest = true;
       this.questVotes = votes.join(", ");
+    },
+    togglePlayerVoteStatus(bool) {
+      this.showPlayerVoteStatus = bool;
     },
     revealTeamVotes(votes) {
       //this.$socket.emit('togglePlayerVoteStatus', true);

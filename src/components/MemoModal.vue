@@ -6,8 +6,8 @@
         ref="focusThis"
         id="textarea"
         placeholder="Enter something..."
-        rows="5"
-        max-rows="5"
+        rows="6"
+        max-rows="6"
       ></b-form-textarea>
     </div>
     <!--include footer so OK and Cancel buttons dont show up-->
