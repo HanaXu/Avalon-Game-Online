@@ -5,7 +5,7 @@
 <script>
 import firebase from "firebase";
 import firebaseui from "firebaseui";
-import "../../node_modules/firebaseui/dist/firebaseui.css";
+import "../../../node_modules/firebaseui/dist/firebaseui.css";
 import axios from "axios";
 // import { bus } from "@/main.js";
 

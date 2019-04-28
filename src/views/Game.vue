@@ -103,12 +103,10 @@ export default {
       this.showAddPlayerButton = data.bool;
       this.showRemovePlayerButton = data.bool;
     },
-
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-
     //assassination time
     beginAssassination(msg) {
       //update player cards to show Assassinate button
@@ -121,7 +119,6 @@ export default {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-
     //game is over
     gameOver(msg) {
       this.gameOver = true;
@@ -134,31 +131,6 @@ export default {
 <style>
 .main-board {
   background: #eae7e3;
-  border-radius: 3px;
-  padding: 1em;
-  min-height: 70vh;
-  clear: none;
-}
-
-.container.game {
-  max-width: 60vw;
-  min-height: 70vh;
-  display: inline-block;
-  padding: 1em;
-  margin: 0;
-  clear: none;
-}
-
-.container.chat {
-  min-height: 70vh;
-  padding: 0;
-  margin: 0;
-  display: inline-block;
-  clear: none;
-}
-
-.setupButton {
-  float: right;
   border-radius: 5px;
   margin: 10px;
   min-height: 40vh;

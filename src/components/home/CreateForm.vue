@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Auth from "@/components/Auth.vue";
+import Auth from "@/components/home/Auth.vue";
 
 export default {
   name: "CreateForm",
