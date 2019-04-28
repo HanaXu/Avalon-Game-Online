@@ -8,6 +8,7 @@
         class="mb-2 mr-sm-2 mb-sm-0"
         placeholder="name"
         v-model="name"
+        @keydown.enter.native.prevent="createRoom"
       ></b-input>
       <b-button @click="createRoom" id="create-room-btn" class="avalon-btn-lg">Create Room</b-button>
     </b-form>
@@ -48,6 +49,7 @@ export default {
             name: this.name
           });
         });
+      console.log("creating room");
     }
   },
   sockets: {

@@ -6,8 +6,9 @@
         <b-input
           autofocus
           id="inline-form-input-roomCode"
-          placeholder="roomCode"
+          placeholder="room code"
           v-model="roomCode"
+          @keydown.enter.native.prevent="joinRoom"
         ></b-input>
       </b-input-group>
 
@@ -17,6 +18,7 @@
         class="mb-2 mr-sm-2 mb-sm-0"
         placeholder="name"
         v-model="name"
+        @keydown.enter.native.prevent="joinRoom"
       ></b-input>
 
       <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
