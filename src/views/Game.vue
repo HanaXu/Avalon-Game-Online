@@ -17,13 +17,12 @@
             :showRemovePlayerButton="showRemovePlayerButton"
             :assassination="assassination"
           />
-          <QuestCards v-if="gameStarted" :quests="quests"/>
-          <VoteTrack v-if="gameStarted" :currentVoteTrack="currentVoteTrack"/>
+          <QuestCards v-if="gameStarted"/>
+          <VoteTrack v-if="gameStarted"/>
         </div>
 
         <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
-        <PlayerVoteStatus v-if="showPlayerVoteStatus"/>
-
+        <PlayerVoteStatus/>
         <QuestVotes :yourName="yourName"/>
         <DecideQuestTeam :yourName="yourName"/>
       </div>
@@ -37,8 +36,6 @@
         </div>
       </div>
     </div>
-
-    <b-navbar class="navbar-default footer" fixed="bottom">Show Chat</b-navbar>
   </div>
 </template>
 
@@ -75,21 +72,13 @@ export default {
       yourName: null,
       roomCode: null,
       players: [],
-      quests: [],
 
-      currentVoteTrack: null,
       questMsg: null,
       showQuestMsg: false,
 
       gameStarted: false,
       showAddPlayerButton: false,
       showRemovePlayerButton: false,
-
-      onQuest: false,
-      canVoteOnQuest: false,
-      onGoodTeam: null,
-
-      showPlayerVoteStatus: false,
 
       waitingForAssassin: false,
       assassination: false,
@@ -103,15 +92,8 @@ export default {
     this.roomCode = this.$route.params.roomCode;
   },
   sockets: {
-    //update overall game
     updatePlayers(players) {
       this.players = players;
-    },
-    updateQuests(data) {
-      this.quests = data["quests"];
-    },
-    updateVoteTrack(data) {
-      this.currentVoteTrack = data["voteTrack"];
     },
     gameStarted() {
       this.gameStarted = true;
@@ -122,10 +104,6 @@ export default {
       this.showRemovePlayerButton = data.bool;
     },
 
-    togglePlayerVoteStatus(bool) {
-      console.log("togglePlayerVoteStatus");
-      this.showPlayerVoteStatus = bool;
-    },
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;

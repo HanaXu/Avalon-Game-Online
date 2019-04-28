@@ -17,7 +17,16 @@
 <script>
 export default {
   name: "VoteTrack",
-  props: ["currentVoteTrack"]
+  data() {
+    return {
+      currentVoteTrack: null
+    };
+  },
+  sockets: {
+    updateVoteTrack(data) {
+      this.currentVoteTrack = data["voteTrack"];
+    }
+  }
 };
 </script>
 

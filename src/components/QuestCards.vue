@@ -30,11 +30,16 @@
 <script>
 export default {
   name: "QuestCards",
-  props: ["quests"],
   data() {
     return {
+      quests: [],
       width: window.innerWidth
     };
+  },
+  sockets: {
+    updateQuests(data) {
+      this.quests = data["quests"];
+    }
   }
 };
 </script>
