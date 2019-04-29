@@ -137,8 +137,12 @@ io.on('connection', socket => {
       io.in(roomCode).emit('updateVoteTrack', {
         voteTrack: currentQuest.voteTrack
       });
-
+      //update quest message
       io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+      //update history modal
+      if (GameList[roomCode].challengeMode === "OFF") {
+        io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+      }
 
       if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
         //show that player has made some kind of vote
