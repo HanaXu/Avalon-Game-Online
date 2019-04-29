@@ -407,7 +407,7 @@ export class GameBot {
             //the latest quest history object:
             let quest = this.questHistory[this.nextQuest][this.nextVoteTrack];
 
-            if (quest.success != null) { //only update player risk scores if quest actually happened
+            if (quest != undefined && quest.success != null) { //only update player risk scores if quest actually happened
                 for (let i = 0; i < this.players.length; i++) {
 
                     //check for quest leader
