@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
-      <b-navbar-brand>{{ navbarBrandMsg }}</b-navbar-brand>
+      <b-navbar-brand><img src="../public/img/icons/favicon-32x32.png" width="32" height="32" /> {{ navbarBrandMsg }}</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
