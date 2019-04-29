@@ -26,7 +26,7 @@ var config = {
 
 firebase.initializeApp(config);
 
-const awsURL = "http://ec2-18-191-152-81.us-east-2.compute.amazonaws.com/";
+const awsURL = "http://ec2-18-220-78-233.us-east-2.compute.amazonaws.com/";
 const devURL = "http://localhost:80";
 
 Vue.use(BootstrapVue);
