@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.5ef61f863be1a0fc464e10c6d8bf4de1.js"
+  "/precache-manifest.d5c2bd4de8365fc2ea9d077b2b1e513a.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "avalonline"});
