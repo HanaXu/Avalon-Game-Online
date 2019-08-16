@@ -1,6 +1,4 @@
 import socketIO from 'socket.io-client';
-import util from 'util';
-import { QuestHistory } from './history.mjs';
 
 const firstNames = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 const lastNames = ["Smith", "Johnson", "Williams", "Jones", "Brown", "Miller", "Wilson"];
@@ -146,7 +144,7 @@ export class GameBot {
 
         // Bot Attempt at Assassination
         // Again Currently just making a choice at Random
-        bot.socket.on('beginAssassination', function (msg) {
+        bot.socket.on('beginAssassination', function () {
             //console.log(`My Name is: ${bot.name} And I got this from Server: ${msg}`);
             var toAssassinate = Math.floor(Math.random() * bot.players.length);
             while (bot.players[toAssassinate].team === 'Evil') {
@@ -184,7 +182,6 @@ export class GameBot {
          * Will be removed later
          */
         var firstName = firstNames[(nameStart++) % (firstNames.length)];
-        var lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
         var middleName = " The Bot";
 
         var name = firstName.concat(middleName);
@@ -287,7 +284,6 @@ export class GameBot {
     makeEvilQuestTeamVote(playersOnQuest) {
         let playersOnQuestNum = playersOnQuest.length - 1;
         let evilAmount = 0;
-        let goodAmount = 0;
 
         for (let i = 0; i < playersOnQuestNum; i++) {
             for (let x = 0; x < this.players.length; x++) {
@@ -378,10 +374,8 @@ export class GameBot {
         console.log(`------initializing playerRiskScores for ${this.name}------`);
         this.playerRiskScores = [];
         for (let i = 0; i < this.players.length; i++) {
-            let known = false;
             let risk = 0;
             if (this.players[i].team !== 'hidden') {
-                known = true;
                 if (this.players[i].team === "Evil") {
                     risk = 100;
                 }

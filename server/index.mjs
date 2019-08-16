@@ -3,17 +3,17 @@ import socketIO from 'socket.io';
 import path from 'path';
 import {
   Game
-} from '../game/game.mjs';
+} from './game/game.mjs';
 import {
   Player
-} from '../game/player.mjs';
+} from './game/player.mjs';
 import {
   GameBot
-} from '../game/gameBot.mjs';
+} from './game/gameBot.mjs';
 import {
   sanitizeTeamView,
   validateOptionalCharacters
-} from '../game/utility.mjs';
+} from './game/utility.mjs';
 import util from "util";
 
 const app = express();
