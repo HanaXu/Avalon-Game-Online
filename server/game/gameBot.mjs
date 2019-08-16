@@ -111,7 +111,7 @@ export class GameBot {
                     name: bot.name,
                     decision: botDecision
                 });
-                console.log(`-----acceptOrRejectTeam: ${bot.name} Sent ${botDecision}-----`);
+                // console.log(`-----acceptOrRejectTeam: ${bot.name} Sent ${botDecision}-----`);
             }
         });
 
@@ -168,7 +168,7 @@ export class GameBot {
         var socket = clientIO.connect(`http://localhost:${port}`);
 
         socket.on('connect', () => {
-            console.log(`In gameBot Class: Socket ID: ${socket.id}`);
+            // console.log(`In gameBot Class: Socket ID: ${socket.id}`);
         });
 
         return socket;
@@ -352,7 +352,7 @@ export class GameBot {
         //loop over risk scores to determine each player's risk
         for (let i = 0; i < this.playerRiskScores.length; i++) {
             if (playersOnQuest.includes(this.playerRiskScores[i].playerName)) {
-                console.log(`Quest Team member ${this.playerRiskScores[i].playerName} has risk of ${this.playerRiskScores[i].risk}`);
+                // console.log(`Quest Team member ${this.playerRiskScores[i].playerName} has risk of ${this.playerRiskScores[i].risk}`);
                 //check if you know for certain that they're evil
                 if (this.playerRiskScores[i].team === "Evil") {
                     return 'reject';
@@ -371,7 +371,7 @@ export class GameBot {
     /******* bot intelligence functions (risk scores)*****/
 
     initializePlayerRiskScores() {
-        console.log(`------initializing playerRiskScores for ${this.name}------`);
+        // console.log(`------initializing playerRiskScores for ${this.name}------`);
         this.playerRiskScores = [];
         for (let i = 0; i < this.players.length; i++) {
             let risk = 0;
@@ -390,13 +390,13 @@ export class GameBot {
                 risk: risk
             };
             this.playerRiskScores.push(playerRiskScore);
-            console.log(playerRiskScore);
+            // console.log(playerRiskScore);
         }
     }
 
     //called when quest history is updated
     updatePlayerRiskScores() {
-        console.log(`------updating player risk score for ${this.name}------`);
+        // console.log(`------updating player risk score for ${this.name}------`);
         if (this.questHistory[this.nextQuest] != undefined) {
             //the latest quest history object:
             let quest = this.questHistory[this.nextQuest][this.nextVoteTrack];
@@ -409,11 +409,11 @@ export class GameBot {
                         //console.log(`Last Quest Leader was: ${this.players[i].name}`);
                         if (quest.success) { //quest succeeded
                             this.playerRiskScores[i].risk--;
-                            console.log(this.playerRiskScores[i]);
+                            // console.log(this.playerRiskScores[i]);
                         }
                         else { //quest failed
                             this.playerRiskScores[i].risk++;
-                            console.log(this.playerRiskScores[i]);
+                            // console.log(this.playerRiskScores[i]);
                         }
                     }
 
@@ -454,7 +454,7 @@ export class GameBot {
                             this.playerRiskScores[i].risk--;
                         }
                     }
-                    console.log(this.playerRiskScores[i]);
+                    // console.log(this.playerRiskScores[i]);
 
                 }
                 //quest happened, increment nextQuest and reset lastvoteTrack

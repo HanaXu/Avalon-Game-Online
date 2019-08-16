@@ -117,22 +117,14 @@ export class Game {
   }
 
   hasPlayerWithName(name) {
-    for (let i in this.players) {
-      if (this.players[i].name === name) {
-        return true;
-      }
-    }
+    return this.players.some(player => player.name === name);
   }
 
   addPlayerToQuest(questNum, name) {
     for (let i in this.players) {
       if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0) {
         this.players[i].onQuest = true;
-        this.quests[questNum].playersOnQuest.add(name);
-        this.quests[questNum].playersNeededLeft--;
-
-        console.log(`${name} is now on the quest`);
-        console.log(`players needed left: ${this.quests[questNum].playersNeededLeft}`);
+        this.quests[questNum].addPlayer(name);
         break;
       }
     }
@@ -142,22 +134,16 @@ export class Game {
     for (let i in this.players) {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
-        this.quests[questNum].playersOnQuest.delete(name);
-        this.quests[questNum].playersNeededLeft++;
-
-        console.log(`${name} is no longer on the quest`);
-        console.log(`players needed left: ${this.quests[questNum].playersNeededLeft}`);
+        this.quests[questNum].removePlayer(name);
         break;
       }
     }
   }
 
   getPlayer({ socketID, name }) {
-    for (let i in this.players) {
-      if (this.players[i].socketID === socketID || this.players[i].name === name) {
-        return this.players[i];
-      }
-    }
+    return this.players.find(player => 
+      player.socketID === socketID || player.name === name
+    );
   }
 
   deletePlayer(socketID) {
@@ -171,21 +157,11 @@ export class Game {
   }
 
   getHostSocketID() {
-    for (let i in this.players) {
-      if (this.players[i].role === 'Host') {
-        console.log('Host socket found');
-        return this.players[i].socketID;
-      }
-    }
+    return (this.players.find(player => player.role === 'Host')).socketID;
   }
 
   getAssassinSocketID() {
-    for (let i in this.players) {
-      if (this.players[i].character === 'Assassin') {
-        console.log('Assassin socket found');
-        return this.players[i].socketID;
-      }
-    }
+    return (this.players.find(player => player.character === 'Assassin')).socketID;
   }
 
   // randomly assign a room leader in the player list.
@@ -196,9 +172,7 @@ export class Game {
       if (this.players[i] != null) {
         this.players[i].leader = true;
         this.leaderIndex = i;
-        this.quests[1].leader.name = this.players[i].name;
-        this.quests[1].leader.socketID = this.players[i].socketID;
-        this.quests[1].currentQuest = true;
+        this.quests[1].assignLeader({name: this.players[i].name, socketID: this.players[i].socketID});
         break;
       }
     }
@@ -222,9 +196,10 @@ export class Game {
     }
     //assign new leader to correct Player
     this.players[this.leaderIndex].leader = true;
-    this.quests[questNum].leader.name = this.players[this.leaderIndex].name;
-    this.quests[questNum].leader.socketID = this.players[this.leaderIndex].socketID;
-    this.quests[questNum].currentQuest = true;
+    this.quests[questNum].assignLeader({
+      name: this.players[this.leaderIndex].name,
+      socketID: this.players[this.leaderIndex].socketID
+    });
   }
 
   assignIdentities(optionalCharacters) {
@@ -285,9 +260,7 @@ export class Game {
     for (let i in this.players) {
       this.players[i].onQuest = false;
     }
-
-    let currentQuest = this.quests[questNum];
-    currentQuest.resetQuest();
+    this.quests[questNum].resetQuest();
   }
 
   saveQuestHistory(questNum, currentQuest) {
@@ -331,7 +304,6 @@ export class Game {
   //called after each quest is completed
   //tally all quests successes/fails
   tallyQuests() {
-    console.log('tally quests');
     let successCount = 0;
     let failCount = 0;
 
@@ -352,12 +324,7 @@ export class Game {
 
   //check if player is Merlin
   checkIfMerlin(name) {
-    for (let i = 0; i < this.players.length; i++) {
-      if (this.players[i].name == name && this.players[i].character == "Merlin") {
-        return true;
-      }
-    }
-    return false;
+    return this.getPlayer({name: name}).character === 'Merlin';
   }
 
   //end the game in favor of evil

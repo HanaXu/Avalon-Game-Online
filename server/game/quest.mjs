@@ -1,3 +1,5 @@
+import { throws } from "assert";
+
 /**
  * how many players will go on this quest, in the format of [questNum][total # players - 5]
  * ex: PLAYERS_ON_QUEST[0][0] = the first quest, with a 5 player game, will have 2 people on the Quest
@@ -11,7 +13,6 @@ const PLAYERS_ON_QUEST = [
   [3, 3, 4, 5, 5, 5],
   [3, 4, 4, 5, 5, 5]
 ];
-
 
 export class Quest {
   /**
@@ -52,12 +53,27 @@ export class Quest {
     this.success = null;
   }
 
+  addPlayer(name) {
+    this.playersOnQuest.add(name);
+    this.playersNeededLeft--;
+    console.log(`${name} is now on the quest`);
+    console.log(`players needed left: ${this.playersNeededLeft}`);
+  }
+
+  removePlayer(name) {
+    this.playersOnQuest.delete(name);
+    this.playersNeededLeft++;
+    console.log(`${name} is no longer on the quest`);
+    console.log(`players needed left: ${this.playersNeededLeft}`);
+  }
+
+  assignLeader(playerInfo) {
+    this.leader = playerInfo;
+    this.currentQuest = true;
+  }
+
   assignResult() {
-    if (this.votes.fail.length > 0) {
-      this.success = false;
-    } else {
-      this.success = true;
-    }
+    this.success = !this.votes.fail.length > 0;
   }
 
   //resets all values relating to players on quest & quest votes to original values
