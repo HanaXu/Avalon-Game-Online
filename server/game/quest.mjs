@@ -54,15 +54,11 @@ export default class Quest {
   addPlayer(name) {
     this.playersOnQuest.add(name);
     this.playersNeededLeft--;
-    console.log(`${name} is now on the quest`);
-    console.log(`players needed left: ${this.playersNeededLeft}`);
   }
 
   removePlayer(name) {
     this.playersOnQuest.delete(name);
     this.playersNeededLeft++;
-    console.log(`${name} is no longer on the quest`);
-    console.log(`players needed left: ${this.playersNeededLeft}`);
   }
 
   assignLeader(playerInfo) {

@@ -51,7 +51,7 @@ io.on('connection', socket => {
     //check if the room already exists in GameList
     for (let i in GameList) {
       if (GameList[roomCode] != null) {
-        console.log('room already exists');
+        console.log(`room ${roomCode} already exists`);
         roomExists = true;
         break;
       }
@@ -73,7 +73,6 @@ io.on('connection', socket => {
   });
 
   socket.on('challengeMode', function (mode) {
-    console.log(`received challenge mode: ${mode}.`)
     GameList[roomCode].challengeMode = mode;
     io.in(roomCode).emit('updateChallengeMode', mode);
   });
@@ -206,7 +205,6 @@ io.on('connection', socket => {
 
     //check for game ready
     if (GameList[roomCode].players.length >= 5) {
-      console.log('game ready');
       let hostSocketID = GameList[roomCode].getHostSocketID();
       io.to(hostSocketID).emit('gameReady'); //only emit to the host client
     }
@@ -340,7 +338,6 @@ io.on('connection', socket => {
     }
 
     currentQuest.questTeamDecisions.voted.push(name);
-    console.log(`received decision from: ${name}`);
 
     GameList[roomCode].gameState['questMsg'] = 'Waiting for all players to Accept or Reject team.';
     io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
@@ -498,7 +495,6 @@ function chooseQuestTeam(roomCode) {
   //update quest message
   emitLeaderIsChoosingTeam(roomCode, currentQuest);
 
-  console.log(`List of Players is: ${GameList[roomCode].players}`);
   console.log(`Current Quest: ${currentQuest.questNum}`);
 
   //only let the quest leader choose players
@@ -518,7 +514,6 @@ function questTeamAcceptedStuff(roomCode) {
   GameList[roomCode].gameState['succeedOrFailQuest'] = true;
 
   let players = GameList[roomCode].players;
-  console.log("Quest team is: ");
 
   //send goOnQuest to each player on quest
   for (let i = 0; i < players.length; i++) {
@@ -527,7 +522,6 @@ function questTeamAcceptedStuff(roomCode) {
       let onGoodTeam = (players[i].team) === "Good";
 
       io.to(GameList[roomCode].players[i].socketID).emit('goOnQuest', onGoodTeam);
-      console.log(players[i].name);
     }
   }
 }
@@ -567,9 +561,6 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 function checkForGameOver(roomCode) {
   let currentQuest = GameList[roomCode].getCurrentQuest();
   let tallyQuests = GameList[roomCode].tallyQuests();
-
-  console.log(`tally quests success: ${tallyQuests.successes}`)
-  console.log(`tally quests fails: ${tallyQuests.fails}`)
 
   //evil has won, game over
   if (tallyQuests.fails >= 3) {

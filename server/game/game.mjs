@@ -166,7 +166,6 @@ export default class Game {
 
   // randomly assign a room leader in the player list.
   assignFirstLeader() {
-    console.log('assignFirstLeader()');
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i = 0; i < this.players.length; i++) {
       if (this.players[i] != null) {
@@ -180,8 +179,6 @@ export default class Game {
 
   //assign next room leader (goes in order incrementally always)
   assignNextLeader(questNum) {
-    console.log("assignNextLeader()");
-
     //reset prev leader Player object
     this.players[this.leaderIndex].leader = false;
     //reset players on quest
@@ -203,7 +200,6 @@ export default class Game {
   }
 
   assignIdentities(optionalCharacters) {
-    console.log('assignIdentities()');
     let shuffledIdentities;
 
     if (optionalCharacters.length > 0) {
@@ -231,7 +227,6 @@ export default class Game {
       this.roleList = populateRoleList(teamObj);
       shuffledIdentities = shuffle(objectToArray(teamObj));
     }
-    console.log(shuffledIdentities)
 
     for (let i = 0; i < this.players.length; i++) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player

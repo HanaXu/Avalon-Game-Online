@@ -7,12 +7,12 @@ npm install
 
 ### Compiles and hot-reloads UI for development
 ```
-npm run serve
+npm run vue
 ```
 
 ### Compiles and runs server for development
 ```
-npm run start
+npm run node
 ```
 
 ### Compiles and minifies for production

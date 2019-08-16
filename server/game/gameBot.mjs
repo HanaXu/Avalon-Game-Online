@@ -124,7 +124,7 @@ export default class GameBot {
         bot.socket.on('choosePlayersForQuest', function (data) {
             //console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             bot.leader = true;
-            console.log(`-----Leader Bot: ${bot.leader}, ${bot.name}-----`);
+            // console.log(`-----Leader Bot: ${bot.leader}, ${bot.name}-----`);
             if (bot.leader === true && data.bool === true) {
                 bot.botLeaderPicks(data);
             }
@@ -138,7 +138,7 @@ export default class GameBot {
                 name: bot.name,
                 decision: botDecision
             });
-            console.log(`In Quest: ${bot.name} Sent ${botDecision}`);
+            // console.log(`In Quest: ${bot.name} Sent ${botDecision}`);
         });
 
 
@@ -186,7 +186,7 @@ export default class GameBot {
 
         var name = firstName.concat(middleName);
 
-        console.log(`Name is: ${name}`);
+        // console.log(`Name is: ${name}`);
         return name;
     }
 
@@ -260,7 +260,7 @@ export default class GameBot {
         //choose only one evil player to go on quest
         for (let i = 0; i < players.length; i++) {
             if (players[i].team === 'Evil' && players[i].name !== this.name) {
-                console.log(`Chose: ${players[i].name}`);
+                // console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
                 this.socket.emit("addPlayerToQuest", players[i].name);
                 this.socket.emit('updatePlayers');
@@ -271,7 +271,7 @@ export default class GameBot {
         for (let i = 0; i < players.length; i++) {
             if (players[i].team !== 'Evil' && count < playersOnQuestNum) {
                 count++;
-                console.log(`Chose: ${players[i].name}`);
+                // console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
                 this.socket.emit("addPlayerToQuest", players[i].name);
                 this.socket.emit('updatePlayers');
@@ -482,7 +482,7 @@ export default class GameBot {
                 }
             }
         }
-        console.log(`The player with the lowest risk score is ${this.playerRiskScores[minIndex].playerName} with a risk of ${this.playerRiskScores[minIndex].risk}`);
+        // console.log(`The player with the lowest risk score is ${this.playerRiskScores[minIndex].playerName} with a risk of ${this.playerRiskScores[minIndex].risk}`);
         return minIndex;
     }
 
