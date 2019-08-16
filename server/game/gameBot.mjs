@@ -31,7 +31,7 @@ const PLAYERS_ON_QUEST = [
 //right now, the value 10 is based on nothing
 const RISK_THRESHOLD = 10;
 
-export class GameBot {
+export default class GameBot {
     constructor() {
         this.socketID = null;
         this.socket = null;

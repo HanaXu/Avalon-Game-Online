@@ -1,5 +1,3 @@
-import { throws } from "assert";
-
 /**
  * how many players will go on this quest, in the format of [questNum][total # players - 5]
  * ex: PLAYERS_ON_QUEST[0][0] = the first quest, with a 5 player game, will have 2 people on the Quest
@@ -14,7 +12,7 @@ const PLAYERS_ON_QUEST = [
   [3, 4, 4, 5, 5, 5]
 ];
 
-export class Quest {
+export default class Quest {
   /**
    * Quest objects have:
    * @property {number} questNum - which quest players are on from 1 to 5

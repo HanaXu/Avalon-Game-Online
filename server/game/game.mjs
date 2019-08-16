@@ -1,6 +1,6 @@
 import { objectToArray, shuffle, populateRoleList } from './utility.mjs';
-import { Quest } from './quest.mjs';
-import { QuestHistory } from './history.mjs';
+import Quest from './quest.mjs';
+import QuestHistory from './history.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
@@ -46,7 +46,7 @@ const BaseCharacters = {
   }
 };
 
-export class Game {
+export default class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.challengeMode = "OFF";

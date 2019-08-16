@@ -1,4 +1,4 @@
-export class QuestHistory {
+export default class QuestHistory {
 
     constructor(questNum) {
         this.questNum = questNum;

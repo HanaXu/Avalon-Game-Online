@@ -1,20 +1,13 @@
 import express from 'express';
 import socketIO from 'socket.io';
 import path from 'path';
-import {
-  Game
-} from './game/game.mjs';
-import {
-  Player
-} from './game/player.mjs';
-import {
-  GameBot
-} from './game/gameBot.mjs';
+import Game from './game/game.mjs';
+import Player from './game/player.mjs';
+import GameBot from './game/gameBot.mjs';
 import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from './game/utility.mjs';
-import util from "util";
 
 const app = express();
 const port = 80;
@@ -322,7 +315,6 @@ io.on('connection', socket => {
     //show accept/reject buttons to everyone
     GameList[roomCode].gameState['acceptOrRejectTeam'] = true;
     let a = Array.from(currentQuest.playersOnQuest);
-    console.log("current quest players(server side): " + util.inspect(a, true, null, true));
     io.in(roomCode).emit('acceptOrRejectTeam', {
       bool: true,
       onQuest: a,
