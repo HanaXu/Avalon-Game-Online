@@ -25,11 +25,15 @@ app.get(/.*/, function (req, res) {
 const io = socketIO(server);
 
 var GameList = {}; //keeps record of all game objects
-//var GameBotMemoryList = {}; // keeps record of all game bot memory List
+const requireAuth = false;
 
 io.on('connection', socket => {
   var roomCode; //make roomCode available to socket
 
+  socket.on('checkForAuth', function () {
+    socket.emit('checkForAuth', requireAuth);
+  });
+  
   //create a new room
   socket.on('createRoom', data => {
     roomCode = data.roomCode;

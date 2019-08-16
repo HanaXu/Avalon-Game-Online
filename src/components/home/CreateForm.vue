@@ -16,12 +16,13 @@
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <Auth v-if="createRoomClicked" :name="name"></Auth>
+    <Auth v-if="createRoomClicked && authRequired" :name="name"></Auth>
   </div>
 </template>
 
 <script>
 import Auth from "@/components/home/Auth.vue";
+import axios from "axios";
 
 export default {
   name: "CreateForm",
@@ -35,14 +36,31 @@ export default {
       loading: false,
       error: false,
       errorMsg: null,
-      createRoomClicked: false
+      createRoomClicked: false,
+      authRequired: null
     };
+  },
+  beforeMount: function() {
+    this.$socket.emit("checkForAuth");
   },
   methods: {
     createRoom() {
       this.error = false;
-      // this.loading = true;
       this.createRoomClicked = true;
+      if (!this.authRequired) {
+        this.loading = true;
+        axios
+        .get(
+          "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
+        )
+        .then(res => {
+          this.roomCode = res.data;
+          this.$socket.emit("createRoom", {
+            roomCode: this.roomCode,
+            name: this.name
+          });
+        });
+      }
     }
   },
   sockets: {
@@ -50,6 +68,16 @@ export default {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
+    },
+    checkForAuth(bool) {
+      this.authRequired = bool;
+    },
+    passedValidation() {
+      this.loading = false;
+      this.$router.push({
+        name: "game",
+        params: { yourName: this.name, roomCode: this.roomCode }
+      });
     }
   }
 };
