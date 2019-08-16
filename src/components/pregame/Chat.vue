@@ -25,7 +25,6 @@
 
 <script>
 import firebase from "firebase";
-// import { bus } from "@/main.js";
 import { setInterval } from "timers";
 import Vue from "vue";
 import VueChatScroll from "vue-chat-scroll";
@@ -115,9 +114,6 @@ export default {
     let vm = this;
     let username = this.yourName;
     let roomCode = this.roomCode;
-
-    // bus.$on("joinChat", this.joinMessage());
-
     const itemsRef = firebase.database().ref("chat/room-messages/" + roomCode);
 
     itemsRef.on("value", snapshot => {

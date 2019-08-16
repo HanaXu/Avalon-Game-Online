@@ -50,16 +50,16 @@ export default {
       if (!this.authRequired) {
         this.loading = true;
         axios
-        .get(
-          "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
-        )
-        .then(res => {
-          this.roomCode = res.data;
-          this.$socket.emit("createRoom", {
-            roomCode: this.roomCode,
-            name: this.name
+          .get(
+            "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
+          )
+          .then(res => {
+            this.roomCode = res.data;
+            this.$socket.emit("createRoom", {
+              roomCode: this.roomCode,
+              name: this.name
+            });
           });
-        });
       }
     }
   },

@@ -52,8 +52,6 @@ export default {
         roomCode: this.roomCode,
         name: this.name
       });
-
-      // bus.$emit("joinChat");
     }
   },
   sockets: {

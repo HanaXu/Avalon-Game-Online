@@ -7,7 +7,10 @@
 
     <b-row>
       <b-col md="3" offset="2">
-        <p>Room Capacity: {{players.length}}/10</p>
+        <p v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
+          Room Capacity:
+          <span :class="{red: players.length < 5, green: players.length >= 5}">{{players.length}}/10</span>
+        </p>
       </b-col>
       <b-col md="5">
         <b-form-checkbox
@@ -31,7 +34,7 @@
 
     <b-row>
       <b-col md="7" offset="1">
-        <PlayerList :players="players"/>
+        <PlayerList :players="players" />
       </b-col>
       <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
         <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
@@ -108,3 +111,12 @@ export default {
   }
 };
 </script>
+
+<style>
+.red {
+  color: red;
+}
+.green {
+  color: green;
+}
+</style>

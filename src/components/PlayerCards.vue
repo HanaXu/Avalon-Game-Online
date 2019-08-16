@@ -21,15 +21,15 @@
               style="cursor: pointer"
             >📝</span>
           </h5>
-          <MemoModal :playerName="player.name"/>
+          <MemoModal :playerName="player.name" />
 
           <h6 class="player card-subtitle text-muted">
             <b>Team:</b>
             {{ player.team }}
-            <br>
+            <br />
             <b>Character:</b>
             {{ player.character }}
-            <br>
+            <br />
             <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
             <p v-if="player.disconnected === true" class="font-italic">Disconnected</p>
           </h6>

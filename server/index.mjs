@@ -33,7 +33,7 @@ io.on('connection', socket => {
   socket.on('checkForAuth', function () {
     socket.emit('checkForAuth', requireAuth);
   });
-  
+
   //create a new room
   socket.on('createRoom', data => {
     roomCode = data.roomCode;

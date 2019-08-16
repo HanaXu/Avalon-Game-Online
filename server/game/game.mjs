@@ -141,7 +141,7 @@ export default class Game {
   }
 
   getPlayer({ socketID, name }) {
-    return this.players.find(player => 
+    return this.players.find(player =>
       player.socketID === socketID || player.name === name
     );
   }
@@ -171,7 +171,7 @@ export default class Game {
       if (this.players[i] != null) {
         this.players[i].leader = true;
         this.leaderIndex = i;
-        this.quests[1].assignLeader({name: this.players[i].name, socketID: this.players[i].socketID});
+        this.quests[1].assignLeader({ name: this.players[i].name, socketID: this.players[i].socketID });
         break;
       }
     }
@@ -319,7 +319,7 @@ export default class Game {
 
   //check if player is Merlin
   checkIfMerlin(name) {
-    return this.getPlayer({name: name}).character === 'Merlin';
+    return this.getPlayer({ name: name }).character === 'Merlin';
   }
 
   //end the game in favor of evil
