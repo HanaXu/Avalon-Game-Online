@@ -3,8 +3,6 @@
     <div class="row justify-content-md-center mx-0">
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
-
-        <!-- Pre-Game stuff -->
         <Lobby v-if="!gameStarted" :yourName="yourName" :roomCode="roomCode" :players="players"/>
 
         <!-- Actual Game -->
@@ -40,9 +38,9 @@
 </template>
 
 <script>
-import Lobby from "@/components/pregame/Lobby.vue";
+import Lobby from "@/components/lobby/Lobby.vue";
 import PlayerCards from "@/components/PlayerCards.vue";
-import Chat from "@/components/pregame/Chat.vue";
+import Chat from "@/components/lobby/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
@@ -107,19 +105,16 @@ export default {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-    //assassination time
     beginAssassination(msg) {
       //update player cards to show Assassinate button
       this.assassination = true;
       this.questMsg = msg;
     },
     waitForAssassin(msg) {
-      //do nothing
       this.waitingForAssassin = true;
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-    //game is over
     gameOver(msg) {
       this.gameOver = true;
       this.endGameMsg = msg;

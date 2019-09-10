@@ -69,7 +69,6 @@ export default {
   sockets: {
     votedOnTeam(votes) {
       console.log("votedOnTeam()");
-      //this.$socket.emit('togglePlayerVoteStatus', true);
       this.teamVotes = votes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
@@ -82,7 +81,6 @@ export default {
       this.showPlayerVoteStatus = bool;
     },
     revealTeamVotes(votes) {
-      //this.$socket.emit('togglePlayerVoteStatus', true);
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
       this.teamVotes.reject = votes.reject.join(", ");
@@ -90,7 +88,6 @@ export default {
       this.showTeamVoteResults = true;
     },
     hideTeamVotes() {
-      //this.$socket.emit('togglePlayerVoteStatus', false);
       this.showHasVoted = false;
       this.showTeamVoteResults = false;
     },

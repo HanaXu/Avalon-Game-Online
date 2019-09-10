@@ -1,15 +1,5 @@
 <template>
   <b-modal id="setupModal" class="setup" title="Setup Options" @ok="handleOk">
-    <!-- "ADD BOT" BUTTON WILL GO HERE IN THIS DIV -->
-    <!--    <b-row style="padding-bottom: 10px">
-      <b-col sm="5">
-        <label class="label" for="bots">AI players:</label>
-      </b-col>
-      <b-col sm="3">
-        <b-form-input id="botCount" v-model="botCount" type="number" min="0" max="10" value="0"></b-form-input>
-      </b-col>
-    </b-row>
-    -->
     <b-row>
       <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
     </b-row>
@@ -30,9 +20,6 @@
         </b-form-group>
       </b-col>
     </b-row>
-
-    <!-- <div> Selected: <strong>{{ selected }}</strong> </div> -->
-
     <p>
       <em>
         <strong>Notes:</strong>

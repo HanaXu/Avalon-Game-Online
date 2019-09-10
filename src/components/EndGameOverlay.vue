@@ -50,7 +50,4 @@ export default {
   font-weight: bold;
   color: white !important;
 }
-
-.subtitle {
-}
 </style>

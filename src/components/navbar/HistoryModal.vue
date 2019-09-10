@@ -106,7 +106,6 @@ export default {
   },
   sockets: {
     updateHistoryModal(historyObj) {
-      console.log(`updating History Modal`);
       this.questHistory = historyObj;
     },
     updateChallengeMode(str) {
@@ -150,7 +149,6 @@ h3 {
 
 .subheader {
   font-weight: bold;
-  /* text-decoration: underline; */
   border-bottom: 2px solid #8a7d6e;
 }
 

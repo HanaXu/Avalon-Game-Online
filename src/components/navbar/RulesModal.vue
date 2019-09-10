@@ -37,7 +37,6 @@
       If the evil players do not name Merlin, then the Good players win.
     </p>
 
-
     <!--include footer so OK and Cancel buttons dont show up-->
     <div slot="modal-footer">
     </div>

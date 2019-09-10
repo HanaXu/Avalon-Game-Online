@@ -36,7 +36,6 @@ export default {
   },
   methods: {
     passedAuth() {
-      console.log("passed auth");
       axios
         .get(
           "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"

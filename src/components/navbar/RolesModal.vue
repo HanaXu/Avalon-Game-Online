@@ -74,7 +74,6 @@
       him during a 7 or 10 player game. Adding him is a great way to spice up a game of veterans.
     </p>
 
-
     <!--include footer so OK and Cancel buttons dont show up-->
     <div slot="modal-footer">
     </div>

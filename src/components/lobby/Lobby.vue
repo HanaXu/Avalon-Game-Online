@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import PlayerList from "@/components/pregame/PlayerList.vue";
-import SetupOptions from "@/components/pregame/SetupOptions.vue";
+import PlayerList from "@/components/lobby/PlayerList.vue";
+import SetupOptions from "@/components/lobby/SetupOptions.vue";
 
 export default {
   name: "Lobby",
@@ -74,11 +74,8 @@ export default {
     clickedSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
       this.optionalCharacters = data;
-      console.log(`optional characters: ${this.optionalCharacters}`);
-      console.log(`Data is: ${data}`);
     },
     startGame() {
-      console.log(`starting game in room: ${this.roomCode}`);
       this.$socket.emit("startGame", {
         roomCode: this.roomCode,
         optionalCharacters: this.optionalCharacters

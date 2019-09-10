@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Chat from "@/components/pregame/Chat.vue";
+import Chat from "@/components/lobby/Chat.vue";
 
 export default {
   name: "JoinForm",
