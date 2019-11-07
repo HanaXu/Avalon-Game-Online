@@ -1,8 +1,8 @@
 <template>
-  <b-row class="section" v-if="showConfirmTeamButton || showAcceptRejectButtons">
+  <b-row class="section" v-if="showConfirmTeamButtonToLeader || showAcceptRejectButtons">
     <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
     <b-col class="py-0">
-      <div v-if="showConfirmTeamButton">
+      <div v-if="showConfirmTeamButtonToLeader">
         <b-button
           class="avalon-btn-lg"
           id="confirm-team-btn"
@@ -30,7 +30,7 @@ export default {
   name: "DecideQuestTeam",
   data() {
     return {
-      showConfirmTeamButton: false,
+      showConfirmTeamButtonToLeader: false,
       showAcceptRejectButtons: false,
       teamVotes: null,
       showHasVoted: false,
@@ -50,8 +50,8 @@ export default {
     }
   },
   sockets: {
-    confirmQuestTeam(bool) {
-      this.showConfirmTeamButton = bool;
+    showConfirmTeamButtonToLeader(bool) {
+      this.showConfirmTeamButtonToLeader = bool;
     },
     acceptOrRejectTeam(data) {
       this.showAcceptRejectButtons = data.bool;
