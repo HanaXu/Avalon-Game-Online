@@ -11,11 +11,6 @@ import axios from "axios";
 export default {
   name: "Auth",
   props: ["name"],
-  data() {
-    return {
-      roomCode: null
-    };
-  },
   mounted() {
     let self = this;
     let uiConfig = {
@@ -36,24 +31,14 @@ export default {
   },
   methods: {
     passedAuth() {
-      axios
-        .get(
-          "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
-        )
-        .then(res => {
-          this.roomCode = res.data;
-          this.$socket.emit("createRoom", {
-            roomCode: this.roomCode,
-            name: this.name
-          });
-        });
+      this.$socket.emit("createRoom", this.name);
     }
   },
   sockets: {
-    passedValidation() {
+    passedValidation(roomCode) {
       this.$router.push({
         name: "game",
-        params: { yourName: this.name, roomCode: this.roomCode }
+        params: { yourName: this.name, roomCode: roomCode }
       });
     }
   }

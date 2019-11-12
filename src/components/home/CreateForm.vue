@@ -22,7 +22,6 @@
 
 <script>
 import Auth from "@/components/home/Auth.vue";
-import axios from "axios";
 
 export default {
   name: "CreateForm",
@@ -32,7 +31,6 @@ export default {
   data() {
     return {
       name: null,
-      roomCode: null,
       loading: false,
       error: false,
       errorMsg: null,
@@ -49,17 +47,7 @@ export default {
       this.createRoomClicked = true;
       if (!this.authRequired) {
         this.loading = true;
-        axios
-          .get(
-            "https://www.random.org/integers/?num=1&min=1&max=999999&col=1&base=10&format=plain&rnd=new"
-          )
-          .then(res => {
-            this.roomCode = res.data;
-            this.$socket.emit("createRoom", {
-              roomCode: this.roomCode,
-              name: this.name
-            });
-          });
+        this.$socket.emit("createRoom", this.name);
       }
     }
   },
@@ -72,11 +60,11 @@ export default {
     checkForAuth(bool) {
       this.authRequired = bool;
     },
-    passedValidation() {
+    passedValidation(roomCode) {
       this.loading = false;
       this.$router.push({
         name: "game",
-        params: { yourName: this.name, roomCode: this.roomCode }
+        params: { yourName: this.name, roomCode: roomCode }
       });
     }
   }

@@ -33,38 +33,26 @@ io.on('connection', socket => {
     socket.emit('checkForAuth', requireAuth);
   });
 
-  socket.on('createRoom', data => {
-    roomCode = data.roomCode;
-    const name = data.name;
-    let game, player;
-
+  socket.on('createRoom', name => {
     //validation
     if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Error: Name does not meet length requirements: ${name}`);
       socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
     }
-    //check if the room already exists
-    if (GameList.hasOwnProperty(roomCode)) {
-      console.log(`Error: room ${roomCode} already exists`);
-      socket.emit('errorMsg', `Error creating room. Please try again`);
-      return;
-    }
 
-    socket.emit('passedValidation');
+    roomCode = generateRoomCode();
+    socket.emit('passedValidation', roomCode);
     socket.emit('roomCode', roomCode);
     socket.join(roomCode); //subscribe the socket to the roomcode
 
-    console.log(`room ${roomCode} does not exist. creating new game room`);
-    game = new Game(roomCode);
-    player = new Player(socket.id, name, roomCode, 'Host');
-    game.players.push(player);
-    GameList[roomCode] = game;
+    GameList[roomCode] = new Game(roomCode);
+    GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
 
     //since player is Host, show them the game setup options (bots, optional characters)
-    io.to(socket.id).emit('showHostSetupOptions', true);
+    socket.emit('showHostSetupOptions', true);
     //emit all the game players to client, client then updates the UI
-    io.in(roomCode).emit('updatePlayers', game.players);
+    io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
   });
 
   socket.on('challengeMode', function (mode) {
@@ -80,7 +68,6 @@ io.on('connection', socket => {
   socket.on('joinRoom', data => {
     const name = data.name;
     roomCode = data.roomCode;
-    let player;
 
     //validate before letting player join a room
     if (GameList[roomCode] === undefined) {
@@ -185,9 +172,7 @@ io.on('connection', socket => {
     socket.emit('passedValidation');
     socket.emit('roomCode', roomCode);
     socket.join(roomCode); //subscribe the socket to the roomcode
-
-    player = new Player(socket.id, name, roomCode, 'Guest');
-    GameList[roomCode].players.push(player);
+    GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
 
     io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
     io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
@@ -430,8 +415,17 @@ io.on('connection', socket => {
   });
 });
 
-//server side validate instead of having the client validate
-//client's only job is to update the UI
+function generateRoomCode(){
+  let roomCode = Math.floor(Math.random() * 999999) + 1;
+  //check if the room already exists
+  while (GameList.hasOwnProperty(roomCode)) {
+    console.log(`collision with roomCode ${roomCode}`)
+    roomCode = Math.floor(Math.random() * 999999) + 1;
+  }
+  console.log(`generating new room code ${roomCode}`)
+  return roomCode;
+}
+
 function emitSanitizedPlayers(players) {
   for (let i in players) {
     let sanitizedPlayers = sanitizeTeamView(players[i].socketID, players[i].character, players);
