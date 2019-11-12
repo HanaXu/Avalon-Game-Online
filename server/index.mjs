@@ -10,13 +10,12 @@ import {
 } from './game/utility.mjs';
 
 const app = express();
-const port = 80;
+const port = 3000;
 const server = app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
 
-const __dirname = path.dirname(new URL(
-  import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 app.use(express.static(__dirname + "/dist/"));
 app.get(/.*/, function (req, res) {
   res.sendFile(__dirname + "/dist/index.html");

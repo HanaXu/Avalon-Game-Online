@@ -4,6 +4,8 @@
 ```
 npm install
 ```
+Create a `.env` file in the root directory.
+Add `VUE_APP_SOCKET_CONNECT_URL=http://localhost:3000` to it.
 
 ### Compiles and hot-reloads UI for development
 ```
@@ -18,11 +20,6 @@ npm run node
 ### Compiles and minifies for production
 ```
 npm run build
-```
-
-### Run your tests
-```
-npm run test
 ```
 
 ### Customize configuration
