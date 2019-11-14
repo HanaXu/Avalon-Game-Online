@@ -244,7 +244,7 @@ export default class Game {
     }
   }
 
-  resetPlayersOnQuestVote() {
+  resetPlayersVotedOnQuest() {
     for (let i in this.players) {
       this.players[i].votedOnQuest = false;
     }

@@ -7,7 +7,7 @@
         class="avalon-btn-lg"
         id="fail-btn"
         @click="questVote('fail')"
-        :disabled="onGoodTeam"
+        :disabled="disableFailBtn"
       >Fail</b-button>
     </b-col>
   </b-row>
@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       canVoteOnQuest: false,
-      onGoodTeam: false
+      disableFailBtn: false
     };
   },
   methods: {
@@ -36,7 +36,7 @@ export default {
   sockets: {
     goOnQuest(bool) {
       this.canVoteOnQuest = true;
-      this.onGoodTeam = bool;
+      this.disableFailBtn = bool;
     }
   }
 };
