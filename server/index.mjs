@@ -69,7 +69,7 @@ io.on('connection', socket => {
     roomCode = data.roomCode;
 
     //validate user input
-    let errorMsg = validateJoinRoom(name, roomCode);
+    const errorMsg = validateJoinRoom(name, roomCode);
     if (errorMsg.length > 0) {
       socket.emit('errorMsg', errorMsg);
       return;
@@ -90,7 +90,7 @@ io.on('connection', socket => {
 
     //check for game ready
     if (GameList[roomCode].players.length >= 5) {
-      let hostSocketID = GameList[roomCode].getHostSocketID();
+      const hostSocketID = GameList[roomCode].getPlayer({ role: 'Host'}).socketID;
       io.to(hostSocketID).emit('gameReady');
     }
   });
@@ -99,8 +99,8 @@ io.on('connection', socket => {
   //assign identities & assign first quest leader
   socket.on('startGame', function (data) {
     roomCode = data.roomCode;
-    let optionalCharacters = data.optionalCharacters;
-    let errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
+    const optionalCharacters = data.optionalCharacters;
+    const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
     if (errorMsg.length > 0) {
       socket.emit('errorMsg', errorMsg);
       return;
@@ -135,7 +135,7 @@ io.on('connection', socket => {
     if (currentQuest.playersNeededLeft > 0) {
       updateChoosingPlayerCountMsg(roomCode, currentQuest);
     } else {
-      GameList[roomCode].gameState['questMsg'] = `Waiting for ${currentQuest.leader.name} to confirm team.`;
+      GameList[roomCode].gameState['questMsg'] = `Waiting for ${currentQuest.leaderInfo.name} to confirm team.`;
       io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
       socket.emit('showConfirmTeamButtonToLeader', true);
     }
@@ -156,7 +156,7 @@ io.on('connection', socket => {
     io.in(roomCode).emit('hideVotes');
     socket.emit('showConfirmTeamButtonToLeader', false);
     //hide add/remove players from quest leader
-    io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', {
+    io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
       bool: false,
       players: GameList[roomCode].players,
       currentQuestNum: currentQuest.questNum
@@ -197,7 +197,7 @@ io.on('connection', socket => {
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.questTeamDecisions.voted.length === currentQuest.totalNumPlayers) {
       GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
-      GameList[roomCode].resetPlayersVotedOnTeam();
+      GameList[roomCode].resetPlayersProperty('votedOnTeam');
       io.in(roomCode).emit('revealTeamVotes', currentQuest.questTeamDecisions);
       //quest Rejected
       if (currentQuest.questTeamDecisions.reject.length >= GameList[roomCode].players.length / 2) {
@@ -215,7 +215,7 @@ io.on('connection', socket => {
     console.log(`received quest vote from: ${name}`);
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
-    let votes = currentQuest.votes;
+    const votes = currentQuest.votes;
     votes[decision].push(name);
     votes.voted.push(name);
     io.in(roomCode).emit('votedOnQuest', votes.voted); //show that player has made some kind of vote
@@ -246,22 +246,16 @@ io.on('connection', socket => {
         currentQuestNum: currentQuest.questNum
       });
 
-      GameList[roomCode].resetPlayersVotedOnQuest();
+      GameList[roomCode].resetPlayersProperty('votedOnQuest');
       checkForGameOver(roomCode); //check for 3 failed or 3 succeeded quests
     }
   });
 
   socket.on('assassinatePlayer', function (name) {
-    console.log(`Attempting to assassinate ${name}.`);
-    let isMerlin = GameList[roomCode].checkIfMerlin(name);
-    let msg;
-
-    if (isMerlin) {
-      GameList[roomCode].endGameEvilWins(`Assassin successfully discovered and killed ${name}, who was Merlin.`);
-      msg = `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`;
-    } else {
-      msg = `Assassin failed to discover and kill Merlin. Good Wins!`;
-    }
+    const merlinPlayer = GameList[roomCode].getPlayer({character: 'Merlin'});
+    console.log(`Merlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
+    const msg = merlinPlayer.name === name ? `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`
+      : `Assassin failed to discover and kill Merlin. Good Wins!`;
     io.in(roomCode).emit('gameOver', msg);
   });
 
@@ -279,7 +273,6 @@ io.on('connection', socket => {
       else {
         console.log('deleteing player before start')
         GameList[roomCode].deletePlayer(socket.id);
-        //emit all the game players to client, client then updates the UI
         io.in(roomCode).emit('updatePlayers', players);
       }
     }
@@ -338,17 +331,17 @@ io.on('connection', socket => {
       questTeamAcceptedStuff(roomCode);
     }
     //show add/remove quest buttons if leader
-    if (currentQuest.leader.name === name && !currentQuest.questTeamConfirmed) {
+    if (currentQuest.leaderInfo.name === name && !currentQuest.questTeamConfirmed) {
       console.log('show add/remove quest buttons to leader')
-      currentQuest.leader.socketID = socket.id;
-      io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', {
+      currentQuest.leaderInfo.socketID = socket.id;
+      io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
         bool: true,
         players: GameList[roomCode].players,
         currentQuestNum: currentQuest.questNum
       });
       socket.emit('showConfirmTeamButtonToLeader', false);
     }
-    if (currentQuest.leader.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.questTeamConfirmed) {
+    if (currentQuest.leaderInfo.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.questTeamConfirmed) {
       socket.emit('showConfirmTeamButtonToLeader', true);
     }
   }
@@ -391,21 +384,21 @@ function validateJoinRoom(name, roomCode) {
 
 function updatePlayerCards(players) {
   players.forEach(player => {
-    let sanitizedPlayers = sanitizeTeamView(player.socketID, player.character, players);
+    const sanitizedPlayers = sanitizeTeamView(player.socketID, player.character, players);
     io.to(player.socketID).emit('updatePlayers', sanitizedPlayers);
   });
 }
 
 function updateChoosingPlayerCountMsg(roomCode, currentQuest) {
-  GameList[roomCode].gameState['questMsg'] = `${currentQuest.leader.name} is choosing 
+  GameList[roomCode].gameState['questMsg'] = `${currentQuest.leaderInfo.name} is choosing 
                                               ${currentQuest.playersNeededLeft} more players to go on quest 
                                               ${currentQuest.questNum}`;
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 }
 
 function questLeaderChoosesQuestTeam(roomCode) {
-  let currentQuest = GameList[roomCode].getCurrentQuest();
-  
+  const currentQuest = GameList[roomCode].getCurrentQuest();
+
   io.in(roomCode).emit('updateQuests', { //update quest cards
     quests: GameList[roomCode].quests,
     currentQuestNum: currentQuest.questNum
@@ -413,11 +406,11 @@ function questLeaderChoosesQuestTeam(roomCode) {
   io.in(roomCode).emit('updateVoteTrack', {
     voteTrack: currentQuest.voteTrack
   });
-  
+
   updateChoosingPlayerCountMsg(roomCode, currentQuest);
   console.log(`Current Quest: ${currentQuest.questNum}`);
 
-  io.to(currentQuest.leader.socketID).emit('choosePlayersForQuest', {
+  io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
     bool: true,
     players: GameList[roomCode].players,
     currentQuestNum: currentQuest.questNum
@@ -432,7 +425,7 @@ function questTeamAcceptedStuff(roomCode) {
   GameList[roomCode].gameState['succeedOrFailQuest'] = true;
   GameList[roomCode].players.forEach(player => {
     if (player.onQuest && !player.votedOnQuest) {
-      let disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
+      const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
       io.to(player.socketID).emit('goOnQuest', disableFailBtn);
     }
   });
@@ -450,11 +443,11 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 
   //check if voteTrack has exceeded 5 (game over)
   if (currentQuest.voteTrack > 5) {
-    let msg = `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`;
-    GameList[roomCode].endGameEvilWins(msg);
+    const msg = `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`;
     io.in(roomCode).emit('gameOver', msg);
-  } else {
-    GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum); //reset current quest player data
+  } else { //increment voteTrack and assign next leader
+    GameList[roomCode].resetPlayersProperty('onQuest');
+    GameList[roomCode].quests[currentQuest.questNum].resetQuest();
     GameList[roomCode].assignNextLeader(currentQuest.questNum);
     updatePlayerCards(GameList[roomCode].players);
     questLeaderChoosesQuestTeam(roomCode);
@@ -462,17 +455,18 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 }
 
 function checkForGameOver(roomCode) {
-  let currentQuest = GameList[roomCode].getCurrentQuest();
-  let tallyQuests = GameList[roomCode].tallyQuests();
+  const currentQuest = GameList[roomCode].getCurrentQuest();
+  const tallyQuests = GameList[roomCode].tallyQuests();
 
   //evil has won, game over
   if (tallyQuests.fails >= 3) {
-    GameList[roomCode].resetPlayersOnQuest(currentQuest.questNum);
+    GameList[roomCode].resetPlayersProperty('onQuest');
+    GameList[roomCode].quests[currentQuest.questNum].resetQuest();
     io.in(roomCode).emit('gameOver', `${tallyQuests.fails} quests failed. Evil Wins!`);
   }
   //good is on track to win, evil can assassinate
   else if (tallyQuests.successes >= 3) {
-    let assassinSocketID = GameList[roomCode].getAssassinSocketID();
+    const assassinSocketID = GameList[roomCode].getPlayer({ character: 'Assassin'}).socketID;
     io.in(roomCode).emit('waitForAssassin', `Good has triumphed over Evil by succeeding 
     ${tallyQuests.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
 

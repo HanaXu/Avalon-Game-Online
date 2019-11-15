@@ -140,9 +140,9 @@ export default class Game {
     }
   }
 
-  getPlayer({ socketID, name }) {
+  getPlayer({ socketID, name, role, character }) {
     return this.players.find(player =>
-      player.socketID === socketID || player.name === name
+      player.socketID === socketID || player.name === name || player.role === role || player.character === character
     );
   }
 
@@ -156,22 +156,13 @@ export default class Game {
     }
   }
 
-  getHostSocketID() {
-    return (this.players.find(player => player.role === 'Host')).socketID;
-  }
-
-  getAssassinSocketID() {
-    return (this.players.find(player => player.character === 'Assassin')).socketID;
-  }
-
-  // randomly assign a room leader in the player list.
   assignFirstLeader() {
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
-    for (let i = 0; i < this.players.length; i++) {
+    for (let i in this.players) {
       if (this.players[i] != null) {
         this.players[i].leader = true;
         this.leaderIndex = i;
-        this.quests[1].assignLeader({ name: this.players[i].name, socketID: this.players[i].socketID });
+        this.quests[1].assignLeaderInfo({ name: this.players[i].name, socketID: this.players[i].socketID });
         break;
       }
     }
@@ -179,10 +170,9 @@ export default class Game {
 
   //assign next room leader (goes in order incrementally always)
   assignNextLeader(questNum) {
-    //reset prev leader Player object
-    this.players[this.leaderIndex].leader = false;
-    //reset players on quest
-    this.resetPlayersOnQuest(questNum);
+    this.players[this.leaderIndex].leader = false; //reset prev leader Player object
+    this.resetPlayersProperty('onQuest');
+    this.quests[questNum].resetQuest();
 
     //increment leaderIndex (mod by playerLength so it wraps around)
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
@@ -193,7 +183,7 @@ export default class Game {
     }
     //assign new leader to correct Player
     this.players[this.leaderIndex].leader = true;
-    this.quests[questNum].assignLeader({
+    this.quests[questNum].assignLeaderInfo({
       name: this.players[this.leaderIndex].name,
       socketID: this.players[this.leaderIndex].socketID
     });
@@ -201,61 +191,43 @@ export default class Game {
 
   assignIdentities(optionalCharacters) {
     let shuffledIdentities;
+    let teamObj = Game.BaseCharacters[this.players.length];
 
     if (optionalCharacters.length > 0) {
-      let newTeamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
-
-      for (let i = 0; i < optionalCharacters.length; i++) {
-        if (optionalCharacters[i] === 'Percival') {
-          newTeamObj['Loyal Servant of Arthur']--;
-          newTeamObj['Percival'] = 1;
-        } else if (optionalCharacters[i] === 'Mordred') {
-          newTeamObj['Minion of Mordred']--;
-          newTeamObj['Mordred'] = 1;
-        } else if (optionalCharacters[i] === 'Oberon') {
-          newTeamObj['Minion of Mordred']--;
-          newTeamObj['Oberon'] = 1;
-        } else if (optionalCharacters[i] === 'Morgana') {
-          newTeamObj['Minion of Mordred']--;
-          newTeamObj['Morgana'] = 1;
+      teamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
+      optionalCharacters.forEach(optionalCharacter => {
+        switch (optionalCharacter) {
+          case 'Percival':
+            teamObj['Loyal Servant of Arthur']--;
+            teamObj['Percival'] = 1;
+            break;
+          case 'Mordred':
+            teamObj['Minion of Mordred']--;
+            teamObj['Mordred'] = 1;
+            break;
+          case 'Oberon':
+            teamObj['Minion of Mordred']--;
+            teamObj['Oberon'] = 1;
+            break;
+          case 'Morgana':
+            teamObj['Minion of Mordred']--;
+            teamObj['Morgana'] = 1;
+            break;
         }
-      }
-      this.roleList = populateRoleList(newTeamObj);
-      shuffledIdentities = shuffle(objectToArray(newTeamObj));
-    } else {
-      let teamObj = Game.BaseCharacters[this.players.length];
-      this.roleList = populateRoleList(teamObj);
-      shuffledIdentities = shuffle(objectToArray(teamObj));
+      });
     }
-
-    for (let i = 0; i < this.players.length; i++) {
+    this.roleList = populateRoleList(teamObj);
+    shuffledIdentities = shuffle(objectToArray(teamObj));
+    for (let i in this.players) {
       this.players[i].character = shuffledIdentities[i]; // assign character to player
-      if (Game.GoodTeam.has(shuffledIdentities[i])) {
-        this.players[i].team = 'Good'; // assign team based on character
-      } else {
-        this.players[i].team = 'Evil';
-      }
+      this.players[i].team = Game.GoodTeam.has(shuffledIdentities[i]) ? 'Good' : 'Evil'; // assign team based on character
     }
   }
 
-  resetPlayersVotedOnTeam() {
-    for (let i in this.players) {
-      this.players[i].votedOnTeam = false;
-    }
-  }
-
-  resetPlayersVotedOnQuest() {
-    for (let i in this.players) {
-      this.players[i].votedOnQuest = false;
-    }
-  }
-
-  //resets all values relating to players on quest & quest votes to original values
-  resetPlayersOnQuest(questNum) {
-    for (let i in this.players) {
-      this.players[i].onQuest = false;
-    }
-    this.quests[questNum].resetQuest();
+  resetPlayersProperty(property) {
+    this.players.forEach(player => {
+      player[property] = false;
+    });
   }
 
   saveQuestHistory(questNum, currentQuest) {
@@ -266,7 +238,7 @@ export default class Game {
     }
     this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
     this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
-    this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leader.name;
+    this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leaderInfo.name;
     if (currentQuest.questTeamDecisions.accept.length > currentQuest.questTeamDecisions.reject.length) {
       this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'accepted';
     } else {
@@ -286,12 +258,9 @@ export default class Game {
     if (lastQuestNum < 5) {
       this.quests[lastQuestNum].currentQuest = false;
       this.quests[lastQuestNum + 1].currentQuest = true;
-
-      //assign a leader
       this.assignNextLeader(lastQuestNum + 1);
     }
     else {
-      //last quest is over, move to endgame
       console.log("Game over: Reached last quest.");
     }
   }
@@ -315,18 +284,6 @@ export default class Game {
       successes: successCount,
       fails: failCount
     });
-  }
-
-  //check if player is Merlin
-  checkIfMerlin(name) {
-    return this.getPlayer({ name: name }).character === 'Merlin';
-  }
-
-  //end the game in favor of evil
-  //called when voteTrack hits 5, evil wins majority of quests, or assassinates Merlin
-  endGameEvilWins(msg) {
-    //reset everything
-    console.log(`Evil Wins: ${msg}`);
   }
 
 };

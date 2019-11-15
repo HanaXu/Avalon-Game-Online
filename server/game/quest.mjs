@@ -31,7 +31,7 @@ export default class Quest {
     this.playersOnQuest = new Set([]);
     this.playersNeededLeft = this.playersRequired;
     this.voteTrack = 1;
-    this.leader = {
+    this.leaderInfo = {
       'name': '',
       'socketID': null
     };
@@ -61,8 +61,8 @@ export default class Quest {
     this.playersNeededLeft++;
   }
 
-  assignLeader(playerInfo) {
-    this.leader = playerInfo;
+  assignLeaderInfo(playerInfo) {
+    this.leaderInfo = playerInfo;
     this.currentQuest = true;
   }
 
