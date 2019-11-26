@@ -116,10 +116,6 @@ export default class Game {
     return GoodTeam;
   }
 
-  hasPlayerWithName(name) {
-    return this.players.some(player => player.name === name);
-  }
-
   addPlayerToQuest(questNum, name) {
     for (let i in this.players) {
       if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0) {
@@ -140,9 +136,9 @@ export default class Game {
     }
   }
 
-  getPlayer({ socketID, name, role, character }) {
+  getPlayerBy(property, value) {
     return this.players.find(player =>
-      player.socketID === socketID || player.name === name || player.role === role || player.character === character
+      player[property] === value
     );
   }
 
@@ -232,7 +228,7 @@ export default class Game {
 
   saveQuestHistory(questNum, currentQuest) {
     //console.log(this.questHistory[questNum][currentQuest.voteTrack]);
-    if (this.questHistory[questNum][currentQuest.voteTrack] === undefined) {
+    if (typeof this.questHistory[questNum][currentQuest.voteTrack] === 'undefined') {
       console.log('exceeded 1 votetrack, creating new history obj');
       this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
     }

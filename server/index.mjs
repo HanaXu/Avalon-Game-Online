@@ -49,7 +49,7 @@ io.on('connection', socket => {
     GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
 
     //since player is Host, show them the game setup options (bots, optional characters)
-    socket.emit('showHostSetupOptions', true);
+    socket.emit('showHostSetupOptionsBtn', true);
     //emit all the game players to client, client then updates the UI
     io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
   });
@@ -75,7 +75,7 @@ io.on('connection', socket => {
       return;
     }
     //reconnect disconnected player after the game has started
-    else if (GameList[roomCode].hasPlayerWithName(name) && GameList[roomCode].getPlayer({ name: name }).disconnected === true) {
+    else if (GameList[roomCode].getPlayerBy('name', name) && GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
       reconnectPlayerToStartedGame(name);
       return;
     }
@@ -90,8 +90,8 @@ io.on('connection', socket => {
 
     //check for game ready
     if (GameList[roomCode].players.length >= 5) {
-      const hostSocketID = GameList[roomCode].getPlayer({ role: 'Host'}).socketID;
-      io.to(hostSocketID).emit('gameReady');
+      const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
+      io.to(hostSocketID).emit('readyToStartGame');
     }
   });
 
@@ -113,7 +113,7 @@ io.on('connection', socket => {
 
     updatePlayerCards(GameList[roomCode].players);
     io.in(roomCode).emit('gameStarted');
-    io.to(socket.id).emit('showHostSetupOptions', false);
+    io.to(socket.id).emit('showHostSetupOptionsBtn', false);
     //show what kind of characters are in the game
     io.in(roomCode).emit('roleList', {
       good: GameList[roomCode].roleList["good"],
@@ -187,7 +187,7 @@ io.on('connection', socket => {
     io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 
     //hide buttons if they already voted
-    GameList[roomCode].getPlayer({ name: name }).votedOnTeam = true;
+    GameList[roomCode].getPlayerBy('name', name).votedOnTeam = true;
     socket.emit('acceptOrRejectTeam', { bool: false });
 
     //show that player has made some kind of vote
@@ -211,7 +211,7 @@ io.on('connection', socket => {
 
   socket.on('questVote', function (data) {
     const { name, decision } = data;
-    GameList[roomCode].getPlayer({ name: name }).votedOnQuest = true;
+    GameList[roomCode].getPlayerBy('name', name).votedOnQuest = true;
     console.log(`received quest vote from: ${name}`);
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
@@ -252,7 +252,7 @@ io.on('connection', socket => {
   });
 
   socket.on('assassinatePlayer', function (name) {
-    const merlinPlayer = GameList[roomCode].getPlayer({character: 'Merlin'});
+    const merlinPlayer = GameList[roomCode].getPlayerBy('character', 'Merlin');
     console.log(`Merlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
     const msg = merlinPlayer.name === name ? `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`
       : `Assassin failed to discover and kill Merlin. Good Wins!`;
@@ -260,13 +260,13 @@ io.on('connection', socket => {
   });
 
   socket.on('disconnect', function () {
-    if (Object.keys(GameList).length != 0 && GameList[roomCode] != undefined) {
+    if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
       let players = GameList[roomCode].players;
 
       //disconnection after game start
       if (GameList[roomCode].gameIsStarted) {
         console.log('disconnecting player after game start')
-        GameList[roomCode].getPlayer({ socketID: socket.id }).disconnected = true;
+        GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
         updatePlayerCards(players);
       }
       //disconnection before game start
@@ -280,7 +280,7 @@ io.on('connection', socket => {
 
   function reconnectPlayerToStartedGame(name) {
     console.log(`reconnecting ${name} to room ${roomCode}`)
-    let existingPlayer = GameList[roomCode].getPlayer({ name: name });
+    let existingPlayer = GameList[roomCode].getPlayerBy('name', name);
     existingPlayer.socketID = socket.id;
     existingPlayer.disconnected = false;
 
@@ -360,7 +360,7 @@ function generateRoomCode() {
 
 //validate before letting player join a room
 function validateJoinRoom(name, roomCode) {
-  if (GameList[roomCode] === undefined) {
+  if (typeof GameList[roomCode] === 'undefined') {
     console.log(`Error: Room code '${roomCode}' does not exist.`);
     return `Error: Room code '${roomCode}' does not exist.`;
   }
@@ -370,7 +370,7 @@ function validateJoinRoom(name, roomCode) {
   } else if (name === null || name.length < 1 || name.length > 20) {
     console.log(`Error: Name must be between 1-20 characters: ${name}`);
     return `Error: Name must be between 1-20 characters: ${name}`;
-  } else if (GameList[roomCode].hasPlayerWithName(name)) {
+  } else if (GameList[roomCode].getPlayerBy('name', name)) {
     console.log(`Error: Name '${name}' is already taken.`);
     return `Error: Name '${name}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
@@ -466,7 +466,7 @@ function checkForGameOver(roomCode) {
   }
   //good is on track to win, evil can assassinate
   else if (tallyQuests.successes >= 3) {
-    const assassinSocketID = GameList[roomCode].getPlayer({ character: 'Assassin'}).socketID;
+    const assassinSocketID = GameList[roomCode].getPlayerBy('character', 'Assassin').socketID;
     io.in(roomCode).emit('waitForAssassin', `Good has triumphed over Evil by succeeding 
     ${tallyQuests.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
 

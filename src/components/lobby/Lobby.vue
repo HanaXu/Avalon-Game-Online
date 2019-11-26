@@ -14,7 +14,7 @@
       </b-col>
       <b-col md="5">
         <b-form-checkbox
-          v-if="showSetupOptions"
+          v-if="showSetupOptionsBtn"
           id="checkbox-1"
           v-model="challengeMode"
           name="checkbox-1"
@@ -25,7 +25,7 @@
           Challenge Mode (No History Saved):
           <strong>{{ challengeMode }}</strong>
         </b-form-checkbox>
-        <div v-if="!showSetupOptions">
+        <div v-if="!showSetupOptionsBtn">
           Challenge Mode (No History Saved):
           <strong>{{ challengeMode }}</strong>
         </div>
@@ -37,13 +37,13 @@
         <PlayerList :players="players" />
       </b-col>
       <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
-        <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptions">Setup Options</b-button>
+        <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptionsBtn">Setup Options</b-button>
       </b-col>
     </b-row>
     <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
 
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <div v-if="showStartButton">
+    <div v-if="showStartBtn">
       <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
   </div>
@@ -64,10 +64,10 @@ export default {
     return {
       optionalCharacters: [],
       challengeMode: "OFF",
-      showSetupOptions: false,
+      showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
-      showStartButton: false
+      showStartBtn: false
     };
   },
   methods: {
@@ -80,7 +80,7 @@ export default {
         roomCode: this.roomCode,
         optionalCharacters: this.optionalCharacters
       });
-      this.showStartButton = false;
+      this.showStartBtn = false;
     },
     emitChallengeMode(mode) {
       this.$socket.emit("challengeMode", mode);
@@ -90,20 +90,20 @@ export default {
     updateChallengeMode(str) {
       this.challengeMode = str;
     },
-    gameReady() {
-      this.showStartButton = true;
+    readyToStartGame() {
+      this.showStartBtn = true;
     },
     gameStarted() {
       this.error = false;
-      this.showSetupOptions = false;
+      this.showSetupOptionsBtn = false;
     },
-    showHostSetupOptions(bool) {
-      this.showSetupOptions = bool;
+    showHostSetupOptionsBtn(bool) {
+      this.showSetupOptionsBtn = bool;
     },
     errorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
-      this.showStartButton = true;
+      this.showStartBtn = true;
     }
   }
 };

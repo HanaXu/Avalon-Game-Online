@@ -98,7 +98,7 @@ export default class GameBot {
 
         });
 
-        bot.socket.on("gameReady", function () {
+        bot.socket.on("readyToStartGame", function () {
             console.log("Bot Ready for Game!");
         });
 
@@ -397,11 +397,11 @@ export default class GameBot {
     //called when quest history is updated
     updatePlayerRiskScores() {
         // console.log(`------updating player risk score for ${this.name}------`);
-        if (this.questHistory[this.nextQuest] != undefined) {
+        if (typeof this.questHistory[this.nextQuest] !== 'undefined') {
             //the latest quest history object:
             let quest = this.questHistory[this.nextQuest][this.nextVoteTrack];
 
-            if (quest != undefined && quest.success != null) { //only update player risk scores if quest actually happened
+            if (typeof quest !== 'undefined' && quest.success != null) { //only update player risk scores if quest actually happened
                 for (let i = 0; i < this.players.length; i++) {
 
                     //check for quest leader

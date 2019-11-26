@@ -11,15 +11,15 @@ example teamObj
 */
 export function populateRoleList(teamObj) {
     let roleList = {
-        "good": {},
-        "evil": {}
+        'good': {},
+        'evil': {}
     };
     for (let character in teamObj) {
         if (teamObj[character] <= 0) continue;
         if (GoodTeam.has(character)) {
-            roleList["good"][character] = teamObj[character];
+            roleList['good'][character] = teamObj[character];
         } else {
-            roleList["evil"][character] = teamObj[character];
+            roleList['evil'][character] = teamObj[character];
         }
     }
     // console.log(roleList);
