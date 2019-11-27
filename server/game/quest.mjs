@@ -35,12 +35,12 @@ export default class Quest {
       'name': '',
       'socketID': null
     };
-    this.questTeamDecisions = {
+    this.acceptOrRejectTeam = {
       'voted': [],
       'accept': [],
       'reject': []
     };
-    this.questTeamConfirmed = false;
+    this.leaderHasConfirmedTeam = false;
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.votes = {
@@ -74,9 +74,9 @@ export default class Quest {
   resetQuest() {
     this.playersNeededLeft = this.playersRequired;
     this.playersOnQuest.clear();
-    this.questTeamDecisions.voted = [];
-    this.questTeamDecisions.accept = [];
-    this.questTeamDecisions.reject = [];
+    this.acceptOrRejectTeam.voted = [];
+    this.acceptOrRejectTeam.accept = [];
+    this.acceptOrRejectTeam.reject = [];
   }
 
   // getter for PlayerIdentities

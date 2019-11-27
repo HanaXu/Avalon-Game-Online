@@ -5,7 +5,7 @@ export default class QuestHistory {
         this.playersOnQuest = null;
         this.voteTrack = 1;
         this.leader = null;
-        this.questTeamDecisions = {
+        this.acceptOrRejectTeam = {
             'result': null,
             'accept': [],
             'reject': []

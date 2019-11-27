@@ -68,7 +68,6 @@ export default {
   props: [],
   sockets: {
     votedOnTeam(votes) {
-      console.log("votedOnTeam()");
       this.teamVotes = votes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
@@ -87,18 +86,18 @@ export default {
       this.showHasVoted = false;
       this.showTeamVoteResults = true;
     },
-    hideTeamVotes() {
+    hidePreviousTeamVotes() {
       this.showHasVoted = false;
       this.showTeamVoteResults = false;
     },
-    revealVotes(data) {
+    revealQuestResults(data) {
       this.canVoteOnQuest = false;
       this.showHasVotedOnQuest = false;
       this.successCount = data["success"];
       this.failCount = data["fail"];
       this.showQuestVoteResults = true;
     },
-    hideVotes() {
+    hidePreviousQuestVotes() {
       this.showQuestVoteResults = false;
       this.canVoteOnQuest = false;
     }

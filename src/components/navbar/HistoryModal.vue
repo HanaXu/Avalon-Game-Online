@@ -53,11 +53,11 @@
 
             <b-badge
               class="voteResult teamRejected"
-              v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'rejected'"
+              v-if="questItem[voteTrackIndex].acceptOrRejectTeam.result === 'rejected'"
             >Rejected Team</b-badge>
             <b-badge
               class="voteResult teamAccepted"
-              v-if="questItem[voteTrackIndex].questTeamDecisions.result === 'accepted'"
+              v-if="questItem[voteTrackIndex].acceptOrRejectTeam.result === 'accepted'"
             >Accepted Team</b-badge>
           </b-col>
           <b-col cols="12" md="9">
@@ -67,7 +67,7 @@
                 <br>
 
                 <span
-                  v-for="(playerName, index) in questItem[voteTrackIndex].questTeamDecisions.accept"
+                  v-for="(playerName, index) in questItem[voteTrackIndex].acceptOrRejectTeam.accept"
                   :key="index"
                 >
                   {{ playerName }}
@@ -78,7 +78,7 @@
                 <span class="subheader">Rejected Team</span>
                 <br>
                 <span
-                  v-for="(playerName, index) in questItem[voteTrackIndex].questTeamDecisions.reject"
+                  v-for="(playerName, index) in questItem[voteTrackIndex].acceptOrRejectTeam.reject"
                   :key="index"
                 >
                   {{ playerName }}

@@ -6,19 +6,19 @@
         <b-button
           class="avalon-btn-lg"
           id="confirm-team-btn"
-          @click="questTeamConfirmed"
+          @click="leaderHasConfirmedTeam"
         >Confirm Team</b-button>
       </div>
       <div v-if="showAcceptRejectButtons">
         <b-button
           class="avalon-btn-lg"
           id="accept-team-btn"
-          @click="questTeamDecision('accept')"
+          @click="playerAcceptsOrRejectsTeam('accept')"
         >Accept Team</b-button>
         <b-button
           class="avalon-btn-lg"
           id="reject-team-btn"
-          @click="questTeamDecision('reject')"
+          @click="playerAcceptsOrRejectsTeam('reject')"
         >Reject Team</b-button>
       </div>
     </b-col>
@@ -39,11 +39,11 @@ export default {
   },
   props: ["yourName"],
   methods: {
-    questTeamConfirmed() {
-      this.$socket.emit("questTeamConfirmed");
+    leaderHasConfirmedTeam() {
+      this.$socket.emit("leaderHasConfirmedTeam");
     },
-    questTeamDecision(decision) {
-      this.$socket.emit("questTeamDecision", {
+    playerAcceptsOrRejectsTeam(decision) {
+      this.$socket.emit("playerAcceptsOrRejectsTeam", {
         name: this.yourName,
         decision: decision
       });
@@ -53,7 +53,7 @@ export default {
     showConfirmTeamButtonToLeader(bool) {
       this.showConfirmTeamButtonToLeader = bool;
     },
-    acceptOrRejectTeam(data) {
+    showAcceptOrRejectTeamBtns(data) {
       this.showAcceptRejectButtons = data.bool;
     }
   }

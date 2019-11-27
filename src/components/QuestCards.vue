@@ -37,8 +37,8 @@ export default {
     };
   },
   sockets: {
-    updateQuests(data) {
-      this.quests = data["quests"];
+    updateQuestCards(quests) {
+      this.quests = quests;
     }
   }
 };

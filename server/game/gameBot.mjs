@@ -104,10 +104,10 @@ export default class GameBot {
 
         // Function For Bot to Decide Whether it Will
         // Accept or Reject the Vote for Quest Teams
-        bot.socket.on("acceptOrRejectTeam", function (data) {
+        bot.socket.on("showAcceptOrRejectTeamBtns", function (data) {
             if (data.bool === true) {
                 let botDecision = bot.botQuestTeamVote(data.onQuest);
-                bot.socket.emit("questTeamDecision", {
+                bot.socket.emit("playerAcceptsOrRejectsTeam", {
                     name: bot.name,
                     decision: botDecision
                 });
@@ -278,7 +278,7 @@ export default class GameBot {
             }
         }
         this.leader = false;
-        this.socket.emit('questTeamConfirmed');
+        this.socket.emit('leaderHasConfirmedTeam');
     }
 
     makeEvilQuestTeamVote(playersOnQuest) {
@@ -338,7 +338,7 @@ export default class GameBot {
         }
 
         this.leader = false;
-        this.socket.emit('questTeamConfirmed');
+        this.socket.emit('leaderHasConfirmedTeam');
     }
 
     makeGoodQuestTeamVote(playersOnQuest) {
@@ -432,7 +432,7 @@ export default class GameBot {
                     }
 
                     //check for vote Accept
-                    if (quest.questTeamDecisions.accept.includes(this.players[i].name)) {
+                    if (quest.acceptOrRejectTeam.accept.includes(this.players[i].name)) {
                         //increment risk score if quest failed, decrement if succeeded
                         if (quest.success) {
                             //decrement risk score because quest succeeded
@@ -444,7 +444,7 @@ export default class GameBot {
                         //console.log(this.playerRiskScores[i]);
                     }
                     //check for vote Reject
-                    else if (quest.questTeamDecisions.reject.includes(this.players[i].name)) {
+                    else if (quest.acceptOrRejectTeam.reject.includes(this.players[i].name)) {
                         //decrement risk score if quest failed, increment if succeeded
                         if (quest.success) {
                             //decrement risk score because quest succeeded

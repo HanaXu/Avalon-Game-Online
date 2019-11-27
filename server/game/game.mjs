@@ -145,7 +145,7 @@ export default class Game {
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
-        console.log(`removing player from room: ${this.roomCode}`);
+        console.log(`removing ${this.players[i].name} from room: ${this.roomCode}`);
         this.players.splice(i, 1); //delete 1 player element at index i
         break;
       }
@@ -235,13 +235,13 @@ export default class Game {
     this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
     this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
     this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leaderInfo.name;
-    if (currentQuest.questTeamDecisions.accept.length > currentQuest.questTeamDecisions.reject.length) {
-      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'accepted';
+    if (currentQuest.acceptOrRejectTeam.accept.length > currentQuest.acceptOrRejectTeam.reject.length) {
+      this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.result = 'accepted';
     } else {
-      this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.result = 'rejected';
+      this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.result = 'rejected';
     }
-    this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.accept = currentQuest.questTeamDecisions.accept;
-    this.questHistory[questNum][currentQuest.voteTrack].questTeamDecisions.reject = currentQuest.questTeamDecisions.reject;
+    this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.accept = currentQuest.acceptOrRejectTeam.accept;
+    this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.reject = currentQuest.acceptOrRejectTeam.reject;
     this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
     this.questHistory[questNum][currentQuest.voteTrack].votes.fail = currentQuest.votes.fail.length;
     this.questHistory[questNum][currentQuest.voteTrack].success = currentQuest.success;
