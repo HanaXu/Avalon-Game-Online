@@ -20,7 +20,7 @@
           name="checkbox-1"
           value="ON"
           unchecked-value="OFF"
-          @change="emitChallengeMode($event)"
+          @change="updateChallengeMode($event)"
         >
           Challenge Mode (No History Saved):
           <strong>{{ challengeMode }}</strong>
@@ -40,10 +40,10 @@
         <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptionsBtn">Setup Options</b-button>
       </b-col>
     </b-row>
-    <SetupOptions @clicked="clickedSetupOptions" :roomCode="roomCode"></SetupOptions>
+    <SetupOptions @clicked="updateSetupOptions" :roomCode="roomCode"></SetupOptions>
 
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <div v-if="showStartBtn">
+    <div v-if="showStartGameBtn">
       <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
   </div>
@@ -67,11 +67,11 @@ export default {
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
-      showStartBtn: false
+      showStartGameBtn: false
     };
   },
   methods: {
-    clickedSetupOptions(data) {
+    updateSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
       this.optionalCharacters = data;
     },
@@ -80,9 +80,9 @@ export default {
         roomCode: this.roomCode,
         optionalCharacters: this.optionalCharacters
       });
-      this.showStartBtn = false;
+      this.showStartGameBtn = false;
     },
-    emitChallengeMode(mode) {
+    updateChallengeMode(mode) {
       this.$socket.emit("challengeMode", mode);
     }
   },
@@ -90,20 +90,20 @@ export default {
     updateChallengeMode(str) {
       this.challengeMode = str;
     },
-    readyToStartGame() {
-      this.showStartBtn = true;
+    showStartGameBtn() {
+      this.showStartGameBtn = true;
     },
-    gameStarted() {
+    startGame() {
       this.error = false;
       this.showSetupOptionsBtn = false;
     },
     showHostSetupOptionsBtn(bool) {
       this.showSetupOptionsBtn = bool;
     },
-    errorMsg(msg) {
+    updateErrorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
-      this.showStartBtn = true;
+      this.showStartGameBtn = true;
     }
   }
 };

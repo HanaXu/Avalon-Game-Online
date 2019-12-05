@@ -26,7 +26,6 @@ export default {
   methods: {
     questVote(decision) {
       this.canVoteOnQuest = false;
-
       this.$socket.emit("questVote", {
         name: this.yourName,
         decision: decision

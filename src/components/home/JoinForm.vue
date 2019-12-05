@@ -55,7 +55,7 @@ export default {
     }
   },
   sockets: {
-    errorMsg(msg) {
+    updateErrorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;

@@ -94,7 +94,6 @@ export default {
   color: #000;
   text-align: left;
 }
-
 .label {
   font-weight: bold;
 }

@@ -34,22 +34,22 @@
             <p v-if="player.disconnected === true" class="font-italic">Disconnected</p>
           </h6>
 
-          <div v-if="showAddPlayerButton || showRemovePlayerButton">
+          <div v-if="showAddBtn || showRemoveBtn">
             <b-button
               class="mx-1 mt-2 questAddButton"
               :id="'add-player-' + player.name"
-              v-if="!player.onQuest && showAddPlayerButton"
+              v-if="!player.onQuest && showAddBtn"
               @click="addPlayerToQuest(player.name)"
             >Add to Quest</b-button>
             <b-button
               class="mx-1 mt-1 questRemoveButton"
               :id="'remove-player-' + player.name"
-              v-if="player.onQuest && showRemovePlayerButton"
+              v-if="player.onQuest && showRemoveBtn"
               @click="removePlayerFromQuest(player.name)"
             >Remove</b-button>
           </div>
 
-          <div v-if="assassination" class="row justify-content-md-center">
+          <div v-if="showAssassinateBtn" class="row justify-content-md-center">
             <b-button
               class="mx-1 mt-1"
               :id="'assassinate-' + player.name"
@@ -74,9 +74,9 @@ export default {
   props: [
     "players",
     "yourName",
-    "showAddPlayerButton",
-    "showRemovePlayerButton",
-    "assassination"
+    "showAddBtn",
+    "showRemoveBtn",
+    "showAssassinateBtn"
   ],
   data() {
     return {

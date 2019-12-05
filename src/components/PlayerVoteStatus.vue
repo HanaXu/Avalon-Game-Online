@@ -7,7 +7,6 @@
           <strong>Voted:</strong>
           {{ teamVotes }}
         </div>
-
         <!--all players have voted, show all results-->
         <div v-if="showTeamVoteResults" class="row my-0 justify-content-center">
           <div class="col-md-6 col-12 text-left">
@@ -25,7 +24,6 @@
             </div>
           </div>
         </div>
-
         <!--all of quest team has voted-->
         <div class="row justify-content-center" v-if="showQuestVoteResults">
           <div class="col-6 col-md-3">
@@ -67,17 +65,15 @@ export default {
   },
   props: [],
   sockets: {
-    votedOnTeam(votes) {
-      this.teamVotes = votes.join(", ");
+    updateConcealedTeamVotes(currentVotes) {
+      this.teamVotes = currentVotes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
+      this.showPlayerVoteStatus = true;
     },
-    votedOnQuest(votes) {
+    updateConcealedQuestVotes(votes) {
       this.showHasVotedOnQuest = true;
       this.questVotes = votes.join(", ");
-    },
-    togglePlayerVoteStatus(bool) {
-      this.showPlayerVoteStatus = bool;
     },
     revealTeamVotes(votes) {
       this.teamVotes = votes;

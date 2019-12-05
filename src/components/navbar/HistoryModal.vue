@@ -45,12 +45,10 @@
             <span>{{ " " + questItem[voteTrackIndex].playersOnQuest.join(", ") }}</span>
           </b-col>
         </b-row>
-
         <!-- decide quest team outcome -->
         <b-row>
           <b-col cols="12" md="3">
             <strong>Team Vote Results:</strong>
-
             <b-badge
               class="voteResult teamRejected"
               v-if="questItem[voteTrackIndex].acceptOrRejectTeam.result === 'rejected'"
@@ -65,7 +63,6 @@
               <b-col cols="6">
                 <span class="subheader">Accepted Team</span>
                 <br>
-
                 <span
                   v-for="(playerName, index) in questItem[voteTrackIndex].acceptOrRejectTeam.accept"
                   :key="index"
@@ -90,11 +87,11 @@
         </b-row>
       </div>
     </div>
-
     <!--include footer so OK and Cancel buttons dont show up-->
     <div slot="modal-footer"></div>
   </b-modal>
 </template>
+
 <script>
 export default {
   name: "HistoryModal",
@@ -120,7 +117,6 @@ export default {
   overflow-x: hidden;
   word-wrap: break-word;
 }
-
 h3 {
   font-family: "Segoe UI", Helvetica, Arial, sans-serif;
   text-align: center;
@@ -128,38 +124,30 @@ h3 {
   padding: 2px 0;
   margin: 0;
 }
-
 .col-6 {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .voteTrackItem {
   border-top: 2px solid #8a7d6e;
 }
-
 .voteResult,
 .voteResult.teamAccepted {
   background: #7d67aa;
 }
-
 .voteResult.teamRejected {
   background: #a42323;
 }
-
 .subheader {
   font-weight: bold;
   border-bottom: 2px solid #8a7d6e;
 }
-
 .questResult {
   background: #c7c2cf;
 }
-
 .questResult.succeed {
   color: green !important;
 }
-
 .questResult.fail {
   color: #a42323 !important;
 }

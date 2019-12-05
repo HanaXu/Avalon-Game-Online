@@ -13,7 +13,6 @@
       Deception, accusation, and logical deducation are all equally important in order
       for Good to prevail or Evil to rule the day.
     </p>
-
     <h2 class="heading">
       <b>Game Play</b>
     </h2>
@@ -25,7 +24,6 @@
       process until a team is approved. If five teams are rejected in a single round, Evil wins.
       In the Quest phase, players selected to be on the team will annonymously vote to succeed or fail the quest.
     </p>
-
     <h2 class="heading">
       <b>Assassinate Merlin</b>
     </h2>
@@ -36,7 +34,6 @@
       will pick one good player as Merlin. If the named player is Merlin, then Evil players win.
       If the evil players do not name Merlin, then the Good players win.
     </p>
-
     <!--include footer so OK and Cancel buttons dont show up-->
     <div slot="modal-footer">
     </div>

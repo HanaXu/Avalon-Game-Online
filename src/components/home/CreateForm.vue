@@ -52,13 +52,13 @@ export default {
     }
   },
   sockets: {
-    errorMsg(msg) {
+    updateErrorMsg(msg) {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
     },
-    checkForAuth(bool) {
-      this.authRequired = bool;
+    setAuth(requireAuth) {
+      this.authRequired = requireAuth;
     },
     passedValidation(roomCode) {
       this.loading = false;

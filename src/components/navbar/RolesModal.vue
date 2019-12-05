@@ -9,7 +9,6 @@
       <br>2. Voting
       <br>3. Deception indicators
     </p>
-
     <h2 class="heading">
       <b>Minion of Mordred</b>
     </h2>
@@ -17,7 +16,6 @@
       Your primary goal is to lose missions. Your secondary goal is to try to discover who
       Merlin is so that you can help the Assassin if you fail your primary goal.
     </p>
-
     <h2 class="heading">
       <b>Merlin</b>
     </h2>
@@ -30,7 +28,6 @@
       <br>3. Being more helpful to the good side than usual.
       <br>4. Never being confused or surprised.
     </p>
-
     <h2 class="heading">
       <b>Assassin</b>
     </h2>
@@ -38,7 +35,6 @@
       Merlin votes correctly pretty much always so the assassin’s most important task is
       watching the voting to see who votes correctly most of the time.
     </p>
-
     <h2 class="heading">
       <b>Percival</b>
     </h2>
@@ -47,12 +43,10 @@
       Your primary job is to pretend to be Merlin. Your secondary job is to
       determine who Morgana is so you can vote down quests in which they try to participate.
     </p>
-
     <h2 class="heading">
       <b>Morgana</b>
     </h2>
     <p>Morgana appears as Merlin to Percival, Percival does not know which is which.</p>
-
     <h2 class="heading">
       <b>Mordred</b>
     </h2>
@@ -64,7 +58,6 @@
       situation because you will be able to watch the votes to see how everyone votes for teams
       to which the other minions belong.
     </p>
-
     <h2 class="heading">
       <b>Oberon</b>
     </h2>
@@ -73,7 +66,6 @@
       addition to a game, but makes it a challenge for the minions, so I recommend only considering
       him during a 7 or 10 player game. Adding him is a great way to spice up a game of veterans.
     </p>
-
     <!--include footer so OK and Cancel buttons dont show up-->
     <div slot="modal-footer">
     </div>

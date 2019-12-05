@@ -37,15 +37,12 @@ export default {
     overflow: hidden;
   }
 }
-
-
 /****NORMAL SCREENS****/
 @media screen and (min-width: 768px) {
   #overlay {
     margin: 10px 10px 10px 0;
   }
 }
-
 #overlay .gameOverMessage {
   font-weight: bold;
   color: white !important;

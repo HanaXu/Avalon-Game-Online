@@ -42,10 +42,8 @@ export default {
   methods: {
     sendMessage(e) {
       e.preventDefault();
-
       // Trim newline from message
       e.target.value = e.target.value.replace(/^\s+|\s+$/g, "");
-
       let timeStamp = this.timeStamp();
 
       if (e.target.value) {
@@ -54,13 +52,11 @@ export default {
           text: e.target.value,
           time: timeStamp
         };
-
         // Push message to firebase reference
         firebase
           .database()
           .ref("chat/room-messages/" + this.roomCode)
           .push(message);
-
         e.target.value = "";
       } else {
         console.log("Something went wrong...");
@@ -87,26 +83,19 @@ export default {
     timeStamp() {
       // Create Date object with current time
       let now = new Date();
-
       // Create array with hours and minutes
       let time = [now.getHours(), now.getMinutes()];
-
       // Set the period
       let period = time[0] < 12 ? "AM" : "PM";
-
       // Convert from military time
       time[0] = time[0] < 12 ? time[0] : time[0] - 12;
-
       // Change hour from 0 to 12 if applicable
       time[0] = time[0] || 12;
-
       // Add 0 before minutes less than 10
       if (time[1] < 10) {
         time[1] = "0" + time[1];
       }
-
       let currentTime = time.join(":") + period;
-
       return currentTime;
     }
   },
@@ -119,7 +108,6 @@ export default {
     itemsRef.on("value", snapshot => {
       var messages = [];
       let data = snapshot.val() || null;
-
       // Display all messages in the current room
       if (data) {
         Object.keys(data).forEach(key => {
@@ -131,7 +119,6 @@ export default {
           });
         });
       }
-
       vm.messages = messages;
     });
   }

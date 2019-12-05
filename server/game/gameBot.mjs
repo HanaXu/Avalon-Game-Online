@@ -73,13 +73,13 @@ export default class GameBot {
             bot.socket.emit("connectPlayer");
         }
 
-        bot.socket.on('gameStarted', function () {
+        bot.socket.on('startGame', function () {
             bot.initializePlayerRiskScores();
         });
 
-        bot.socket.on("updatePlayers", function (players) {
-            //updatePlayers(players, name);
-            //console.log("in Bot Class on updatePlayers: ");
+        bot.socket.on("updatePlayerCards", function (players) {
+            //updatePlayerCards(players, name);
+            //console.log("in Bot Class on updatePlayerCards: ");
             // console.log(players)
             // console.log(`my socket id is: ${socket.id}`)
             bot.players = players;
@@ -98,7 +98,7 @@ export default class GameBot {
 
         });
 
-        bot.socket.on("readyToStartGame", function () {
+        bot.socket.on("showStartGameBtn", function () {
             console.log("Bot Ready for Game!");
         });
 
@@ -121,7 +121,7 @@ export default class GameBot {
 
         });
 
-        bot.socket.on('choosePlayersForQuest', function (data) {
+        bot.socket.on('showAddRemovePlayerBtns', function (data) {
             //console.log(`Leader Bot: ${bot.leader}, ${bot.name}`);
             bot.leader = true;
             // console.log(`-----Leader Bot: ${bot.leader}, ${bot.name}-----`);
@@ -263,7 +263,7 @@ export default class GameBot {
                 // console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
                 this.socket.emit("addPlayerToQuest", players[i].name);
-                this.socket.emit('updatePlayers');
+                this.socket.emit('updatePlayerCards');
                 break;
             }
         }
@@ -274,7 +274,7 @@ export default class GameBot {
                 // console.log(`Chose: ${players[i].name}`);
                 players[i].onQuest = true;
                 this.socket.emit("addPlayerToQuest", players[i].name);
-                this.socket.emit('updatePlayers');
+                this.socket.emit('updatePlayerCards');
             }
         }
         this.leader = false;
@@ -334,7 +334,7 @@ export default class GameBot {
             this.players[playerIndex].onQuest = true;
             sentOnQuest.push(this.players[playerIndex].name);
             this.socket.emit("addPlayerToQuest", players[playerIndex].name);
-            this.socket.emit("updatePlayers");
+            this.socket.emit("updatePlayerCards");
         }
 
         this.leader = false;

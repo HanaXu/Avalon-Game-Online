@@ -13,13 +13,11 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-
     <div class="modals">
       <RulesModal/>
       <RolesModal/>
       <HistoryModal/>
     </div>
-
     <router-view/>
   </div>
 </template>

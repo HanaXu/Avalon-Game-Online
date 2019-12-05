@@ -29,17 +29,16 @@ io.on('connection', socket => {
   var roomCode; //make roomCode available to socket
 
   socket.on('checkForAuth', function () {
-    socket.emit('checkForAuth', requireAuth);
+    socket.emit('setAuth', requireAuth);
   });
 
-  socket.on('createRoom', name => {
+  socket.on('createRoom', function (name) {
     //validate user input
     if (name === null || name.length < 1 || name.length > 20) {
       console.log(`Error: Name does not meet length requirements: ${name}`);
-      socket.emit('errorMsg', `Error: Name must be between 1-20 characters: ${name}`);
+      socket.emit('updateErrorMsg', `Error: Name must be between 1-20 characters: ${name}`);
       return;
     }
-
     roomCode = generateRoomCode();
     socket.emit('passedValidation', roomCode);
     socket.emit('roomCode', roomCode);
@@ -47,11 +46,8 @@ io.on('connection', socket => {
 
     GameList[roomCode] = new Game(roomCode);
     GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
-
-    //since player is Host, show them the game setup options (bots, optional characters)
     socket.emit('showHostSetupOptionsBtn', true);
-    //emit all the game players to client, client then updates the UI
-    io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
+    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
 
   socket.on('challengeMode', function (mode) {
@@ -64,78 +60,70 @@ io.on('connection', socket => {
     Bot.createBot(roomCode, port);
   });
 
-  socket.on('joinRoom', data => {
-    const name = data.name;
+  socket.on('joinRoom', function (data) {
     roomCode = data.roomCode;
-
+    const name = data.name;
     //reconnect disconnected player after the game has started
-    if (GameList[roomCode].getPlayerBy('name', name) && GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
+    if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', name) &&
+      GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
       reconnectPlayerToStartedGame(name);
       return;
     }
     //validate user input
     const errorMsg = validateJoinRoom(name, roomCode);
     if (errorMsg.length > 0) {
-      socket.emit('errorMsg', errorMsg);
+      socket.emit('updateErrorMsg', errorMsg);
       return;
     }
-
     socket.emit('passedValidation');
     socket.emit('roomCode', roomCode);
     socket.join(roomCode);
     GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
 
-    io.in(roomCode).emit('updatePlayers', GameList[roomCode].players);
+    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
-
     if (GameList[roomCode].players.length >= 5) {
       const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
-      io.to(hostSocketID).emit('readyToStartGame');
+      io.to(hostSocketID).emit('showStartGameBtn');
     }
   });
 
-  //no other clients can join now that game is started
-  //assign identities & assign first quest leader
   socket.on('startGame', function (data) {
     roomCode = data.roomCode;
     const optionalCharacters = data.optionalCharacters;
     const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
     if (errorMsg.length > 0) {
-      socket.emit('errorMsg', errorMsg);
+      socket.emit('updateErrorMsg', errorMsg);
       return;
     }
-
     GameList[roomCode].gameIsStarted = true;
     GameList[roomCode].initializeQuests();
     GameList[roomCode].assignIdentities(optionalCharacters);
     GameList[roomCode].assignFirstLeader();
 
     updatePlayerCards(GameList[roomCode].players);
-    io.in(roomCode).emit('gameStarted');
+    io.in(roomCode).emit('startGame');
     io.to(socket.id).emit('showHostSetupOptionsBtn', false);
-    //show what kind of characters are in the game
-    io.in(roomCode).emit('roleList', {
+    io.in(roomCode).emit('setRoleList', {
       good: GameList[roomCode].roleList["good"],
       evil: GameList[roomCode].roleList["evil"]
     });
     //empty the history modal in case player is still in same session from a previous game
     io.in(roomCode).emit('updateHistoryModal', []);
-    questLeaderChoosesQuestTeam(roomCode);
+    leaderChoosesQuestTeam(roomCode);
   });
 
   socket.on('addPlayerToQuest', function (name) {
     let currentQuest = GameList[roomCode].getCurrentQuest();
-
     GameList[roomCode].addPlayerToQuest(currentQuest.questNum, name);
     updatePlayerCards(GameList[roomCode].players);
     io.in(roomCode).emit('hidePreviousTeamVotes'); //get rid of previous votes if they're still showing
 
     if (currentQuest.playersNeededLeft > 0) {
-      updateChoosingPlayerCountMsg(roomCode, currentQuest);
+      updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
     } else {
-      GameList[roomCode].gameState['questMsg'] = `Waiting for ${currentQuest.leaderInfo.name} to confirm team.`;
-      io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-      socket.emit('showConfirmTeamButtonToLeader', true);
+      updateQuestMsg(roomCode, `Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
+      socket.emit('showConfirmTeamBtnToLeader', true);
     }
   });
 
@@ -143,28 +131,24 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     GameList[roomCode].removePlayerFromQuest(currentQuest.questNum, name);
     updatePlayerCards(GameList[roomCode].players);
-    updateChoosingPlayerCountMsg(roomCode, currentQuest);
-    socket.emit('showConfirmTeamButtonToLeader', false);
+    updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
+    socket.emit('showConfirmTeamBtnToLeader', false);
   });
 
   socket.on('leaderHasConfirmedTeam', function () {
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
     io.in(roomCode).emit('hidePreviousQuestVotes');
-    socket.emit('showConfirmTeamButtonToLeader', false);
-    //hide add/remove players from quest leader
-    io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
+    socket.emit('showConfirmTeamBtnToLeader', false);
+    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
       bool: false,
       players: GameList[roomCode].players,
       currentQuestNum: currentQuest.questNum
     });
     currentQuest.leaderHasConfirmedTeam = true;
 
-    GameList[roomCode].gameState['questMsg'] = 'Waiting for all players to Accept or Reject team.';
-    io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-
-    //show accept/reject buttons to everyone
     GameList[roomCode].gameState['acceptOrRejectTeam'] = true;
+    updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
     io.in(roomCode).emit('showAcceptOrRejectTeamBtns', {
       bool: true,
       onQuest: Array.from(currentQuest.playersOnQuest),
@@ -177,24 +161,17 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     currentQuest.acceptOrRejectTeam[decision].push(name);
     currentQuest.acceptOrRejectTeam.voted.push(name);
-
-    GameList[roomCode].gameState['questMsg'] = 'Waiting for all players to Accept or Reject team.';
-    io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-
-    //hide buttons if they already voted
     GameList[roomCode].getPlayerBy('name', name).votedOnTeam = true;
-    socket.emit('showAcceptOrRejectTeamBtns', { bool: false });
 
-    //show that player has made some kind of vote
-    io.in(roomCode).emit('togglePlayerVoteStatus', true); //goes to Game.vue to display the element
-    io.in(roomCode).emit('votedOnTeam', currentQuest.acceptOrRejectTeam.voted); //goes to PlayerVoteStatus to update content of element
+    updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
+    socket.emit('showAcceptOrRejectTeamBtns', { bool: false });
+    io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
       GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
       GameList[roomCode].resetPlayersProperty('votedOnTeam');
       io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
-
       if (currentQuest.acceptOrRejectTeam.reject.length >= GameList[roomCode].players.length / 2) {
         questTeamRejectedStuff(roomCode, currentQuest);
       }
@@ -213,16 +190,13 @@ io.on('connection', socket => {
     const votes = currentQuest.votes;
     votes[decision].push(name);
     votes.voted.push(name);
-    io.in(roomCode).emit('votedOnQuest', votes.voted); //show that player has made some kind of vote
+    io.in(roomCode).emit('updateConcealedQuestVotes', votes.voted); //show that player has made some kind of vote
 
     //check if number of received votes is max needed
     if ((votes.succeed.length + votes.fail.length) == currentQuest.playersRequired) {
       GameList[roomCode].gameState['succeedOrFailQuest'] = false;
-
-      //get rid of team vote stuff from DecideQuestTeam component
-      io.in(roomCode).emit('hidePreviousTeamVotes');
+      io.in(roomCode).emit('hidePreviousTeamVotes'); //get rid of team vote stuff from DecideQuestTeam component
       console.log('All quest votes received.');
-
       io.in(roomCode).emit('revealQuestResults', {
         success: votes.succeed.length,
         fail: votes.fail.length
@@ -234,7 +208,6 @@ io.on('connection', socket => {
         io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
       }
       io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
-
       GameList[roomCode].resetPlayersProperty('votedOnQuest');
       checkForGameOver(roomCode);
     }
@@ -251,17 +224,16 @@ io.on('connection', socket => {
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
       let players = GameList[roomCode].players;
-
       //disconnection after game start
       if (GameList[roomCode].gameIsStarted) {
-        console.log('disconnecting player after game start')
+        console.log('disconnecting player from started game')
         GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
         updatePlayerCards(players);
       }
       //disconnection before game start
       else {
         GameList[roomCode].deletePlayer(socket.id);
-        io.in(roomCode).emit('updatePlayers', players);
+        io.in(roomCode).emit('updatePlayerCards', players);
       }
     }
   });
@@ -278,8 +250,8 @@ io.on('connection', socket => {
 
     //show game screen instead of lobby
     if (GameList[roomCode].gameIsStarted) {
-      socket.emit('gameStarted');
-      io.in(roomCode).emit('roleList', {
+      socket.emit('startGame');
+      io.in(roomCode).emit('setRoleList', {
         good: GameList[roomCode].roleList["good"],
         evil: GameList[roomCode].roleList["evil"]
       });
@@ -297,9 +269,7 @@ io.on('connection', socket => {
     }
 
     if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
-      //show that player has made some kind of vote
-      io.in(roomCode).emit('togglePlayerVoteStatus', true);
-      io.in(roomCode).emit('votedOnTeam', currentQuest.acceptOrRejectTeam.voted);
+      io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
       if (!existingPlayer.votedOnTeam) {
         console.log('did not vote yet, showing accept/reject buttons')
         socket.emit('showAcceptOrRejectTeamBtns', { bool: true });
@@ -318,15 +288,15 @@ io.on('connection', socket => {
     if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
       console.log('showing add/remove quest buttons to leader')
       currentQuest.leaderInfo.socketID = socket.id;
-      io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
+      io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
         bool: true,
         players: GameList[roomCode].players,
         currentQuestNum: currentQuest.questNum
       });
-      socket.emit('showConfirmTeamButtonToLeader', false);
+      socket.emit('showConfirmTeamBtnToLeader', false);
     }
     if (currentQuest.leaderInfo.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.leaderHasConfirmedTeam) {
-      socket.emit('showConfirmTeamButtonToLeader', true);
+      socket.emit('showConfirmTeamBtnToLeader', true);
     }
   }
 });
@@ -369,29 +339,30 @@ function validateJoinRoom(name, roomCode) {
 function updatePlayerCards(players) {
   players.forEach(player => {
     const sanitizedPlayers = sanitizeTeamView(player.socketID, player.character, players);
-    io.to(player.socketID).emit('updatePlayers', sanitizedPlayers);
+    io.to(player.socketID).emit('updatePlayerCards', sanitizedPlayers);
   });
 }
 
-function updateChoosingPlayerCountMsg(roomCode, currentQuest) {
+function updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest) {
   GameList[roomCode].gameState['questMsg'] = `${currentQuest.leaderInfo.name} is choosing 
                                               ${currentQuest.playersNeededLeft} more players to go on quest 
                                               ${currentQuest.questNum}`;
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 }
 
-function questLeaderChoosesQuestTeam(roomCode) {
+function updateQuestMsg(roomCode, msg) {
+  GameList[roomCode].gameState['questMsg'] = msg;
+  io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+}
+
+function leaderChoosesQuestTeam(roomCode) {
   const currentQuest = GameList[roomCode].getCurrentQuest();
 
   io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
-  io.in(roomCode).emit('updateVoteTrack', {
-    voteTrack: currentQuest.voteTrack
-  });
-
-  updateChoosingPlayerCountMsg(roomCode, currentQuest);
+  io.in(roomCode).emit('updateVoteTrack', { voteTrack: currentQuest.voteTrack });
+  updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
   console.log(`Current Quest: ${currentQuest.questNum}`);
-
-  io.to(currentQuest.leaderInfo.socketID).emit('choosePlayersForQuest', {
+  io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
     bool: true,
     players: GameList[roomCode].players,
     currentQuestNum: currentQuest.questNum
@@ -399,9 +370,7 @@ function questLeaderChoosesQuestTeam(roomCode) {
 }
 
 function questTeamAcceptedStuff(roomCode) {
-  GameList[roomCode].gameState['questMsg'] = 'Quest team was Approved. Waiting for quest team to go on quest.';
-  io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-
+  updateQuestMsg(roomCode, 'Quest team was Approved. Waiting for quest team to go on quest.');
   GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
   GameList[roomCode].gameState['succeedOrFailQuest'] = true;
   GameList[roomCode].players.forEach(player => {
@@ -417,21 +386,18 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
   if (GameList[roomCode].challengeMode === "OFF") {
     io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
   }
-
-  GameList[roomCode].gameState['questMsg'] = 'Quest team was Rejected. New quest leader has been chosen.';
-  io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+  updateQuestMsg(roomCode, 'Quest team was Rejected. New quest leader has been chosen.');
   currentQuest.voteTrack++;
 
   //check if voteTrack has exceeded 5 (game over)
   if (currentQuest.voteTrack > 5) {
-    const msg = `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`;
-    io.in(roomCode).emit('gameOver', msg);
+    io.in(roomCode).emit('gameOver', `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`);
   } else { //increment voteTrack and assign next leader
     GameList[roomCode].resetPlayersProperty('onQuest');
     GameList[roomCode].quests[currentQuest.questNum].resetQuest();
     GameList[roomCode].assignNextLeader(currentQuest.questNum);
     updatePlayerCards(GameList[roomCode].players);
-    questLeaderChoosesQuestTeam(roomCode);
+    leaderChoosesQuestTeam(roomCode);
   }
 }
 
@@ -448,7 +414,7 @@ function checkForGameOver(roomCode) {
   //good is on track to win, evil can assassinate
   else if (tallyQuests.successes >= 3) {
     const assassinSocketID = GameList[roomCode].getPlayerBy('character', 'Assassin').socketID;
-    io.in(roomCode).emit('waitForAssassin', `Good has triumphed over Evil by succeeding 
+    io.in(roomCode).emit('updateQuestMsg', `Good has triumphed over Evil by succeeding 
     ${tallyQuests.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
 
     io.to(assassinSocketID).emit('beginAssassination', `You are the assassin. 
@@ -458,6 +424,6 @@ function checkForGameOver(roomCode) {
     //choose next leader and start next quest
     GameList[roomCode].startNextQuest(currentQuest.questNum);
     updatePlayerCards(GameList[roomCode].players);
-    questLeaderChoosesQuestTeam(roomCode);
+    leaderChoosesQuestTeam(roomCode);
   }
 }

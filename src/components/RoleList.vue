@@ -22,7 +22,7 @@ export default {
     };
   },
   sockets: {
-    roleList(data) {
+    setRoleList(data) {
       this.goodRoles = data["good"];
       this.evilRoles = data["evil"];
     }

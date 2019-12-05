@@ -4,27 +4,24 @@
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
         <Lobby v-if="!gameStarted" :yourName="yourName" :roomCode="roomCode" :players="players"/>
-
         <!-- Actual Game -->
         <div class="container main-board" v-if="gameStarted">
           <PlayerCards
             v-if="gameStarted"
             :players="players"
             :yourName="yourName"
-            :showAddPlayerButton="showAddPlayerButton"
-            :showRemovePlayerButton="showRemovePlayerButton"
-            :assassination="assassination"
+            :showAddBtn="showAddBtn"
+            :showRemoveBtn="showRemoveBtn"
+            :showAssassinateBtn="showAssassinateBtn"
           />
           <QuestCards v-if="gameStarted"/>
           <VoteTrack v-if="gameStarted"/>
         </div>
-
         <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
         <PlayerVoteStatus/>
         <QuestVotes :yourName="yourName"/>
         <DecideQuestTeam :yourName="yourName"/>
       </div>
-
       <div class="col-12 col-md-3">
         <div class="container chat">
           <RoleList v-if="gameStarted"/>
@@ -70,17 +67,12 @@ export default {
       yourName: null,
       roomCode: null,
       players: [],
-
       questMsg: null,
       showQuestMsg: false,
-
       gameStarted: false,
-      showAddPlayerButton: false,
-      showRemovePlayerButton: false,
-
-      waitingForAssassin: false,
-      assassination: false,
-
+      showAddBtn: false,
+      showRemoveBtn: false,
+      showAssassinateBtn: false,
       gameOver: false,
       endGameMsg: null
     };
@@ -90,30 +82,23 @@ export default {
     this.roomCode = this.$route.params.roomCode;
   },
   sockets: {
-    updatePlayers(players) {
+    updatePlayerCards(players) {
       this.players = players;
     },
-    gameStarted() {
+    startGame() {
       this.gameStarted = true;
     },
-    //choose player to go on quest
-    choosePlayersForQuest(data) {
-      this.showAddPlayerButton = data.bool;
-      this.showRemovePlayerButton = data.bool;
+    showAddRemovePlayerBtns(data) {
+      this.showAddBtn = data.bool;
+      this.showRemoveBtn = data.bool;
     },
     updateQuestMsg(msg) {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
     beginAssassination(msg) {
-      //update player cards to show Assassinate button
-      this.assassination = true;
+      this.showAssassinateBtn = true;
       this.questMsg = msg;
-    },
-    waitForAssassin(msg) {
-      this.waitingForAssassin = true;
-      this.questMsg = msg;
-      this.showQuestMsg = true;
     },
     gameOver(msg) {
       this.gameOver = true;
