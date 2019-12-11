@@ -96,11 +96,8 @@ io.on('connection', socket => {
       socket.emit('updateErrorMsg', errorMsg);
       return;
     }
-    GameList[roomCode].gameIsStarted = true;
-    GameList[roomCode].initializeQuests();
-    GameList[roomCode].assignIdentities(optionalCharacters);
-    GameList[roomCode].assignFirstLeader();
 
+    GameList[roomCode].startGame(optionalCharacters);
     updatePlayerCards(GameList[roomCode].players);
     io.in(roomCode).emit('startGame');
     io.to(socket.id).emit('showHostSetupOptionsBtn', false);
@@ -117,7 +114,6 @@ io.on('connection', socket => {
     let currentQuest = GameList[roomCode].getCurrentQuest();
     GameList[roomCode].addPlayerToQuest(currentQuest.questNum, name);
     updatePlayerCards(GameList[roomCode].players);
-    io.in(roomCode).emit('hidePreviousTeamVotes'); //get rid of previous votes if they're still showing
 
     if (currentQuest.playersNeededLeft > 0) {
       updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
@@ -171,13 +167,11 @@ io.on('connection', socket => {
     if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
       GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
       GameList[roomCode].resetPlayersProperty('votedOnTeam');
+      const teamIsRejected = currentQuest.acceptOrRejectTeam.reject.length >= GameList[roomCode].players.length / 2;
+      teamIsRejected ? currentQuest.acceptOrRejectTeam.result = 'rejected' : currentQuest.acceptOrRejectTeam.result = 'accepted';
+
       io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
-      if (currentQuest.acceptOrRejectTeam.reject.length >= GameList[roomCode].players.length / 2) {
-        questTeamRejectedStuff(roomCode, currentQuest);
-      }
-      else {
-        questTeamAcceptedStuff(roomCode);
-      }
+      teamIsRejected ? questTeamRejectedStuff(roomCode, currentQuest) : questTeamAcceptedStuff(roomCode);
     }
   });
 
@@ -188,22 +182,23 @@ io.on('connection', socket => {
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
     const votes = currentQuest.votes;
-    votes[decision].push(name);
+    votes[decision] += 1;
     votes.voted.push(name);
     io.in(roomCode).emit('updateConcealedQuestVotes', votes.voted); //show that player has made some kind of vote
 
     //check if number of received votes is max needed
-    if ((votes.succeed.length + votes.fail.length) == currentQuest.playersRequired) {
+    if ((votes.succeed + votes.fail) == currentQuest.playersRequired) {
       GameList[roomCode].gameState['succeedOrFailQuest'] = false;
-      io.in(roomCode).emit('hidePreviousTeamVotes'); //get rid of team vote stuff from DecideQuestTeam component
-      console.log('All quest votes received.');
-      io.in(roomCode).emit('revealQuestResults', {
-        success: votes.succeed.length,
-        fail: votes.fail.length
-      });
-      currentQuest.assignResult();
 
-      GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+      console.log('All quest votes received.');
+      currentQuest.assignResult();
+      io.in(roomCode).emit('hidePreviousTeamVotes');
+      io.in(roomCode).emit('revealQuestResults', {
+        success: votes.succeed,
+        fail: votes.fail
+      });
+      GameList[roomCode].saveQuestHistory(currentQuest);
+
       if (GameList[roomCode].challengeMode === "OFF") {
         io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
       }
@@ -260,9 +255,7 @@ io.on('connection', socket => {
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
     io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
-    io.in(roomCode).emit('updateVoteTrack', {
-      voteTrack: currentQuest.voteTrack
-    });
+    io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
     io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
     if (GameList[roomCode].challengeMode === "OFF") {
       io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
@@ -359,7 +352,7 @@ function leaderChoosesQuestTeam(roomCode) {
   const currentQuest = GameList[roomCode].getCurrentQuest();
 
   io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
-  io.in(roomCode).emit('updateVoteTrack', { voteTrack: currentQuest.voteTrack });
+  io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
   updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
   console.log(`Current Quest: ${currentQuest.questNum}`);
   io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
@@ -382,17 +375,17 @@ function questTeamAcceptedStuff(roomCode) {
 }
 
 function questTeamRejectedStuff(roomCode, currentQuest) {
-  GameList[roomCode].saveQuestHistory(currentQuest.questNum, currentQuest);
+  GameList[roomCode].saveQuestHistory(currentQuest);
+  currentQuest.voteTrack++;
   if (GameList[roomCode].challengeMode === "OFF") {
     io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
   }
   updateQuestMsg(roomCode, 'Quest team was Rejected. New quest leader has been chosen.');
-  currentQuest.voteTrack++;
 
   //check if voteTrack has exceeded 5 (game over)
   if (currentQuest.voteTrack > 5) {
     io.in(roomCode).emit('gameOver', `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`);
-  } else { //increment voteTrack and assign next leader
+  } else { //assign next leader
     GameList[roomCode].resetPlayersProperty('onQuest');
     GameList[roomCode].quests[currentQuest.questNum].resetQuest();
     GameList[roomCode].assignNextLeader(currentQuest.questNum);
@@ -402,27 +395,27 @@ function questTeamRejectedStuff(roomCode, currentQuest) {
 }
 
 function checkForGameOver(roomCode) {
-  const currentQuest = GameList[roomCode].getCurrentQuest();
-  const tallyQuests = GameList[roomCode].tallyQuests();
+  const { questNum } = GameList[roomCode].getCurrentQuest();
+  const questScores = GameList[roomCode].tallyQuestScores();
 
   //evil has won, game over
-  if (tallyQuests.fails >= 3) {
+  if (questScores.fails >= 3) {
     GameList[roomCode].resetPlayersProperty('onQuest');
-    GameList[roomCode].quests[currentQuest.questNum].resetQuest();
-    io.in(roomCode).emit('gameOver', `${tallyQuests.fails} quests failed. Evil Wins!`);
+    GameList[roomCode].quests[questNum].resetQuest();
+    io.in(roomCode).emit('gameOver', `${questScores.fails} quests failed. Evil Wins!`);
   }
   //good is on track to win, evil can assassinate
-  else if (tallyQuests.successes >= 3) {
+  else if (questScores.successes >= 3) {
     const assassinSocketID = GameList[roomCode].getPlayerBy('character', 'Assassin').socketID;
     io.in(roomCode).emit('updateQuestMsg', `Good has triumphed over Evil by succeeding 
-    ${tallyQuests.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
+    ${questScores.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
 
     io.to(assassinSocketID).emit('beginAssassination', `You are the assassin. 
     Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.`);
   }
   else {
     //choose next leader and start next quest
-    GameList[roomCode].startNextQuest(currentQuest.questNum);
+    GameList[roomCode].startNextQuest(questNum);
     updatePlayerCards(GameList[roomCode].players);
     leaderChoosesQuestTeam(roomCode);
   }

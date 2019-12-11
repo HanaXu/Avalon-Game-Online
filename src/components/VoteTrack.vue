@@ -23,8 +23,8 @@ export default {
     };
   },
   sockets: {
-    updateVoteTrack(data) {
-      this.currentVoteTrack = data["voteTrack"];
+    updateVoteTrack(voteTrack) {
+      this.currentVoteTrack = voteTrack;
     }
   }
 };

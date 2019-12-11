@@ -59,8 +59,22 @@ export default class Game {
     this.roleList = null;
     this.players = [];
     this.quests = null;
-    this.questHistory = null;
+    this.questHistory = {};
     this.leaderIndex = 0;
+  }
+
+  static get BaseCharacters() {
+    return BaseCharacters;
+  }
+  static get GoodTeam() {
+    return GoodTeam;
+  }
+
+  startGame(optionalCharacters) {
+    this.gameIsStarted = true;
+    this.initializeQuests();
+    this.assignIdentities(optionalCharacters);
+    this.assignFirstLeader();
   }
 
   initializeQuests() {
@@ -73,29 +87,6 @@ export default class Game {
       5: new Quest(5, this.players.length)
     };
     this.quests[1].currentQuest = true;
-    this.initializeQuestHistory();
-  }
-
-  initializeQuestHistory() {
-    this.questHistory = {
-      //key: quest
-      1: {
-        //key: vote track
-        1: new QuestHistory(1),
-      },
-      2: {
-        1: new QuestHistory(2),
-      },
-      3: {
-        1: new QuestHistory(3),
-      },
-      4: {
-        1: new QuestHistory(4),
-      },
-      5: {
-        1: new QuestHistory(5),
-      },
-    }
   }
 
   getCurrentQuest() {
@@ -104,16 +95,6 @@ export default class Game {
         return this.quests[i];
       }
     }
-  }
-
-  // getter for PlayerIdentities
-  static get BaseCharacters() {
-    return BaseCharacters;
-  }
-
-  // getter for GoodTeam
-  static get GoodTeam() {
-    return GoodTeam;
   }
 
   addPlayerToQuest(questNum, name) {
@@ -188,7 +169,6 @@ export default class Game {
   assignIdentities(optionalCharacters) {
     let shuffledIdentities;
     let teamObj = Game.BaseCharacters[this.players.length];
-
     if (optionalCharacters.length > 0) {
       teamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
       optionalCharacters.forEach(optionalCharacter => {
@@ -215,8 +195,8 @@ export default class Game {
     this.roleList = populateRoleList(teamObj);
     shuffledIdentities = shuffle(objectToArray(teamObj));
     for (let i in this.players) {
-      this.players[i].character = shuffledIdentities[i]; // assign character to player
-      this.players[i].team = Game.GoodTeam.has(shuffledIdentities[i]) ? 'Good' : 'Evil'; // assign team based on character
+      this.players[i].character = shuffledIdentities[i];
+      this.players[i].team = Game.GoodTeam.has(shuffledIdentities[i]) ? 'Good' : 'Evil';
     }
   }
 
@@ -226,55 +206,36 @@ export default class Game {
     });
   }
 
-  saveQuestHistory(questNum, currentQuest) {
-    //console.log(this.questHistory[questNum][currentQuest.voteTrack]);
-    if (typeof this.questHistory[questNum][currentQuest.voteTrack] === 'undefined') {
-      console.log('exceeded 1 votetrack, creating new history obj');
-      this.questHistory[questNum][currentQuest.voteTrack] = new QuestHistory(currentQuest.questNum);
+  saveQuestHistory(currentQuest) {
+    const { questNum, voteTrack } = currentQuest;
+    if (typeof this.questHistory[questNum] === 'undefined') {
+      console.log(`creating history obj for quest: ${questNum} voteTrack: ${voteTrack}`);
+      let arr = [];
+      arr.push(new QuestHistory(currentQuest));
+      this.questHistory[questNum] = arr;
     }
-    this.questHistory[questNum][currentQuest.voteTrack].playersOnQuest = Array.from(currentQuest.playersOnQuest);
-    this.questHistory[questNum][currentQuest.voteTrack].voteTrack = currentQuest.voteTrack;
-    this.questHistory[questNum][currentQuest.voteTrack].leader = currentQuest.leaderInfo.name;
-    if (currentQuest.acceptOrRejectTeam.accept.length > currentQuest.acceptOrRejectTeam.reject.length) {
-      this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.result = 'accepted';
-    } else {
-      this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.result = 'rejected';
+    // votetrack went up
+    else if (typeof this.questHistory[questNum][voteTrack] === 'undefined') {
+      console.log(`adding history obj to quest:${questNum} voteTrack: ${voteTrack}`);
+      this.questHistory[questNum].push(new QuestHistory(currentQuest));
     }
-    this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.accept = currentQuest.acceptOrRejectTeam.accept;
-    this.questHistory[questNum][currentQuest.voteTrack].acceptOrRejectTeam.reject = currentQuest.acceptOrRejectTeam.reject;
-    this.questHistory[questNum][currentQuest.voteTrack].votes.succeed = currentQuest.votes.succeed.length;
-    this.questHistory[questNum][currentQuest.voteTrack].votes.fail = currentQuest.votes.fail.length;
-    this.questHistory[questNum][currentQuest.voteTrack].success = currentQuest.success;
-    console.log(`QUEST ${questNum} votetrack ${currentQuest.voteTrack} HISTORY: `);
-    console.log(this.questHistory[questNum][currentQuest.voteTrack]);
   }
 
-  //move to next quest out of 5
   startNextQuest(lastQuestNum) {
     if (lastQuestNum < 5) {
       this.quests[lastQuestNum].currentQuest = false;
       this.quests[lastQuestNum + 1].currentQuest = true;
       this.assignNextLeader(lastQuestNum + 1);
     }
-    else {
-      console.log("Game over: Reached last quest.");
-    }
   }
 
-  //called after each quest is completed
-  //tally all quests successes/fails
-  tallyQuests() {
+  tallyQuestScores() {
     let successCount = 0;
     let failCount = 0;
-
     for (let i in this.quests) {
       if (this.quests[i].success === null) continue;
-      if (this.quests[i].success) {
-        successCount++;
-      }
-      else if (!this.quests[i].success) {
-        failCount++;
-      }
+      if (this.quests[i].success) successCount++;
+      else if (!this.quests[i].success) failCount++;
     }
     return ({
       successes: successCount,

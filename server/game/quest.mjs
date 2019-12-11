@@ -30,7 +30,7 @@ export default class Quest {
     this.playersRequired = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
     this.playersOnQuest = new Set([]);
     this.playersNeededLeft = this.playersRequired;
-    this.voteTrack = 1;
+    this.voteTrack = 0;
     this.leaderInfo = {
       'name': '',
       'socketID': null
@@ -45,10 +45,14 @@ export default class Quest {
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
     this.votes = {
       'voted': [],
-      'succeed': [],
-      'fail': []
+      'succeed': 0,
+      'fail': 0
     };
     this.success = null;
+  }
+
+  static get PLAYERS_ON_QUEST() {
+    return PLAYERS_ON_QUEST;
   }
 
   addPlayer(name) {
@@ -67,20 +71,18 @@ export default class Quest {
   }
 
   assignResult() {
-    this.success = !this.votes.fail.length > 0;
+    this.success = !this.votes.fail > 0;
   }
 
   //resets all values relating to players on quest & quest votes to original values
   resetQuest() {
     this.playersNeededLeft = this.playersRequired;
     this.playersOnQuest.clear();
-    this.acceptOrRejectTeam.voted = [];
-    this.acceptOrRejectTeam.accept = [];
-    this.acceptOrRejectTeam.reject = [];
+    this.acceptOrRejectTeam = {
+      'voted': [],
+      'accept': [],
+      'reject': []
+    };
   }
 
-  // getter for PlayerIdentities
-  static get PLAYERS_ON_QUEST() {
-    return PLAYERS_ON_QUEST;
-  }
 }

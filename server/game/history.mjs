@@ -1,19 +1,11 @@
 export default class QuestHistory {
-
-    constructor(questNum) {
-        this.questNum = questNum;
-        this.playersOnQuest = null;
-        this.voteTrack = 1;
-        this.leader = null;
-        this.acceptOrRejectTeam = {
-            'result': null,
-            'accept': [],
-            'reject': []
-        };
-        this.votes = {
-            'succeed': null,
-            'fail': null
-        };
-        this.success = null;
+    constructor(quest) {
+        this.questNum = quest.questNum;
+        this.playersOnQuest = Array.from(quest.playersOnQuest);
+        this.voteTrack = quest.voteTrack;
+        this.leader = quest.leaderInfo.name;
+        this.acceptOrRejectTeam = {...quest.acceptOrRejectTeam};
+        this.votes = {...quest.votes};
+        this.success = quest.success;
     }
 }
