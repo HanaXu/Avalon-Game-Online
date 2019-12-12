@@ -86,11 +86,11 @@ export default {
       this.showHasVoted = false;
       this.showTeamVoteResults = false;
     },
-    revealQuestResults(data) {
+    revealQuestResults(votes) {
       this.canVoteOnQuest = false;
       this.showHasVotedOnQuest = false;
-      this.successCount = data["success"];
-      this.failCount = data["fail"];
+      this.successCount = votes.succeed;
+      this.failCount = votes.fail;
       this.showQuestVoteResults = true;
     },
     hidePreviousQuestVotes() {

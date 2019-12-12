@@ -9,7 +9,6 @@
     "start": "vue-cli-service serve | node --experimental-modules server/index.mjs"
   },
   "dependencies": {
-    "axios": "^0.18.1",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.16",
     "core-js": "^2.6.5",
@@ -30,7 +29,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.5",
     "@vue/cli-plugin-pwa": "^3.5.1",
-    "@vue/cli-service": "^3.5.3",
+    "@vue/cli-service": "^4.1.1",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.21"

@@ -193,10 +193,7 @@ io.on('connection', socket => {
       console.log('All quest votes received.');
       currentQuest.assignResult();
       io.in(roomCode).emit('hidePreviousTeamVotes');
-      io.in(roomCode).emit('revealQuestResults', {
-        success: votes.succeed,
-        fail: votes.fail
-      });
+      io.in(roomCode).emit('revealQuestResults', votes);
       GameList[roomCode].saveQuestHistory(currentQuest);
 
       if (GameList[roomCode].challengeMode === "OFF") {
