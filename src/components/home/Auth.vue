@@ -6,10 +6,11 @@
 import firebase from "firebase";
 import firebaseui from "firebaseui";
 import "../../../node_modules/firebaseui/dist/firebaseui.css";
+import { mapState } from 'vuex';
 
 export default {
   name: "Auth",
-  props: ["name"],
+  computed: mapState(['name']),
   mounted() {
     let self = this;
     let uiConfig = {
@@ -34,10 +35,10 @@ export default {
     }
   },
   sockets: {
-    passedValidation(roomCode) {
+    passedValidation({name, roomCode}) {
       this.$router.push({
         name: "game",
-        params: { yourName: this.name, roomCode: roomCode }
+        params: { name: name, roomCode: roomCode }
       });
     }
   }

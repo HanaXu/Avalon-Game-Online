@@ -40,8 +40,10 @@ io.on('connection', socket => {
       return;
     }
     roomCode = generateRoomCode();
-    socket.emit('passedValidation', roomCode);
-    socket.emit('roomCode', roomCode);
+    socket.emit('passedValidation', {
+      name: name,
+      roomCode: roomCode
+    });
     socket.join(roomCode); //subscribe the socket to the roomcode
 
     GameList[roomCode] = new Game(roomCode);
@@ -75,8 +77,10 @@ io.on('connection', socket => {
       socket.emit('updateErrorMsg', errorMsg);
       return;
     }
-    socket.emit('passedValidation');
-    socket.emit('roomCode', roomCode);
+    socket.emit('passedValidation', {
+      name: name,
+      roomCode: roomCode
+    });
     socket.join(roomCode);
     GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
 
@@ -236,8 +240,10 @@ io.on('connection', socket => {
     existingPlayer.socketID = socket.id;
     existingPlayer.disconnected = false;
 
-    socket.emit('roomCode', roomCode);
-    socket.emit('passedValidation');
+    socket.emit('passedValidation', {
+      name: name,
+      roomCode: roomCode
+    });
     socket.join(roomCode);
 
     //show game screen instead of lobby

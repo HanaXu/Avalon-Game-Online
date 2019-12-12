@@ -1,10 +1,9 @@
 <template>
   <div class="main-board">
     <h4>
-      Welcome, {{ yourName }}, to game room
-      <span id="roomCode">{{ roomCode }}</span>.
+      Welcome, {{ name }}, to game room
+      <span>{{ roomCode }}</span>.
     </h4>
-
     <b-row>
       <b-col md="3" offset="2">
         <p v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
@@ -31,7 +30,6 @@
         </div>
       </b-col>
     </b-row>
-
     <b-row>
       <b-col md="7" offset="1">
         <PlayerList :players="players" />
@@ -40,8 +38,7 @@
         <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptionsBtn">Setup Options</b-button>
       </b-col>
     </b-row>
-    <SetupOptions @clicked="updateSetupOptions" :roomCode="roomCode"></SetupOptions>
-
+    <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
     <div v-if="showStartGameBtn">
       <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
@@ -52,10 +49,11 @@
 <script>
 import PlayerList from "@/components/lobby/PlayerList.vue";
 import SetupOptions from "@/components/lobby/SetupOptions.vue";
+import { mapState } from 'vuex';
 
 export default {
   name: "Lobby",
-  props: ["yourName", "roomCode", "players"],
+  props: ["players"],
   components: {
     PlayerList,
     SetupOptions
@@ -70,6 +68,7 @@ export default {
       showStartGameBtn: false
     };
   },
+  computed: mapState(['roomCode', 'name']),
   methods: {
     updateSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window

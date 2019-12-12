@@ -16,7 +16,7 @@
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <Auth v-if="createRoomClicked && authRequired" :name="name"></Auth>
+    <Auth v-if="createRoomClicked && authRequired"></Auth>
   </div>
 </template>
 
@@ -60,11 +60,11 @@ export default {
     setAuth(requireAuth) {
       this.authRequired = requireAuth;
     },
-    passedValidation(roomCode) {
+    passedValidation({name, roomCode}) {
       this.loading = false;
       this.$router.push({
         name: "game",
-        params: { yourName: this.name, roomCode: roomCode }
+        params: { name: name, roomCode: roomCode }
       });
     }
   }

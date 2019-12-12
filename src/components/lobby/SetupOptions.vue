@@ -32,9 +32,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: "SetupOptions",
-  props: ["roomCode"],
   data() {
     return {
       error: false,
@@ -61,6 +62,7 @@ export default {
       ]
     };
   },
+  computed: mapState(['roomCode']),
   methods: {
     validateSelected() {
       if (

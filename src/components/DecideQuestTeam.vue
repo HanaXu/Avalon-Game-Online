@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: "DecideQuestTeam",
   data() {
@@ -36,14 +38,14 @@ export default {
       showTeamVoteResults: false
     };
   },
-  props: ["yourName"],
+  computed: mapState(['name']),
   methods: {
     leaderHasConfirmedTeam() {
       this.$socket.emit("leaderHasConfirmedTeam");
     },
     playerAcceptsOrRejectsTeam(decision) {
       this.$socket.emit("playerAcceptsOrRejectsTeam", {
-        name: this.yourName,
+        name: this.name,
         decision: decision
       });
     }

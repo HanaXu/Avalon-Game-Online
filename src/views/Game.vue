@@ -3,30 +3,28 @@
     <div class="row justify-content-md-center mx-0">
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
-        <Lobby v-if="!gameStarted" :yourName="yourName" :roomCode="roomCode" :players="players"/>
+        <Lobby v-if="!gameStarted" :players="players"/>
         <!-- Actual Game -->
         <div class="container main-board" v-if="gameStarted">
           <PlayerCards
-            v-if="gameStarted"
             :players="players"
-            :yourName="yourName"
             :showAddBtn="showAddBtn"
             :showRemoveBtn="showRemoveBtn"
             :showAssassinateBtn="showAssassinateBtn"
           />
-          <QuestCards v-if="gameStarted"/>
-          <VoteTrack v-if="gameStarted"/>
+          <QuestCards />
+          <VoteTrack />
         </div>
         <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
         <PlayerVoteStatus/>
-        <QuestVotes :yourName="yourName"/>
-        <DecideQuestTeam :yourName="yourName"/>
+        <QuestVotes />
+        <DecideQuestTeam />
       </div>
       <div class="col-12 col-md-3">
         <div class="container chat">
           <RoleList v-if="gameStarted"/>
           <div style="align: right">
-            <Chat :your-name="yourName" :room-code="roomCode"></Chat>
+            <Chat />
           </div>
         </div>
       </div>
@@ -64,8 +62,6 @@ export default {
   },
   data() {
     return {
-      yourName: null,
-      roomCode: null,
       players: [],
       questMsg: null,
       showQuestMsg: false,
@@ -76,10 +72,6 @@ export default {
       gameOver: false,
       endGameMsg: null
     };
-  },
-  created() {
-    this.yourName = this.$route.params.yourName;
-    this.roomCode = this.$route.params.roomCode;
   },
   sockets: {
     updatePlayerCards(players) {

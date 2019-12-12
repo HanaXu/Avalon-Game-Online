@@ -2,7 +2,7 @@
   <div id="app">
     <!-- Navbar -->
     <b-navbar toggleable="lg" class="navbar-default container">
-      <b-navbar-brand><img src="../public/img/icons/favicon-32x32.png" width="32" height="32" /> {{ navbarBrandMsg }}</b-navbar-brand>
+      <b-navbar-brand><img src="../public/img/icons/favicon-32x32.png" width="32" height="32" /> Avalonline Room {{ roomCode }}</b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
@@ -27,6 +27,7 @@ import Home from "./views/Home.vue";
 import RulesModal from "@/components/navbar/RulesModal.vue";
 import RolesModal from "@/components/navbar/RolesModal.vue";
 import HistoryModal from "@/components/navbar/HistoryModal.vue";
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -35,19 +36,10 @@ export default {
     RolesModal,
     HistoryModal
   },
-  data() {
-    return {
-      navbarBrandMsg: "Avalonline"
-    };
-  },
+  computed: mapState(['roomCode']),
   methods: {
     reload() {
       window.location.reload();
-    }
-  },
-  sockets: {
-    roomCode(roomCode) {
-      this.navbarBrandMsg = "Avalonline Room " + roomCode;
     }
   }
 };

@@ -3,7 +3,7 @@
     <div class v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
       <div
         class="player card"
-        :class="{darkerBG: player.name === yourName}"
+        :class="{darkerBG: player.name === name}"
         v-for="(player, index) in players"
         :key="index"
       >
@@ -65,6 +65,7 @@
 
 <script>
 import MemoModal from "@/components/MemoModal.vue";
+import { mapState } from 'vuex';
 
 export default {
   name: "PlayerCards",
@@ -73,7 +74,6 @@ export default {
   },
   props: [
     "players",
-    "yourName",
     "showAddBtn",
     "showRemoveBtn",
     "showAssassinateBtn"
@@ -83,6 +83,7 @@ export default {
       width: window.innerWidth
     };
   },
+  computed: mapState(['name']),
   methods: {
     addPlayerToQuest(playerName) {
       this.$socket.emit("addPlayerToQuest", playerName);

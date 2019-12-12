@@ -11,7 +11,6 @@
           @keydown.enter.native.prevent="joinRoom"
         ></b-input>
       </b-input-group>
-
       <label class="sr-only" for="inline-form-input-name">Name</label>
       <b-input
         id="inline-form-input-name"
@@ -20,7 +19,6 @@
         v-model="name"
         @keydown.enter.native.prevent="joinRoom"
       ></b-input>
-
       <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
@@ -60,10 +58,10 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation() {
+    passedValidation({name, roomCode}) {
       this.$router.push({
         name: "game",
-        params: { yourName: this.name, roomCode: this.roomCode }
+        params: { name: name, roomCode: roomCode }
       });
     }
   }

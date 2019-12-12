@@ -26,6 +26,7 @@
 <script>
 import firebase from "firebase";
 import { setInterval } from "timers";
+import { mapState } from 'vuex';
 import Vue from "vue";
 import VueChatScroll from "vue-chat-scroll";
 Vue.use(VueChatScroll);
@@ -34,28 +35,28 @@ export default {
   name: "Chat",
   data() {
     return {
-      username: "",
       messages: []
     };
   },
-  props: ["your-name", "room-code"],
+  computed: mapState(['roomCode', 'name']),
   methods: {
     sendMessage(e) {
       e.preventDefault();
       // Trim newline from message
       e.target.value = e.target.value.replace(/^\s+|\s+$/g, "");
       let timeStamp = this.timeStamp();
+      const path = `chat/room-messages/${this.roomCode}`;
 
       if (e.target.value) {
         const message = {
-          username: this.yourName,
+          username: this.name,
           text: e.target.value,
           time: timeStamp
         };
         // Push message to firebase reference
         firebase
           .database()
-          .ref("chat/room-messages/" + this.roomCode)
+          .ref(path)
           .push(message);
         e.target.value = "";
       } else {
@@ -63,23 +64,6 @@ export default {
         console.log(e);
       }
     },
-    // joinMessage() {
-    //   let joined = this.yourName + " joined the room.";
-    //   let timeStamp = this.timeStamp();
-
-    //   const message = {
-    //     username: "",
-    //     text: joined,
-    //     time: timeStamp,
-    //     type: "join"
-    //   };
-
-    //   firebase
-    //     .database()
-    //     .ref("chat/room-messages/" + this.roomCode)
-    //     .push(message);
-    //   // console.log("Join message sent");
-    // },
     timeStamp() {
       // Create Date object with current time
       let now = new Date();
@@ -101,9 +85,9 @@ export default {
   },
   mounted() {
     let vm = this;
-    let username = this.yourName;
-    let roomCode = this.roomCode;
-    const itemsRef = firebase.database().ref("chat/room-messages/" + roomCode);
+    const username = this.name;
+    const path = `chat/room-messages/${this.roomCode}`;
+    const itemsRef = firebase.database().ref(path);
 
     itemsRef.on("value", snapshot => {
       var messages = [];

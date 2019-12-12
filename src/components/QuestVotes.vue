@@ -14,20 +14,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: "QuestVotes",
-  props: ["yourName"],
   data() {
     return {
       canVoteOnQuest: false,
       disableFailBtn: false
     };
   },
+  computed: mapState(['name']),
   methods: {
     questVote(decision) {
       this.canVoteOnQuest = false;
       this.$socket.emit("questVote", {
-        name: this.yourName,
+        name: this.name,
         decision: decision
       });
     }
