@@ -22,7 +22,7 @@ app.get(/.*/, function (req, res) {
   res.sendFile(__dirname + "/dist/index.html");
 });
 
-var GameList = {}; //keeps record of all game objects
+export var GameList = {}; //keeps record of all game objects
 const requireAuth = false;
 
 io.on('connection', socket => {
@@ -58,8 +58,8 @@ io.on('connection', socket => {
   });
 
   socket.on('createBot', function (roomCode) {
-    let Bot = new GameBot();
-    Bot.createBot(roomCode, port);
+    let bot = new GameBot(roomCode, port);
+    bot.startListening();
   });
 
   socket.on('joinRoom', function (data) {
@@ -140,20 +140,12 @@ io.on('connection', socket => {
 
     io.in(roomCode).emit('hidePreviousQuestVotes');
     socket.emit('showConfirmTeamBtnToLeader', false);
-    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
-      bool: false,
-      players: GameList[roomCode].players,
-      currentQuestNum: currentQuest.questNum
-    });
+    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', false);
     currentQuest.leaderHasConfirmedTeam = true;
 
     GameList[roomCode].gameState['acceptOrRejectTeam'] = true;
     updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
-    io.in(roomCode).emit('showAcceptOrRejectTeamBtns', {
-      bool: true,
-      onQuest: Array.from(currentQuest.playersOnQuest),
-      players: GameList[roomCode].players
-    });
+    io.in(roomCode).emit('showAcceptOrRejectTeamBtns', true);
   });
 
   socket.on('playerAcceptsOrRejectsTeam', function (data) {
@@ -164,7 +156,7 @@ io.on('connection', socket => {
     GameList[roomCode].getPlayerBy('name', name).votedOnTeam = true;
 
     updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
-    socket.emit('showAcceptOrRejectTeamBtns', { bool: false });
+    socket.emit('showAcceptOrRejectTeamBtns', false);
     io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
 
     //everyone has voted, reveal the votes & move to next step
@@ -211,7 +203,7 @@ io.on('connection', socket => {
 
   socket.on('assassinatePlayer', function (name) {
     const merlinPlayer = GameList[roomCode].getPlayerBy('character', 'Merlin');
-    console.log(`Merlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
+    console.log(`\nMerlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
     const msg = merlinPlayer.name === name ? `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`
       : `Assassin failed to discover and kill Merlin. Good Wins!`;
     io.in(roomCode).emit('gameOver', msg);
@@ -222,7 +214,7 @@ io.on('connection', socket => {
       let players = GameList[roomCode].players;
       //disconnection after game start
       if (GameList[roomCode].gameIsStarted) {
-        console.log('disconnecting player from started game')
+        console.log('\ndisconnecting player from started game')
         GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
         updatePlayerCards(players);
       }
@@ -235,7 +227,7 @@ io.on('connection', socket => {
   });
 
   function reconnectPlayerToStartedGame(name) {
-    console.log(`reconnecting ${name} to room ${roomCode}`)
+    console.log(`\nreconnecting ${name} to room ${roomCode}`)
     let existingPlayer = GameList[roomCode].getPlayerBy('name', name);
     existingPlayer.socketID = socket.id;
     existingPlayer.disconnected = false;
@@ -268,7 +260,7 @@ io.on('connection', socket => {
       io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
       if (!existingPlayer.votedOnTeam) {
         console.log('did not vote yet, showing accept/reject buttons')
-        socket.emit('showAcceptOrRejectTeamBtns', { bool: true });
+        socket.emit('showAcceptOrRejectTeamBtns', true);
       }
     }
     //reveal votes
@@ -284,11 +276,7 @@ io.on('connection', socket => {
     if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
       console.log('showing add/remove quest buttons to leader')
       currentQuest.leaderInfo.socketID = socket.id;
-      io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
-        bool: true,
-        players: GameList[roomCode].players,
-        currentQuestNum: currentQuest.questNum
-      });
+      io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
       socket.emit('showConfirmTeamBtnToLeader', false);
     }
     if (currentQuest.leaderInfo.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.leaderHasConfirmedTeam) {
@@ -358,11 +346,7 @@ function leaderChoosesQuestTeam(roomCode) {
   io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
   updateLeaderIsChoosingPlayersMsg(roomCode, currentQuest);
   console.log(`Current Quest: ${currentQuest.questNum}`);
-  io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', {
-    bool: true,
-    players: GameList[roomCode].players,
-    currentQuestNum: currentQuest.questNum
-  });
+  io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
 }
 
 function questTeamAcceptedStuff(roomCode) {
@@ -372,7 +356,7 @@ function questTeamAcceptedStuff(roomCode) {
   GameList[roomCode].players.forEach(player => {
     if (player.onQuest && !player.votedOnQuest) {
       const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
-      io.to(player.socketID).emit('goOnQuest', disableFailBtn);
+      io.to(player.socketID).emit('succeedOrFailQuest', disableFailBtn);
     }
   });
 }

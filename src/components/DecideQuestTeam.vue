@@ -54,8 +54,8 @@ export default {
     showConfirmTeamBtnToLeader(bool) {
       this.showConfirmTeamBtnToLeader = bool;
     },
-    showAcceptOrRejectTeamBtns(data) {
-      this.showAcceptRejectButtons = data.bool;
+    showAcceptOrRejectTeamBtns(bool) {
+      this.showAcceptRejectButtons = bool;
     }
   }
 };

@@ -35,9 +35,9 @@ export default {
     }
   },
   sockets: {
-    goOnQuest(bool) {
+    succeedOrFailQuest(disableFailBtn) {
       this.canVoteOnQuest = true;
-      this.disableFailBtn = bool;
+      this.disableFailBtn = disableFailBtn;
     }
   }
 };

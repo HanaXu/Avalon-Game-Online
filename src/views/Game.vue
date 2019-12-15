@@ -80,9 +80,9 @@ export default {
     startGame() {
       this.gameStarted = true;
     },
-    showAddRemovePlayerBtns(data) {
-      this.showAddBtn = data.bool;
-      this.showRemoveBtn = data.bool;
+    showAddRemovePlayerBtns(showAddRemovePlayerBtns) {
+      this.showAddBtn = showAddRemovePlayerBtns;
+      this.showRemoveBtn = showAddRemovePlayerBtns;
     },
     updateQuestMsg(msg) {
       this.questMsg = msg;
