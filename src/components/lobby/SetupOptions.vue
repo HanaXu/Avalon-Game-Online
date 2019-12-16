@@ -1,7 +1,7 @@
 <template>
   <b-modal id="setupModal" class="setup" title="Setup Options" @ok="handleOk">
     <b-row>
-      <b-button margin-top="20px" class="setupButton" @click="createBot">Add Bot</b-button>
+      <b-button margin-top="20px" class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
     <b-row>
       <b-col sm="5">
@@ -40,7 +40,6 @@ export default {
     return {
       error: false,
       errorMsg: "",
-      botCount: 0,
       selected: [], // Must be an array reference!
       options: [
         {
@@ -62,7 +61,7 @@ export default {
       ]
     };
   },
-  computed: mapState(['roomCode']),
+  computed: mapState(['roomCode', 'players']),
   methods: {
     validateSelected() {
       if (
@@ -77,14 +76,11 @@ export default {
       }
     },
     createBot() {
-      console.log(`CreateBot function Called with room: ${this.roomCode}`);
       this.$socket.emit("createBot", this.roomCode);
-      this.botCount++;
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
       console.log(`Selected Items: ${this.selected}`);
-      console.log(`Bots: ${this.botCount}`);
       this.$emit("clicked", this.selected);
     }
   }

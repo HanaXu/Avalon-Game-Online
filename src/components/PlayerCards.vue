@@ -73,7 +73,6 @@ export default {
     MemoModal
   },
   props: [
-    "players",
     "showAddBtn",
     "showRemoveBtn",
     "showAssassinateBtn"
@@ -83,7 +82,7 @@ export default {
       width: window.innerWidth
     };
   },
-  computed: mapState(['name']),
+  computed: mapState(['name', 'players']),
   methods: {
     addPlayerToQuest(playerName) {
       this.$socket.emit("addPlayerToQuest", playerName);

@@ -3,11 +3,10 @@
     <div class="row justify-content-md-center mx-0">
       <div class="col-12 col-md-7">
         <EndGameOverlay/>
-        <Lobby v-if="!gameStarted" :players="players"/>
+        <Lobby v-if="!gameStarted" />
         <!-- Actual Game -->
         <div class="container main-board" v-if="gameStarted">
           <PlayerCards
-            :players="players"
             :showAddBtn="showAddBtn"
             :showRemoveBtn="showRemoveBtn"
             :showAssassinateBtn="showAssassinateBtn"
@@ -62,7 +61,6 @@ export default {
   },
   data() {
     return {
-      players: [],
       questMsg: null,
       showQuestMsg: false,
       gameStarted: false,
@@ -74,9 +72,6 @@ export default {
     };
   },
   sockets: {
-    updatePlayerCards(players) {
-      this.players = players;
-    },
     startGame() {
       this.gameStarted = true;
     },

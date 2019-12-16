@@ -1,8 +1,7 @@
 <template>
   <div class="main-board">
     <h4>
-      Welcome, {{ name }}, to game room
-      <span>{{ roomCode }}</span>.
+      Welcome, {{ name }}, to game room {{ roomCode }}.
     </h4>
     <b-row>
       <b-col md="3" offset="2">
@@ -32,7 +31,9 @@
     </b-row>
     <b-row>
       <b-col md="7" offset="1">
-        <PlayerList :players="players" />
+        <ul class="lobbyList">
+          <li v-for="(player, index) in players" :key="index">{{ player.role }}: {{ player.name }}</li>
+        </ul>
       </b-col>
       <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
         <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptionsBtn">Setup Options</b-button>
@@ -47,15 +48,12 @@
 </template>
 
 <script>
-import PlayerList from "@/components/lobby/PlayerList.vue";
 import SetupOptions from "@/components/lobby/SetupOptions.vue";
 import { mapState } from 'vuex';
 
 export default {
   name: "Lobby",
-  props: ["players"],
   components: {
-    PlayerList,
     SetupOptions
   },
   data() {
@@ -68,7 +66,7 @@ export default {
       showStartGameBtn: false
     };
   },
-  computed: mapState(['roomCode', 'name']),
+  computed: mapState(['roomCode', 'name', 'players']),
   methods: {
     updateSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
@@ -108,11 +106,18 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .red {
   color: red;
 }
 .green {
   color: green;
+}
+ul {
+  padding: 0;
+  padding-top: 1rem;
+}
+li {
+  padding-left: 1.5rem;
 }
 </style>

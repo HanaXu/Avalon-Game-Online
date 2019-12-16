@@ -6,12 +6,16 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     roomCode: '',
-    name: ''
+    name: '',
+    players: []
   },
   mutations: {
     SOCKET_passedValidation(state, {name, roomCode}) {
       state.name = name;
       state.roomCode = roomCode;
+    },
+    SOCKET_updatePlayerCards(state, players) {
+      state.players = players;
     }
   },
   actions: {
