@@ -1,4 +1,5 @@
-import { GameList } from '../index.mjs';
+import { GameList, updatePlayerCards } from '../index.mjs';
+import { validateOptionalCharacters } from '../game/utility.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
@@ -54,6 +55,30 @@ export function joinRoom(io, socket) {
         const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
       }
+    });
+  })
+}
+
+export function startGame(io, socket, roomCode) {
+  return new Promise((resolve) => {
+    socket.on('startGame', function (optionalCharacters) {
+      const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
+      if (errorMsg.length > 0) {
+        socket.emit('updateErrorMsg', errorMsg);
+        return;
+      }
+
+      GameList[roomCode].startGame(optionalCharacters);
+      updatePlayerCards(GameList[roomCode].players);
+      io.in(roomCode).emit('startGame');
+      io.to(socket.id).emit('showHostSetupOptionsBtn', false);
+      io.in(roomCode).emit('setRoleList', {
+        good: GameList[roomCode].roleList["good"],
+        evil: GameList[roomCode].roleList["evil"]
+      });
+      //empty the history modal in case player is still in same session from a previous game
+      io.in(roomCode).emit('updateHistoryModal', []);
+      resolve();
     });
   })
 }

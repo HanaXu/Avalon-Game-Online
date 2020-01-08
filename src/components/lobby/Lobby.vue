@@ -73,10 +73,7 @@ export default {
       this.optionalCharacters = data;
     },
     startGame() {
-      this.$socket.emit("startGame", {
-        roomCode: this.roomCode,
-        optionalCharacters: this.optionalCharacters
-      });
+      this.$socket.emit("startGame", this.optionalCharacters);
       this.showStartGameBtn = false;
     },
     updateChallengeMode(mode) {

@@ -10,7 +10,8 @@ import {
 } from './game/utility.mjs';
 import {
   createRoom,
-  joinRoom
+  joinRoom,
+  startGame
 } from './socket/roomListener.mjs';
 
 const app = express();
@@ -37,25 +38,7 @@ io.on('connection', async socket => {
   const { name, roomCode } = await Promise.race([createRoom(io, socket, port), joinRoom(io, socket)]);
   console.log(`${name} ${roomCode}`)
 
-  socket.on('startGame', function (data) {
-    roomCode = data.roomCode;
-    const optionalCharacters = data.optionalCharacters;
-    const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
-    if (errorMsg.length > 0) {
-      socket.emit('updateErrorMsg', errorMsg);
-      return;
-    }
-
-    GameList[roomCode].startGame(optionalCharacters);
-    updatePlayerCards(GameList[roomCode].players);
-    io.in(roomCode).emit('startGame');
-    io.to(socket.id).emit('showHostSetupOptionsBtn', false);
-    io.in(roomCode).emit('setRoleList', {
-      good: GameList[roomCode].roleList["good"],
-      evil: GameList[roomCode].roleList["evil"]
-    });
-    //empty the history modal in case player is still in same session from a previous game
-    io.in(roomCode).emit('updateHistoryModal', []);
+  startGame(io, socket, roomCode).then(() => {
     leaderChoosesQuestTeam(roomCode);
   });
 
@@ -227,7 +210,7 @@ io.on('connection', async socket => {
   }
 });
 
-function updatePlayerCards(players) {
+export function updatePlayerCards(players) {
   players.forEach(player => {
     const sanitizedPlayers = sanitizeTeamView(player.socketID, player.character, players);
     io.to(player.socketID).emit('updatePlayerCards', sanitizedPlayers);
