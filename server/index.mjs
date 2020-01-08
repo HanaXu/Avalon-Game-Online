@@ -8,6 +8,10 @@ import {
   sanitizeTeamView,
   validateOptionalCharacters
 } from './game/utility.mjs';
+import {
+  createRoom,
+  joinRoom
+} from './socket/roomListener.mjs';
 
 const app = express();
 const port = 3000;
@@ -22,75 +26,16 @@ app.get(/.*/, function (req, res) {
   res.sendFile(__dirname + "/dist/index.html");
 });
 
-export var GameList = {}; //keeps record of all game objects
+export let GameList = {}; //keeps record of all game objects
 const requireAuth = false;
 
-io.on('connection', socket => {
-  var roomCode; //make roomCode available to socket
-
-  socket.on('checkForAuth', function () {
+io.on('connection', async socket => {
+  socket.on('checkForAuth', () => {
     socket.emit('setAuth', requireAuth);
   });
 
-  socket.on('createRoom', function (name) {
-    //validate user input
-    if (name === null || name.length < 1 || name.length > 20) {
-      console.log(`Error: Name does not meet length requirements: ${name}`);
-      socket.emit('updateErrorMsg', `Error: Name must be between 1-20 characters: ${name}`);
-      return;
-    }
-    roomCode = generateRoomCode();
-    socket.emit('passedValidation', {
-      name: name,
-      roomCode: roomCode
-    });
-    socket.join(roomCode); //subscribe the socket to the roomcode
-
-    GameList[roomCode] = new Game(roomCode);
-    GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
-    socket.emit('showHostSetupOptionsBtn', true);
-    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-  });
-
-  socket.on('challengeMode', function (mode) {
-    GameList[roomCode].challengeMode = mode;
-    io.in(roomCode).emit('updateChallengeMode', mode);
-  });
-
-  socket.on('createBot', function (roomCode) {
-    let bot = new GameBot(roomCode, port);
-    bot.startListening();
-  });
-
-  socket.on('joinRoom', function (data) {
-    roomCode = data.roomCode;
-    const name = data.name;
-    //reconnect disconnected player after the game has started
-    if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', name) &&
-      GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
-      reconnectPlayerToStartedGame(name);
-      return;
-    }
-    //validate user input
-    const errorMsg = validateJoinRoom(name, roomCode);
-    if (errorMsg.length > 0) {
-      socket.emit('updateErrorMsg', errorMsg);
-      return;
-    }
-    socket.emit('passedValidation', {
-      name: name,
-      roomCode: roomCode
-    });
-    socket.join(roomCode);
-    GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
-
-    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-    io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
-    if (GameList[roomCode].players.length >= 5) {
-      const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
-      io.to(hostSocketID).emit('showStartGameBtn');
-    }
-  });
+  const { name, roomCode } = await Promise.race([createRoom(io, socket, port), joinRoom(io, socket)]);
+  console.log(`${name} ${roomCode}`)
 
   socket.on('startGame', function (data) {
     roomCode = data.roomCode;
@@ -232,10 +177,7 @@ io.on('connection', socket => {
     existingPlayer.socketID = socket.id;
     existingPlayer.disconnected = false;
 
-    socket.emit('passedValidation', {
-      name: name,
-      roomCode: roomCode
-    });
+    socket.emit('passedValidation', {name, roomCode});
     socket.join(roomCode);
 
     //show game screen instead of lobby
@@ -284,41 +226,6 @@ io.on('connection', socket => {
     }
   }
 });
-
-function generateRoomCode() {
-  let roomCode = Math.floor(Math.random() * 999999) + 1;
-  //check if the room already exists
-  while (GameList.hasOwnProperty(roomCode)) {
-    console.log(`collision with roomCode ${roomCode}`)
-    roomCode = Math.floor(Math.random() * 999999) + 1;
-  }
-  console.log(`generating new room code ${roomCode}`)
-  return roomCode;
-}
-
-//validate before letting player join a room
-function validateJoinRoom(name, roomCode) {
-  if (typeof GameList[roomCode] === 'undefined') {
-    console.log(`Error: Room code '${roomCode}' does not exist.`);
-    return `Error: Room code '${roomCode}' does not exist.`;
-  }
-  else if (GameList[roomCode].gameIsStarted) {
-    console.log('Error: Cannot join a game that has already started');
-    return 'Error: Cannot join a game that has already started';
-  } else if (name === null || name.length < 1 || name.length > 20) {
-    console.log(`Error: Name must be between 1-20 characters: ${name}`);
-    return `Error: Name must be between 1-20 characters: ${name}`;
-  } else if (GameList[roomCode].getPlayerBy('name', name)) {
-    console.log(`Error: Name '${name}' is already taken.`);
-    return `Error: Name '${name}' is already taken.`;
-  } else if (GameList[roomCode].players.length >= 10) {
-    console.log(`Error: Room '${roomCode}' has reached a capacity of 10`);
-    return `Error: Room '${roomCode}' has reached a capacity of 10`;
-  }
-  else {
-    return "";
-  }
-}
 
 function updatePlayerCards(players) {
   players.forEach(player => {

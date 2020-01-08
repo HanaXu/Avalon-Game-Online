@@ -16,13 +16,9 @@ export function populateRoleList(teamObj) {
     };
     for (let character in teamObj) {
         if (teamObj[character] <= 0) continue;
-        if (GoodTeam.has(character)) {
-            roleList['good'][character] = teamObj[character];
-        } else {
-            roleList['evil'][character] = teamObj[character];
-        }
+        GoodTeam.has(character) ? roleList['good'][character] = teamObj[character]
+                                : roleList['evil'][character] = teamObj[character];
     }
-    // console.log(roleList);
     return roleList;
 }
 

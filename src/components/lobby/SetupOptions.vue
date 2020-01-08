@@ -76,7 +76,7 @@ export default {
       }
     },
     createBot() {
-      this.$socket.emit("createBot", this.roomCode);
+      this.$socket.emit("createBot");
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)

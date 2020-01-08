@@ -1,6 +1,6 @@
 import { objectToArray, shuffle, populateRoleList } from './utility.mjs';
 import Quest from './quest.mjs';
-import QuestHistory from './history.mjs';
+import QuestHistory from './questHistory.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
