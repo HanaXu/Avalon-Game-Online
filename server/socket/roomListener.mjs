@@ -1,4 +1,4 @@
-import { GameList, updatePlayerCards } from '../index.mjs';
+import { GameList } from '../index.mjs';
 import { validateOptionalCharacters } from '../game/utility.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
@@ -14,15 +14,15 @@ export function createRoom(io, socket, port) {
         return;
       }
       let roomCode = generateRoomCode();
-      socket.emit('passedValidation', {name, roomCode});
+      socket.emit('passedValidation', { name, roomCode });
       socket.join(roomCode); //subscribe the socket to the roomcode
-      resolve({name, roomCode});
       settingsListener(io, socket, roomCode, port);
 
       GameList[roomCode] = new Game(roomCode);
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
       socket.emit('showHostSetupOptionsBtn', true);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      resolve({ name, roomCode });
     });
   });
 }
@@ -44,49 +44,23 @@ export function joinRoom(io, socket) {
         socket.emit('updateErrorMsg', errorMsg);
         return;
       }
-      socket.emit('passedValidation', {name, roomCode});
+      socket.emit('passedValidation', { name, roomCode });
       socket.join(roomCode);
-      resolve(data);
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
-  
+
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
       io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
       if (GameList[roomCode].players.length >= 5) {
         const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
       }
-    });
-  })
-}
-
-export function startGame(io, socket, roomCode) {
-  return new Promise((resolve) => {
-    socket.on('startGame', function (optionalCharacters) {
-      const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
-      if (errorMsg.length > 0) {
-        socket.emit('updateErrorMsg', errorMsg);
-        return;
-      }
-
-      GameList[roomCode].startGame(optionalCharacters);
-      updatePlayerCards(GameList[roomCode].players);
-      io.in(roomCode).emit('startGame');
-      io.to(socket.id).emit('showHostSetupOptionsBtn', false);
-      io.in(roomCode).emit('setRoleList', {
-        good: GameList[roomCode].roleList["good"],
-        evil: GameList[roomCode].roleList["evil"]
-      });
-      //empty the history modal in case player is still in same session from a previous game
-      io.in(roomCode).emit('updateHistoryModal', []);
-      resolve();
+      resolve(data);
     });
   })
 }
 
 function generateRoomCode() {
   let roomCode = Math.floor(Math.random() * 999999) + 1;
-  console.log(GameList)
-  //check if the room already exists
   while (GameList.hasOwnProperty(roomCode)) {
     console.log(`collision with roomCode ${roomCode}`)
     roomCode = Math.floor(Math.random() * 999999) + 1;
