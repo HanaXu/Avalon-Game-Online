@@ -1,5 +1,4 @@
-import { GameList } from '../index.mjs';
-import { validateOptionalCharacters } from '../game/utility.mjs';
+import { GameList, updatePlayerCards } from '../index.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
@@ -30,12 +29,12 @@ export function createRoom(io, socket, port) {
 export function joinRoom(io, socket) {
   return new Promise((resolve) => {
     socket.on('joinRoom', function (data) {
-      const roomCode = data.roomCode;
-      const name = data.name;
+      const { name, roomCode } = data;
+
       //reconnect disconnected player after the game has started
       if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', name) &&
         GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
-        reconnectPlayerToStartedGame(name);
+        reconnectPlayerToStartedGame(io, socket, name, roomCode);
         return;
       }
       //validate user input
@@ -82,8 +81,8 @@ function settingsListener(io, socket, roomCode, port) {
 
 function validatePlayerJoinsRoom(name, roomCode) {
   if (typeof GameList[roomCode] === 'undefined') {
-    console.log(`Error: Room code '${game.roomCode}' does not exist.`);
-    return `Error: Room code '${game.roomCode}' does not exist.`;
+    console.log(`Error: Room code '${GameList[roomCode]}' does not exist.`);
+    return `Error: Room code '${GameList[roomCode]}' does not exist.`;
   }
   else if (GameList[roomCode].gameIsStarted) {
     console.log('Error: Cannot join a game that has already started');
@@ -100,5 +99,60 @@ function validatePlayerJoinsRoom(name, roomCode) {
   }
   else {
     return "";
+  }
+}
+
+function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
+  console.log(`\nreconnecting ${name} to room ${roomCode}`)
+  let existingPlayer = GameList[roomCode].getPlayerBy('name', name);
+  existingPlayer.socketID = socket.id;
+  existingPlayer.disconnected = false;
+
+  socket.emit('passedValidation', { name, roomCode });
+  socket.join(roomCode);
+
+  //show game screen instead of lobby
+  if (GameList[roomCode].gameIsStarted) {
+    socket.emit('startGame');
+    io.in(roomCode).emit('setRoleList', {
+      good: GameList[roomCode].roleList["good"],
+      evil: GameList[roomCode].roleList["evil"]
+    });
+  }
+  updatePlayerCards(io, GameList[roomCode].players);
+
+  let currentQuest = GameList[roomCode].getCurrentQuest();
+  io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
+  io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
+  io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+  if (GameList[roomCode].challengeMode === "OFF") {
+    io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+  }
+
+  if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
+    io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
+    if (!existingPlayer.votedOnTeam) {
+      console.log('did not vote yet, showing accept/reject buttons')
+      socket.emit('showAcceptOrRejectTeamBtns', true);
+    }
+  }
+  //reveal votes
+  else if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
+    console.log('reveal votes');
+    //client does not seem to be getting revealAcceptOrRejectTeam
+    io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
+  }
+
+  if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
+    questTeamAcceptedStuff(roomCode);
+  }
+  if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
+    console.log('showing add/remove quest buttons to leader')
+    currentQuest.leaderInfo.socketID = socket.id;
+    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
+    socket.emit('showConfirmTeamBtnToLeader', false);
+  }
+  if (currentQuest.leaderInfo.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.leaderHasConfirmedTeam) {
+    socket.emit('showConfirmTeamBtnToLeader', true);
   }
 }
