@@ -1,12 +1,12 @@
 import express from 'express';
 import socketIO from 'socket.io';
 import path from 'path';
-import { sanitizeTeamView } from './game/utility.mjs';
 import {
   createRoom,
   joinRoom
 } from './socket/roomListener.mjs';
 import { gameListener } from './socket/gameListener.mjs';
+import { disconnectLisenter } from './socket/connectionListener.mjs';
 
 const app = express();
 const port = 3000;
@@ -32,24 +32,8 @@ io.on('connection', socket => {
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
     .then((data) => {
       const { name, roomCode } = data;
+      disconnectLisenter(io, socket, roomCode);
       gameListener(io, socket, name, roomCode);
-
-      socket.on('disconnect', function () {
-        if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
-          let players = GameList[roomCode].players;
-          //disconnection after game start
-          if (GameList[roomCode].gameIsStarted) {
-            console.log('\ndisconnecting player from started game')
-            GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
-            updatePlayerCards(io, players);
-          }
-          //disconnection before game start
-          else {
-            GameList[roomCode].deletePlayer(socket.id);
-            io.in(roomCode).emit('updatePlayerCards', players);
-          }
-        }
-      });
     });
 });
 

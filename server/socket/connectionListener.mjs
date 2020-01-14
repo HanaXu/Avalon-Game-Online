@@ -1,0 +1,87 @@
+import { GameList, updatePlayerCards } from '../index.mjs';
+
+export function disconnectLisenter(io, socket, roomCode) {
+  socket.on('disconnect', function () {
+    if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
+      let players = GameList[roomCode].players;
+      //disconnection after game start
+      if (GameList[roomCode].gameIsStarted) {
+        console.log('\ndisconnecting player from started game')
+        GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
+        updatePlayerCards(io, players);
+      }
+      //disconnection before game start
+      else {
+        GameList[roomCode].deletePlayer(socket.id);
+        io.in(roomCode).emit('updatePlayerCards', players);
+      }
+    }
+  });
+}
+
+export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
+  console.log(`\nreconnecting ${name} to room ${roomCode}`)
+  let existingPlayer = GameList[roomCode].getPlayerBy('name', name);
+  existingPlayer.socketID = socket.id;
+  existingPlayer.disconnected = false;
+
+  socket.emit('passedValidation', { name, roomCode });
+  socket.join(roomCode);
+
+  //show game screen instead of lobby
+  if (GameList[roomCode].gameIsStarted) {
+    socket.emit('startGame');
+    io.in(roomCode).emit('setRoleList', {
+      good: GameList[roomCode].roleList["good"],
+      evil: GameList[roomCode].roleList["evil"]
+    });
+  }
+  updatePlayerCards(io, GameList[roomCode].players);
+
+  let currentQuest = GameList[roomCode].getCurrentQuest();
+  io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
+  io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
+  io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+  if (GameList[roomCode].challengeMode === "OFF") {
+    io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
+  }
+
+  if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
+    io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
+    if (!existingPlayer.votedOnTeam) {
+      console.log('did not vote yet, showing accept/reject buttons')
+      socket.emit('showAcceptOrRejectTeamBtns', true);
+    }
+  }
+  //reveal votes
+  else if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
+    console.log('reveal votes');
+    //client does not seem to be getting revealAcceptOrRejectTeam
+    io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
+  }
+
+  if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
+    questTeamAcceptedStuff(roomCode);
+  }
+  if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
+    console.log('showing add/remove quest buttons to leader')
+    currentQuest.leaderInfo.socketID = socket.id;
+    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
+    socket.emit('showConfirmTeamBtnToLeader', false);
+  }
+  if (currentQuest.leaderInfo.name === name && currentQuest.playersNeededLeft <= 0 && !currentQuest.leaderHasConfirmedTeam) {
+    socket.emit('showConfirmTeamBtnToLeader', true);
+  }
+
+  function questTeamAcceptedStuff() {
+    updateQuestMsg(roomCode, 'Quest team was Approved. Waiting for quest team to go on quest.');
+    GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
+    GameList[roomCode].gameState['succeedOrFailQuest'] = true;
+    GameList[roomCode].players.forEach(player => {
+      if (player.onQuest && !player.votedOnQuest) {
+        const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
+        io.to(player.socketID).emit('succeedOrFailQuest', disableFailBtn);
+      }
+    });
+  }
+}

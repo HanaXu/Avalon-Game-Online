@@ -170,7 +170,7 @@ export function gameListener(io, socket, name, roomCode) {
       GameList[roomCode].quests[currentQuest.questNum].resetQuest();
       GameList[roomCode].assignNextLeader(currentQuest.questNum);
       updatePlayerCards(io, GameList[roomCode].players);
-      leaderChoosesQuestTeam(roomCode);
+      leaderChoosesQuestTeam();
     }
   }
 
@@ -197,7 +197,7 @@ export function gameListener(io, socket, name, roomCode) {
       //choose next leader and start next quest
       GameList[roomCode].startNextQuest(questNum);
       updatePlayerCards(io, GameList[roomCode].players);
-      leaderChoosesQuestTeam(roomCode);
+      leaderChoosesQuestTeam();
     }
   }
   
