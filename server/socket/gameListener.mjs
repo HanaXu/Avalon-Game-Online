@@ -1,8 +1,5 @@
 import { GameList, updatePlayerCards } from '../index.mjs';
-import {
-  sanitizeTeamView,
-  validateOptionalCharacters
-} from '../game/utility.mjs';
+import { validateOptionalCharacters } from '../game/utility.mjs';
 
 export function gameListener(io, socket, name, roomCode) {
   socket.on('startGame', function (optionalCharacters) {

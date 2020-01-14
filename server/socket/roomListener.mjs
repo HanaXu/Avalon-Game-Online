@@ -1,8 +1,8 @@
 import { GameList, updatePlayerCards } from '../index.mjs';
+import { reconnectPlayerToStartedGame } from './connectionListener.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
-import { reconnectPlayerToStartedGame } from './connectionListener.mjs';
 
 export function createRoom(io, socket, port) {
   return new Promise((resolve) => {
