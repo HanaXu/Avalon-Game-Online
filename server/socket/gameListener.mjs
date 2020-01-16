@@ -1,13 +1,8 @@
 import { GameList, updatePlayerCards } from '../index.mjs';
-import { validateOptionalCharacters } from '../game/utility.mjs';
 
 export function gameListener(io, socket, name, roomCode) {
   socket.on('startGame', function (optionalCharacters) {
-    const errorMsg = validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length);
-    if (errorMsg.length > 0) {
-      socket.emit('updateErrorMsg', errorMsg);
-      return;
-    }
+    if (!validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length)) return;
 
     GameList[roomCode].startGame(optionalCharacters);
     updatePlayerCards(io, GameList[roomCode].players);
@@ -30,7 +25,7 @@ export function gameListener(io, socket, name, roomCode) {
     if (currentQuest.playersNeededLeft > 0) {
       updateLeaderIsChoosingPlayersMsg(currentQuest);
     } else {
-      updateQuestMsg(roomCode, `Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
+      updateQuestMsg(`Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
       socket.emit('showConfirmTeamBtnToLeader', true);
     }
   });
@@ -52,7 +47,7 @@ export function gameListener(io, socket, name, roomCode) {
     currentQuest.leaderHasConfirmedTeam = true;
 
     GameList[roomCode].gameState['acceptOrRejectTeam'] = true;
-    updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
+    updateQuestMsg('Waiting for all players to Accept or Reject team.');
     io.in(roomCode).emit('showAcceptOrRejectTeamBtns', true);
   });
 
@@ -63,7 +58,7 @@ export function gameListener(io, socket, name, roomCode) {
     currentQuest.acceptOrRejectTeam.voted.push(name);
     GameList[roomCode].getPlayerBy('name', name).votedOnTeam = true;
 
-    updateQuestMsg(roomCode, 'Waiting for all players to Accept or Reject team.');
+    updateQuestMsg('Waiting for all players to Accept or Reject team.');
     socket.emit('showAcceptOrRejectTeamBtns', false);
     io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
 
@@ -82,7 +77,6 @@ export function gameListener(io, socket, name, roomCode) {
   socket.on('questVote', function (data) {
     const { name, decision } = data;
     GameList[roomCode].getPlayerBy('name', name).votedOnQuest = true;
-    console.log(`received quest vote from: ${name}`);
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
     const votes = currentQuest.votes;
@@ -93,8 +87,6 @@ export function gameListener(io, socket, name, roomCode) {
     //check if number of received votes is max needed
     if ((votes.succeed + votes.fail) == currentQuest.playersRequired) {
       GameList[roomCode].gameState['succeedOrFailQuest'] = false;
-
-      console.log('All quest votes received.');
       currentQuest.assignResult();
       io.in(roomCode).emit('hidePreviousTeamVotes');
       io.in(roomCode).emit('revealQuestResults', votes);
@@ -117,13 +109,34 @@ export function gameListener(io, socket, name, roomCode) {
     io.in(roomCode).emit('gameOver', msg);
   });
 
+  //check to make sure chosen optional characters works for number of players
+  //if 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
+  function validateOptionalCharacters(characters, numPlayers) {
+    const evilCharacters = characters.filter((character) => character != "Percival");
+    let errorMsg = "";
+
+    if (numPlayers <= 6 && evilCharacters.length > 1) {
+        errorMsg = `Error: game with 5 or 6 players can only include 1 of Mordred, 
+                    Oberon, or Morgana. Please select only one then click Start Game again.`;
+    }
+    else if ((numPlayers > 6 && numPlayers < 10) && evilCharacters.length > 2) {
+      errorMsg = `Error: game with 7, 8, or 9 players can only include 2 of Mordred, 
+                  Oberon, or Morgana. Please de-select one then click Start Game again.`;
+    }
+    if (errorMsg.length > 0) {
+      socket.emit('updateErrorMsg', errorMsg);
+      return false;
+    }
+    return true;
+  }
+
   function leaderChoosesQuestTeam() {
     const currentQuest = GameList[roomCode].getCurrentQuest();
 
     io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
     io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
     updateLeaderIsChoosingPlayersMsg(currentQuest);
-    console.log(`\nCurrent Quest: ${currentQuest.questNum}`);
+    console.log(`Current Quest: ${currentQuest.questNum}`);
     io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
   }
 
@@ -140,7 +153,7 @@ export function gameListener(io, socket, name, roomCode) {
   }
 
   function questTeamAcceptedStuff() {
-    updateQuestMsg(roomCode, 'Quest team was Approved. Waiting for quest team to go on quest.');
+    updateQuestMsg('Quest team was Approved. Waiting for quest team to go on quest.');
     GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
     GameList[roomCode].gameState['succeedOrFailQuest'] = true;
     GameList[roomCode].players.forEach(player => {
@@ -157,7 +170,7 @@ export function gameListener(io, socket, name, roomCode) {
     if (GameList[roomCode].challengeMode === "OFF") {
       io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
     }
-    updateQuestMsg(roomCode, 'Quest team was Rejected. New quest leader has been chosen.');
+    updateQuestMsg('Quest team was Rejected. New quest leader has been chosen.');
 
     //check if voteTrack has exceeded 5 (game over)
     if (currentQuest.voteTrack > 5) {

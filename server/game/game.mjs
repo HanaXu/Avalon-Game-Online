@@ -78,7 +78,6 @@ export default class Game {
   }
 
   initializeQuests() {
-    console.log(`initializing quests. total players: ${this.players.length}`);
     this.quests = {
       1: new Quest(1, this.players.length),
       2: new Quest(2, this.players.length),
@@ -126,7 +125,6 @@ export default class Game {
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
-        console.log(`removing ${this.players[i].name} from room: ${this.roomCode}`);
         this.players.splice(i, 1); //delete 1 player element at index i
         break;
       }
@@ -209,14 +207,12 @@ export default class Game {
   saveQuestHistory(currentQuest) {
     const { questNum, voteTrack } = currentQuest;
     if (typeof this.questHistory[questNum] === 'undefined') {
-      console.log(`creating history obj for quest: ${questNum} voteTrack: ${voteTrack}`);
       let arr = [];
       arr.push(new QuestHistory(currentQuest));
       this.questHistory[questNum] = arr;
     }
     // votetrack went up
     else if (typeof this.questHistory[questNum][voteTrack] === 'undefined') {
-      console.log(`adding history obj to quest:${questNum} voteTrack: ${voteTrack}`);
       this.questHistory[questNum].push(new QuestHistory(currentQuest));
     }
   }

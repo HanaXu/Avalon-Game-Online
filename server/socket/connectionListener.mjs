@@ -1,17 +1,15 @@
 import { GameList, updatePlayerCards } from '../index.mjs';
 
-export function disconnectLisenter(io, socket, roomCode) {
+export function disconnectListener(io, socket, roomCode) {
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
-      let players = GameList[roomCode].players;
-      //disconnection after game start
+      const players = GameList[roomCode].players;
+
       if (GameList[roomCode].gameIsStarted) {
-        console.log('\ndisconnecting player from started game')
         GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
         updatePlayerCards(io, players);
       }
-      //disconnection before game start
-      else {
+      else { // player is in lobby
         GameList[roomCode].deletePlayer(socket.id);
         io.in(roomCode).emit('updatePlayerCards', players);
       }
@@ -28,7 +26,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   socket.emit('passedValidation', { name, roomCode });
   socket.join(roomCode);
 
-  //show game screen instead of lobby
+  //show game instead of lobby
   if (GameList[roomCode].gameIsStarted) {
     socket.emit('startGame');
     io.in(roomCode).emit('setRoleList', {
@@ -49,14 +47,11 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
     io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
     if (!existingPlayer.votedOnTeam) {
-      console.log('did not vote yet, showing accept/reject buttons')
       socket.emit('showAcceptOrRejectTeamBtns', true);
     }
   }
   //reveal votes
   else if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
-    console.log('reveal votes');
-    //client does not seem to be getting revealAcceptOrRejectTeam
     io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
   }
 
@@ -64,7 +59,6 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
     questTeamAcceptedStuff(roomCode);
   }
   if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
-    console.log('showing add/remove quest buttons to leader')
     currentQuest.leaderInfo.socketID = socket.id;
     io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
     socket.emit('showConfirmTeamBtnToLeader', false);

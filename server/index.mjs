@@ -7,7 +7,7 @@ import {
   joinRoom
 } from './socket/roomListener.mjs';
 import { gameListener } from './socket/gameListener.mjs';
-import { disconnectLisenter } from './socket/connectionListener.mjs';
+import { disconnectListener } from './socket/connectionListener.mjs';
 
 const app = express();
 const port = 3000;
@@ -33,14 +33,13 @@ io.on('connection', socket => {
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
     .then((data) => {
       const { name, roomCode } = data;
-      disconnectLisenter(io, socket, roomCode);
+      disconnectListener(io, socket, roomCode);
       gameListener(io, socket, name, roomCode);
     });
 });
 
 export function updatePlayerCards(io, players) {
   players.forEach(player => {
-    const sanitizedPlayers = sanitizeTeamView(player.socketID, player.character, players);
-    io.to(player.socketID).emit('updatePlayerCards', sanitizedPlayers);
+    io.to(player.socketID).emit('updatePlayerCards', sanitizeTeamView(player.socketID, player.character, players));
   });
 }

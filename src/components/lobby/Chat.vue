@@ -60,7 +60,6 @@ export default {
           .push(message);
         e.target.value = "";
       } else {
-        console.log("Something went wrong...");
         console.log(e);
       }
     },

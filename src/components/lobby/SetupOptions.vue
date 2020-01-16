@@ -80,7 +80,6 @@ export default {
     },
     handleOk() {
       //send array of selected characters to parent (Game.vue)
-      console.log(`Selected Items: ${this.selected}`);
       this.$emit("clicked", this.selected);
     }
   }
