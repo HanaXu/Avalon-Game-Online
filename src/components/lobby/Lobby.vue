@@ -10,23 +10,16 @@
           <span :class="{red: players.length < 5, green: players.length >= 5}">{{players.length}}/10</span>
         </p>
       </b-col>
-      <b-col md="5">
-        <b-form-checkbox
-          v-if="showSetupOptionsBtn"
-          id="checkbox-1"
-          v-model="challengeMode"
-          name="checkbox-1"
-          value="ON"
-          unchecked-value="OFF"
-          @change="updateChallengeMode($event)"
-        >
-          Challenge Mode (No History Saved):
-          <strong>{{ challengeMode }}</strong>
-        </b-form-checkbox>
-        <div v-if="!showSetupOptionsBtn">
-          Challenge Mode (No History Saved):
-          <strong>{{ challengeMode }}</strong>
-        </div>
+      <b-col md="5" offset="1">
+      <b-form-checkbox
+        name="challenge-mode-checkbox"
+        v-model="challengeMode"
+        :disabled="!showSetupOptionsBtn"
+        @input="updateChallengeMode"
+        switch
+      >
+        Challenge mode (No history saved)
+      </b-form-checkbox>
       </b-col>
     </b-row>
     <b-row>
@@ -59,7 +52,7 @@ export default {
   data() {
     return {
       optionalCharacters: [],
-      challengeMode: "OFF",
+      challengeMode: false,
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
@@ -76,13 +69,13 @@ export default {
       this.$socket.emit("startGame", this.optionalCharacters);
       this.showStartGameBtn = false;
     },
-    updateChallengeMode(mode) {
-      this.$socket.emit("challengeMode", mode);
+    updateChallengeMode() {
+      this.$socket.emit("challengeMode", this.challengeMode);
     }
   },
   sockets: {
-    updateChallengeMode(str) {
-      this.challengeMode = str;
+    updateChallengeMode(challengeMode) {
+      this.challengeMode = challengeMode;
     },
     showStartGameBtn() {
       this.showStartGameBtn = true;
@@ -91,7 +84,7 @@ export default {
       this.error = false;
       this.showSetupOptionsBtn = false;
     },
-    showHostSetupOptionsBtn(bool) {
+    showSetupOptionsBtn(bool) {
       this.showSetupOptionsBtn = bool;
     },
     updateErrorMsg(msg) {

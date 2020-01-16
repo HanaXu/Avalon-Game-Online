@@ -40,7 +40,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
   io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-  if (GameList[roomCode].challengeMode === "OFF") {
+  if (!GameList[roomCode].challengeMode) {
     io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
   }
 

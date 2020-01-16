@@ -1,7 +1,7 @@
 <template>
   <b-modal id="setupModal" class="setup" title="Setup Options" @ok="handleOk">
     <b-row>
-      <b-button margin-top="20px" class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
+      <b-button class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
     <b-row>
       <b-col sm="5">
@@ -11,11 +11,11 @@
         <b-form-group>
           <b-form-checkbox
             v-for="option in options"
-            v-model="selected"
+            v-model="selectedCharacters"
             :key="option.value"
             :value="option.value"
-            :disabled="option.value === 'Morgana' && !selected.includes('Percival')"
-            @input="validateSelected()"
+            :disabled="option.value === 'Morgana' && !selectedCharacters.includes('Percival')"
+            @input="validateselectedCharacters()"
           >{{ option.text }}</b-form-checkbox>
         </b-form-group>
       </b-col>
@@ -40,7 +40,7 @@ export default {
     return {
       error: false,
       errorMsg: "",
-      selected: [], // Must be an array reference!
+      selectedCharacters: [], // Must be an array reference!
       options: [
         {
           text: "Percival (Good, knows Merlin)",
@@ -63,14 +63,14 @@ export default {
   },
   computed: mapState(['roomCode', 'players']),
   methods: {
-    validateSelected() {
+    validateselectedCharacters() {
       if (
-        this.selected.includes("Morgana") &&
-        !this.selected.includes("Percival")
+        this.selectedCharacters.includes("Morgana") &&
+        !this.selectedCharacters.includes("Percival")
       ) {
-        for (let i = 0; i < this.selected.length; i++) {
-          if (this.selected[i] === "Morgana") {
-            this.selected.splice(i, 1);
+        for (let i = 0; i < this.selectedCharacters.length; i++) {
+          if (this.selectedCharacters[i] === "Morgana") {
+            this.selectedCharacters.splice(i, 1);
           }
         }
       }
@@ -79,8 +79,8 @@ export default {
       this.$socket.emit("createBot");
     },
     handleOk() {
-      //send array of selected characters to parent (Game.vue)
-      this.$emit("clicked", this.selected);
+      //send selected characters to parent (Lobby.vue)
+      this.$emit("clicked", this.selectedCharacters);
     }
   }
 };

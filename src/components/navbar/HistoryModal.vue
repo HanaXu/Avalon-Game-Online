@@ -1,6 +1,6 @@
 <template>
   <b-modal id="modal-history" size="lg" scrollable title="Game History">
-    <h4 v-if="challengeMode === 'ON'">Challenge mode is on. No history is saved.</h4>
+    <h4 v-if="challengeMode">Challenge mode is on. No history is saved.</h4>
     <div v-for="(quest, questIndex) in questHistory" :key="questIndex">
       <!-- put success/fail badge next to quest label -->
       <span v-for="(voteTrack, voteTrackIndex) in quest" :key="voteTrackIndex">
@@ -65,15 +65,15 @@ export default {
   data() {
     return {
       questHistory: null,
-      challengeMode: "OFF"
+      challengeMode: false
     };
   },
   sockets: {
     updateHistoryModal(historyObj) {
       this.questHistory = historyObj;
     },
-    updateChallengeMode(str) {
-      this.challengeMode = str;
+    updateChallengeMode(challengeMode) {
+      this.challengeMode = challengeMode;
     }
   }
 };

@@ -49,7 +49,7 @@ const BaseCharacters = {
 export default class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
-    this.challengeMode = "OFF";
+    this.challengeMode = false;
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,
