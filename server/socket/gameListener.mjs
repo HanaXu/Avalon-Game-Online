@@ -108,7 +108,8 @@ export function gameListener(io, socket, name, roomCode) {
     console.log(`\nMerlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
     const msg = merlinPlayer.name === name ? `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`
       : `Assassin failed to discover and kill Merlin. Good Wins!`;
-    io.in(roomCode).emit('gameOver', msg);
+    updateQuestMsg(msg);
+    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
 
   //check to make sure chosen optional characters works for number of players
@@ -170,7 +171,8 @@ export function gameListener(io, socket, name, roomCode) {
 
     //check if voteTrack has exceeded 5 (game over)
     if (currentQuest.voteTrack > 5) {
-      io.in(roomCode).emit('gameOver', `Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`);
+      updateQuestMsg(`Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`);
+      io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     } else { //assign next leader
       GameList[roomCode].resetPlayersProperty('onQuest');
       GameList[roomCode].quests[currentQuest.questNum].resetQuest();
@@ -188,13 +190,14 @@ export function gameListener(io, socket, name, roomCode) {
     if (questScores.fails >= 3) {
       GameList[roomCode].resetPlayersProperty('onQuest');
       GameList[roomCode].quests[questNum].resetQuest();
-      io.in(roomCode).emit('gameOver', `${questScores.fails} quests failed. Evil Wins!`);
+      updateQuestMsg(`${questScores.fails} quests failed. Evil Wins!`);
+      io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     }
     //good is on track to win, evil can assassinate
     else if (questScores.successes >= 3) {
       const assassinSocketID = GameList[roomCode].getPlayerBy('character', 'Assassin').socketID;
-      io.in(roomCode).emit('updateQuestMsg', `Good has triumphed over Evil by succeeding 
-    ${questScores.successes} quests. Waiting for Assassin to attempt to assassinate Merlin.`);
+      updateQuestMsg(`Good has triumphed over Evil by succeeding  ${questScores.successes} quests. 
+                      Waiting for Assassin to attempt to assassinate Merlin.`)
 
       io.to(assassinSocketID).emit('beginAssassination', `You are the assassin. 
     Choose the player you think is Merlin to attempt to assassinate them and win the game for Evil.`);

@@ -58,10 +58,10 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation({name, roomCode}) {
+    passedValidation({ name, roomCode }) {
       this.$router.push({
         name: "game",
-        params: { name: name, roomCode: roomCode }
+        params: { name, roomCode }
       });
     }
   }

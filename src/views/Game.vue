@@ -2,7 +2,6 @@
   <div>
     <div class="row justify-content-md-center mx-0">
       <div class="col-12 col-md-7">
-        <EndGameOverlay/>
         <Lobby v-if="!gameStarted" />
         <!-- Actual Game -->
         <div class="container main-board" v-if="gameStarted">
@@ -38,7 +37,6 @@ import Chat from "@/components/lobby/Chat.vue";
 import QuestCards from "@/components/QuestCards.vue";
 import VoteTrack from "@/components/VoteTrack.vue";
 import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
-import EndGameOverlay from "@/components/EndGameOverlay.vue";
 import QuestVotes from "@/components/QuestVotes.vue";
 import GameStatus from "@/components/GameStatus.vue";
 import PlayerVoteStatus from "@/components/PlayerVoteStatus.vue";
@@ -53,7 +51,6 @@ export default {
     QuestCards,
     VoteTrack,
     DecideQuestTeam,
-    EndGameOverlay,
     QuestVotes,
     GameStatus,
     PlayerVoteStatus,
@@ -66,9 +63,7 @@ export default {
       gameStarted: false,
       showAddBtn: false,
       showRemoveBtn: false,
-      showAssassinateBtn: false,
-      gameOver: false,
-      endGameMsg: null
+      showAssassinateBtn: false
     };
   },
   sockets: {
@@ -86,10 +81,6 @@ export default {
     beginAssassination(msg) {
       this.showAssassinateBtn = true;
       this.questMsg = msg;
-    },
-    gameOver(msg) {
-      this.gameOver = true;
-      this.endGameMsg = msg;
     }
   }
 };
