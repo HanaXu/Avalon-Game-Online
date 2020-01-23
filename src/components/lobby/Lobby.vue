@@ -3,24 +3,11 @@
     <h4>
       Welcome, {{ name }}, to game room {{ roomCode }}.
     </h4>
-    <b-row>
-      <b-col md="3" offset="2">
-        <p v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
-          Room Capacity:
-          <span :class="{red: players.length < 5, green: players.length >= 5}">{{players.length}}/10</span>
-        </p>
-      </b-col>
-      <b-col md="5" offset="1">
-      <b-form-checkbox
-        name="challenge-mode-checkbox"
-        v-model="challengeMode"
-        :disabled="!showSetupOptionsBtn"
-        @input="updateChallengeMode"
-        switch
-      >
-        Challenge mode (No history saved)
-      </b-form-checkbox>
-      </b-col>
+    <b-row class="justify-content-center">
+      <p class="mb-0" v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
+        Room Capacity:
+        <span :class="{red: players.length < 5, green: players.length >= 5}">{{players.length}}/10</span>
+      </p>
     </b-row>
     <b-row>
       <b-col md="7" offset="1">
@@ -52,7 +39,6 @@ export default {
   data() {
     return {
       optionalCharacters: [],
-      challengeMode: false,
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
@@ -68,15 +54,9 @@ export default {
     startGame() {
       this.$socket.emit("startGame", this.optionalCharacters);
       this.showStartGameBtn = false;
-    },
-    updateChallengeMode() {
-      this.$socket.emit("challengeMode", this.challengeMode);
     }
   },
   sockets: {
-    updateChallengeMode(challengeMode) {
-      this.challengeMode = challengeMode;
-    },
     showStartGameBtn() {
       this.showStartGameBtn = true;
     },

@@ -42,7 +42,6 @@ export function joinRoom(io, socket) {
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
 
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-      io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
       if (GameList[roomCode].players.length >= 5) {
         const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
@@ -63,11 +62,6 @@ function generateRoomCode() {
 }
 
 function settingsListener(io, socket, roomCode, port) {
-  socket.on('challengeMode', function (challengeMode) {
-    GameList[roomCode].challengeMode = challengeMode;
-    io.in(roomCode).emit('updateChallengeMode', GameList[roomCode].challengeMode);
-  });
-
   socket.on('createBot', function () {
     new GameBot(roomCode, port).startListening();
   });

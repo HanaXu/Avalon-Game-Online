@@ -45,12 +45,8 @@ export default class GameBot {
             }
         });
 
-        this.socket.on('updateHistoryModal', (questHistory) => {
-            if (Object.keys(questHistory).length > 0) {
-                const currentQuest = GameList[this.roomCode].getCurrentQuest();
-                let latestQuestHistory = questHistory[currentQuest.questNum - 1].pop();
-                this.updatePlayerRiskScores(latestQuestHistory);
-            }
+        this.socket.on('updateBotRiskScores', (quest) => {
+            this.updatePlayerRiskScores(quest);
         });
 
         this.socket.on('showAddRemovePlayerBtns', (showAddRemovePlayerBtns) => {
@@ -168,7 +164,6 @@ export default class GameBot {
         this.socket.emit('leaderHasConfirmedTeam');
     }
 
-    //called when quest history is updated
     updatePlayerRiskScores(quest) {
         this.sanitizedPlayers.forEach(player => {
             let playerRiskScore = this.playerRiskScores.find(playerRiskScore => playerRiskScore.name === player.name);
@@ -176,7 +171,7 @@ export default class GameBot {
                 quest.success ? playerRiskScore.risk-- : playerRiskScore.risk++;
             }
             //check for player on quest
-            if (quest.playersOnQuest.includes(player.name) && player.team === 'hidden') {
+            if (Array.from(quest.playersOnQuest).includes(player.name) && player.team === 'hidden') {
                 quest.success ? playerRiskScore.risk-- : playerRiskScore.risk += 10;
             }
             //check for vote accept

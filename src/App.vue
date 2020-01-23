@@ -9,14 +9,12 @@
           <b-nav-item to="/" @click="reload">Home</b-nav-item>
           <b-nav-item v-b-modal.modal-rules busy="true">Rules</b-nav-item>
           <b-nav-item v-b-modal.modal-roles busy="true">Roles</b-nav-item>
-          <b-nav-item v-b-modal.modal-history busy="true">Game History</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <div class="modals">
       <RulesModal/>
       <RolesModal/>
-      <HistoryModal/>
     </div>
     <router-view/>
   </div>
@@ -26,15 +24,13 @@
 import Home from "./views/Home.vue";
 import RulesModal from "@/components/navbar/RulesModal.vue";
 import RolesModal from "@/components/navbar/RolesModal.vue";
-import HistoryModal from "@/components/navbar/HistoryModal.vue";
 import { mapState } from 'vuex';
 
 export default {
   components: {
     Home,
     RulesModal,
-    RolesModal,
-    HistoryModal
+    RolesModal
   },
   computed: mapState(['roomCode']),
   methods: {

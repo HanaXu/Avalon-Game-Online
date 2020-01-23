@@ -40,9 +40,6 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
   io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
-  if (!GameList[roomCode].challengeMode) {
-    io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
-  }
 
   if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
     io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
@@ -56,7 +53,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   }
 
   if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
-    questTeamAcceptedStuff(roomCode);
+    showSucceedAndFailBtnsToPlayersOnQuest();
   }
   if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
     currentQuest.leaderInfo.socketID = socket.id;
@@ -67,7 +64,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
     socket.emit('showConfirmTeamBtnToLeader', true);
   }
 
-  function questTeamAcceptedStuff() {
+  function showSucceedAndFailBtnsToPlayersOnQuest() {
     updateQuestMsg(roomCode, 'Quest team was Approved. Waiting for quest team to go on quest.');
     GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
     GameList[roomCode].gameState['succeedOrFailQuest'] = true;

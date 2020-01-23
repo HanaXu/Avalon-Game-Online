@@ -12,8 +12,6 @@ export function gameListener(io, socket, name, roomCode) {
       good: GameList[roomCode].roleList["good"],
       evil: GameList[roomCode].roleList["evil"]
     });
-    //empty the history modal in case player is still in same session from a previous game
-    io.in(roomCode).emit('updateHistoryModal', []);
     leaderChoosesQuestTeam();
   });
 
@@ -72,7 +70,11 @@ export function gameListener(io, socket, name, roomCode) {
       teamIsRejected ? currentQuest.acceptOrRejectTeam.result = 'rejected' : currentQuest.acceptOrRejectTeam.result = 'accepted';
 
       io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
-      teamIsRejected ? questTeamRejectedStuff(roomCode, currentQuest) : questTeamAcceptedStuff(roomCode);
+      if (teamIsRejected) {
+        incrementVoteTrackAndAssignNextLeader(currentQuest, `Quest team was rejected. Assigning next leader.`);
+      } else {
+        showSucceedAndFailBtnsToPlayersOnQuest();
+      }
     }
   });
 
@@ -92,11 +94,7 @@ export function gameListener(io, socket, name, roomCode) {
       currentQuest.assignResult();
       io.in(roomCode).emit('hidePreviousTeamVotes');
       io.in(roomCode).emit('revealQuestResults', votes);
-      GameList[roomCode].saveQuestHistory(currentQuest);
-
-      if (!GameList[roomCode].challengeMode) {
-        io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
-      }
+      io.in(roomCode).emit('updateBotRiskScores', currentQuest);
       io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
       GameList[roomCode].resetPlayersProperty('votedOnQuest');
       checkForGameOver(roomCode);
@@ -149,7 +147,7 @@ export function gameListener(io, socket, name, roomCode) {
     io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
   }
 
-  function questTeamAcceptedStuff() {
+  function showSucceedAndFailBtnsToPlayersOnQuest() {
     updateQuestMsg('Quest team was Approved. Waiting for quest team to go on quest.');
     GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
     GameList[roomCode].gameState['succeedOrFailQuest'] = true;
@@ -161,13 +159,10 @@ export function gameListener(io, socket, name, roomCode) {
     });
   }
 
-  function questTeamRejectedStuff(currentQuest) {
-    GameList[roomCode].saveQuestHistory(currentQuest);
+  function incrementVoteTrackAndAssignNextLeader(currentQuest, msg) {
+    io.in(roomCode).emit('updateBotRiskScores', currentQuest);
     currentQuest.voteTrack++;
-    if (!GameList[roomCode].challengeMode) {
-      io.in(roomCode).emit('updateHistoryModal', GameList[roomCode].questHistory);
-    }
-    updateQuestMsg('Quest team was Rejected. New quest leader has been chosen.');
+    updateQuestMsg(msg);
 
     //check if voteTrack has exceeded 5 (game over)
     if (currentQuest.voteTrack > 5) {

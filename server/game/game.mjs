@@ -1,6 +1,5 @@
 import { objectToArray, shuffle, populateRoleList } from './utility.mjs';
 import Quest from './quest.mjs';
-import QuestHistory from './questHistory.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
@@ -49,7 +48,6 @@ const BaseCharacters = {
 export default class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
-    this.challengeMode = false;
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,
@@ -59,7 +57,6 @@ export default class Game {
     this.roleList = null;
     this.players = [];
     this.quests = null;
-    this.questHistory = {};
     this.leaderIndex = 0;
   }
 
@@ -202,19 +199,6 @@ export default class Game {
     this.players.forEach(player => {
       player[property] = false;
     });
-  }
-
-  saveQuestHistory(currentQuest) {
-    const { questNum, voteTrack } = currentQuest;
-    if (typeof this.questHistory[questNum] === 'undefined') {
-      let arr = [];
-      arr.push(new QuestHistory(currentQuest));
-      this.questHistory[questNum] = arr;
-    }
-    // votetrack went up
-    else if (typeof this.questHistory[questNum][voteTrack] === 'undefined') {
-      this.questHistory[questNum].push(new QuestHistory(currentQuest));
-    }
   }
 
   startNextQuest(lastQuestNum) {
