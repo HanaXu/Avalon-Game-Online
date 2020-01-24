@@ -5,7 +5,7 @@
 npm install
 ```
 Create a `.env` file in the root directory.
-Add `VUE_APP_SOCKET_CONNECT_URL=http://localhost:3000` to it.
+Add `VUE_APP_SOCKET_CONNECT_URL=http://localhost:3000` and `VUE_APP_DEBUG=true` to it.
 
 ### Compiles and hot-reloads UI for development
 ```

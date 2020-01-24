@@ -12,8 +12,6 @@ import firebaseui from "firebaseui";
 
 export const bus = new Vue();
 
-Vue.config.productionTip = false;
-
 // Initialize Firebase
 var config = {
   apiKey: "AIzaSyC_0DpX0DNsW0WqtBq88BlQc1MntzEL3ZY",
@@ -29,7 +27,7 @@ firebase.initializeApp(config);
 Vue.use(BootstrapVue);
 Vue.use(
   new VueSocketIO({
-    debug: true,
+    debug: process.env.VUE_APP_DEBUG === "true",
     connection: process.env.VUE_APP_SOCKET_CONNECT_URL,
     vuex: {
       store,
