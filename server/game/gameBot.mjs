@@ -139,13 +139,13 @@ export default class GameBot {
     }
 
     makeEvilLeaderPicks() {
-        const { questNum, playersRequired } = GameList[this.roomCode].getCurrentQuest();
+        const { questNum, teamSize } = GameList[this.roomCode].getCurrentQuest();
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
 
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
         this.socket.emit("addPlayerToQuest", evilPlayer.name);
 
-        for (let i = 1; i < playersRequired; i++) {
+        for (let i = 1; i < teamSize; i++) {
             if (sortedPlayerRiskScores[i].team !== 'Evil') {
                 this.socket.emit("addPlayerToQuest", sortedPlayerRiskScores[i].name);
             }
@@ -154,11 +154,11 @@ export default class GameBot {
     }
 
     makeGoodLeaderPicks() {
-        const { questNum, playersRequired } = GameList[this.roomCode].getCurrentQuest();
+        const { questNum, teamSize } = GameList[this.roomCode].getCurrentQuest();
 
         //add players with the lowest risk score
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
-        for (let i = 0; i < playersRequired; i++) {
+        for (let i = 0; i < teamSize; i++) {
             this.socket.emit("addPlayerToQuest", sortedPlayerRiskScores[i].name);
         }
         this.socket.emit('leaderHasConfirmedTeam');

@@ -57,6 +57,8 @@ export default class Game {
     this.roleList = null;
     this.players = [];
     this.quests = null;
+    this.questFails = 0;
+    this.questSuccesses = 0;
     this.leaderIndex = 0;
   }
 
@@ -207,20 +209,6 @@ export default class Game {
       this.quests[lastQuestNum + 1].currentQuest = true;
       this.assignNextLeader(lastQuestNum + 1);
     }
-  }
-
-  tallyQuestScores() {
-    let successCount = 0;
-    let failCount = 0;
-    for (let i in this.quests) {
-      if (this.quests[i].success === null) continue;
-      if (this.quests[i].success) successCount++;
-      else if (!this.quests[i].success) failCount++;
-    }
-    return ({
-      successes: successCount,
-      fails: failCount
-    });
   }
 
 };
