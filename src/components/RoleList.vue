@@ -3,10 +3,10 @@
     <h4 class="sectionTitle">Role List</h4>
     <ul class="row lobbyList px-1 m-0">
       <div class="col-7 good">
-        <li v-for="(value, character) in goodRoles">{{ character }}: {{value}}</li>
+        <li v-for="(value, character) in goodRoles" :key="character">{{ character }}: {{value}}</li>
       </div>
       <div class="col-5 evil">
-        <li v-for="(value, character) in evilRoles">{{ character }}: {{value}}</li>
+        <li v-for="(value, character) in evilRoles" :key="character">{{ character }}: {{value}}</li>
       </div>
     </ul>
   </div>

@@ -21,4 +21,4 @@ export default class Player {
     this.votedOnQuest = false;
     this.disconnected = false;
   }
-};
+}

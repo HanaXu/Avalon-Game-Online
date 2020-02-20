@@ -15,7 +15,6 @@ const PLAYERS_ON_QUEST = [
 export default class Quest {
   /**
    * @property {number} questNum - Which quest players are on from 1 to 5
-   * @property {number} totalNumPlayers - Number of players in the room
    * @property {number} teamSize - Size of current quest’s team, based on above table
    * @property {set} playersOnQuest - Set of names of players chosen to go on quest
    * @property {number} voteTrack - How many failed team votes for the current quest, between 0 and 5
@@ -26,7 +25,6 @@ export default class Quest {
 
   constructor(questNum, totalNumPlayers) {
     this.questNum = questNum;
-    this.totalNumPlayers = totalNumPlayers;
     this.teamSize = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
     this.playersOnQuest = new Set([]);
     this.playersNeededLeft = this.teamSize;
@@ -40,6 +38,7 @@ export default class Quest {
       'accept': [],
       'reject': []
     };
+    this.teamAccepted = false;
     this.leaderHasConfirmedTeam = false;
     this.currentQuest = false;
     this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
@@ -65,12 +64,26 @@ export default class Quest {
     this.playersNeededLeft++;
   }
 
+  addTeamVote(name, decision) {
+    this.acceptOrRejectTeam[decision].push(name);
+    this.acceptOrRejectTeam.voted.push(name);
+  }
+
+  assignTeamResult(totalNumPlayers) {
+    this.teamAccepted = this.acceptOrRejectTeam.reject.length >= totalNumPlayers / 2;
+  }
+
   assignLeaderInfo(playerInfo) {
     this.leaderInfo = playerInfo;
     this.currentQuest = true;
   }
 
-  assignResult() {
+  addQuestVote(name, decision) {
+    this.votes[decision]++;
+    this.votes.voted.push(name);
+  }
+
+  assignQuestResult() {
     this.success = !this.votes.fail > 0;
   }
 

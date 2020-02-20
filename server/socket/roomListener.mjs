@@ -1,4 +1,4 @@
-import { GameList, updatePlayerCards } from '../index.mjs';
+import { GameList } from '../index.mjs';
 import { reconnectPlayerToStartedGame } from './connectionListener.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';

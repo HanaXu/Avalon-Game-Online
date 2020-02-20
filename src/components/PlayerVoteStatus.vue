@@ -12,7 +12,7 @@
           <div class="col-md-6 col-12 text-left">
             <strong>Accepted Team:</strong>
             {{ teamVotes.accept }}
-            <br>
+            <br />
             <strong>Rejected Team:</strong>
             {{ teamVotes.reject }}
           </div>
@@ -32,7 +32,7 @@
           <div class="col-6 col-md-2 text-left">
             <strong>Succeed:</strong>
             {{ successCount }}
-            <br>
+            <br />
             <strong>Fail:</strong>
             {{ failCount }}
           </div>

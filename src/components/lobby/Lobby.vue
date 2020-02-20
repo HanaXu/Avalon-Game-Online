@@ -1,12 +1,16 @@
 <template>
   <div class="main-board">
-    <h4>
-      Welcome, {{ name }}, to game room {{ roomCode }}.
-    </h4>
+    <h4>Welcome, {{ name }}, to game room {{ roomCode }}.</h4>
     <b-row class="justify-content-center">
-      <p class="mb-0" v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
+      <p
+        class="mb-0"
+        v-b-tooltip.bottom
+        title="A minimum of 5 players is required to start the game"
+      >
         Room Capacity:
-        <span :class="{red: players.length < 5, green: players.length >= 5}">{{players.length}}/10</span>
+        <span
+          :class="{red: players.length < 5, green: players.length >= 5}"
+        >{{players.length}}/10</span>
       </p>
     </b-row>
     <b-row>
@@ -16,11 +20,11 @@
         </ul>
       </b-col>
       <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
-        <b-button class="setupButton" v-b-modal.setupModal v-if="showSetupOptionsBtn">Setup Options</b-button>
+        <b-button v-if="showSetupOptionsBtn" class="setupButton" v-b-modal.setupModal>Setup Options</b-button>
       </b-col>
     </b-row>
     <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
-    <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
+    <b-alert v-if="error" variant="danger" show>{{ errorMsg }}</b-alert>
     <div v-if="showStartGameBtn">
       <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
@@ -29,7 +33,7 @@
 
 <script>
 import SetupOptions from "@/components/lobby/SetupOptions.vue";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "Lobby",
@@ -45,7 +49,7 @@ export default {
       showStartGameBtn: false
     };
   },
-  computed: mapState(['roomCode', 'name', 'players']),
+  computed: mapState(["roomCode", "name", "players"]),
   methods: {
     updateSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window

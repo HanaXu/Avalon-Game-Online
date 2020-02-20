@@ -23,16 +23,16 @@
     <p>
       <em>
         <strong>Notes:</strong>
-        <br>You cannot include Morgana unless Percival is also in the game.
-        <br>5 and 6-player games cannot include more than one optional evil character.
-        <br>7, 8, and 9-player games cannot include more than two optional evil characters.
+        <br />You cannot include Morgana unless Percival is also in the game.
+        <br />5 and 6-player games cannot include more than one optional evil character.
+        <br />7, 8, and 9-player games cannot include more than two optional evil characters.
       </em>
     </p>
   </b-modal>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "SetupOptions",
@@ -61,7 +61,7 @@ export default {
       ]
     };
   },
-  computed: mapState(['roomCode', 'players']),
+  computed: mapState(["roomCode", "players"]),
   methods: {
     validateselectedCharacters() {
       if (

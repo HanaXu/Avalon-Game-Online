@@ -1,5 +1,5 @@
 <template>
-  <b-row class="section" v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons">
+  <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons" class="section">
     <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
     <b-col class="py-0">
       <div v-if="showConfirmTeamBtnToLeader">
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "DecideQuestTeam",
@@ -38,7 +38,7 @@ export default {
       showTeamVoteResults: false
     };
   },
-  computed: mapState(['name']),
+  computed: mapState(["name"]),
   methods: {
     leaderHasConfirmedTeam() {
       this.$socket.emit("leaderHasConfirmedTeam");

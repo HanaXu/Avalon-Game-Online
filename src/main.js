@@ -8,7 +8,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import VueSocketIO from "vue-socket.io";
 import firebase from "firebase";
-import firebaseui from "firebaseui";
 
 export const bus = new Vue();
 

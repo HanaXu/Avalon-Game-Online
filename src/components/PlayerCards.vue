@@ -24,10 +24,10 @@
           <MemoModal :playerName="player.name" />
 
           <h6 class="player card-subtitle text-muted">
-            <b>Team:</b>
+            <strong>Team:</strong>
             {{ player.team }}
             <br />
-            <b>Character:</b>
+            <strong>Character:</strong>
             {{ player.character }}
             <br />
             <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
@@ -65,24 +65,20 @@
 
 <script>
 import MemoModal from "@/components/MemoModal.vue";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "PlayerCards",
   components: {
     MemoModal
   },
-  props: [
-    "showAddBtn",
-    "showRemoveBtn",
-    "showAssassinateBtn"
-  ],
+  props: ["showAddBtn", "showRemoveBtn", "showAssassinateBtn"],
   data() {
     return {
       width: window.innerWidth
     };
   },
-  computed: mapState(['name', 'players']),
+  computed: mapState(["name", "players"]),
   methods: {
     addPlayerToQuest(playerName) {
       this.$socket.emit("addPlayerToQuest", playerName);

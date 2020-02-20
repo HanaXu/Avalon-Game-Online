@@ -6,11 +6,11 @@
 import firebase from "firebase";
 import firebaseui from "firebaseui";
 import "../../../node_modules/firebaseui/dist/firebaseui.css";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "Auth",
-  computed: mapState(['name']),
+  computed: mapState(["name"]),
   mounted() {
     let self = this;
     let uiConfig = {

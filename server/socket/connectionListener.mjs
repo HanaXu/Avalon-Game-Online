@@ -1,4 +1,4 @@
-import { GameList, updatePlayerCards } from '../index.mjs';
+import { GameList, updatePlayerCards, showSucceedAndFailBtnsToPlayersOnQuest } from '../index.mjs';
 
 export function disconnectListener(io, socket, roomCode) {
   socket.on('disconnect', function () {
@@ -45,12 +45,12 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
     }
   }
   //reveal votes
-  else if (currentQuest.acceptOrRejectTeam.voted.length === currentQuest.totalNumPlayers) {
+  else if (currentQuest.acceptOrRejectTeam.voted.length === GameList[roomCode].players.length) {
     io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
   }
 
   if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
-    showSucceedAndFailBtnsToPlayersOnQuest();
+    showSucceedAndFailBtnsToPlayersOnQuest(roomCode);
   }
   if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {
     currentQuest.leaderInfo.socketID = socket.id;
@@ -61,15 +61,4 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
     socket.emit('showConfirmTeamBtnToLeader', true);
   }
 
-  function showSucceedAndFailBtnsToPlayersOnQuest() {
-    updateQuestMsg(roomCode, 'Quest team was Approved. Waiting for quest team to go on quest.');
-    GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
-    GameList[roomCode].gameState['succeedOrFailQuest'] = true;
-    GameList[roomCode].players.forEach(player => {
-      if (player.onQuest && !player.votedOnQuest) {
-        const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
-        io.to(player.socketID).emit('succeedOrFailQuest', disableFailBtn);
-      }
-    });
-  }
 }

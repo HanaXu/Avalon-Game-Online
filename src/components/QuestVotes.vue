@@ -1,5 +1,5 @@
 <template>
-  <b-row class="section" v-if="canVoteOnQuest">
+  <b-row v-if="canVoteOnQuest" class="section">
     <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
     <b-col class="py-0">
       <b-button class="avalon-btn-lg" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 
 export default {
   name: "QuestVotes",
@@ -24,7 +24,7 @@ export default {
       disableFailBtn: false
     };
   },
-  computed: mapState(['name']),
+  computed: mapState(["name"]),
   methods: {
     questVote(decision) {
       this.canVoteOnQuest = false;

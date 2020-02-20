@@ -3,7 +3,7 @@
     <div class="row justify-content-md-center mx-0">
       <div class="col-12 col-md-7">
         <Lobby v-if="!gameStarted" />
-        <!-- Actual Game -->
+        <!-- Game -->
         <div class="container main-board" v-if="gameStarted">
           <PlayerCards
             :showAddBtn="showAddBtn"
@@ -13,17 +13,18 @@
           <QuestCards />
           <VoteTrack />
         </div>
-        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg"/>
-        <PlayerVoteStatus/>
+        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
+        <PlayerVoteStatus />
         <QuestVotes />
         <DecideQuestTeam />
       </div>
+      <!-- Misc -->
       <div class="col-12 col-md-3">
         <div class="container chat">
-          <RoleList v-if="gameStarted"/>
           <div style="align: right">
             <Chat />
           </div>
+          <RoleList v-if="gameStarted" />
         </div>
       </div>
     </div>

@@ -29,8 +29,6 @@
 </template>
 
 <script>
-import Chat from "@/components/lobby/Chat.vue";
-
 export default {
   name: "JoinForm",
   data() {

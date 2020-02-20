@@ -8,12 +8,12 @@
           <div class="message" v-bind:key="message.id" v-for="message in messages">
             <strong>{{message.username + " "}}</strong>
             <font size="2" color="grey">({{message.time}})</font>
-            <br>
+            <br />
             {{message.text}}
           </div>
         </div>
       </div>
-      <hr>
+      <hr />
       <textarea
         type="text"
         placeholder="Press Enter to send your message..."
@@ -26,7 +26,7 @@
 <script>
 import firebase from "firebase";
 import { setInterval } from "timers";
-import { mapState } from 'vuex';
+import { mapState } from "vuex";
 import Vue from "vue";
 import VueChatScroll from "vue-chat-scroll";
 Vue.use(VueChatScroll);
@@ -38,7 +38,7 @@ export default {
       messages: []
     };
   },
-  computed: mapState(['roomCode', 'name']),
+  computed: mapState(["roomCode", "name"]),
   methods: {
     sendMessage(e) {
       e.preventDefault();
