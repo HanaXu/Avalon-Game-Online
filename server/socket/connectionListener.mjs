@@ -31,6 +31,11 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   socket.emit('passedValidation', { name, roomCode });
   socket.join(roomCode);
 
+  socket.emit('initChat', GameList[roomCode].chat);
+  const msg = { id: Date.now(), adminMsg: `${name} has rejoined the game.` };
+  GameList[roomCode].chat.push(msg);
+  io.in(roomCode).emit('updateChat', msg);
+
   //show game instead of lobby
   if (GameList[roomCode].gameIsStarted) {
     socket.emit('startGame');

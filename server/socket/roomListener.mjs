@@ -1,5 +1,4 @@
 import { GameList } from '../index.mjs';
-import { reconnectPlayerToStartedGame } from './connectionListener.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
@@ -34,8 +33,7 @@ export function joinRoom(io, socket) {
       //reconnect disconnected player after the game has started
       if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', name) &&
         GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
-        reconnectPlayerToStartedGame(io, socket, name, roomCode);
-        return;
+        resolve({name, roomCode, reconnect: true});
       }
       //validate user input
       if (!validatePlayerJoinsRoom(socket, name, roomCode)) return;

@@ -4,7 +4,7 @@ import path from 'path';
 import { sanitizeTeamView } from './game/utility.mjs';
 import { createRoom, joinRoom } from './socket/roomListener.mjs';
 import { gameListener } from './socket/gameListener.mjs';
-import { disconnectListener } from './socket/connectionListener.mjs';
+import { disconnectListener, reconnectPlayerToStartedGame } from './socket/connectionListener.mjs';
 
 const app = express();
 const port = 3000;
@@ -28,13 +28,8 @@ io.on('connection', socket => {
   });
 
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
-    .then(({ roomCode }) => {
-
-      socket.on('updateChat', (msg) => {
-        GameList[roomCode].chat.push(msg);
-        io.in(roomCode).emit('updateChat', msg);
-      });
-
+    .then(({ name, roomCode, reconnect }) => {
+      if (reconnect) reconnectPlayerToStartedGame(io, socket, name, roomCode);
       disconnectListener(io, socket, roomCode);
       gameListener(io, socket, roomCode);
     });

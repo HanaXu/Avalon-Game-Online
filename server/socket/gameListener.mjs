@@ -6,6 +6,11 @@ import {
 
 export function gameListener(io, socket, roomCode) {
 
+  socket.on('updateChat', (msg) => {
+    GameList[roomCode].chat.push(msg);
+    io.in(roomCode).emit('updateChat', msg);
+  });
+
   socket.on('startGame', function (optionalCharacters) {
     if (!validateOptionalCharacters(optionalCharacters, GameList[roomCode].players.length)) return;
 
