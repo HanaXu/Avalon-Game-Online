@@ -48,6 +48,7 @@ const BaseCharacters = {
 export default class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
+    this.chat = [];
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,

@@ -16,8 +16,11 @@ export function createRoom(io, socket, port) {
 
       GameList[roomCode] = new Game(roomCode);
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
+      GameList[roomCode].chat.push({ id: Date.now(), adminMsg: `${name} has joined the game.` });
+
       socket.emit('showSetupOptionsBtn', true);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      io.in(roomCode).emit('initChat', GameList[roomCode].chat);
       resolve({ name, roomCode });
     });
   });
@@ -39,9 +42,15 @@ export function joinRoom(io, socket) {
 
       socket.join(roomCode);
       socket.emit('passedValidation', { name, roomCode });
+      socket.emit('initChat', GameList[roomCode].chat);
+
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
+      const msg = { id: Date.now(), adminMsg: `${name} has joined the game.` };
+      GameList[roomCode].chat.push(msg);
 
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      io.in(roomCode).emit('updateChat', msg);
+
       if (GameList[roomCode].players.length >= 5) {
         const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');

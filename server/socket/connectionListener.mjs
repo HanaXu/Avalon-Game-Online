@@ -4,15 +4,20 @@ export function disconnectListener(io, socket, roomCode) {
   socket.on('disconnect', function () {
     if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
       const players = GameList[roomCode].players;
+      let player = GameList[roomCode].getPlayerBy('socketID', socket.id);
 
       if (GameList[roomCode].gameIsStarted) {
-        GameList[roomCode].getPlayerBy('socketID', socket.id).disconnected = true;
+        player.disconnected = true;
         updatePlayerCards(io, players);
       }
       else { // player is in lobby
         GameList[roomCode].deletePlayer(socket.id);
         io.in(roomCode).emit('updatePlayerCards', players);
       }
+
+      const msg = { id: Date.now(), adminMsg: `${player.name} has left the game.` };
+      GameList[roomCode].chat.push(msg);
+      io.in(roomCode).emit('updateChat', msg);
     }
   });
 }

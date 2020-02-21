@@ -3,10 +3,15 @@
     <div class="card-body">
       <div class="message-ctn" v-chat-scroll>
         <div class="message" v-bind:key="message.id" v-for="message in messages">
-          <strong>{{message.username + " "}}</strong>
-          <span class="timestamp">({{message.time}})</span>
-          <br />
-          {{message.text}}
+          <span v-if="message.adminMsg">
+            <em style="color: grey">{{message.adminMsg}}</em>
+          </span>
+          <div v-else>
+            <strong>{{`${message.username} `}}</strong>
+            <span class="timestamp">({{message.time}})</span>
+            <br />
+            {{message.msg}}
+          </div>
         </div>
       </div>
     </div>
@@ -21,7 +26,6 @@
 </template>
 
 <script>
-import firebase from "firebase";
 import { mapState } from "vuex";
 
 export default {
@@ -35,26 +39,13 @@ export default {
   methods: {
     sendMessage(e) {
       e.preventDefault();
-      // Trim newline from message
-      e.target.value = e.target.value.replace(/^\s+|\s+$/g, "");
-      let timeStamp = this.timeStamp();
-      const path = `chat/room-messages/${this.roomCode}`;
-
-      if (e.target.value) {
-        const message = {
-          username: this.name,
-          text: e.target.value,
-          time: timeStamp
-        };
-        // Push message to firebase reference
-        firebase
-          .database()
-          .ref(path)
-          .push(message);
-        e.target.value = "";
-      } else {
-        console.log(e);
-      }
+      this.$socket.emit("updateChat", {
+        id: Date.now(),
+        username: this.name,
+        msg: e.target.value,
+        time: this.timeStamp()
+      });
+      e.target.value = "";
     },
     timeStamp() {
       let now = new Date();
@@ -72,27 +63,13 @@ export default {
       return currentTime;
     }
   },
-  mounted() {
-    let vm = this;
-    const path = `chat/room-messages/${this.roomCode}`;
-    const itemsRef = firebase.database().ref(path);
-
-    itemsRef.on("value", snapshot => {
-      var messages = [];
-      let data = snapshot.val() || null;
-      // Display all messages in the current room
-      if (data) {
-        Object.keys(data).forEach(key => {
-          messages.push({
-            id: key,
-            username: data[key].username,
-            text: data[key].text,
-            time: data[key].time
-          });
-        });
-      }
-      vm.messages = messages;
-    });
+  sockets: {
+    initChat(msgs) {
+      this.messages = msgs;
+    },
+    updateChat(msg) {
+      this.messages.push(msg);
+    }
   }
 };
 </script>
@@ -120,7 +97,7 @@ export default {
   margin: 5px;
 }
 .timestamp {
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: grey;
 }
 .textarea {

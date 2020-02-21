@@ -28,7 +28,13 @@ io.on('connection', socket => {
   });
 
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
-    .then(({roomCode}) => {
+    .then(({ roomCode }) => {
+
+      socket.on('updateChat', (msg) => {
+        GameList[roomCode].chat.push(msg);
+        io.in(roomCode).emit('updateChat', msg);
+      });
+
       disconnectListener(io, socket, roomCode);
       gameListener(io, socket, roomCode);
     });
