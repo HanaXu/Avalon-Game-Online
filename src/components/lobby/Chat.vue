@@ -1,35 +1,28 @@
 <template>
-  <div id="app">
-    <div class="card">
-      <div class="card-header p-2">Chat</div>
-      <div class="card-body">
-        <dl id="messageList"></dl>
-        <div class="messages" v-chat-scroll>
-          <div class="message" v-bind:key="message.id" v-for="message in messages">
-            <strong>{{message.username + " "}}</strong>
-            <font size="2" color="grey">({{message.time}})</font>
-            <br />
-            {{message.text}}
-          </div>
+  <div class="card">
+    <div class="card-body">
+      <div class="message-ctn" v-chat-scroll>
+        <div class="message" v-bind:key="message.id" v-for="message in messages">
+          <strong>{{message.username + " "}}</strong>
+          <span class="timestamp">({{message.time}})</span>
+          <br />
+          {{message.text}}
         </div>
       </div>
-      <hr />
-      <textarea
-        type="text"
-        placeholder="Press Enter to send your message..."
-        v-on:keyup.enter="sendMessage"
-      ></textarea>
     </div>
+    <hr />
+    <textarea
+      class="textarea"
+      rows="1"
+      placeholder="Press Enter to send your message..."
+      v-on:keyup.enter="sendMessage"
+    ></textarea>
   </div>
 </template>
 
 <script>
 import firebase from "firebase";
-import { setInterval } from "timers";
 import { mapState } from "vuex";
-import Vue from "vue";
-import VueChatScroll from "vue-chat-scroll";
-Vue.use(VueChatScroll);
 
 export default {
   name: "Chat",
@@ -64,11 +57,8 @@ export default {
       }
     },
     timeStamp() {
-      // Create Date object with current time
       let now = new Date();
-      // Create array with hours and minutes
       let time = [now.getHours(), now.getMinutes()];
-      // Set the period
       let period = time[0] < 12 ? "AM" : "PM";
       // Convert from military time
       time[0] = time[0] < 12 ? time[0] : time[0] - 12;
@@ -84,7 +74,6 @@ export default {
   },
   mounted() {
     let vm = this;
-    const username = this.name;
     const path = `chat/room-messages/${this.roomCode}`;
     const itemsRef = firebase.database().ref(path);
 
@@ -109,61 +98,37 @@ export default {
 </script>
 
 <style scoped>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 0;
+.card {
+  background: #eae7e3;
 }
-.messages {
-  text-align: left;
-  width: inherit;
-  /* max-height: 35vh;
-  overflow-x: hidden;
-  overflow-y: auto; */
-}
-.message {
-  border: #000 solid 2px;
-  padding: 2px;
-  margin: 5px;
-  width: inherit;
-}
-div.row {
-  width: 30vw;
-}
-div.col-md-8 {
-  width: inherit;
-}
-div.card {
-  width: inherit;
-}
-div.card-header {
-  width: inherit;
-}
-div.card-body {
+.card-body {
   padding: 5px;
 }
-div.messages {
+.card > hr {
+  margin: 0;
+  padding: 0;
+}
+.message-ctn {
+  text-align: left;
   min-height: 50vh;
   max-height: 50vh;
   overflow-x: hidden;
   overflow-y: auto;
 }
-div.message {
-  border: none;
-}
-textarea {
-  overflow: hidden;
-  min-width: 100px;
-  resize: none;
-  word-wrap: normal;
-  padding: 5px;
+.message {
+  padding: 2px;
   margin: 5px;
 }
-* {
-  margin: 0;
-  padding: 0;
+.timestamp {
+  font-size: .75rem;
+  color: grey;
+}
+.textarea {
+  background: transparent;
+  overflow-y: auto;
+  min-width: 100px;
+  resize: none;
+  padding: 5px;
+  margin: 5px;
 }
 </style>

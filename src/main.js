@@ -7,9 +7,8 @@ import "./registerServiceWorker";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import VueSocketIO from "vue-socket.io";
+import VueChatScroll from "vue-chat-scroll";
 import firebase from "firebase";
-
-export const bus = new Vue();
 
 // Initialize Firebase
 var config = {
@@ -24,6 +23,7 @@ var config = {
 firebase.initializeApp(config);
 
 Vue.use(BootstrapVue);
+Vue.use(VueChatScroll);
 Vue.use(
   new VueSocketIO({
     debug: process.env.VUE_APP_DEBUG === "true",

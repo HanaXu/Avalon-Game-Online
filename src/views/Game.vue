@@ -21,10 +21,8 @@
       <!-- Misc -->
       <div class="col-12 col-md-3">
         <div class="container chat">
-          <div style="align: right">
-            <Chat />
-          </div>
           <RoleList v-if="gameStarted" />
+          <Chat />
         </div>
       </div>
     </div>
