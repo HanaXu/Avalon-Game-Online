@@ -70,6 +70,9 @@ export default class Game {
     return GoodTeam;
   }
 
+  /**
+   * @param {Object} optionalCharacters 
+   */
   startGame(optionalCharacters) {
     this.gameIsStarted = true;
     this.initializeQuests();
@@ -96,6 +99,10 @@ export default class Game {
     }
   }
 
+  /**
+   * @param {Number} questNum 
+   * @param {String} name 
+   */
   addPlayerToQuest(questNum, name) {
     for (let i in this.players) {
       if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0) {
@@ -106,6 +113,10 @@ export default class Game {
     }
   }
 
+  /**
+   * @param {Number} questNum 
+   * @param {String} name 
+   */
   removePlayerFromQuest(questNum, name) {
     for (let i in this.players) {
       if (this.players[i].name === name) {
@@ -117,11 +128,12 @@ export default class Game {
   }
 
   getPlayerBy(property, value) {
-    return this.players.find(player =>
-      player[property] === value
-    );
+    return this.players.find(player => player[property] === value);
   }
 
+  /**
+   * @param {String} socketID 
+   */
   deletePlayer(socketID) {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
@@ -143,7 +155,10 @@ export default class Game {
     }
   }
 
-  //assign next room leader (goes in order incrementally always)
+  /**
+   * Assign next room leader (goes in order incrementally always)
+   * @param {Number} questNum 
+   */
   assignNextLeader(questNum) {
     this.players[this.leaderIndex].leader = false; //reset prev leader Player object
     this.resetPlayersProperty('onQuest');
@@ -164,6 +179,9 @@ export default class Game {
     });
   }
 
+  /**
+   * @param {Object} optionalCharacters 
+   */
   assignIdentities(optionalCharacters) {
     let shuffledIdentities;
     let teamObj = Game.BaseCharacters[this.players.length];
@@ -204,6 +222,9 @@ export default class Game {
     });
   }
 
+  /**
+   * @param {Number} lastQuestNum 
+   */
   startNextQuest(lastQuestNum) {
     if (lastQuestNum < 5) {
       this.quests[lastQuestNum].currentQuest = false;

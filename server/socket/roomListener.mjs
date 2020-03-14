@@ -3,15 +3,23 @@ import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
 
+/**
+ * @param {Object} io
+ * @param {Object} socket
+ * @param {Number} port
+ */
 export function createRoom(io, socket, port) {
   return new Promise((resolve) => {
+    /**
+     * @param {String} name
+     */
     socket.on('createRoom', function (name) {
       if (!validatePlayerCreatesRoom(socket, name)) return;
 
       const roomCode = generateRoomCode();
       socket.join(roomCode);
       socket.emit('passedValidation', { name, roomCode });
-      settingsListener(io, socket, roomCode, port);
+      settingsListener(socket, roomCode, port);
 
       GameList[roomCode] = new Game(roomCode);
       GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
@@ -25,8 +33,15 @@ export function createRoom(io, socket, port) {
   });
 }
 
+/**
+ * @param {Object} io 
+ * @param {Object} socket 
+ */
 export function joinRoom(io, socket) {
   return new Promise((resolve) => {
+    /**
+     * @param {Object} data
+     */
     socket.on('joinRoom', function (data) {
       const { name, roomCode } = data;
 
@@ -68,12 +83,21 @@ function generateRoomCode() {
   return roomCode;
 }
 
-function settingsListener(io, socket, roomCode, port) {
+/**
+ * @param {Object} socket 
+ * @param {Number} roomCode 
+ * @param {Number} port 
+ */
+function settingsListener(socket, roomCode, port) {
   socket.on('createBot', function () {
     new GameBot(roomCode, port).startListening();
   });
 }
 
+/**
+ * @param {Object} socket 
+ * @param {String} name 
+ */
 function validatePlayerCreatesRoom(socket, name) {
   if (name === null || name.length < 1 || name.length > 20) {
     console.log(`Error: Name must be between 1-20 characters: ${name}`);
@@ -83,6 +107,11 @@ function validatePlayerCreatesRoom(socket, name) {
   return true;
 }
 
+/**
+ * @param {Object} socket 
+ * @param {String} name 
+ * @param {Number} roomCode 
+ */
 function validatePlayerJoinsRoom(socket, name, roomCode) {
   let errorMsg = "";
 

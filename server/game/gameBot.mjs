@@ -31,11 +31,17 @@ export default class GameBot {
             this.initializePlayerRiskScores();
         });
 
+        /**
+         * @param {Array} Players
+         */
         this.socket.on("updatePlayerCards", (players) => {
             this.sanitizedPlayers = players;
         });
 
-        // Accept or Reject the Vote for Quest Teams
+        /**
+         * Accept of Reject the vote for Quest Teams
+         * @param {Boolean} showAcceptOrRejectTeamBtns
+         */
         this.socket.on("showAcceptOrRejectTeamBtns", (showAcceptOrRejectTeamBtns) => {
             if (showAcceptOrRejectTeamBtns) {
                 this.socket.emit("playerAcceptsOrRejectsTeam", {
@@ -45,10 +51,16 @@ export default class GameBot {
             }
         });
 
+        /**
+         * @param {Object} quest
+         */
         this.socket.on('updateBotRiskScores', (quest) => {
             this.updatePlayerRiskScores(quest);
         });
 
+        /**
+         * @param {Boolean} showAddRemovePlayerBtns
+         */
         this.socket.on('showAddRemovePlayerBtns', (showAddRemovePlayerBtns) => {
             if (showAddRemovePlayerBtns) {
                 this.team === 'Evil' ? this.makeEvilLeaderPicks() : this.makeGoodLeaderPicks();
@@ -101,6 +113,9 @@ export default class GameBot {
         return decision;
     }
     
+    /**
+     * @param {Object} currentQuest 
+     */
     makeEvilQuestTeamVote(currentQuest) {
         let evilAmount = 0;
         if (currentQuest.questNum === 1) {
@@ -117,6 +132,9 @@ export default class GameBot {
         }
     }
 
+    /**
+     * @param {Object} currentQuest 
+     */
     makeGoodQuestTeamVote(currentQuest) {
         if (this.nextVoteTrack == 5) {
             return 'accept';
@@ -164,6 +182,9 @@ export default class GameBot {
         this.socket.emit('leaderHasConfirmedTeam');
     }
 
+    /**
+     * @param {Object} quest 
+     */
     updatePlayerRiskScores(quest) {
         this.sanitizedPlayers.forEach(player => {
             let playerRiskScore = this.playerRiskScores.find(playerRiskScore => playerRiskScore.name === player.name);

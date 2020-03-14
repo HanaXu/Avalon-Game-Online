@@ -64,20 +64,34 @@ export default class Quest {
     this.playersNeededLeft++;
   }
 
+  /**
+   * @param {String} name 
+   * @param {String} decision 
+   */
   addTeamVote(name, decision) {
     this.acceptOrRejectTeam[decision].push(name);
     this.acceptOrRejectTeam.voted.push(name);
   }
 
+  /**
+   * @param {Number} totalNumPlayers 
+   */
   assignTeamResult(totalNumPlayers) {
     this.teamAccepted = this.acceptOrRejectTeam.reject.length >= totalNumPlayers / 2;
   }
 
+  /**
+   * @param {Object} playerInfo 
+   */
   assignLeaderInfo(playerInfo) {
     this.leaderInfo = playerInfo;
     this.currentQuest = true;
   }
 
+  /**
+   * @param {String} name 
+   * @param {String} decision 
+   */
   addQuestVote(name, decision) {
     this.votes[decision]++;
     this.votes.voted.push(name);
