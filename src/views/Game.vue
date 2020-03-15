@@ -31,15 +31,15 @@
 
 <script>
 import Lobby from "@/components/lobby/Lobby.vue";
-import PlayerCards from "@/components/PlayerCards.vue";
 import Chat from "@/components/lobby/Chat.vue";
-import QuestCards from "@/components/QuestCards.vue";
-import VoteTrack from "@/components/VoteTrack.vue";
-import DecideQuestTeam from "@/components/DecideQuestTeam.vue";
-import QuestVotes from "@/components/QuestVotes.vue";
-import GameStatus from "@/components/GameStatus.vue";
-import PlayerVoteStatus from "@/components/PlayerVoteStatus.vue";
-import RoleList from "@/components/RoleList.vue";
+import PlayerCards from "@/components/game/PlayerCards.vue";
+import QuestCards from "@/components/game/QuestCards.vue";
+import VoteTrack from "@/components/game/VoteTrack.vue";
+import DecideQuestTeam from "@/components/game/DecideQuestTeam.vue";
+import QuestVotes from "@/components/game/QuestVotes.vue";
+import GameStatus from "@/components/game/GameStatus.vue";
+import PlayerVoteStatus from "@/components/game/PlayerVoteStatus.vue";
+import RoleList from "@/components/game/RoleList.vue";
 
 export default {
   name: "Game",

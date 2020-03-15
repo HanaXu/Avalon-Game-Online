@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import MemoModal from "@/components/MemoModal.vue";
+import MemoModal from "@/components/game/MemoModal.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -94,7 +94,7 @@ export default {
 </script>
 
 <style>
-@import "../styles/styles.css";
+@import "../../styles/styles.css";
 .disconnected {
   background: #f8d7da !important;
 }

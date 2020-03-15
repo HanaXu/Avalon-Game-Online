@@ -54,11 +54,17 @@ export default class Quest {
     return PLAYERS_ON_QUEST;
   }
 
+  /**
+   * @param {String} name 
+   */
   addPlayer(name) {
     this.playersOnQuest.add(name);
     this.playersNeededLeft--;
   }
 
+  /**
+   * @param {String} name 
+   */
   removePlayer(name) {
     this.playersOnQuest.delete(name);
     this.playersNeededLeft++;

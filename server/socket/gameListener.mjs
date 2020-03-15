@@ -141,6 +141,26 @@ export function gameListener(io, socket, roomCode) {
     io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
 
+  socket.on('disconnect', function () {
+    if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
+      const players = GameList[roomCode].players;
+      let player = GameList[roomCode].getPlayerBy('socketID', socket.id);
+
+      if (GameList[roomCode].gameIsStarted) {
+        player.disconnected = true;
+        updatePlayerCards(io, players);
+      }
+      else { // player is in lobby
+        GameList[roomCode].deletePlayer(socket.id);
+        io.in(roomCode).emit('updatePlayerCards', players);
+      }
+
+      const msg = { id: Date.now(), adminMsg: `${player.name} has left the game.` };
+      GameList[roomCode].chat.push(msg);
+      io.in(roomCode).emit('updateChat', msg);
+    }
+  });
+
   /**
    * Make sure chosen optional characters works for number of players
    * If 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
@@ -253,33 +273,6 @@ function showSucceedAndFailBtnsToPlayersOnQuest(io, roomCode) {
     if (player.onQuest && !player.votedOnQuest) {
       const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
       io.to(player.socketID).emit('succeedOrFailQuest', disableFailBtn);
-    }
-  });
-}
-
-/**
- * @param {Object} io 
- * @param {Object} socket 
- * @param {Number} roomCode 
- */
-export function disconnectListener(io, socket, roomCode) {
-  socket.on('disconnect', function () {
-    if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
-      const players = GameList[roomCode].players;
-      let player = GameList[roomCode].getPlayerBy('socketID', socket.id);
-
-      if (GameList[roomCode].gameIsStarted) {
-        player.disconnected = true;
-        updatePlayerCards(io, players);
-      }
-      else { // player is in lobby
-        GameList[roomCode].deletePlayer(socket.id);
-        io.in(roomCode).emit('updatePlayerCards', players);
-      }
-
-      const msg = { id: Date.now(), adminMsg: `${player.name} has left the game.` };
-      GameList[roomCode].chat.push(msg);
-      io.in(roomCode).emit('updateChat', msg);
     }
   });
 }

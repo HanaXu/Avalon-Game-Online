@@ -1,14 +1,16 @@
 import { GoodTeam } from './game.mjs';
 
-/*
-example teamObj
-10: {
-    'Merlin': 1,
-    'Assassin': 1,
-    'Loyal Servant of Arthur': 5,
-    'Minion of Mordred': 3
-  }
-*/
+/**
+ * Example object
+ * 10: {
+ *  'Merlin': 1,
+ *  'Assassin': 1,
+ *  'Loyal Servant of Arthur': 5,
+ *  'Minion of Mordred': 3
+ * }
+ * @param {Object} teamObj 
+ * @returns {Object}
+ */
 export function populateRoleList(teamObj) {
     let roleList = {
         'good': {},
@@ -22,7 +24,12 @@ export function populateRoleList(teamObj) {
     return roleList;
 }
 
-// hide all player team and character info but yourself
+/**
+ * @param {String} yourSocketID 
+ * @param {String} yourCharacter 
+ * @param {Array} players 
+ * @returns {Array}
+ */
 export function sanitizeTeamView(yourSocketID, yourCharacter, players) {
     const clonedPlayers = JSON.parse(JSON.stringify(players));
 
@@ -42,7 +49,12 @@ export function sanitizeTeamView(yourSocketID, yourCharacter, players) {
     }
 }
 
-// hide all player team and character info but yourself
+/**
+ * Hide everyone else's info
+ * @param {String} yourSocketID 
+ * @param {Array} players 
+ * @returns {Array}
+ */
 function sanitizeForGoodTeam(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
@@ -57,6 +69,12 @@ function sanitizeForGoodTeam(yourSocketID, players) {
     return players;
 }
 
+/**
+ * Merlin & Morgana both appear to be Merlin
+ * @param {String} yourSocketID 
+ * @param {Array} players 
+ * @returns {Array}
+ */
 function sanitizeForPercival(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
@@ -78,7 +96,12 @@ function sanitizeForPercival(yourSocketID, players) {
     return players;
 }
 
-// hide identities of good team & Oberon
+/**
+ * Hide identities of good team & Oberon
+ * @param {String} yourSocketID 
+ * @param {Array} players 
+ * @returns {Array}
+ */
 function sanitizeForEvilTeam(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
@@ -99,7 +122,12 @@ function sanitizeForEvilTeam(yourSocketID, players) {
     return players;
 }
 
-// hide identities of good team & Morgana
+/**
+ * Hide identities of good team & Morgana
+ * @param {String} yourSocketID 
+ * @param {Array} players 
+ * @returns {Array}
+ */
 function sanitizeForMerlin(yourSocketID, players) {
     for (const i in players) {
         if (players[i].socketID === yourSocketID) {
@@ -120,7 +148,11 @@ function sanitizeForMerlin(yourSocketID, players) {
     return players;
 }
 
-// Fisher-Yates shuffle
+/**
+ * Fisher-Yates shuffle
+ * @param {Array} array 
+ * @returns {Array}
+ */
 export function shuffle(array) {
     let currentIndex = array.length;
     let temporaryValue;
@@ -139,7 +171,11 @@ export function shuffle(array) {
     return array;
 }
 
-//convert the object to array for shuffling
+/**
+ * Convert object to array for shuffling
+ * @param {Object} team 
+ * @returns {Array}
+ */
 export function objectToArray(team) {
     let arr = []
     for (let character in team) {

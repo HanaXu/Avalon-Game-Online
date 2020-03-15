@@ -3,7 +3,7 @@ import socketIO from 'socket.io';
 import path from 'path';
 import { sanitizeTeamView } from './game/utility.mjs';
 import { createRoom, joinRoom } from './socket/roomListener.mjs';
-import { gameListener, disconnectListener, reconnectPlayerToStartedGame } from './socket/gameListener.mjs';
+import { gameListener, reconnectPlayerToStartedGame } from './socket/gameListener.mjs';
 
 const app = express();
 const port = 3000;
@@ -31,7 +31,6 @@ io.on('connection', socket => {
       if (reconnect) {
         reconnectPlayerToStartedGame(io, socket, name, roomCode);
       }
-      disconnectListener(io, socket, roomCode);
       gameListener(io, socket, roomCode);
     });
 });
