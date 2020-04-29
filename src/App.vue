@@ -9,7 +9,7 @@
           width="32"
           height="32"
         />
-        Avalonline Room {{ roomCode }}
+        Avalonline
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -40,7 +40,6 @@ export default {
     RulesModal,
     RolesModal
   },
-  computed: mapState(["roomCode"]),
   methods: {
     reload() {
       window.location.reload();

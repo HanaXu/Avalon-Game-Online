@@ -41,10 +41,21 @@ h2.subtitle {
 .modals {
     text-align: left;
 }
+.alert {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+p, span {
+    font-size: 18px;
+}
 
 .btn {
     font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     font-weight: bold;
+}
+
+.flex-wrap {
+    justify-content: center;
 }
 
 @media screen and (min-width: 1px) {
@@ -189,17 +200,7 @@ h2.subtitle {
 
 }
 
-.setupButton {
-    float: right;
-}
-
 /************PLAYER & QUEST CARDS**************/
-.playerEvil {
-    border-top: 5px solid #A42323;
-}
-.playerGood {
-    border-top: 5px solid #3C48BB;
-}
 .questBadge {
     margin: 0.5rem;
     background: #7D67AA !important;
@@ -230,15 +231,6 @@ h2.subtitle {
         overflow-x: auto;
         margin: 0 auto;
     }
-    .player.card {
-        background: #f8f9fa; /* bootstrap 4 bg-light*/
-        margin: 5px;
-        width: 90px;
-        border: none;
-    }
-    .player.card-body {
-        padding: 2px;
-    }
     .quest.card {
         border-radius: 5px;
         background: #f8f9fa; /* bootstrap 4 bg-light*/
@@ -257,12 +249,9 @@ h2.subtitle {
 }
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
-    .player.card {
+    /* .player.card {
         width: 150px;
-    }
-    .player.card-body {
-        padding: 8px;
-    }
+    } */
     .card-title {
         font-size: 20px;
     }

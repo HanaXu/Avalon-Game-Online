@@ -1,27 +1,30 @@
 <template>
   <div class="main-board">
-    <h4>Welcome, {{ name }}, to game room {{ roomCode }}.</h4>
-    <b-row class="justify-content-center">
-      <p
-        class="mb-0"
+    <b-row class="justify-content-center mt-2">
+      <p class="col-md-3 col-sm-6 mb-0">Room code: {{ roomCode }}</p>
+      <div
+        class="col-md-3 col-sm-6 mb-0"
         v-b-tooltip.bottom
         title="A minimum of 5 players is required to start the game"
       >
-        Room Capacity:
-        <span
-          :class="{red: players.length < 5, green: players.length >= 5}"
-        >{{players.length}}/10</span>
-      </p>
+        <p class="mb-0">
+          Room capacity:
+          <span
+            :class="{red: players.length < 5, green: players.length >= 5}"
+          >{{players.length}}/10</span>
+        </p>
+      </div>
     </b-row>
     <b-row>
-      <b-col md="7" offset="1">
+      <div class="container">
+        <b-button class="setupButton" v-if="showSetupOptionsBtn" v-b-modal.setupModal>Setup Options</b-button>
         <ul class="lobbyList">
-          <li v-for="(player, index) in players" :key="index">{{ player.role }}: {{ player.name }}</li>
+          <li class="offset-1" v-for="(player, index) in players" :key="index">
+            <span v-if="player.name === name" class="self p-1">{{ player.role }}: {{ player.name }}</span>
+            <span v-else>{{ player.role }}: {{ player.name }}</span>
+          </li>
         </ul>
-      </b-col>
-      <b-col md="4" align-self="start" style="padding: 10px 0 0 0">
-        <b-button v-if="showSetupOptionsBtn" class="setupButton" v-b-modal.setupModal>Setup Options</b-button>
-      </b-col>
+      </div>
     </b-row>
     <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
     <b-alert v-if="error" variant="danger" show>{{ errorMsg }}</b-alert>
@@ -93,5 +96,8 @@ ul {
 }
 li {
   padding-left: 1.5rem;
+}
+.setupButton {
+  float: right;
 }
 </style>

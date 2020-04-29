@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="row justify-content-md-center mx-0">
-      <div class="col-12 col-md-7">
+      <div class="col-md-7">
         <Lobby v-if="!gameStarted" />
         <!-- Game -->
         <div class="container main-board" v-if="gameStarted">
@@ -19,7 +19,7 @@
         <DecideQuestTeam />
       </div>
       <!-- Misc -->
-      <div class="col-12 col-md-3">
+      <div class="col-md-3">
         <div class="container chat">
           <RoleList v-if="gameStarted" />
           <Chat />
