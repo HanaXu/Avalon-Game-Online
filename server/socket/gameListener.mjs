@@ -300,7 +300,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   //show game instead of lobby
   if (GameList[roomCode].gameIsStarted) {
     socket.emit('startGame');
-    io.in(roomCode).emit('setRoleList', GameList[roomCode].roleList);
+    socket.emit('setRoleList', GameList[roomCode].roleList);
   }
   updatePlayerCards(io, GameList[roomCode].players);
 

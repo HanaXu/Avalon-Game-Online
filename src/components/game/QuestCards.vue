@@ -9,7 +9,7 @@
           class="quest card"
           v-for="(quest, index) in quests"
           :key="index"
-          :class="{markRed: quest.success === false, markGreen: quest.success === true, darkerBG: quest.currentQuest === true}"
+          :class="{questFail: quest.success === false, questSuccess: quest.success === true, self: quest.currentQuest === true}"
         >
           <div class="quest card-body">
             <h5 class="quest card-title">
@@ -53,10 +53,10 @@ export default {
 .card-body {
   padding: 0rem;
 }
-.markRed {
+.questFail {
   border: 5px solid red !important;
 }
-.markGreen {
+.questSuccess {
   border: 5px solid green !important;
 }
 */

@@ -162,7 +162,6 @@ h2.subtitle {
         overflow: hidden;
     }
 
-
     .footer {
         box-shadow: 0 -2px 5px #c2ab8e;
         text-align: center;
@@ -190,31 +189,28 @@ h2.subtitle {
 
 }
 
-
 .setupButton {
     float: right;
 }
 
-
-
 /************PLAYER & QUEST CARDS**************/
-.markEvil {
+.playerEvil {
     border-top: 5px solid #A42323;
 }
-.markGood {
+.playerGood {
     border-top: 5px solid #3C48BB;
 }
 .questBadge {
     margin: 0.5rem;
     background: #7D67AA !important;
 }
-.darkerBG {
+.self {
     background: #C7C2CF !important;
 }
-.markRed {
+.questFail {
     border: 5px solid #A42323 !important;
 }
-.markGreen {
+.questSuccess {
     border: 5px solid green !important;
 }
 /****MOBILE SCREENS****/
@@ -274,8 +270,6 @@ h2.subtitle {
         width: 100px;
     }
 }
-
-
 
 /*************SECTION******************/
 /*used in PlayerVoteStatus, GameStatus*/

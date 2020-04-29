@@ -3,13 +3,13 @@
     <div class v-bind:class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}">
       <div
         class="player card"
-        :class="{darkerBG: player.name === name}"
+        :class="{self: player.name === name}"
         v-for="(player, index) in players"
         :key="index"
       >
         <div
           class="player card-body"
-          :class="{markEvil: player.team === 'Evil', markGood: player.team === 'Good', disconnected: player.disconnected === true}"
+          :class="{playerEvil: player.team === 'Evil', playerGood: player.team === 'Good', disconnected: player.disconnected === true}"
         >
           <h5 class="card-title">
             {{ player.name }}
