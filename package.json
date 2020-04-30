@@ -15,7 +15,7 @@
     "express": "^4.16.4",
     "firebase": "^5.10.0",
     "firebaseui": "^3.6.0",
-    "jquery": "^3.4.0",
+    "jquery": "^3.5.0",
     "pm2": "^3.5.0",
     "register-service-worker": "^1.6.2",
     "socket.io": "^2.2.0",
