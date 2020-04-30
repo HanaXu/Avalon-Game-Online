@@ -1,29 +1,29 @@
 <template>
-  <div>
-    <div class="row justify-content-md-center mx-0">
-      <div class="col-md-7">
-        <Lobby v-if="!gameStarted" />
-        <!-- Game -->
-        <div class="container main-board" v-if="gameStarted">
-          <PlayerCards
-            :showAddBtn="showAddBtn"
-            :showRemoveBtn="showRemoveBtn"
-            :showAssassinateBtn="showAssassinateBtn"
-          />
-          <QuestCards />
-          <VoteTrack />
-        </div>
+  <div class="row justify-content-md-center mx-0">
+    <div class="col-md-8">
+      <Lobby v-if="!gameStarted" />
+      <!-- Game -->
+      <div class="container main-board" v-if="gameStarted">
+        <PlayerCards
+          :showAddBtn="showAddBtn"
+          :showRemoveBtn="showRemoveBtn"
+          :showAssassinateBtn="showAssassinateBtn"
+        />
+        <QuestCards />
+        <VoteTrack />
+      </div>
+      <div class="container">
         <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
         <PlayerVoteStatus />
         <QuestVotes />
         <DecideQuestTeam />
       </div>
-      <!-- Misc -->
-      <div class="col-md-3">
-        <div class="container chat">
-          <RoleList v-if="gameStarted" />
-          <Chat />
-        </div>
+    </div>
+    <!-- Misc -->
+    <div class="col-md-3">
+      <div class="container chat">
+        <RoleList v-if="gameStarted" />
+        <Chat />
       </div>
     </div>
   </div>

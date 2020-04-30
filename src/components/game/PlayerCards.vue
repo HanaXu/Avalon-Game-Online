@@ -1,9 +1,13 @@
 <template>
-  <div
-    class="row mt-2"
-    :class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}"
-  >
-    <div class="player" v-for="(player, index) in players" :key="index">
+  <div class="row justify-content-center mt-2">
+    <div
+      class="player"
+      :class="{
+        'd-flex flex-nowrap': width < 768,
+        'd-flex flex-wrap': width >= 768}"
+      v-for="(player, index) in players"
+      :key="index"
+    >
       <div
         class="card"
         :class="{
@@ -15,12 +19,7 @@
         <h5 class="card-title">
           {{ player.name }}
           <span style="color: #FFD700" v-if="player.leader">👑</span>
-
-          <span
-            v-b-modal="'memo-modal-' + player.name"
-            class="float-right"
-            style="cursor: pointer"
-          >📝</span>
+          <span v-b-modal="'memo-modal-' + player.name" style="cursor: pointer">📝</span>
         </h5>
         <MemoModal :playerName="player.name" />
 
@@ -98,6 +97,7 @@ export default {
 .player {
   .card {
     background: #f8f9fa; /* bootstrap 4 bg-light*/
+    box-shadow: 2px 2px 5px #c2ab8e;
     padding: 8px;
     margin: 5px;
     border: none;
@@ -109,6 +109,10 @@ export default {
   }
   .good {
     border-top: 5px solid #3c48bb;
+  }
+  .questBadge {
+    margin: 0.25rem;
+    background: #7d67aa !important;
   }
   .disconnected {
     background: #f8d7da !important;

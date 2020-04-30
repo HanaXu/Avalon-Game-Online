@@ -58,6 +58,11 @@ p, span {
     justify-content: center;
 }
 
+.row {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 @media screen and (min-width: 1px) {
     .navbar-default .navbar-brand {
         color: #777;
@@ -91,13 +96,12 @@ p, span {
         color: #ccc351 !important;
         text-transform: uppercase;
         background: #685035 !important;
-        padding: 5px !important;
+        padding: 0;
         border: 4px solid #6f5035 !important;
         border-radius: 7px;
         display: inline-block;
-        font-size: 18px !important;
         margin: 2px 5px;
-        width: 100px;
+        width: 6rem;
     }
     .avalon-btn-lg:hover,
     .avalon-btn-lg:focus,
@@ -125,17 +129,14 @@ p, span {
     }
 }
 @media screen and (min-width: 769px) {
-
     .navbar-default .navbar-brand {
         font-size: 20px;
     }
-
     .avalon-btn-lg {
-        padding: 10px !important;
-        font-size: 20px !important;
-        width: 200px;
+        padding: 8px;
+        font-size: 1.1rem;
+        width: 10rem;
     }
-
     /*get rid of padding on all columns */
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
     .col, .col-auto, .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7,
@@ -165,7 +166,7 @@ p, span {
     .container.chat {
         visibility: visible;
         min-height: 75vh;
-         margin: 10px 0;
+        margin: 10px 0;
         width: 100%;
         padding: 0;
         display: inline-block;
@@ -182,9 +183,6 @@ p, span {
 }
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
-    .container.game {
-        /*max-width: 50vw;*/
-    }
     .container.chat {
         visibility: visible;
         min-height: 75vh;
@@ -201,19 +199,10 @@ p, span {
 }
 
 /************PLAYER & QUEST CARDS**************/
-.questBadge {
-    margin: 0.5rem;
-    background: #7D67AA !important;
-}
 .self {
     background: #C7C2CF !important;
 }
-.questFail {
-    border: 5px solid #A42323 !important;
-}
-.questSuccess {
-    border: 5px solid green !important;
-}
+
 /****MOBILE SCREENS****/
 @media screen and (min-width: 1px) {
     .card-title {
@@ -225,38 +214,11 @@ p, span {
     .card-subtitle {
         font-size: 14px;
     }
-    .playerCards,
-    .questCards {
-        padding-top: 4px;
-        overflow-x: auto;
-        margin: 0 auto;
-    }
-    .quest.card {
-        border-radius: 5px;
-        background: #f8f9fa; /* bootstrap 4 bg-light*/
-        margin: 2px;
-        width: 64px;
-        border: none;
-        padding: 1px !important;
-    }
-    .quest.card-body {
-        padding: 2px;
-    }
-    .quest.card-subtitle {
-        font-size: 14px;
-    }
-
 }
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
-    /* .player.card {
-        width: 150px;
-    } */
     .card-title {
         font-size: 20px;
-    }
-    .quest.card {
-        width: 100px;
     }
 }
 
@@ -265,16 +227,9 @@ p, span {
 @media screen and (min-width: 1px) {
     .section {
         border-radius: 5px;
-        min-height: 30px;
-        padding: 5px;
-        margin: 10px !important;
+        margin: 5px;
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
-        font-size: 14px;
-    }
-
-    .row {
-        margin: 2px !important;
     }
 
     .section .sectionTitle {
@@ -282,22 +237,8 @@ p, span {
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
         background-color: #8A7D6E;
-        color: #F1F1F1 !important;
+        color: #F1F1F1;
         font-weight: bold;
-        font-size: 18px;
-        float: left;
-        min-height: 30px;
-        vertical-align: middle;
-        margin: -5px 0 -5px -5px; /*offset the padding of .section */
-        padding: 1%;
-    }
-}
-/****NORMAL SCREENS****/
-@media screen and (min-width: 769px) {
-    .section .sectionTitle {
         font-size: 15px;
-    }
-    .row {
-        margin: 5px !important;
     }
 }

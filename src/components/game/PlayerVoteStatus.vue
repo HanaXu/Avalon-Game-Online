@@ -26,13 +26,12 @@
         </div>
         <!--all of quest team has voted-->
         <div class="row justify-content-center" v-if="showQuestVoteResults">
-          <div class="col-6 col-md-3">
-            <strong>Quest Vote Results:</strong>
+          <div class="col-md-2">
+            <strong>Quest Results:</strong>
           </div>
-          <div class="col-6 col-md-2 text-left">
+          <div class="col-md-3">
             <strong>Succeed:</strong>
             {{ successCount }}
-            <br />
             <strong>Fail:</strong>
             {{ failCount }}
           </div>
