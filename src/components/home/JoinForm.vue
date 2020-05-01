@@ -19,7 +19,7 @@
         v-model="name"
         @keydown.enter.native.prevent="joinRoom"
       ></b-input>
-      <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
+      <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn">Join Room</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>

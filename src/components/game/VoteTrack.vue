@@ -1,13 +1,13 @@
 <template>
   <div class="row justify-content-center">
-    <b-row class="d-flex flex-wrap section">
+    <b-row class="section">
       <b-col class="sectionTitle" md="2">Vote Track</b-col>
       <b-col class="circles">
         <div
-          class="circle"
-          :class="{markBG: index === currentVoteTrack}"
           v-for="index in 5"
           :key="index"
+          class="circle"
+          :class="{markBG: index === currentVoteTrack}"
         >{{ index }}</div>
       </b-col>
     </b-row>
@@ -34,7 +34,7 @@ export default {
 /****MOBILE SCREENS****/
 @media screen and (min-width: 1px) {
   .markBG {
-    background: #7D67AA !important;
+    background: #7d67aa !important;
     color: white;
   }
   .circle {

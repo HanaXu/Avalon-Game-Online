@@ -1,17 +1,13 @@
 <template>
   <div class="card">
-    <div class="card-body">
-      <div class="message-ctn" v-chat-scroll>
-        <div class="message" v-bind:key="message.id" v-for="message in messages">
-          <span v-if="message.adminMsg">
-            <em style="color: grey">{{message.adminMsg}}</em>
-          </span>
-          <div v-else>
-            <strong>{{`${message.username} `}}</strong>
-            <span class="timestamp">({{message.time}})</span>
-            <br />
-            {{message.msg}}
-          </div>
+    <div class="card-body message-ctn" v-chat-scroll>
+      <div v-for="message in messages" :key="message.id" class="message">
+        <em v-if="message.adminMsg" style="color: grey">{{message.adminMsg}}</em>
+        <div v-else>
+          <strong>{{`${message.username} `}}</strong>
+          <span class="timestamp">({{message.time}})</span>
+          <br />
+          {{message.msg}}
         </div>
       </div>
     </div>
@@ -19,7 +15,7 @@
     <textarea
       class="textarea"
       rows="1"
-      placeholder="Press Enter to send your message..."
+      placeholder="Press Enter to send..."
       v-on:keyup.enter="sendMessage"
     ></textarea>
   </div>

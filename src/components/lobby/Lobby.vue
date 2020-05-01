@@ -19,7 +19,7 @@
       <div class="container">
         <b-button class="setupButton" v-if="showSetupOptionsBtn" v-b-modal.setupModal>Setup Options</b-button>
         <ul class="lobbyList">
-          <li class="offset-1" v-for="(player, index) in players" :key="index">
+          <li v-for="(player, index) in players" :key="index" class="offset-1">
             <span v-if="player.name === name" class="self p-1">{{ player.role }}: {{ player.name }}</span>
             <span v-else>{{ player.role }}: {{ player.name }}</span>
           </li>
@@ -29,7 +29,7 @@
     <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
     <b-alert v-if="error" variant="danger" show>{{ errorMsg }}</b-alert>
     <div v-if="showStartGameBtn">
-      <b-button class="avalon-btn-lg" id="start-game-btn" @click="startGame">Start Game</b-button>
+      <b-button class="avalon-btn" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
   </div>
 </template>
@@ -99,5 +99,10 @@ li {
 }
 .setupButton {
   float: right;
+}
+.lobbyList {
+  list-style-type: none;
+  text-align: left;
+  font-size: 20px;
 }
 </style>

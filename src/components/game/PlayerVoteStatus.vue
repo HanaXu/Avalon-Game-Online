@@ -1,44 +1,42 @@
 <template>
-  <div v-if="showPlayerVoteStatus">
-    <b-row class="section">
-      <b-col class="sectionTitle" cols="3" md="2">Player Votes</b-col>
-      <b-col>
-        <div v-if="showHasVoted && !showTeamVoteResults">
-          <strong>Voted:</strong>
-          {{ teamVotes }}
+  <b-row v-if="showPlayerVoteStatus" class="section">
+    <b-col class="sectionTitle" md="2">Player Votes</b-col>
+    <b-col>
+      <div v-if="showHasVoted && !showTeamVoteResults">
+        <strong>Voted:</strong>
+        {{ teamVotes }}
+      </div>
+      <!--all players have voted, show all results-->
+      <div v-if="showTeamVoteResults" class="row my-0 justify-content-center">
+        <div class="col-md-6 col-12 text-left">
+          <strong>Accepted Team:</strong>
+          {{ teamVotes.accept }}
+          <br />
+          <strong>Rejected Team:</strong>
+          {{ teamVotes.reject }}
         </div>
-        <!--all players have voted, show all results-->
-        <div v-if="showTeamVoteResults" class="row my-0 justify-content-center">
-          <div class="col-md-6 col-12 text-left">
-            <strong>Accepted Team:</strong>
-            {{ teamVotes.accept }}
-            <br />
-            <strong>Rejected Team:</strong>
-            {{ teamVotes.reject }}
-          </div>
-          <!--some of team has voted on quest but not all-->
-          <div class="col-md-4 col-12 mt-2 text-left">
-            <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
-              <strong>Went on quest:</strong>
-              {{ questVotes }}
-            </div>
+        <!--some of team has voted on quest but not all-->
+        <div class="col-md-4 col-12 mt-2 text-left">
+          <div v-if="showHasVotedOnQuest && !showQuestVoteResults">
+            <strong>Went on quest:</strong>
+            {{ questVotes }}
           </div>
         </div>
-        <!--all of quest team has voted-->
-        <div class="row justify-content-center" v-if="showQuestVoteResults">
-          <div class="col-md-2">
-            <strong>Quest Results:</strong>
-          </div>
-          <div class="col-md-3">
-            <strong>Succeed:</strong>
-            {{ successCount }}
-            <strong>Fail:</strong>
-            {{ failCount }}
-          </div>
+      </div>
+      <!--all of quest team has voted-->
+      <div class="row justify-content-center" v-if="showQuestVoteResults">
+        <div class="col-md-2">
+          <strong>Quest Results:</strong>
         </div>
-      </b-col>
-    </b-row>
-  </div>
+        <div class="col-md-3">
+          <strong>Succeed:</strong>
+          {{ successCount }}
+          <strong>Fail:</strong>
+          {{ failCount }}
+        </div>
+      </div>
+    </b-col>
+  </b-row>
 </template>
 
 <script>
@@ -76,7 +74,7 @@ export default {
     },
     revealTeamVotes(votes) {
       this.teamVotes = votes;
-      this.teamVotes.accept = votes.accept.join(", "); //make array look nicer
+      this.teamVotes.accept = votes.accept.join(", ");
       this.teamVotes.reject = votes.reject.join(", ");
       this.showHasVoted = false;
       this.showTeamVoteResults = true;

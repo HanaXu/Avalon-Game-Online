@@ -1,28 +1,20 @@
 <template>
-  <div class="row justify-content-md-center mb-1">
+  <div class="quest row justify-content-center mb-1">
     <div
-      class="quest"
-      :class="{'d-flex flex-nowrap': width < 768, 'd-flex flex-wrap': width >= 768}"
-    >
-      <div
-        class="card"
-        v-for="(quest, index) in quests"
-        :key="index"
-        :class="{
+      v-for="(quest, index) in quests"
+      class="card"
+      :key="index"
+      :class="{
           fail: quest.success === false,
           success: quest.success === true,
           self: quest.currentQuest === true}"
-      >
-        <div class="card-body">
-          <h5 class="card-title">
-            Quest {{ quest.questNum }}
-            <span
-              v-if="quest.currentQuest === true"
-              style="color: #FFD700"
-            >👑</span>
-          </h5>
-          <h6 class="card-subtitle mb-2 text-muted">{{ quest.teamSize }} players</h6>
-        </div>
+    >
+      <div class="card-body">
+        <h5 class="card-title">
+          Quest {{ quest.questNum }}
+          <span v-if="quest.currentQuest === true">👑</span>
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ quest.teamSize }} players</h6>
       </div>
     </div>
   </div>
@@ -67,7 +59,6 @@ export default {
   }
 }
 
-/****MOBILE SCREENS****/
 @media screen and (max-width: 425px) {
   .quest {
     .card {

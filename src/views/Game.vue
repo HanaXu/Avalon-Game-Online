@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-md-center mx-0">
+  <div class="row justify-content-md-center">
     <div class="col-md-8">
       <Lobby v-if="!gameStarted" />
       <!-- Game -->
@@ -12,12 +12,10 @@
         <QuestCards />
         <VoteTrack />
       </div>
-      <div class="container">
-        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
-        <PlayerVoteStatus />
-        <QuestVotes />
-        <DecideQuestTeam />
-      </div>
+      <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
+      <PlayerVoteStatus />
+      <QuestVotes />
+      <DecideQuestTeam />
     </div>
     <!-- Misc -->
     <div class="col-md-3">
@@ -77,9 +75,8 @@ export default {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-    beginAssassination(msg) {
-      this.showAssassinateBtn = true;
-      this.questMsg = msg;
+    showAssassinateBtn(showAssassinateBtn) {
+      this.showAssassinateBtn = showAssassinateBtn;
     }
   }
 };

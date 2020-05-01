@@ -22,19 +22,12 @@ body {
     background: url("castle-tan.jpg") right 30% no-repeat !important;
     background-attachment: fixed !important;
 }
-
-h1.title,
-h2.subtitle {
-    text-shadow: 1px 1px 2px #8A7D6E;
-}
-
 *,
 *:before,
 *:after {
     box-sizing: border-box;
     margin: 0;
 }
-
 .heading {
     color: #685035;
 }
@@ -43,21 +36,15 @@ h2.subtitle {
 }
 .alert {
     margin-top: .5rem;
-    margin-bottom: .5rem;
+    margin-bottom: .5rem !important;
 }
 p, span {
     font-size: 18px;
 }
-
 .btn {
     font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     font-weight: bold;
 }
-
-.flex-wrap {
-    justify-content: center;
-}
-
 .row {
     margin-left: auto !important;
     margin-right: auto !important;
@@ -82,60 +69,25 @@ p, span {
         padding-left: 2px !important;
         padding-right: 2px !important;
     }
-
-
-    .lobbyList {
-        text-align: left;
-        font-size: 20px;
-    }
-    ul.lobbyList {
-        list-style-type: none;
-    }
-
-    .avalon-btn-lg {
+    .avalon-btn {
         color: #ccc351 !important;
         text-transform: uppercase;
         background: #685035 !important;
-        padding: 0;
         border: 4px solid #6f5035 !important;
-        border-radius: 7px;
-        display: inline-block;
         margin: 2px 5px;
-        width: 6rem;
     }
-    .avalon-btn-lg:hover,
-    .avalon-btn-lg:focus,
-    .avalon-btn-lg:active {
+    .avalon-btn:hover,
+    .avalon-btn:focus,
+    .avalon-btn:active {
         color: #685035 !important;
         background: #ccc351 !important;
         border-color: #ccc351 !important;
         transition: all 0.4s ease 0s;
     }
-    .questAddButton,
-    .questRemoveButton:hover,
-    .questRemoveButton:focus,
-    .questRemoveButton:active {
-        color: #ccc351 !important;
-        background: #685035 !important;
-    }
-
-    .questRemoveButton,
-    .questAddButton:hover,
-    .questAddButton:focus,
-    .questAddButton:active {
-        color: #685035 !important;
-        background: #ccc351 !important;
-        border-color: #ccc351 !important;
-    }
 }
 @media screen and (min-width: 769px) {
     .navbar-default .navbar-brand {
         font-size: 20px;
-    }
-    .avalon-btn-lg {
-        padding: 8px;
-        font-size: 1.1rem;
-        width: 10rem;
     }
     /*get rid of padding on all columns */
     .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
@@ -173,13 +125,11 @@ p, span {
         clear: none;
         overflow: hidden;
     }
-
     .footer {
         box-shadow: 0 -2px 5px #c2ab8e;
         text-align: center;
         visibility: hidden;
     }
-
 }
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
@@ -195,10 +145,8 @@ p, span {
     .footer {
         visibility: hidden;
     }
-
 }
 
-/************PLAYER & QUEST CARDS**************/
 .self {
     background: #C7C2CF !important;
 }
@@ -231,7 +179,6 @@ p, span {
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
     }
-
     .section .sectionTitle {
         font-family: "Segoe UI", Helvetica, Arial, sans-serif;
         border-top-left-radius: 5px;

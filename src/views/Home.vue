@@ -1,25 +1,23 @@
 <template>
-  <div>
-    <section class="container" style="margin-top: 10%">
-      <div v-if="!(joinToggled || createToggled)">
-        <h1 class="title">Avalonline</h1>
-        <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
-        <b-button
-          :pressed.sync="createToggled"
-          id="create-room-btn"
-          class="avalon-btn-lg"
-        >Create Room</b-button>
-        <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-lg">Join Room</b-button>
-      </div>
-      <div v-if="createToggled">
-        <CreateForm></CreateForm>
-        <b-button :pressed.sync="createToggled" class="avalon-btn-lg">Back</b-button>
-      </div>
-      <div v-if="joinToggled">
-        <JoinForm></JoinForm>
-        <b-button :pressed.sync="joinToggled" class="avalon-btn-lg">Back</b-button>
-      </div>
-    </section>
+  <div class="container" style="margin-top: 10%">
+    <h1 class="title">Avalonline</h1>
+    <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
+    <div v-if="!(createToggled || joinToggled)">
+      <b-button :pressed.sync="createToggled" id="create-room-btn" class="avalon-btn">Create Room</b-button>
+      <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn">Join Room</b-button>
+    </div>
+    <div v-if="createToggled">
+      <CreateForm />
+      <b-button
+        :pressed.sync="createToggled"
+        @click="$event.target.blur()"
+        class="avalon-btn"
+      >Back</b-button>
+    </div>
+    <div v-if="joinToggled">
+      <JoinForm />
+      <b-button :pressed.sync="joinToggled" @click="$event.target.blur()" class="avalon-btn">Back</b-button>
+    </div>
   </div>
 </template>
 
@@ -42,21 +40,22 @@ export default {
 };
 </script>
 
-<style scoped>
-.container {
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  text-align: center;
+<style>
+.form-inline {
+  display: inline-flex !important;
 }
-.title {
+h1.title {
   font-size: 50px;
   color: #503e2c;
   margin-bottom: 1rem;
 }
-.subtitle {
+h2.subtitle {
   font-size: 25px;
   color: #503e2c;
   margin-bottom: 0.8rem;
+}
+h1.title,
+h2.subtitle {
+    text-shadow: 1px 1px 2px #8A7D6E;
 }
 </style>

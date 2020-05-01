@@ -1,22 +1,22 @@
 <template>
   <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons" class="section">
-    <b-col class="sectionTitle" cols="3" md="2">Action</b-col>
+    <b-col class="sectionTitle" md="2">Action</b-col>
     <b-col class="py-0">
       <div v-if="showConfirmTeamBtnToLeader">
         <b-button
-          class="avalon-btn-lg"
+          class="avalon-btn"
           id="confirm-team-btn"
           @click="leaderHasConfirmedTeam"
         >Confirm Team</b-button>
       </div>
       <div v-if="showAcceptRejectButtons">
         <b-button
-          class="avalon-btn-lg"
+          class="avalon-btn"
           id="accept-team-btn"
           @click="playerAcceptsOrRejectsTeam('accept')"
         >Accept Team</b-button>
         <b-button
-          class="avalon-btn-lg"
+          class="avalon-btn"
           id="reject-team-btn"
           @click="playerAcceptsOrRejectsTeam('reject')"
         >Reject Team</b-button>
