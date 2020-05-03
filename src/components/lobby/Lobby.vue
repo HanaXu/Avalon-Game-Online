@@ -29,7 +29,7 @@
     <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
     <b-alert v-if="error" variant="danger" show>{{ errorMsg }}</b-alert>
     <div v-if="showStartGameBtn">
-      <b-button class="avalon-btn" id="start-game-btn" @click="startGame">Start Game</b-button>
+      <b-button class="avalon-btn-primary big" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
   </div>
 </template>

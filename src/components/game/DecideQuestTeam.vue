@@ -4,19 +4,19 @@
     <b-col class="py-0">
       <div v-if="showConfirmTeamBtnToLeader">
         <b-button
-          class="avalon-btn"
+          class="avalon-btn-primary big"
           id="confirm-team-btn"
           @click="leaderHasConfirmedTeam"
         >Confirm Team</b-button>
       </div>
       <div v-if="showAcceptRejectButtons">
         <b-button
-          class="avalon-btn"
+          class="avalon-btn-primary big"
           id="accept-team-btn"
           @click="playerAcceptsOrRejectsTeam('accept')"
         >Accept Team</b-button>
         <b-button
-          class="avalon-btn"
+          class="avalon-btn-primary big"
           id="reject-team-btn"
           @click="playerAcceptsOrRejectsTeam('reject')"
         >Reject Team</b-button>

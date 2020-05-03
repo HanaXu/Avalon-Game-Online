@@ -2,9 +2,9 @@
   <b-row v-if="canVoteOnQuest" class="section">
     <b-col class="sectionTitle" md="2">Action</b-col>
     <b-col class="py-0">
-      <b-button class="avalon-btn" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
+      <b-button class="avalon-btn-primary big" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
       <b-button
-        class="avalon-btn"
+        class="avalon-btn-primary big"
         id="fail-btn"
         @click="questVote('fail')"
         :disabled="disableFailBtn"

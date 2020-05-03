@@ -1,11 +1,16 @@
 <template>
-  <b-modal :id="'memo-modal-' + playerName" :title="playerName + ' Memo'" @shown="focusMyElement">
+  <b-modal
+    class="notes"
+    :id="'notes-modal-' + playerName"
+    :title="playerName"
+    @shown="focusMyElement"
+  >
     <div>
       <!-- Element to gain focus when modal is opened -->
       <b-form-textarea
         ref="focusThis"
         id="textarea"
-        placeholder="Enter something..."
+        placeholder="Notes..."
         rows="6"
         max-rows="6"
       ></b-form-textarea>
@@ -17,7 +22,7 @@
 
 <script>
 export default {
-  name: "MemoModal",
+  name: "NotesModal",
   props: ["playerName"],
   methods: {
     focusMyElement(e) {
@@ -26,5 +31,22 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+.notes {
+  .modal-header {
+    background: #eae7e3;
+  }
+  .modal-body {
+    background: #eae7e3;
+    .form-control {
+      background: #eae7e3; /* bootstrap 4 bg-light*/
+    }
+  }
+  .modal-footer {
+    background: #eae7e3;
+  }
+}
+</style>
 
 

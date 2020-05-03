@@ -13,9 +13,9 @@
       <h5 class="card-title">
         {{ player.name }}
         <span v-if="player.leader">👑</span>
-        <span v-b-modal="'memo-modal-' + player.name" style="cursor: pointer">📝</span>
+        <span v-b-modal="'notes-modal-' + player.name" style="cursor: pointer">📝</span>
       </h5>
-      <MemoModal :playerName="player.name" />
+      <NotesModal :playerName="player.name" />
       <h6 class="card-subtitle text-muted">
         <strong>Team:</strong>
         {{ player.team }}
@@ -28,21 +28,21 @@
       </h6>
       <div v-if="showAddBtn || showRemoveBtn">
         <b-button
-          class="mt-2 addBtn"
+          class="mt-2 avalon-btn-primary"
           :id="'add-player-' + player.name"
           v-if="!player.onQuest && showAddBtn"
-          @click="addPlayerToQuest(player.name)"
+          @click="addPlayerToQuest($event, player.name)"
         >Add to Quest</b-button>
         <b-button
-          class="mt-1 removeBtn"
+          class="mt-1 avalon-btn-primary"
           :id="'remove-player-' + player.name"
           v-if="player.onQuest && showRemoveBtn"
-          @click="removePlayerFromQuest(player.name)"
+          @click="removePlayerFromQuest($event, player.name)"
         >Remove</b-button>
       </div>
       <div v-if="showAssassinateBtn && !(player.team === 'Evil')">
         <b-button
-          class="mt-1 addBtn"
+          class="mt-1 avalon-btn-primary"
           :id="'assassinate-' + player.name"
           @click="assassinatePlayer(player.name)"
         >Assassinate</b-button>
@@ -52,13 +52,13 @@
 </template>
 
 <script>
-import MemoModal from "@/components/game/MemoModal.vue";
+import NotesModal from "@/components/game/NotesModal.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "PlayerCards",
   components: {
-    MemoModal
+    NotesModal
   },
   props: ["showAddBtn", "showRemoveBtn", "showAssassinateBtn"],
   data() {
@@ -68,10 +68,12 @@ export default {
   },
   computed: mapState(["name", "players"]),
   methods: {
-    addPlayerToQuest(playerName) {
+    addPlayerToQuest(event, playerName) {
+      event.target.blur();
       this.$socket.emit("addPlayerToQuest", playerName);
     },
-    removePlayerFromQuest(playerName) {
+    removePlayerFromQuest(event, playerName) {
+      event.target.blur();
       this.$socket.emit("removePlayerFromQuest", playerName);
     },
     assassinatePlayer(playerName) {
@@ -105,21 +107,6 @@ export default {
   }
   .disconnected {
     background: #f8d7da;
-  }
-  .addBtn,
-  .removeBtn:hover,
-  .removeBtn:focus,
-  .removeBtn:active {
-    color: #ccc351 !important;
-    background: #685035 !important;
-  }
-  .removeBtn,
-  .addBtn:hover,
-  .addBtn:focus,
-  .addBtn:active {
-    color: #685035 !important;
-    background: #ccc351 !important;
-    border-color: #ccc351 !important;
   }
 }
 
