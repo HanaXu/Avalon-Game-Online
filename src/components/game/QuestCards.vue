@@ -10,11 +10,9 @@
           self: quest.currentQuest === true}"
     >
       <div class="card-body">
-        <h5 class="card-title">
-          Quest {{ quest.questNum }}
-          <span v-if="quest.currentQuest === true">👑</span>
-        </h5>
+        <h5 class="card-title">Quest {{ quest.questNum }}</h5>
         <h6 class="card-subtitle mb-2 text-muted">{{ quest.teamSize }} players</h6>
+        <h6 v-if="quest.needsTwoFails" class="card-subtitle mb-2 text-muted font-italic">2 fails</h6>
       </div>
     </div>
   </div>
@@ -52,10 +50,10 @@ export default {
     padding: 2px;
   }
   .fail {
-    border: 5px solid #a42323 !important;
+    border: 3px solid #a42323 !important;
   }
   .success {
-    border: 5px solid green !important;
+    border: 3px solid #3c48bb !important;
   }
 }
 

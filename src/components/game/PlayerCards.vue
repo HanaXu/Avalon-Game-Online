@@ -42,7 +42,7 @@
       </div>
       <div v-if="showAssassinateBtn && !(player.team === 'Evil')">
         <b-button
-          class="mt-1"
+          class="mt-1 addBtn"
           :id="'assassinate-' + player.name"
           @click="assassinatePlayer(player.name)"
         >Assassinate</b-button>
@@ -110,16 +110,16 @@ export default {
   .removeBtn:hover,
   .removeBtn:focus,
   .removeBtn:active {
-    color: #ccc351;
-    background: #685035;
+    color: #ccc351 !important;
+    background: #685035 !important;
   }
   .removeBtn,
   .addBtn:hover,
   .addBtn:focus,
   .addBtn:active {
-    color: #685035;
-    background: #ccc351;
-    border-color: #ccc351;
+    color: #685035 !important;
+    background: #ccc351 !important;
+    border-color: #ccc351 !important;
   }
 }
 

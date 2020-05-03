@@ -23,7 +23,7 @@ export default class Quest {
    * @property {boolean} success - True for a succeeded quest, false for failed quest
    */
 
-  constructor(questNum, totalNumPlayers) {
+  constructor(questNum, totalNumPlayers, needsTwoFails=false) {
     this.questNum = questNum;
     this.teamSize = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
     this.playersOnQuest = new Set([]);
@@ -41,7 +41,7 @@ export default class Quest {
     this.teamAccepted = false;
     this.leaderHasConfirmedTeam = false;
     this.currentQuest = false;
-    this.needsTwoFails = false; // don't worry about this for now, we'll just have it always set to false since it's a "special case" rule
+    this.needsTwoFails = needsTwoFails;
     this.votes = {
       'voted': [],
       'succeed': 0,
@@ -104,7 +104,7 @@ export default class Quest {
   }
 
   assignQuestResult() {
-    this.success = !this.votes.fail > 0;
+    this.success = !(this.needsTwoFails ? this.votes.fail >=2 : this.votes.fail > 0);
   }
 
   //resets all values relating to players on quest & quest votes to original values
