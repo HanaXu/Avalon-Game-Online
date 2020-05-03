@@ -28,12 +28,6 @@ body {
     box-sizing: border-box;
     margin: 0;
 }
-.heading {
-    color: #685035;
-}
-.modals {
-    text-align: left;
-}
 .alert {
     margin-top: .5rem;
     margin-bottom: .5rem !important;
@@ -41,13 +35,12 @@ body {
 p, span {
     font-size: 18px;
 }
-.btn {
-    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-    font-weight: bold;
-}
 .row {
     margin-left: auto !important;
     margin-right: auto !important;
+}
+.self {
+    background: #C7C2CF !important;
 }
 
 @media screen and (min-width: 1px) {
@@ -113,54 +106,6 @@ p, span {
 
 /****MOBILE SCREENS****/
 @media screen and (min-width: 1px) {
-    .col {
-        padding: 1%;
-    }
-    .container.game {
-        min-height: 70vh;
-        display: inline-block;
-        padding: 1%;
-        clear: none;
-        box-shadow: 2px 2px 5px #c2ab8e;
-    }
-    .container.chat {
-        visibility: visible;
-        min-height: 75vh;
-        margin: 10px 0;
-        width: 100%;
-        padding: 0;
-        display: inline-block;
-        clear: none;
-        overflow: hidden;
-    }
-    .footer {
-        box-shadow: 0 -2px 5px #c2ab8e;
-        text-align: center;
-        visibility: hidden;
-    }
-}
-/****NORMAL SCREENS****/
-@media screen and (min-width: 769px) {
-    .container.chat {
-        visibility: visible;
-        min-height: 75vh;
-        margin: 10px !important;
-        padding: 0;
-        display: inline-block;
-        clear: none;
-        overflow: hidden;
-    }
-    .footer {
-        visibility: hidden;
-    }
-}
-
-.self {
-    background: #C7C2CF !important;
-}
-
-/****MOBILE SCREENS****/
-@media screen and (min-width: 1px) {
     .card-title {
         margin-top: 5px;
         font-weight: bold;
@@ -178,16 +123,15 @@ p, span {
     }
 }
 
-/*************SECTION******************/
-/*used in PlayerVoteStatus, GameStatus*/
+/*used in PlayerVoteStatus, GameStatus, DecideQuestTeam, VoteTrack*/
 @media screen and (min-width: 1px) {
-    .section {
+    .status-section {
         border-radius: 5px;
         margin: 5px;
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
     }
-    .section .sectionTitle {
+    .status-section .section-title {
         font-family: "Segoe UI", Helvetica, Arial, sans-serif;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
@@ -195,5 +139,8 @@ p, span {
         color: #F1F1F1;
         font-weight: bold;
         font-size: 15px;
+    }
+    .status-section .col {
+        padding: .5rem;
     }
 }

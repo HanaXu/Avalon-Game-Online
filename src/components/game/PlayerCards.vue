@@ -1,5 +1,5 @@
 <template>
-  <div class="player row justify-content-center mt-2">
+  <div class="player row justify-content-center">
     <div
       v-for="(player, index) in players"
       :key="index"

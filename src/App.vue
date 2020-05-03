@@ -51,4 +51,10 @@ export default {
 
 <style>
 @import "/styles/styles.css";
+.modals {
+    text-align: left;
+}
+.heading {
+    color: #685035;
+}
 </style>

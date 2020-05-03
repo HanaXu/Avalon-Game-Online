@@ -1,15 +1,15 @@
 <template>
-  <div class="row justify-content-center">
-    <b-row class="section">
-      <b-col class="sectionTitle" md="2">Vote Track</b-col>
-      <b-col class="circles">
-        <div
+  <div class="row">
+    <b-row class="justify-content-center status-section">
+      <b-col class="section-title p-1">Vote Track</b-col>
+      <div class="p-1">
+        <span
           v-for="index in 5"
           :key="index"
           class="circle"
           :class="{markBG: index === currentVoteTrack}"
-        >{{ index }}</div>
-      </b-col>
+        >{{ index }}</span>
+      </div>
     </b-row>
   </div>
 </template>
@@ -44,10 +44,13 @@ export default {
     background: #f8f9fa;
     box-shadow: 1px 2px 5px #c2ab8e;
     padding-top: 8px;
-    margin-right: 2px;
+    margin-right: 0.5rem;
     font-size: 14px;
     font-weight: bold;
     display: inline-block;
+  }
+  .circle:first-child {
+    margin-left: 0.4rem;
   }
   .section.voteTrack {
     width: 290px;
@@ -67,7 +70,6 @@ export default {
     width: 40px;
     height: 40px;
     padding-top: 10px;
-    margin-right: 0.5rem;
     font-size: 15px;
   }
   .section.voteTrack {

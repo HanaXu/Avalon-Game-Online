@@ -1,18 +1,17 @@
 <template>
   <div class="main-board">
-    <b-row class="justify-content-center mt-2">
-      <p class="col-md-3 col-sm-6 mb-0">Room code: {{ roomCode }}</p>
+    <b-row class="justify-content-center">
+      <span class="col-md-3 col-sm-6">Room code: {{ roomCode }}</span>
       <div
-        class="col-md-3 col-sm-6 mb-0"
         v-b-tooltip.bottom
         title="A minimum of 5 players is required to start the game"
       >
-        <p class="mb-0">
+        <span>
           Room capacity:
           <span
             :class="{red: players.length < 5, green: players.length >= 5}"
           >{{players.length}}/10</span>
-        </p>
+        </span>
       </div>
     </b-row>
     <b-row>
@@ -90,9 +89,9 @@ export default {
 .green {
   color: green;
 }
-ul {
+ul.lobbyList {
   padding: 0;
-  padding-top: 1rem;
+  margin-top: 1rem;
 }
 li {
   padding-left: 1.5rem;

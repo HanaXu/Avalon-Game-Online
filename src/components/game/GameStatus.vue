@@ -1,6 +1,6 @@
 <template>
-  <b-row class="section">
-    <b-col class="sectionTitle" md="2">Game Status</b-col>
+  <b-row class="status-section">
+    <b-col class="section-title" md="2">Game Status</b-col>
     <b-col>{{ questMsg }}</b-col>
   </b-row>
 </template>

@@ -1,9 +1,9 @@
 <template>
-  <div class="row justify-content-md-center">
-    <div class="col-md-8">
+  <div class="row justify-content-md-center py-3">
+    <div class="col-md-8 px-2">
       <Lobby v-if="!gameStarted" />
       <!-- Game -->
-      <div class="container main-board" v-if="gameStarted">
+      <div class="main-board" v-if="gameStarted">
         <PlayerCards
           :showAddBtn="showAddBtn"
           :showRemoveBtn="showRemoveBtn"
@@ -18,11 +18,9 @@
       <DecideQuestTeam />
     </div>
     <!-- Misc -->
-    <div class="col-md-3">
-      <div class="container chat">
-        <RoleList v-if="gameStarted" />
-        <Chat />
-      </div>
+    <div class="col-md-3 px-2">
+      <RoleList v-if="gameStarted" />
+      <Chat />
     </div>
   </div>
 </template>
@@ -86,16 +84,15 @@ export default {
 .main-board {
   background: #eae7e3;
   border-radius: 5px;
-  margin: 10px;
   min-height: 40vh;
-  padding: 4px !important;
-  clear: none;
+  margin-bottom: .5rem;
+  padding: 1rem;
   box-shadow: 0 2px 5px #c2ab8e;
 }
 .game-section {
   background: #eae7e3;
   border-radius: 5px;
-  padding: 4px !important;
+  padding: 5px;
   box-shadow: 0 2px 5px #c2ab8e;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons" class="section">
-    <b-col class="sectionTitle" md="2">Action</b-col>
+  <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons" class="status-section">
+    <b-col class="section-title" md="2">Action</b-col>
     <b-col class="py-0">
       <div v-if="showConfirmTeamBtnToLeader">
         <b-button

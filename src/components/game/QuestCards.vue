@@ -1,5 +1,5 @@
 <template>
-  <div class="quest row justify-content-center mb-1">
+  <div class="quest row justify-content-center">
     <div
       v-for="(quest, index) in quests"
       class="card"

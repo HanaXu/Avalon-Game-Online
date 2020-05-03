@@ -1,6 +1,6 @@
 <template>
-  <b-row v-if="showPlayerVoteStatus" class="section">
-    <b-col class="sectionTitle" md="2">Player Votes</b-col>
+  <b-row v-if="showPlayerVoteStatus" class="status-section">
+    <b-col class="section-title" md="2">Player Votes</b-col>
     <b-col>
       <div v-if="showHasVoted && !showTeamVoteResults">
         <strong>Voted:</strong>

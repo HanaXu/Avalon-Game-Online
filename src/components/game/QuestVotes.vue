@@ -1,6 +1,6 @@
 <template>
-  <b-row v-if="canVoteOnQuest" class="section">
-    <b-col class="sectionTitle" md="2">Action</b-col>
+  <b-row v-if="canVoteOnQuest" class="status-section">
+    <b-col class="section-title" md="2">Action</b-col>
     <b-col class="py-0">
       <b-button class="avalon-btn-primary big" id="succeed-btn" @click="questVote('succeed')">Succeed</b-button>
       <b-button
