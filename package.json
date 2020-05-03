@@ -6,17 +6,17 @@
     "vue": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "node": "node --experimental-modules server/index.mjs",
-    "start": "vue-cli-service serve | node --experimental-modules server/index.mjs"
+    "start": "concurrently \"vue-cli-service serve\" \"node --experimental-modules server/index.mjs\""
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.16",
+    "concurrently": "^5.2.0",
     "core-js": "^2.6.5",
     "express": "^4.16.4",
-    "firebase": "^5.10.0",
+    "firebase": "^7.14.2",
     "firebaseui": "^3.6.0",
-    "jquery": "^3.5.0",
-    "pm2": "^3.5.0",
+    "jquery": "^3.4.0",
     "register-service-worker": "^1.6.2",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
@@ -30,8 +30,9 @@
     "@vue/cli-plugin-babel": "^3.5.5",
     "@vue/cli-plugin-pwa": "^3.5.1",
     "@vue/cli-service": "^4.1.1",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.14.0",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "pm2": "^4.4.0"
   }
 }
