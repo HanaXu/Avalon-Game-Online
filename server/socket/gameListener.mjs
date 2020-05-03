@@ -92,12 +92,12 @@ export function gameListener(io, socket, roomCode) {
       GameList[roomCode].resetPlayersProperty('votedOnTeam');
 
       currentQuest.assignTeamResult(GameList[roomCode].players.length);
+      io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
       if (currentQuest.teamAccepted) {
-        incrementVoteTrackAndAssignNextLeader(currentQuest, `Quest team was rejected. Assigning next leader.`);
+        incrementVoteTrackAndAssignNextLeader(currentQuest);
       } else {
         showSucceedAndFailBtnsToPlayersOnQuest(io, roomCode);
       }
-      io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
     }
   });
 
@@ -209,10 +209,9 @@ export function gameListener(io, socket, roomCode) {
    * @param {Object} currentQuest 
    * @param {String} msg 
    */
-  function incrementVoteTrackAndAssignNextLeader(currentQuest, msg) {
+  function incrementVoteTrackAndAssignNextLeader(currentQuest) {
     io.in(roomCode).emit('updateBotRiskScores', currentQuest);
     currentQuest.voteTrack++;
-    updateQuestMsg(msg);
 
     //check if voteTrack has exceeded 5 (game over)
     if (currentQuest.voteTrack > 5) {
