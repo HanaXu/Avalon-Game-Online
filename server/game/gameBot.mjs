@@ -79,12 +79,14 @@ export default class GameBot {
             });
         });
 
-        this.socket.on('beginAssassination', () => {
-            let toAssassinate = Math.floor(Math.random() * this.sanitizedPlayers.length);
-            while (this.sanitizedPlayers[toAssassinate].team === 'Evil') {
-                toAssassinate = Math.floor(Math.random() * this.sanitizedPlayers.length);
+        this.socket.on('showAssassinateBtn', (showAssassinateBtn) => {
+            if (showAssassinateBtn) {
+                let toAssassinate = Math.floor(Math.random() * this.sanitizedPlayers.length);
+                while (this.sanitizedPlayers[toAssassinate].team === 'Evil') {
+                    toAssassinate = Math.floor(Math.random() * this.sanitizedPlayers.length);
+                }
+                this.socket.emit('assassinatePlayer', this.sanitizedPlayers[toAssassinate].name);
             }
-            this.socket.emit('assassinatePlayer', this.sanitizedPlayers[toAssassinate].name);
         });
     }
 

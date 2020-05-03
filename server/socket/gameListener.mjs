@@ -133,10 +133,12 @@ export function gameListener(io, socket, roomCode) {
    */
   socket.on('assassinatePlayer', function (name) {
     const merlinPlayer = GameList[roomCode].getPlayerBy('character', 'Merlin');
+    if (merlinPlayer.team === 'Evil') return;
     console.log(`\nMerlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${name}.`);
+    socket.emit('showAssassinateBtn', false);
 
     const msg = merlinPlayer.name === name ? `Assassin successfully discovered and killed ${name}, who was Merlin. Evil Wins!`
-      : `Assassin failed to discover and kill Merlin. Good Wins!`;
+      : `Assassin killed ${name}, who is not Merlin. Good Wins!`;
     updateQuestMsg(msg);
     io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
@@ -244,8 +246,9 @@ export function gameListener(io, socket, roomCode) {
       updateQuestMsg(`Good has triumphed over Evil by succeeding ${GameList[roomCode].questSuccesses} quests. 
                       Waiting for Assassin to attempt to assassinate Merlin.`)
 
-      io.to(assassinSocketID).emit('beginAssassination', `You are the assassin. 
+      io.to(assassinSocketID).emit('updateQuestMsg', `You are the assassin. 
                                     Assassinate the player you think is Merlin to win the game for Evil.`);
+      io.to(assassinSocketID).emit('showAssassinateBtn', true);
     }
     else {
       //choose next leader and start next quest

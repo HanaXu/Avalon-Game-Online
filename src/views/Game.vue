@@ -1,29 +1,27 @@
 <template>
-  <div>
-    <div class="row justify-content-md-center mx-0">
-      <div class="col-12 col-md-7">
-        <Lobby v-if="!gameStarted" />
-        <!-- Game -->
-        <div class="container main-board" v-if="gameStarted">
-          <PlayerCards
-            :showAddBtn="showAddBtn"
-            :showRemoveBtn="showRemoveBtn"
-            :showAssassinateBtn="showAssassinateBtn"
-          />
-          <QuestCards />
-          <VoteTrack />
-        </div>
-        <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
-        <PlayerVoteStatus />
-        <QuestVotes />
-        <DecideQuestTeam />
+  <div class="row justify-content-md-center">
+    <div class="col-md-8">
+      <Lobby v-if="!gameStarted" />
+      <!-- Game -->
+      <div class="container main-board" v-if="gameStarted">
+        <PlayerCards
+          :showAddBtn="showAddBtn"
+          :showRemoveBtn="showRemoveBtn"
+          :showAssassinateBtn="showAssassinateBtn"
+        />
+        <QuestCards />
+        <VoteTrack />
       </div>
-      <!-- Misc -->
-      <div class="col-12 col-md-3">
-        <div class="container chat">
-          <RoleList v-if="gameStarted" />
-          <Chat />
-        </div>
+      <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
+      <PlayerVoteStatus />
+      <QuestVotes />
+      <DecideQuestTeam />
+    </div>
+    <!-- Misc -->
+    <div class="col-md-3">
+      <div class="container chat">
+        <RoleList v-if="gameStarted" />
+        <Chat />
       </div>
     </div>
   </div>
@@ -77,9 +75,8 @@ export default {
       this.questMsg = msg;
       this.showQuestMsg = true;
     },
-    beginAssassination(msg) {
-      this.showAssassinateBtn = true;
-      this.questMsg = msg;
+    showAssassinateBtn(showAssassinateBtn) {
+      this.showAssassinateBtn = showAssassinateBtn;
     }
   }
 };

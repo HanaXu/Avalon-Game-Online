@@ -6,10 +6,12 @@
       class="game-section mb-2 p-0"
       :class="{good: team === 'good', evil: team === 'evil'}"
     >
-      <div class="row lobbyList px-1 m-0">
-        <div v-for="(numCharacters, character) in characters" :key="character">
-          <span class="mr-4">{{ character }}: {{numCharacters}}</span>
-        </div>
+      <div class="row p-1 m-0">
+        <span
+          v-for="(numCharacters, character) in characters"
+          :key="character"
+          class="mr-4"
+        >{{ character }}: {{numCharacters}}</span>
       </div>
     </div>
   </div>

@@ -85,7 +85,7 @@ export default class Game {
       1: new Quest(1, this.players.length),
       2: new Quest(2, this.players.length),
       3: new Quest(3, this.players.length),
-      4: new Quest(4, this.players.length),
+      4: new Quest(4, this.players.length, this.players.length > 6),
       5: new Quest(5, this.players.length)
     };
     this.quests[1].currentQuest = true;

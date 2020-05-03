@@ -9,7 +9,7 @@
           width="32"
           height="32"
         />
-        Avalonline Room {{ roomCode }}
+        Avalonline <span v-if="roomCode">Room {{ roomCode }}</span>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>

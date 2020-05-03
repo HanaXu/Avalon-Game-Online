@@ -1,13 +1,13 @@
 <template>
   <div class="row justify-content-center">
-    <b-row class="d-flex flex-wrap section">
-      <b-col class="sectionTitle" cols="3" md="2">Vote Track</b-col>
+    <b-row class="section">
+      <b-col class="sectionTitle" md="2">Vote Track</b-col>
       <b-col class="circles">
         <div
-          class="circle"
-          :class="{markBG: index === currentVoteTrack}"
           v-for="index in 5"
           :key="index"
+          class="circle"
+          :class="{markBG: index === currentVoteTrack}"
         >{{ index }}</div>
       </b-col>
     </b-row>
@@ -34,22 +34,21 @@ export default {
 /****MOBILE SCREENS****/
 @media screen and (min-width: 1px) {
   .markBG {
-    background: #7D67AA !important;
+    background: #7d67aa !important;
     color: white;
   }
-
   .circle {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: white;
+    background: #f8f9fa;
+    box-shadow: 1px 2px 5px #c2ab8e;
     padding-top: 8px;
     margin-right: 2px;
     font-size: 14px;
     font-weight: bold;
     display: inline-block;
   }
-
   .section.voteTrack {
     width: 290px;
   }
@@ -65,13 +64,12 @@ export default {
 /****NORMAL SCREENS****/
 @media screen and (min-width: 769px) {
   .circle {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     padding-top: 10px;
     margin-right: 0.5rem;
-    font-size: 20px;
+    font-size: 15px;
   }
-
   .section.voteTrack {
     width: 500px;
   }
