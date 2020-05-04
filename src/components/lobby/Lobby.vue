@@ -1,11 +1,12 @@
 <template>
   <div class="main-board">
     <b-row class="justify-content-center">
-      <span class="col-md-3 col-sm-6">Room code: {{ roomCode }}</span>
-      <div
-        v-b-tooltip.bottom
-        title="A minimum of 5 players is required to start the game"
-      >
+      <span class="col-md-3 col-sm-6">
+        Room code: {{ roomCode }}
+        <ClipboardIcon copyElementId="roomCode"/>
+      </span>
+      <input type="hidden" :value="roomCode" id="roomCode" />
+      <div v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
         <span>
           Room capacity:
           <span
@@ -35,12 +36,14 @@
 
 <script>
 import SetupOptions from "@/components/lobby/SetupOptions.vue";
+import ClipboardIcon from "@/components/lobby/ClipboardIcon.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "Lobby",
   components: {
-    SetupOptions
+    SetupOptions,
+    ClipboardIcon
   },
   data() {
     return {
