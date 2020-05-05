@@ -51,7 +51,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "/styles/styles.css";
+@import "./assets/common.scss";
 .modals {
   text-align: left;
 }
