@@ -123,7 +123,7 @@ p, span {
     }
 }
 
-/*used in PlayerVoteStatus, GameStatus, DecideQuestTeam, VoteTrack*/
+/*used in VoteStatus, GameStatus, Actions, VoteTrack*/
 @media screen and (min-width: 1px) {
     .status-section {
         border-radius: 5px;

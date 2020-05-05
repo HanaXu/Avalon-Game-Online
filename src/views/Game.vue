@@ -4,18 +4,13 @@
       <Lobby v-if="!gameStarted" />
       <!-- Game -->
       <div class="main-board" v-if="gameStarted">
-        <PlayerCards
-          :showAddBtn="showAddBtn"
-          :showRemoveBtn="showRemoveBtn"
-          :showAssassinateBtn="showAssassinateBtn"
-        />
+        <PlayerCards />
         <QuestCards />
         <VoteTrack />
       </div>
-      <GameStatus v-if="(showQuestMsg && questMsg.length > 0)" :questMsg="questMsg" />
-      <PlayerVoteStatus />
-      <QuestVotes />
-      <DecideQuestTeam />
+      <GameStatus />
+      <VoteStatus />
+      <Actions />
     </div>
     <!-- Misc -->
     <div class="col-md-3 px-2">
@@ -31,10 +26,9 @@ import Chat from "@/components/lobby/Chat.vue";
 import PlayerCards from "@/components/game/PlayerCards.vue";
 import QuestCards from "@/components/game/QuestCards.vue";
 import VoteTrack from "@/components/game/VoteTrack.vue";
-import DecideQuestTeam from "@/components/game/DecideQuestTeam.vue";
-import QuestVotes from "@/components/game/QuestVotes.vue";
+import Actions from "@/components/game/Actions.vue";
 import GameStatus from "@/components/game/GameStatus.vue";
-import PlayerVoteStatus from "@/components/game/PlayerVoteStatus.vue";
+import VoteStatus from "@/components/game/VoteStatus.vue";
 import RoleList from "@/components/game/RoleList.vue";
 
 export default {
@@ -45,36 +39,19 @@ export default {
     Chat,
     QuestCards,
     VoteTrack,
-    DecideQuestTeam,
-    QuestVotes,
+    Actions,
     GameStatus,
-    PlayerVoteStatus,
+    VoteStatus,
     RoleList
   },
   data() {
     return {
-      questMsg: null,
-      showQuestMsg: false,
-      gameStarted: false,
-      showAddBtn: false,
-      showRemoveBtn: false,
-      showAssassinateBtn: false
+      gameStarted: false
     };
   },
   sockets: {
     startGame() {
       this.gameStarted = true;
-    },
-    showAddRemovePlayerBtns(showAddRemovePlayerBtns) {
-      this.showAddBtn = showAddRemovePlayerBtns;
-      this.showRemoveBtn = showAddRemovePlayerBtns;
-    },
-    updateQuestMsg(msg) {
-      this.questMsg = msg;
-      this.showQuestMsg = true;
-    },
-    showAssassinateBtn(showAssassinateBtn) {
-      this.showAssassinateBtn = showAssassinateBtn;
     }
   }
 };

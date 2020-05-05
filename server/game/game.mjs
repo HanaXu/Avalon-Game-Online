@@ -52,8 +52,8 @@ export default class Game {
     this.gameIsStarted = false;
     this.gameState = {
       questMsg: null,
-      acceptOrRejectTeam: false,
-      succeedOrFailQuest: false
+      showAcceptOrRejectTeamBtns: false,
+      showSucceedOrFailQuestBtns: false
     };
     this.roleList = null;
     this.players = [];
@@ -105,7 +105,7 @@ export default class Game {
    */
   addPlayerToQuest(questNum, name) {
     for (let i in this.players) {
-      if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0) {
+      if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0 && !this.players[i].onQuest) {
         this.players[i].onQuest = true;
         this.quests[questNum].addPlayer(name);
         break;

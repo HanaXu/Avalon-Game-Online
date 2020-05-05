@@ -67,7 +67,7 @@ export function gameListener(io, socket, roomCode) {
     socket.emit('showAddRemovePlayerBtns', false);
     currentQuest.leaderHasConfirmedTeam = true;
 
-    GameList[roomCode].gameState['acceptOrRejectTeam'] = true;
+    GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] = true;
     updateQuestMsg('Waiting for all players to Accept or Reject team.');
     io.in(roomCode).emit('showAcceptOrRejectTeamBtns', true);
   });
@@ -88,7 +88,7 @@ export function gameListener(io, socket, roomCode) {
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.acceptOrRejectTeam.voted.length === GameList[roomCode].players.length) {
-      GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
+      GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] = false;
       GameList[roomCode].resetPlayersProperty('votedOnTeam');
 
       currentQuest.assignTeamResult(GameList[roomCode].players.length);
@@ -115,7 +115,7 @@ export function gameListener(io, socket, roomCode) {
 
     // all votes received
     if ((succeed + fail) == currentQuest.teamSize) {
-      GameList[roomCode].gameState['succeedOrFailQuest'] = false;
+      GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] = false;
       currentQuest.assignQuestResult();
       currentQuest.success ? GameList[roomCode].questSuccesses++ : GameList[roomCode].questFails++;
       GameList[roomCode].resetPlayersProperty('votedOnQuest');
@@ -268,13 +268,13 @@ function showSucceedAndFailBtnsToPlayersOnQuest(io, roomCode) {
   GameList[roomCode].gameState['questMsg'] = 'Quest team was Approved. Waiting for quest team to go on quest.';
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 
-  GameList[roomCode].gameState['acceptOrRejectTeam'] = false;
-  GameList[roomCode].gameState['succeedOrFailQuest'] = true;
+  GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] = false;
+  GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] = true;
 
   GameList[roomCode].players.forEach(player => {
     if (player.onQuest && !player.votedOnQuest) {
       const disableFailBtn = player.team === "Good"; //check if player is good so they can't fail quest
-      io.to(player.socketID).emit('succeedOrFailQuest', disableFailBtn);
+      io.to(player.socketID).emit('showSucceedOrFailQuestBtns', disableFailBtn);
     }
   });
 }
@@ -311,7 +311,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
   io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
   io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
 
-  if (GameList[roomCode].gameState['acceptOrRejectTeam'] === true) {
+  if (GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] === true) {
     io.in(roomCode).emit('updateConcealedTeamVotes', currentQuest.acceptOrRejectTeam.voted);
     if (!existingPlayer.votedOnTeam) {
       socket.emit('showAcceptOrRejectTeamBtns', true);
@@ -322,7 +322,7 @@ export function reconnectPlayerToStartedGame(io, socket, name, roomCode) {
     io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
   }
 
-  if (GameList[roomCode].gameState['succeedOrFailQuest'] === true) {
+  if (GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] === true) {
     showSucceedAndFailBtnsToPlayersOnQuest(io, roomCode);
   }
   if (currentQuest.leaderInfo.name === name && !currentQuest.leaderHasConfirmedTeam) {

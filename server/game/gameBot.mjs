@@ -67,7 +67,7 @@ export default class GameBot {
             }
         });
 
-        this.socket.on('succeedOrFailQuest', () => {
+        this.socket.on('showSucceedOrFailQuestBtns', () => {
             const currentQuest = GameList[this.roomCode].getCurrentQuest();
             let decision;
             

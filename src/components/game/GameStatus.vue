@@ -1,5 +1,5 @@
 <template>
-  <b-row class="status-section">
+  <b-row v-if="(showQuestMsg && questMsg.length > 0)" class="status-section">
     <b-col class="section-title" md="2">Game Status</b-col>
     <b-col>{{ questMsg }}</b-col>
   </b-row>
@@ -8,10 +8,17 @@
 <script>
 export default {
   name: "GameStatus",
-  props: ["questMsg"]
+  data() {
+    return {
+      questMsg: null,
+      showQuestMsg: false
+    };
+  },
+  sockets: {
+    updateQuestMsg(msg) {
+      this.questMsg = msg;
+      this.showQuestMsg = true;
+    }
+  }
 };
 </script>
-
-<style>
-@import "../../styles/styles.css";
-</style>

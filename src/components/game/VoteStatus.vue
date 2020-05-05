@@ -1,6 +1,6 @@
 <template>
-  <b-row v-if="showPlayerVoteStatus" class="status-section">
-    <b-col class="section-title" md="2">Player Votes</b-col>
+  <b-row v-if="showVoteStatus" class="status-section">
+    <b-col class="section-title" md="2">Vote Status</b-col>
     <b-col>
       <div v-if="showHasVoted && !showTeamVoteResults">
         <strong>Voted:</strong>
@@ -41,13 +41,13 @@
 
 <script>
 export default {
-  name: "GameStatus",
+  name: "VoteStatus",
   data() {
     return {
       //deciding team
       teamVotes: null,
       showHasVoted: false,
-      showPlayerVoteStatus: false,
+      showVoteStatus: false,
       showTeamVoteResults: false,
 
       questVotes: null,
@@ -66,7 +66,7 @@ export default {
       this.teamVotes = currentVotes.join(", ");
       this.showHasVoted = true;
       this.showTeamVoteResults = false;
-      this.showPlayerVoteStatus = true;
+      this.showVoteStatus = true;
     },
     updateConcealedQuestVotes(votes) {
       this.showHasVotedOnQuest = true;
@@ -97,7 +97,3 @@ export default {
   }
 };
 </script>
-
-<style>
-@import "../../styles/styles.css";
-</style>

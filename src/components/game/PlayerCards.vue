@@ -26,17 +26,18 @@
         <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
         <span v-if="player.disconnected === true" class="font-italic">Disconnected</span>
       </h6>
-      <div v-if="showAddBtn || showRemoveBtn">
+      <div v-if="showAddRemovePlayerBtns">
         <b-button
           class="mt-2 avalon-btn-primary"
           :id="'add-player-' + player.name"
-          v-if="!player.onQuest && showAddBtn"
+          v-if="!player.onQuest"
+          :disabled="disableAddPlayerBtn"
           @click="addPlayerToQuest($event, player.name)"
         >Add to Quest</b-button>
         <b-button
           class="mt-1 avalon-btn-primary"
           :id="'remove-player-' + player.name"
-          v-if="player.onQuest && showRemoveBtn"
+          v-if="player.onQuest"
           @click="removePlayerFromQuest($event, player.name)"
         >Remove</b-button>
       </div>
@@ -60,10 +61,11 @@ export default {
   components: {
     NotesModal
   },
-  props: ["showAddBtn", "showRemoveBtn", "showAssassinateBtn"],
   data() {
     return {
-      width: window.innerWidth
+      showAddRemovePlayerBtns: false,
+      disableAddPlayerBtn: false,
+      showAssassinateBtn: false
     };
   },
   computed: mapState(["name", "players"]),
@@ -79,12 +81,22 @@ export default {
     assassinatePlayer(playerName) {
       this.$socket.emit("assassinatePlayer", playerName);
     }
+  },
+  sockets: {
+    showAddRemovePlayerBtns(showAddRemovePlayerBtns) {
+      this.showAddRemovePlayerBtns = showAddRemovePlayerBtns;
+    },
+    showConfirmTeamBtnToLeader(showConfirmTeamBtn) {
+      this.disableAddPlayerBtn = showConfirmTeamBtn;
+    },
+    showAssassinateBtn(showAssassinateBtn) {
+      this.showAssassinateBtn = showAssassinateBtn;
+    }
   }
 };
 </script>
 
 <style lang="scss">
-@import "../../styles/styles.css";
 .player {
   .card {
     background: #f8f9fa; /* bootstrap 4 bg-light*/
