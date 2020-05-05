@@ -13,9 +13,9 @@ const server = app.listen(port, () => {
 const io = socketIO(server);
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-app.use(express.static(__dirname + "/dist/"));
+app.use(express.static(__dirname + "/../dist/"));
 app.get(/.*/, function (req, res) {
-  res.sendFile(__dirname + "/dist/index.html");
+  res.sendFile(__dirname + "/../dist/index.html");
 });
 
 export let GameList = {}; //keeps record of all game objects

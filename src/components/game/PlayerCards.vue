@@ -119,6 +119,7 @@ export default {
   }
   .disconnected {
     background: #f8d7da;
+    transition: 0.4s;
   }
 }
 

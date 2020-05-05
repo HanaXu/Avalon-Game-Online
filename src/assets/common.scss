@@ -12,10 +12,10 @@
     border-color: #e7e7e7;
     box-shadow: 0 2px 5px #c2ab8e;
     width: 100%;
-}
-.navbar-default .navbar-brand:hover,
-.navbar-default .navbar-nav .nav-link:hover {
-    color: #494949;
+    .navbar-brand:hover,
+    .navbar-nav .nav-link:hover {
+        color: #494949;
+    }
 }
 body {
     background-color: #d6cdc2;
@@ -69,7 +69,7 @@ p, span {
         color: #ccc351 !important;
         background: #685035 !important;
         border-color: #685035 !important;
-        transition: 0.5s;
+        transition: 0.4s;
     }
     .avalon-btn-primary.big {
         text-transform: uppercase;
@@ -83,7 +83,7 @@ p, span {
         color: #685035 !important;
         background: #ccc351 !important;
         border-color: #ccc351 !important;
-        transition: 0.5s;
+        transition: 0.4s;
     }
 }
 @media screen and (min-width: 769px) {
@@ -130,17 +130,17 @@ p, span {
         margin: 5px;
         background: #F1F1F1;
         box-shadow: 2px 2px 5px #c2ab8e;
-    }
-    .status-section .section-title {
-        font-family: "Segoe UI", Helvetica, Arial, sans-serif;
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
-        background-color: #8A7D6E;
-        color: #F1F1F1;
-        font-weight: bold;
-        font-size: 15px;
-    }
-    .status-section .col {
-        padding: .5rem;
+        .section-title {
+            font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            background-color: #8A7D6E;
+            color: #F1F1F1;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .col {
+            padding: .5rem;
+        }
     }
 }
