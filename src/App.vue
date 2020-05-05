@@ -9,7 +9,8 @@
           width="32"
           height="32"
         />
-        Avalonline <span v-if="roomCode">Room {{ roomCode }}</span>
+        Avalonline
+        <span v-if="roomCode">Room {{ roomCode }}</span>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -49,12 +50,26 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 @import "/styles/styles.css";
 .modals {
-    text-align: left;
+  text-align: left;
 }
 .heading {
-    color: #685035;
+  color: #685035;
+}
+.modal-header {
+  background: #eae7e3;
+}
+.modal-body {
+  background: #eae7e3;
+  .form-control,
+  .form-control:focus,
+  .form-control:active {
+    background: #eae7e3; /* bootstrap 4 bg-light*/
+  }
+}
+.modal-footer {
+  background: #eae7e3;
 }
 </style>

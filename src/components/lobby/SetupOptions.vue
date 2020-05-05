@@ -28,6 +28,8 @@
         <br />7, 8, and 9-player games cannot include more than two optional evil characters.
       </em>
     </p>
+    <!--include footer so OK and Cancel buttons dont show up-->
+    <div slot="modal-footer"></div>
   </b-modal>
 </template>
 
