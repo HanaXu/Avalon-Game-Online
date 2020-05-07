@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="setupModal" class="setup" title="Setup Options" @ok="handleOk">
+  <b-modal id="setupModal" title="Setup Options" @ok="handleOk">
     <b-row>
       <b-button class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
@@ -89,9 +89,11 @@ export default {
 </script>
 
 <style>
-.setup {
+
+#setupModal {
   color: #000;
   text-align: left;
+  padding-left: 0 !important;
 }
 .label {
   font-weight: bold;

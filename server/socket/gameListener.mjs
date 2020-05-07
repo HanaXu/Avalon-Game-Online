@@ -34,7 +34,7 @@ export function gameListener(io, socket, roomCode) {
   socket.on('addPlayerToQuest', function (name) {
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
-    GameList[roomCode].addPlayerToQuest(currentQuest.questNum, name);
+    if (!GameList[roomCode].addPlayerToQuest(currentQuest.questNum, name)) return;
     updatePlayerCards(io, GameList[roomCode].players);
 
     if (currentQuest.playersNeededLeft > 0) {
@@ -52,7 +52,7 @@ export function gameListener(io, socket, roomCode) {
   socket.on('removePlayerFromQuest', function (name) {
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
-    GameList[roomCode].removePlayerFromQuest(currentQuest.questNum, name);
+    if (!GameList[roomCode].removePlayerFromQuest(currentQuest.questNum, name)) return;
     updatePlayerCards(io, GameList[roomCode].players);
     updateQuestMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more players
                     to go on quest ${currentQuest.questNum}`);

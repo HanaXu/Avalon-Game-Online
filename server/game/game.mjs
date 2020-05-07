@@ -108,9 +108,10 @@ export default class Game {
       if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0 && !this.players[i].onQuest) {
         this.players[i].onQuest = true;
         this.quests[questNum].addPlayer(name);
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   /**
@@ -122,9 +123,10 @@ export default class Game {
       if (this.players[i].name === name) {
         this.players[i].onQuest = false;
         this.quests[questNum].removePlayer(name);
-        break;
+        return true;
       }
     }
+    return false;
   }
 
   getPlayerBy(property, value) {
