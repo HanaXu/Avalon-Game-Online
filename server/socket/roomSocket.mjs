@@ -1,4 +1,4 @@
-import { GameList } from '../index.mjs';
+import { GameList } from './appSocket.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';

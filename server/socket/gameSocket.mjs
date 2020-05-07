@@ -1,14 +1,14 @@
 import {
   GameList,
   updatePlayerCards
-} from '../index.mjs';
+} from './appSocket.mjs';
 
 /**
  * @param {Object} io
  * @param {Object} socket
  * @param {Number} roomCode
  */
-export function gameListener(io, socket, roomCode) {
+export function gameSocket(io, socket, roomCode) {
   socket.on('updateChat', (msg) => {
     GameList[roomCode].chat.push(msg);
     io.in(roomCode).emit('updateChat', msg);

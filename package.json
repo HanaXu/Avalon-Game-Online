@@ -5,8 +5,8 @@
   "scripts": {
     "vue": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "node": "node --experimental-modules server/index.mjs",
-    "start": "concurrently \"vue-cli-service serve\" \"node --experimental-modules server/index.mjs\""
+    "node": "node --experimental-modules server/app.mjs",
+    "start": "concurrently \"vue-cli-service serve\" \"node --experimental-modules server/app.mjs\""
   },
   "dependencies": {
     "bootstrap": "^4.3.1",

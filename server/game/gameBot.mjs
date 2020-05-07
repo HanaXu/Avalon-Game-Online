@@ -1,5 +1,5 @@
 import socketIO from 'socket.io-client';
-import { GameList } from '../index.mjs';
+import { GameList } from '../socket/appSocket.mjs';
 
 const nameList = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 let nameIndex = Math.floor(Math.random() * nameList.length);
