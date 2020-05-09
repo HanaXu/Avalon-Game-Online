@@ -3,7 +3,7 @@ import { createRoom, joinRoom } from './roomSocket.mjs';
 import { gameSocket, reconnectPlayerToStartedGame } from './gameSocket.mjs';
 
 export let GameList = {}; //keeps record of all game objects
-const requireAuth = false;
+// const requireAuth = false;
 
 /**
  * @param {Object} io 
@@ -11,9 +11,9 @@ const requireAuth = false;
  * @param {Number} port 
  */
 export function appSocket(io, socket, port) {
-  socket.on('checkForAuth', () => {
-    socket.emit('setAuth', requireAuth);
-  });
+  // socket.on('checkForAuth', () => {
+  //   socket.emit('setAuth', requireAuth);
+  // });
 
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
     .then(({ name, roomCode, reconnect }) => {

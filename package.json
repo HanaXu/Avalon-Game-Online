@@ -13,8 +13,6 @@
     "bootstrap-vue": "^2.13.0",
     "core-js": "^2.6.5",
     "express": "^4.16.4",
-    "firebase": "^7.14.2",
-    "firebaseui": "^3.6.0",
     "jquery": "^3.4.0",
     "register-service-worker": "^1.6.2",
     "socket.io": "^2.2.0",
@@ -30,7 +28,7 @@
     "@vue/cli-plugin-pwa": "^3.5.1",
     "@vue/cli-service": "^4.1.1",
     "concurrently": "^5.2.0",
-    "node-sass": "^4.14.0",
+    "node-sass": "^4.14.1",
     "pm2": "^4.4.0",
     "sass-loader": "^7.1.0",
     "vue-template-compiler": "^2.5.21"

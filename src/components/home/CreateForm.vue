@@ -16,18 +16,18 @@
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <Auth v-if="createRoomClicked && authRequired"></Auth>
+    <!-- <Auth v-if="createRoomClicked && authRequired"></Auth> -->
   </div>
 </template>
 
 <script>
-import Auth from "@/components/home/Auth.vue";
+// import Auth from "@/components/home/Auth.vue";
 
 export default {
   name: "CreateForm",
-  components: {
-    Auth
-  },
+  // components: {
+  //   Auth
+  // },
   data() {
     return {
       name: null,
@@ -35,20 +35,20 @@ export default {
       error: false,
       errorMsg: null,
       createRoomClicked: false,
-      authRequired: null
+      // authRequired: null
     };
   },
-  beforeMount: function() {
-    this.$socket.emit("checkForAuth");
-  },
+  // beforeMount: function() {
+  //   this.$socket.emit("checkForAuth");
+  // },
   methods: {
     createRoom() {
       this.error = false;
       this.createRoomClicked = true;
-      if (!this.authRequired) {
-        this.loading = true;
-        this.$socket.emit("createRoom", this.name);
-      }
+      // if (!this.authRequired) {
+      // }
+      this.loading = true;
+      this.$socket.emit("createRoom", this.name);
     }
   },
   sockets: {
@@ -57,9 +57,9 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    setAuth(requireAuth) {
-      this.authRequired = requireAuth;
-    },
+    // setAuth(requireAuth) {
+    //   this.authRequired = requireAuth;
+    // },
     passedValidation({ name, roomCode }) {
       this.loading = false;
       this.$router.push({
