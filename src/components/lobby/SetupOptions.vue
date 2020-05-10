@@ -5,17 +5,17 @@
     </b-row>
     <b-row>
       <b-col sm="5">
-        <label class="label" for="characters">Special Characters:</label>
+        <label class="label" for="roles">Special Roles:</label>
       </b-col>
       <b-col>
         <b-form-group>
           <b-form-checkbox
             v-for="option in options"
-            v-model="selectedCharacters"
+            v-model="selectedRoles"
             :key="option.value"
             :value="option.value"
-            :disabled="option.value === 'Morgana' && !selectedCharacters.includes('Percival')"
-            @input="validateselectedCharacters()"
+            :disabled="option.value === 'Morgana' && !selectedRoles.includes('Percival')"
+            @input="validateSelectedRoles()"
           >{{ option.text }}</b-form-checkbox>
         </b-form-group>
       </b-col>
@@ -24,8 +24,8 @@
       <em>
         <strong>Notes:</strong>
         <br />You cannot include Morgana unless Percival is also in the game.
-        <br />5 and 6-player games cannot include more than one optional evil character.
-        <br />7, 8, and 9-player games cannot include more than two optional evil characters.
+        <br />5 and 6-player games cannot include more than one optional evil role.
+        <br />7, 8, and 9-player games cannot include more than two optional evil roles.
       </em>
     </p>
     <!--include footer so OK and Cancel buttons dont show up-->
@@ -42,7 +42,7 @@ export default {
     return {
       error: false,
       errorMsg: "",
-      selectedCharacters: [], // Must be an array reference!
+      selectedRoles: [], // Must be an array reference!
       options: [
         {
           text: "Percival (Good, knows Merlin)",
@@ -65,14 +65,14 @@ export default {
   },
   computed: mapState(["roomCode", "players"]),
   methods: {
-    validateselectedCharacters() {
+    validateSelectedRoles() {
       if (
-        this.selectedCharacters.includes("Morgana") &&
-        !this.selectedCharacters.includes("Percival")
+        this.selectedRoles.includes("Morgana") &&
+        !this.selectedRoles.includes("Percival")
       ) {
-        for (let i = 0; i < this.selectedCharacters.length; i++) {
-          if (this.selectedCharacters[i] === "Morgana") {
-            this.selectedCharacters.splice(i, 1);
+        for (let i = 0; i < this.selectedRoles.length; i++) {
+          if (this.selectedRoles[i] === "Morgana") {
+            this.selectedRoles.splice(i, 1);
           }
         }
       }
@@ -81,8 +81,8 @@ export default {
       this.$socket.emit("createBot");
     },
     handleOk() {
-      //send selected characters to parent (Lobby.vue)
-      this.$emit("clicked", this.selectedCharacters);
+      //send selected roles to parent (Lobby.vue)
+      this.$emit("clicked", this.selectedRoles);
     }
   }
 };

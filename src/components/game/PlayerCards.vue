@@ -20,8 +20,8 @@
         <strong>Team:</strong>
         {{ player.team }}
         <br />
-        <strong>Character:</strong>
-        {{ player.character }}
+        <strong>Role:</strong>
+        {{ player.role }}
         <br />
         <b-badge v-if="player.onQuest" class="questBadge">On Quest</b-badge>
         <span v-if="player.disconnected === true" class="font-italic">Disconnected</span>

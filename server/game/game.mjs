@@ -3,10 +3,10 @@ import Quest from './quest.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
 
-// defines what type of characters for size of game
+// defines what type of character roles for size of game
 // key: number of players
-// value: object of characters and how many
-const BaseCharacters = {
+// value: object of game roles and how many
+const BaseRoles = {
   5: {
     'Merlin': 1,
     'Assassin': 1,
@@ -63,20 +63,20 @@ export default class Game {
     this.leaderIndex = 0;
   }
 
-  static get BaseCharacters() {
-    return BaseCharacters;
+  static get BaseRoles() {
+    return BaseRoles;
   }
   static get GoodTeam() {
     return GoodTeam;
   }
 
   /**
-   * @param {Object} optionalCharacters 
+   * @param {Object} optionalRoles 
    */
-  startGame(optionalCharacters) {
+  startGame(optionalRoles) {
     this.gameIsStarted = true;
     this.initializeQuests();
-    this.assignIdentities(optionalCharacters);
+    this.assignRoles(optionalRoles);
     this.assignFirstLeader();
   }
 
@@ -182,15 +182,15 @@ export default class Game {
   }
 
   /**
-   * @param {Object} optionalCharacters 
+   * @param {Object} optionalRoles 
    */
-  assignIdentities(optionalCharacters) {
+  assignRoles(optionalRoles) {
     let shuffledIdentities;
-    let teamObj = Game.BaseCharacters[this.players.length];
-    if (optionalCharacters.length > 0) {
-      teamObj = JSON.parse(JSON.stringify(Game.BaseCharacters[this.players.length]));
-      optionalCharacters.forEach(optionalCharacter => {
-        switch (optionalCharacter) {
+    let teamObj = Game.BaseRoles[this.players.length];
+    if (optionalRoles.length > 0) {
+      teamObj = JSON.parse(JSON.stringify(Game.BaseRoles[this.players.length]));
+      optionalRoles.forEach(optionalRole => {
+        switch (optionalRole) {
           case 'Percival':
             teamObj['Loyal Servant of Arthur']--;
             teamObj['Percival'] = 1;
@@ -213,7 +213,7 @@ export default class Game {
     this.roleList = populateRoleList(teamObj);
     shuffledIdentities = shuffle(objectToArray(teamObj));
     for (let i in this.players) {
-      this.players[i].character = shuffledIdentities[i];
+      this.players[i].role = shuffledIdentities[i];
       this.players[i].team = Game.GoodTeam.has(shuffledIdentities[i]) ? 'Good' : 'Evil';
     }
   }

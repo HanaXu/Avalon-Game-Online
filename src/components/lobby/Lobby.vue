@@ -20,8 +20,8 @@
         <b-button class="setupButton" v-if="showSetupOptionsBtn" v-b-modal.setupModal>Setup Options</b-button>
         <ul class="lobbyList">
           <li v-for="(player, index) in players" :key="index" class="offset-1">
-            <span v-if="player.name === name" class="self p-1">{{ player.role }}: {{ player.name }}</span>
-            <span v-else>{{ player.role }}: {{ player.name }}</span>
+            <span v-if="player.name === name" class="self p-1">{{ player.type }}: {{ player.name }}</span>
+            <span v-else>{{ player.type }}: {{ player.name }}</span>
           </li>
         </ul>
       </div>
@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      optionalCharacters: [],
+      optionalRoles: [],
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
@@ -58,10 +58,10 @@ export default {
   methods: {
     updateSetupOptions(data) {
       //this is called after Okay is clicked from Setup Options window
-      this.optionalCharacters = data;
+      this.optionalRoles = data;
     },
     startGame() {
-      this.$socket.emit("startGame", this.optionalCharacters);
+      this.$socket.emit("startGame", this.optionalRoles);
       this.showStartGameBtn = false;
     }
   },

@@ -1,17 +1,17 @@
 <template>
   <div>
     <div
-      v-for="(characters, team) in roleList"
+      v-for="(roles, team) in roleList"
       :key="team"
       class="game-section mb-2 p-0"
       :class="{good: team === 'good', evil: team === 'evil'}"
     >
       <div class="row p-1 m-0">
         <span
-          v-for="(numCharacters, character) in characters"
-          :key="character"
+          v-for="(numRoles, role) in roles"
+          :key="role"
           class="mr-4"
-        >{{ character }}: {{numCharacters}}</span>
+        >{{ role }}: {{numRoles}}</span>
       </div>
     </div>
   </div>

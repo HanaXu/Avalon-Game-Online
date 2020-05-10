@@ -30,6 +30,6 @@ export function appSocket(io, socket, port) {
  */
 export function updatePlayerCards(io, players) {
   players.forEach(player => {
-    io.to(player.socketID).emit('updatePlayerCards', sanitizeTeamView(player.socketID, player.character, players));
+    io.to(player.socketID).emit('updatePlayerCards', sanitizeTeamView(player.socketID, player.role, players));
   });
 }

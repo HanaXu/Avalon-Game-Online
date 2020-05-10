@@ -65,7 +65,7 @@ export function joinRoom(io, socket) {
       io.in(roomCode).emit('updateChat', msg);
 
       if (GameList[roomCode].players.length >= 5) {
-        const hostSocketID = GameList[roomCode].getPlayerBy('role', 'Host').socketID;
+        const hostSocketID = GameList[roomCode].getPlayerBy('type', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
       }
       resolve(data);
