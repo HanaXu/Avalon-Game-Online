@@ -26,8 +26,8 @@
         </ul>
       </div>
     </b-row>
-    <SetupOptions @clicked="updateSetupOptions"></SetupOptions>
-    <b-alert v-if="error" variant="danger" show>{{ errorMsg }}</b-alert>
+    <SetupOptions @selectedRoles="updateSetupOptions"></SetupOptions>
+    <b-alert v-if="error" variant="danger" show v-html="errorMsg"></b-alert>
     <div v-if="showStartGameBtn">
       <b-button class="avalon-btn-primary big" id="start-game-btn" @click="startGame">Start Game</b-button>
     </div>
@@ -56,9 +56,8 @@ export default {
   },
   computed: mapState(["roomCode", "name", "players"]),
   methods: {
-    updateSetupOptions(data) {
-      //this is called after Okay is clicked from Setup Options window
-      this.optionalRoles = data;
+    updateSetupOptions(selectedRoles) {
+      this.optionalRoles = selectedRoles;
     },
     startGame() {
       this.$socket.emit("startGame", this.optionalRoles);

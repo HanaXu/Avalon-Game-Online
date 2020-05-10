@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="setupModal" title="Setup Options" @ok="handleOk">
+  <b-modal id="setupModal" title="Setup Options" @hidden="handleClose">
     <b-row>
       <b-button class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
@@ -21,8 +21,8 @@
       </b-col>
     </b-row>
     <p>
+      <strong>Notes:</strong>
       <em>
-        <strong>Notes:</strong>
         <br />You cannot include Morgana unless Percival is also in the game.
         <br />5 and 6-player games cannot include more than one optional evil role.
         <br />7, 8, and 9-player games cannot include more than two optional evil roles.
@@ -80,16 +80,15 @@ export default {
     createBot() {
       this.$socket.emit("createBot");
     },
-    handleOk() {
+    handleClose() {
       //send selected roles to parent (Lobby.vue)
-      this.$emit("clicked", this.selectedRoles);
+      this.$emit("selectedRoles", this.selectedRoles);
     }
   }
 };
 </script>
 
 <style>
-
 #setupModal {
   color: #000;
   text-align: left;
