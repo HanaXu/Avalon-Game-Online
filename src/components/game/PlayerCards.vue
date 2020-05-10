@@ -5,7 +5,7 @@
       :key="index"
       class="card"
       :class="{
-          self: player.name === name,
+          self: player.name === playerName,
           evil: player.team === 'Evil',
           good: player.team === 'Good',
           disconnected: player.disconnected === true}"
@@ -57,7 +57,6 @@ import NotesModal from "@/components/game/NotesModal.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "PlayerCards",
   components: {
     NotesModal
   },
@@ -68,7 +67,7 @@ export default {
       showAssassinateBtn: false
     };
   },
-  computed: mapState(["name", "players"]),
+  computed: mapState(["playerName", "players"]),
   methods: {
     addPlayerToQuest(event, playerName) {
       event.target.blur();

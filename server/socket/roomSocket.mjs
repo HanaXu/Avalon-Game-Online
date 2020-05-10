@@ -11,24 +11,24 @@ import GameBot from '../game/gameBot.mjs';
 export function createRoom(io, socket, port) {
   return new Promise((resolve) => {
     /**
-     * @param {String} name
+     * @param {String} playerName 
      */
-    socket.on('createRoom', function (name) {
-      if (!validatePlayerCreatesRoom(socket, name)) return;
+    socket.on('createRoom', function (playerName) {
+      if (!validatePlayerCreatesRoom(socket, playerName)) return;
 
       const roomCode = generateRoomCode();
       socket.join(roomCode);
-      socket.emit('passedValidation', { name, roomCode });
+      socket.emit('passedValidation', { playerName, roomCode });
       settingsListener(socket, roomCode, port);
 
       GameList[roomCode] = new Game(roomCode);
-      GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Host'));
-      GameList[roomCode].chat.push({ id: Date.now(), adminMsg: `${name} has joined the game.` });
+      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
+      GameList[roomCode].chat.push({ id: Date.now(), adminMsg: `${playerName} has joined the game.` });
 
       socket.emit('showSetupOptionsBtn', true);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
       io.in(roomCode).emit('initChat', GameList[roomCode].chat);
-      resolve({ name, roomCode });
+      resolve({ playerName, roomCode });
     });
   });
 }
@@ -43,22 +43,22 @@ export function joinRoom(io, socket) {
      * @param {Object} data
      */
     socket.on('joinRoom', function (data) {
-      const { name, roomCode } = data;
+      const { playerName, roomCode } = data;
 
       //reconnect disconnected player after the game has started
-      if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', name) &&
-        GameList[roomCode].getPlayerBy('name', name).disconnected === true) {
-        resolve({name, roomCode, reconnect: true});
+      if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', playerName) &&
+        GameList[roomCode].getPlayerBy('name', playerName).disconnected === true) {
+        resolve({playerName, roomCode, reconnect: true});
       }
       //validate user input
-      if (!validatePlayerJoinsRoom(socket, name, roomCode)) return;
+      if (!validatePlayerJoinsRoom(socket, playerName, roomCode)) return;
 
       socket.join(roomCode);
-      socket.emit('passedValidation', { name, roomCode });
+      socket.emit('passedValidation', { playerName, roomCode });
       socket.emit('initChat', GameList[roomCode].chat);
 
-      GameList[roomCode].players.push(new Player(socket.id, name, roomCode, 'Guest'));
-      const msg = { id: Date.now(), adminMsg: `${name} has joined the game.` };
+      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
+      const msg = { id: Date.now(), adminMsg: `${playerName} has joined the game.` };
       GameList[roomCode].chat.push(msg);
 
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
@@ -98,10 +98,10 @@ function settingsListener(socket, roomCode, port) {
  * @param {Object} socket 
  * @param {String} name 
  */
-function validatePlayerCreatesRoom(socket, name) {
-  if (name === null || name.length < 1 || name.length > 20) {
-    console.log(`Error: Name must be between 1-20 characters: ${name}`);
-    socket.emit('updateErrorMsg', `Error: Name must be between 1-20 characters: ${name}`);
+function validatePlayerCreatesRoom(socket, playerName) {
+  if (playerName === null || playerName.length < 1 || playerName.length > 20) {
+    console.log(`Error: Player name must be between 1-20 characters: ${playerName}`);
+    socket.emit('updateErrorMsg', `Error: Player name must be between 1-20 characters: ${playerName}`);
     return false;
   }
   return true;
@@ -112,7 +112,7 @@ function validatePlayerCreatesRoom(socket, name) {
  * @param {String} name 
  * @param {Number} roomCode 
  */
-function validatePlayerJoinsRoom(socket, name, roomCode) {
+function validatePlayerJoinsRoom(socket, playerName, roomCode) {
   let errorMsg = "";
 
   if (typeof GameList[roomCode] === 'undefined') {
@@ -120,10 +120,10 @@ function validatePlayerJoinsRoom(socket, name, roomCode) {
   }
   else if (GameList[roomCode].gameIsStarted) {
     errorMsg = 'Error: Cannot join a game that has already started';
-  } else if (name === null || name.length < 1 || name.length > 20) {
-    errorMsg = `Error: Name must be between 1-20 characters: ${name}`;
-  } else if (GameList[roomCode].getPlayerBy('name', name)) {
-    errorMsg = `Error: Name '${name}' is already taken.`;
+  } else if (playerName === null || playerName.length < 1 || playerName.length > 20) {
+    errorMsg = `Error: Player name must be between 1-20 characters: ${playerName}`;
+  } else if (GameList[roomCode].getPlayerBy('name', playerName)) {
+    errorMsg = `Error: Player name '${playerName}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
   }

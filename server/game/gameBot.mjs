@@ -11,7 +11,7 @@ const RISK_THRESHOLD = 10;
 export default class GameBot {
     constructor(roomCode, port) {
         this.socket = socketIO.connect(`http://localhost:${port}`);
-        this.name = `${nameList[(nameIndex++) % (nameList.length)]} The Bot`;
+        this.playerName = `${nameList[(nameIndex++) % (nameList.length)]} The Bot`;
         this.roomCode = roomCode;
         this.team = 'undecided';
         this.sanitizedPlayers = [];
@@ -22,11 +22,11 @@ export default class GameBot {
     startListening() {
         this.socket.emit("joinRoom", {
             roomCode: this.roomCode,
-            name: this.name
+            playerName: this.playerName
         });
 
         this.socket.on('startGame', () => {
-            let self = GameList[this.roomCode].getPlayerBy('name', this.name);
+            let self = GameList[this.roomCode].getPlayerBy('name', this.playerName);
             this.team = self.team;
             this.initializePlayerRiskScores();
         });
@@ -45,7 +45,7 @@ export default class GameBot {
         this.socket.on("showAcceptOrRejectTeamBtns", (showAcceptOrRejectTeamBtns) => {
             if (showAcceptOrRejectTeamBtns) {
                 this.socket.emit("playerAcceptsOrRejectsTeam", {
-                    name: this.name,
+                    playerName: this.playerName,
                     decision: this.botAcceptOrRejectTeam()
                 });
             }
@@ -74,7 +74,7 @@ export default class GameBot {
             if (currentQuest.questNum === 1) decision = 'succeed';
             else decision = this.team === 'Evil' ? 'fail' : 'succeed';
             this.socket.emit('questVote', {
-                name: this.name,
+                playerName: this.playerName,
                 decision: decision
             });
         });
@@ -159,7 +159,7 @@ export default class GameBot {
     }
 
     makeEvilLeaderPicks() {
-        const { questNum, teamSize } = GameList[this.roomCode].getCurrentQuest();
+        const { teamSize } = GameList[this.roomCode].getCurrentQuest();
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
 
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
@@ -174,7 +174,7 @@ export default class GameBot {
     }
 
     makeGoodLeaderPicks() {
-        const { questNum, teamSize } = GameList[this.roomCode].getCurrentQuest();
+        const { teamSize } = GameList[this.roomCode].getCurrentQuest();
 
         //add players with the lowest risk score
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));

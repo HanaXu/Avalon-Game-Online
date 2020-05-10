@@ -16,7 +16,6 @@
 
 <script>
 export default {
-  name: "VoteTrack",
   data() {
     return {
       currentVoteTrack: null

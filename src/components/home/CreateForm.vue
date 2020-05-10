@@ -1,13 +1,13 @@
 <template>
   <div>
     <b-form inline>
-      <label class="sr-only" for="inline-form-input-name">Name</label>
+      <label class="sr-only" for="inline-form-input-player-name">Player name</label>
       <b-input
         autofocus
-        id="inline-form-input-name"
+        id="inline-form-input-player-name"
         class="mb-2 mr-sm-2 mb-sm-0"
-        placeholder="name"
-        v-model="name"
+        placeholder="Player name"
+        v-model="playerName"
         @keydown.enter.native.prevent="createRoom"
       ></b-input>
       <b-button @click="createRoom" id="create-room-btn" class="avalon-btn-primary big">Create Room</b-button>
@@ -24,13 +24,12 @@
 // import Auth from "@/components/home/Auth.vue";
 
 export default {
-  name: "CreateForm",
   // components: {
   //   Auth
   // },
   data() {
     return {
-      name: null,
+      playerName: null,
       loading: false,
       error: false,
       errorMsg: null,
@@ -48,7 +47,7 @@ export default {
       // if (!this.authRequired) {
       // }
       this.loading = true;
-      this.$socket.emit("createRoom", this.name);
+      this.$socket.emit("createRoom", this.playerName);
     }
   },
   sockets: {
@@ -60,11 +59,11 @@ export default {
     // setAuth(requireAuth) {
     //   this.authRequired = requireAuth;
     // },
-    passedValidation({ name, roomCode }) {
+    passedValidation({ playerName, roomCode }) {
       this.loading = false;
       this.$router.push({
         name: "game",
-        params: { name, roomCode }
+        params: { playerName, roomCode }
       });
     }
   }

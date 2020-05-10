@@ -16,9 +16,9 @@ export function appSocket(io, socket, port) {
   // });
 
   Promise.race([createRoom(io, socket, port), joinRoom(io, socket)])
-    .then(({ name, roomCode, reconnect }) => {
+    .then(({ playerName, roomCode, reconnect }) => {
       if (reconnect) {
-        reconnectPlayerToStartedGame(io, socket, name, roomCode);
+        reconnectPlayerToStartedGame(io, socket, playerName, roomCode);
       }
       gameSocket(io, socket, roomCode);
     });

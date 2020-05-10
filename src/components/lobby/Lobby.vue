@@ -20,7 +20,7 @@
         <b-button class="setupButton" v-if="showSetupOptionsBtn" v-b-modal.setupModal>Setup Options</b-button>
         <ul class="lobbyList">
           <li v-for="(player, index) in players" :key="index" class="offset-1">
-            <span v-if="player.name === name" class="self p-1">{{ player.type }}: {{ player.name }}</span>
+            <span v-if="player.name === playerName" class="self p-1">{{ player.type }}: {{ player.name }}</span>
             <span v-else>{{ player.type }}: {{ player.name }}</span>
           </li>
         </ul>
@@ -40,7 +40,6 @@ import ClipboardIcon from "@/components/lobby/ClipboardIcon.vue";
 import { mapState } from "vuex";
 
 export default {
-  name: "Lobby",
   components: {
     SetupOptions,
     ClipboardIcon
@@ -54,7 +53,7 @@ export default {
       showStartGameBtn: false
     };
   },
-  computed: mapState(["roomCode", "name", "players"]),
+  computed: mapState(["roomCode", "playerName", "players"]),
   methods: {
     updateSetupOptions(selectedRoles) {
       this.optionalRoles = selectedRoles;

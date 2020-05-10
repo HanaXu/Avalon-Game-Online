@@ -1,22 +1,22 @@
 <template>
   <div>
     <b-form inline>
-      <label class="sr-only" for="inline-form-input-roomCode">roomCode</label>
+      <label class="sr-only" for="inline-form-input-room-code">Room code</label>
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
         <b-input
           autofocus
-          id="inline-form-input-roomCode"
-          placeholder="room code"
+          id="inline-form-input-room-code"
+          placeholder="Room code"
           v-model="roomCode"
           @keydown.enter.native.prevent="joinRoom"
         ></b-input>
       </b-input-group>
-      <label class="sr-only" for="inline-form-input-name">Name</label>
+      <label class="sr-only" for="inline-form-input-player-name">Player name</label>
       <b-input
-        id="inline-form-input-name"
+        id="inline-form-input-player-name"
         class="mb-2 mr-sm-2 mb-sm-0"
-        placeholder="name"
-        v-model="name"
+        placeholder="Player name"
+        v-model="playerName"
         @keydown.enter.native.prevent="joinRoom"
       ></b-input>
       <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn-primary big">Join Room</b-button>
@@ -30,10 +30,9 @@
 
 <script>
 export default {
-  name: "JoinForm",
   data() {
     return {
-      name: null,
+      playerName: null,
       roomCode: null,
       error: false,
       loading: false,
@@ -46,7 +45,7 @@ export default {
       this.loading = true;
       this.$socket.emit("joinRoom", {
         roomCode: this.roomCode,
-        name: this.name
+        playerName: this.playerName
       });
     }
   },
@@ -56,10 +55,10 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation({ name, roomCode }) {
+    passedValidation({ playerName, roomCode }) {
       this.$router.push({
         name: "game",
-        params: { name, roomCode }
+        params: { playerName, roomCode }
       });
     }
   }

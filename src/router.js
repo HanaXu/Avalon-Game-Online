@@ -19,7 +19,7 @@ export default new Router({
       name: 'game',
       component: Game,
       beforeEnter(to, from, next) {
-        //no roomcode or name
+        //no roomcode or player name
         if (Object.keys(to.params).length === 0) {
           next('/'); //go back to home
         } else {

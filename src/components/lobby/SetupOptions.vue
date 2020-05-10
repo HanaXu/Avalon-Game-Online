@@ -37,7 +37,6 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "SetupOptions",
   data() {
     return {
       error: false,

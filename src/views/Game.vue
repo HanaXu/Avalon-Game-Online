@@ -32,7 +32,6 @@ import VoteStatus from "@/components/game/VoteStatus.vue";
 import RoleList from "@/components/game/RoleList.vue";
 
 export default {
-  name: "Game",
   components: {
     Lobby,
     PlayerCards,

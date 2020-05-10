@@ -20,7 +20,6 @@
 
 <script>
 export default {
-  name: "QuestCards",
   data() {
     return {
       quests: [],

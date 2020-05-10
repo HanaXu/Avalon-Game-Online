@@ -19,7 +19,6 @@
 
 <script>
 export default {
-  name: "RoleList",
   data() {
     return {
       roleList: {}

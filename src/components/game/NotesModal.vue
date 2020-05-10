@@ -23,7 +23,6 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "NotesModal",
   props: ["playerName"],
   computed: mapState(["roomCode"]),
   data() {

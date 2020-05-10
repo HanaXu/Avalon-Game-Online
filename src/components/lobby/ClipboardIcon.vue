@@ -24,7 +24,6 @@
 
 <script>
 export default {
-  name: "ClipboardIcon",
   data() {
     return {
       clipBoardToolTip: "Copy To Clipboard"

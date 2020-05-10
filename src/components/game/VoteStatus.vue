@@ -41,7 +41,6 @@
 
 <script>
 export default {
-  name: "VoteStatus",
   data() {
     return {
       //deciding team
@@ -60,7 +59,6 @@ export default {
       failCount: null
     };
   },
-  props: [],
   sockets: {
     updateConcealedTeamVotes(currentVotes) {
       this.teamVotes = currentVotes.join(", ");

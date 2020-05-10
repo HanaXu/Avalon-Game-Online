@@ -42,7 +42,6 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "Actions",
   data() {
     return {
       showConfirmTeamBtnToLeader: false,
@@ -53,21 +52,21 @@ export default {
       disableFailBtn: false
     };
   },
-  computed: mapState(["name"]),
+  computed: mapState(["playerName"]),
   methods: {
     leaderHasConfirmedTeam() {
       this.$socket.emit("leaderHasConfirmedTeam");
     },
     playerAcceptsOrRejectsTeam(decision) {
       this.$socket.emit("playerAcceptsOrRejectsTeam", {
-        name: this.name,
+        playerName: this.playerName,
         decision: decision
       });
     },
     questVote(decision) {
       this.canVoteOnQuest = false;
       this.$socket.emit("questVote", {
-        name: this.name,
+        playerName: this.playerName,
         decision: decision
       });
     }

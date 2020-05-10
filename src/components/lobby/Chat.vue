@@ -4,7 +4,7 @@
       <div v-for="message in messages" :key="message.id" class="message">
         <em v-if="message.adminMsg" style="color: grey">{{message.adminMsg}}</em>
         <div v-else>
-          <strong>{{`${message.username} `}}</strong>
+          <strong>{{`${message.playerName} `}}</strong>
           <span class="timestamp">({{message.time}})</span>
           <br />
           {{message.msg}}
@@ -25,19 +25,18 @@
 import { mapState } from "vuex";
 
 export default {
-  name: "Chat",
   data() {
     return {
       messages: []
     };
   },
-  computed: mapState(["roomCode", "name"]),
+  computed: mapState(["roomCode", "playerName"]),
   methods: {
     sendMessage(e) {
       e.preventDefault();
       this.$socket.emit("updateChat", {
         id: Date.now(),
-        username: this.name,
+        playerName: this.playerName,
         msg: e.target.value,
         time: this.timeStamp()
       });

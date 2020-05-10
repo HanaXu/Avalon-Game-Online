@@ -7,7 +7,6 @@
 
 <script>
 export default {
-  name: "GameStatus",
   data() {
     return {
       questMsg: null,

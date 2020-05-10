@@ -1,7 +1,7 @@
 <template>
   <div class="container" style="margin-top: 10%">
     <h1 class="title">Avalonline</h1>
-    <h2 class="subtitle">A Game of Dedication and Bluffing</h2>
+    <h2 class="subtitle">A Game of dedication and bluffing</h2>
     <div v-if="!(createToggled || joinToggled)">
       <b-button :pressed.sync="createToggled" id="create-room-btn" class="avalon-btn-primary big">Create Room</b-button>
       <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-primary big">Join Room</b-button>
@@ -26,7 +26,6 @@ import JoinForm from "@/components/home/JoinForm.vue";
 import CreateForm from "@/components/home/CreateForm.vue";
 
 export default {
-  name: "home",
   components: {
     JoinForm,
     CreateForm
