@@ -71,7 +71,7 @@ export default {
 
 <style scoped>
 .card {
-  background: #eae7e3;
+  background: rgba(234, 231, 227, 0.5);
 }
 .card-body {
   padding: 5px;

@@ -58,7 +58,7 @@ export default {
 
 <style>
 .main-board {
-  background: #eae7e3;
+  background: rgba(234, 231, 227, 0.5);
   border-radius: 5px;
   min-height: 40vh;
   margin-bottom: .5rem;
@@ -66,7 +66,7 @@ export default {
   box-shadow: 0 2px 5px #c2ab8e;
 }
 .game-section {
-  background: #eae7e3;
+  background: rgba(234, 231, 227, 0.5);
   border-radius: 5px;
   padding: 5px;
   box-shadow: 0 2px 5px #c2ab8e;
