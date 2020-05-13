@@ -3,7 +3,7 @@
     <b-row class="justify-content-center">
       <span class="col-md-3 col-sm-6">
         Room code: {{ roomCode }}
-        <ClipboardIcon copyElementId="roomCode"/>
+        <ClipboardIcon copyElementId="roomCode" />
       </span>
       <input type="hidden" :value="roomCode" id="roomCode" />
       <div v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
@@ -17,10 +17,17 @@
     </b-row>
     <b-row>
       <div class="container">
-        <b-button class="setupButton" v-if="showSetupOptionsBtn" v-b-modal.setupModal>Setup Options</b-button>
+        <b-button
+          class="setupButton avalon-btn-primary"
+          v-if="showSetupOptionsBtn"
+          v-b-modal.setupModal
+        >Setup Options</b-button>
         <ul class="lobbyList">
           <li v-for="(player, index) in players" :key="index" class="offset-1">
-            <span v-if="player.name === playerName" class="self p-1">{{ player.type }}: {{ player.name }}</span>
+            <span
+              v-if="player.name === playerName"
+              class="self p-1"
+            >{{ player.type }}: {{ player.name }}</span>
             <span v-else>{{ player.type }}: {{ player.name }}</span>
           </li>
         </ul>

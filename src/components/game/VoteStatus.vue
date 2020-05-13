@@ -1,8 +1,8 @@
 <template>
-  <b-row v-if="showVoteStatus" class="status-section">
+  <b-row v-if="showHasVotedOnTeam || showHasVotedOnQuest" class="status-section">
     <b-col class="section-title" md="2">Vote Status</b-col>
     <b-col>
-      <div v-if="showHasVoted && !showTeamVoteResults">
+      <div v-if="showHasVotedOnTeam && !showTeamVoteResults">
         <strong>Voted:</strong>
         {{ teamVotes }}
       </div>
@@ -30,9 +30,9 @@
         </div>
         <div class="col-md-3">
           <strong>Succeed:</strong>
-          {{ successCount }}
+          {{ questVotes.succeed }}
           <strong>Fail:</strong>
-          {{ failCount }}
+          {{ questVotes.fail }}
         </div>
       </div>
     </b-col>
@@ -45,26 +45,21 @@ export default {
     return {
       //deciding team
       teamVotes: null,
-      showHasVoted: false,
-      showVoteStatus: false,
+      showHasVotedOnTeam: false,
       showTeamVoteResults: false,
 
-      questVotes: null,
-
       //deciding outcome of quest
+      questVotes: null,
       showHasVotedOnQuest: false,
-      showQuestVoteResults: false,
-      voted: null,
-      successCount: null,
-      failCount: null
+      showQuestVoteResults: false
     };
   },
   sockets: {
     updateConcealedTeamVotes(currentVotes) {
       this.teamVotes = currentVotes.join(", ");
-      this.showHasVoted = true;
+      this.showHasVotedOnTeam = true;
       this.showTeamVoteResults = false;
-      this.showVoteStatus = true;
+      this.showQuestVoteResults = false;
     },
     updateConcealedQuestVotes(votes) {
       this.showHasVotedOnQuest = true;
@@ -74,23 +69,14 @@ export default {
       this.teamVotes = votes;
       this.teamVotes.accept = votes.accept.join(", ");
       this.teamVotes.reject = votes.reject.join(", ");
-      this.showHasVoted = false;
+      this.showHasVotedOnTeam = false;
       this.showTeamVoteResults = true;
     },
-    hidePreviousTeamVotes() {
-      this.showHasVoted = false;
-      this.showTeamVoteResults = false;
-    },
-    revealQuestResults(votes) {
-      this.canVoteOnQuest = false;
+    revealQuestVotes(votes) {
+      this.questVotes = votes;
       this.showHasVotedOnQuest = false;
-      this.successCount = votes.succeed;
-      this.failCount = votes.fail;
+      this.showHasVotedOnTeam = false;
       this.showQuestVoteResults = true;
-    },
-    hidePreviousQuestVotes() {
-      this.showQuestVoteResults = false;
-      this.canVoteOnQuest = false;
     }
   }
 };

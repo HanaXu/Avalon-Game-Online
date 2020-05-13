@@ -1,7 +1,7 @@
 <template>
   <b-modal id="setupModal" title="Setup Options" @hidden="handleClose">
     <b-row>
-      <b-button class="setupButton" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
+      <b-button class="setupButton avalon-btn-primary" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
     <b-row>
       <b-col sm="5">

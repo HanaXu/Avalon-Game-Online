@@ -62,7 +62,6 @@ export function gameSocket(io, socket, roomCode) {
   socket.on('leaderHasConfirmedTeam', function () {
     let currentQuest = GameList[roomCode].getCurrentQuest();
 
-    io.in(roomCode).emit('hidePreviousQuestVotes');
     socket.emit('showConfirmTeamBtnToLeader', false);
     socket.emit('showAddRemovePlayerBtns', false);
     currentQuest.leaderHasConfirmedTeam = true;
@@ -120,8 +119,7 @@ export function gameSocket(io, socket, roomCode) {
       currentQuest.success ? GameList[roomCode].questSuccesses++ : GameList[roomCode].questFails++;
       GameList[roomCode].resetPlayersProperty('votedOnQuest');
 
-      io.in(roomCode).emit('hidePreviousTeamVotes');
-      io.in(roomCode).emit('revealQuestResults', currentQuest.votes);
+      io.in(roomCode).emit('revealQuestVotes', currentQuest.votes);
       io.in(roomCode).emit('updateBotRiskScores', currentQuest);
       io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
       checkForGameOver();
@@ -323,7 +321,7 @@ export function reconnectPlayerToStartedGame(io, socket, playerName, roomCode) {
   }
   //reveal votes
   else if (currentQuest.acceptOrRejectTeam.voted.length === GameList[roomCode].players.length) {
-    io.in(roomCode).emit('revealAcceptOrRejectTeam', currentQuest.acceptOrRejectTeam);
+    io.in(roomCode).emit('revealTeamVotes', currentQuest.acceptOrRejectTeam);
   }
 
   if (GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] === true) {
