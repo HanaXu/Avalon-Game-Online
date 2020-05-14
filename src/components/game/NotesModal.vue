@@ -41,7 +41,7 @@ export default {
     },
     saveNotes() {
       if (this.notes !== sessionStorage.getItem(this.key)) {
-        sessionStorage.setItem(this.key, this.notes);
+        sessionStorage.setItem(this.key, this.notes.replace(/\r\n|\r|\n/g,"<br />"));
       }
     }
   }

@@ -13,7 +13,13 @@
       <h5 class="card-title">
         {{ player.name }}
         <span v-if="player.leader">👑</span>
-        <span v-b-modal="'notes-modal-' + player.name" style="cursor: pointer">📝</span>
+        <span
+          v-b-modal="'notes-modal-' + player.name"
+          style="cursor: pointer"
+          @mouseover="getPlayerNotes(`${roomCode}-${player.name}`)"
+          @mouseleave="clearPlayerNotes"
+          v-b-tooltip.hover.topright.html="playerNotes"
+        >📝</span>
       </h5>
       <NotesModal :playerName="player.name" />
       <h6 class="card-subtitle text-muted">
@@ -64,10 +70,11 @@ export default {
     return {
       showAddRemovePlayerBtns: false,
       disableAddPlayerBtn: false,
-      showAssassinateBtn: false
+      showAssassinateBtn: false,
+      playerNotes: "Notes..."
     };
   },
-  computed: mapState(["playerName", "players"]),
+  computed: mapState(["roomCode", "playerName", "players"]),
   methods: {
     addPlayerToQuest(event, playerName) {
       event.target.blur();
@@ -79,6 +86,13 @@ export default {
     },
     assassinatePlayer(playerName) {
       this.$socket.emit("assassinatePlayer", playerName);
+    },
+    getPlayerNotes(key) {
+      const savedNotes = sessionStorage.getItem(key);
+      this.playerNotes = savedNotes && savedNotes.length > 0 ? savedNotes : null;
+    },
+    clearPlayerNotes() {
+      setTimeout(() => (this.playerNotes = "Notes..."), 300);
     }
   },
   sockets: {
