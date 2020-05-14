@@ -19,7 +19,7 @@ export function populateRoleList(teamObj) {
     for (let role in teamObj) {
         if (teamObj[role] <= 0) continue;
         GoodTeam.has(role) ? roleList['good'][role] = teamObj[role]
-                            : roleList['evil'][role] = teamObj[role];
+            : roleList['evil'][role] = teamObj[role];
     }
     return roleList;
 }
@@ -33,7 +33,10 @@ export function populateRoleList(teamObj) {
 export function sanitizeTeamView(yourSocketID, yourRole, players) {
     const clonedPlayers = JSON.parse(JSON.stringify(players));
 
-    if (yourRole === 'Percival') {
+    if (yourRole === 'Spectator') {
+        return sanitizeForSpectators(clonedPlayers);
+    }
+    else if (yourRole === 'Percival') {
         return sanitizeForPercival(yourSocketID, clonedPlayers);
     }
     else if (yourRole === 'Merlin') {
@@ -47,6 +50,19 @@ export function sanitizeTeamView(yourSocketID, yourRole, players) {
     else if (!GoodTeam.has(yourRole)) {
         return sanitizeForEvilTeam(yourSocketID, clonedPlayers);
     }
+}
+
+/**
+ * Hide everyone's info
+ * @param {Array} players 
+ * @returns {Array}
+ */
+function sanitizeForSpectators(players) {
+    for (const i in players) {
+        players[i].role = 'hidden';
+        players[i].team = 'hidden';
+    }
+    return players;
 }
 
 /**

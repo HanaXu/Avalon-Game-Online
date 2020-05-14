@@ -1,5 +1,13 @@
 <template>
-  <div class="row justify-content-md-center py-3">
+  <div class="row justify-content-md-center py-2">
+    <div class="col-md-11">
+      <b-alert :show="spectators.length > 0" variant="dark" class="spectators">
+        Spectators: 
+        <span v-for="(spectator, index) in spectators" :key="index">
+          <span :class="{self: spectator.name === playerName}">{{spectator.name}}</span>,
+        </span>
+      </b-alert>
+    </div>
     <div class="col-md-8 px-2">
       <Lobby v-if="!gameStarted" />
       <!-- Game -->
@@ -30,6 +38,7 @@ import Actions from "@/components/game/Actions.vue";
 import GameStatus from "@/components/game/GameStatus.vue";
 import VoteStatus from "@/components/game/VoteStatus.vue";
 import RoleList from "@/components/game/RoleList.vue";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -43,14 +52,19 @@ export default {
     VoteStatus,
     RoleList
   },
+  computed: mapState(["playerName"]),
   data() {
     return {
-      gameStarted: false
+      gameStarted: false,
+      spectators: []
     };
   },
   sockets: {
     startGame() {
       this.gameStarted = true;
+    },
+    updateSpectatorsList(spectators) {
+      this.spectators = spectators;
     }
   }
 };
@@ -61,7 +75,7 @@ export default {
   background: rgba(234, 231, 227, 0.5);
   border-radius: 5px;
   min-height: 40vh;
-  margin-bottom: .5rem;
+  margin-bottom: 0.5rem;
   padding: 1rem;
   box-shadow: 0 2px 5px #c2ab8e;
 }
@@ -70,5 +84,9 @@ export default {
   border-radius: 5px;
   padding: 5px;
   box-shadow: 0 2px 5px #c2ab8e;
+}
+.spectators {
+  margin-top: 0 !important;
+  padding: 0.25rem .75rem !important;
 }
 </style>

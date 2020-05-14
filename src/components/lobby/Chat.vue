@@ -13,6 +13,7 @@
     </div>
     <hr />
     <textarea
+      v-if="showMsgInput"
       class="textarea"
       rows="1"
       placeholder="Press Enter to send..."
@@ -27,7 +28,8 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
-      messages: []
+      messages: [],
+      showMsgInput: null
     };
   },
   computed: mapState(["roomCode", "playerName"]),
@@ -59,8 +61,9 @@ export default {
     }
   },
   sockets: {
-    initChat(msgs) {
+    initChat({msgs, showMsgInput}) {
       this.messages = msgs;
+      this.showMsgInput = showMsgInput;
     },
     updateChat(msg) {
       this.messages.push(msg);

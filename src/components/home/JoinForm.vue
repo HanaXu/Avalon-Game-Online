@@ -8,7 +8,7 @@
           id="inline-form-input-room-code"
           placeholder="Room code"
           v-model="roomCode"
-          @keydown.enter.native.prevent="joinRoom"
+          @keydown.enter.native.prevent="clickHandler(action)"
         ></b-input>
       </b-input-group>
       <label class="sr-only" for="inline-form-input-player-name">Player name</label>
@@ -17,9 +17,9 @@
         class="mb-2 mr-sm-2 mb-sm-0"
         placeholder="Player name"
         v-model="playerName"
-        @keydown.enter.native.prevent="joinRoom"
+        @keydown.enter.native.prevent="clickHandler(action)"
       ></b-input>
-      <b-button @click="joinRoom" id="join-room-btn" class="avalon-btn-primary big">Join Room</b-button>
+      <b-button @click="clickHandler(action)" class="avalon-btn-primary big">{{text}}</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
@@ -39,11 +39,12 @@ export default {
       errorMsg: null
     };
   },
+  props: ["action", "text"],
   methods: {
-    joinRoom() {
+    clickHandler(action) {
       this.error = false;
       this.loading = true;
-      this.$socket.emit("joinRoom", {
+      this.$socket.emit(action, {
         roomCode: this.roomCode,
         playerName: this.playerName
       });

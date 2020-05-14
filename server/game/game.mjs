@@ -57,6 +57,7 @@ export default class Game {
     };
     this.roleList = null;
     this.players = [];
+    this.spectators = [];
     this.quests = null;
     this.questFails = 0;
     this.questSuccesses = 0;
@@ -133,6 +134,10 @@ export default class Game {
     return this.players.find(player => player[property] === value);
   }
 
+  getSpectatorBy(property, value) {
+    return this.spectators.find(spectator => spectator[property] === value);
+  }
+
   /**
    * @param {String} socketID 
    */
@@ -140,6 +145,18 @@ export default class Game {
     for (let i in this.players) {
       if (this.players[i].socketID === socketID) {
         this.players.splice(i, 1); //delete 1 player element at index i
+        break;
+      }
+    }
+  }
+
+  /**
+   * @param {String} socketID 
+   */
+  removeSpectator(socketID) {
+    for (let i in this.spectators) {
+      if (this.spectators[i].socketID === socketID) {
+        this.spectators.splice(i, 1); //delete 1 player element at index i
         break;
       }
     }

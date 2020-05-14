@@ -2,9 +2,10 @@
   <div class="container" style="margin-top: 10%">
     <h1 class="title">Avalonline</h1>
     <h2 class="subtitle">A Game of dedication and bluffing</h2>
-    <div v-if="!(createToggled || joinToggled)">
-      <b-button :pressed.sync="createToggled" id="create-room-btn" class="avalon-btn-primary big">Create Room</b-button>
-      <b-button :pressed.sync="joinToggled" id="join-room-btn" class="avalon-btn-primary big">Join Room</b-button>
+    <div v-if="!(createToggled || joinToggled || spectateToggled)">
+      <b-button :pressed.sync="createToggled" class="avalon-btn-primary big">Create Room</b-button>
+      <b-button :pressed.sync="joinToggled" class="avalon-btn-primary big">Join Room</b-button>
+      <b-button :pressed.sync="spectateToggled" class="avalon-btn-primary big">Spectate Room</b-button>
     </div>
     <div v-if="createToggled">
       <CreateForm />
@@ -15,8 +16,12 @@
       >Back</b-button>
     </div>
     <div v-if="joinToggled">
-      <JoinForm />
+      <JoinForm action="joinRoom" text="Join Room"/>
       <b-button :pressed.sync="joinToggled" @click="$event.target.blur()" class="avalon-btn-primary big">Back</b-button>
+    </div>
+    <div v-if="spectateToggled">
+      <JoinForm action="spectateRoom" text="Spectate Room" />
+      <b-button :pressed.sync="spectateToggled" @click="$event.target.blur()" class="avalon-btn-primary big">Back</b-button>
     </div>
   </div>
 </template>
@@ -33,7 +38,8 @@ export default {
   data() {
     return {
       joinToggled: false,
-      createToggled: false
+      createToggled: false,
+      spectateToggled: false
     };
   }
 };

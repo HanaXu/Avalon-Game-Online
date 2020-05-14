@@ -27,7 +27,7 @@ export function createRoom(io, socket, port) {
 
       socket.emit('showSetupOptionsBtn', true);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-      io.in(roomCode).emit('initChat', GameList[roomCode].chat);
+      io.in(roomCode).emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
       resolve({ playerName, roomCode });
     });
   });
@@ -55,9 +55,9 @@ export function joinRoom(io, socket) {
 
       socket.join(roomCode);
       socket.emit('passedValidation', { playerName, roomCode });
-      socket.emit('initChat', GameList[roomCode].chat);
+      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
 
-      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
+      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Player'));
       const msg = { id: Date.now(), adminMsg: `${playerName} has joined the game.` };
       GameList[roomCode].chat.push(msg);
 
@@ -68,6 +68,38 @@ export function joinRoom(io, socket) {
         const hostSocketID = GameList[roomCode].getPlayerBy('type', 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
       }
+      resolve(data);
+    });
+  })
+}
+
+/**
+ * @param {Object} io 
+ * @param {Object} socket 
+ */
+export function spectateRoom(io, socket) {
+  return new Promise((resolve) => {
+    /**
+     * @param {Object} data
+     */
+    socket.on('spectateRoom', function (data) {
+      const { playerName, roomCode } = data;
+
+      //validate user input
+      if (!validatePlayerSpectatesRoom(socket, playerName, roomCode)) return;
+
+      socket.join(roomCode);
+      socket.emit('passedValidation', { playerName, roomCode });
+      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: false });
+
+      GameList[roomCode].spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
+      const msg = { id: Date.now(), adminMsg: `${playerName} is spectating the game.` };
+      GameList[roomCode].chat.push(msg);
+
+      socket.emit('updatePlayerCards', GameList[roomCode].players);
+      io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
+      io.in(roomCode).emit('updateChat', msg);
+
       resolve(data);
     });
   })
@@ -126,6 +158,31 @@ function validatePlayerJoinsRoom(socket, playerName, roomCode) {
     errorMsg = `Error: Player name '${playerName}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
+  }
+
+  if (errorMsg.length > 0) {
+    console.log(errorMsg);
+    socket.emit('updateErrorMsg', errorMsg);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * @param {Object} socket 
+ * @param {String} name 
+ * @param {Number} roomCode 
+ */
+function validatePlayerSpectatesRoom(socket, playerName, roomCode) {
+  let errorMsg = "";
+
+  if (typeof GameList[roomCode] === 'undefined') {
+    errorMsg = `Error: Room code '${GameList[roomCode]}' does not exist.`;
+  }
+  else if (playerName === null || playerName.length < 1 || playerName.length > 20) {
+    errorMsg = `Error: Name must be between 1-20 characters: ${playerName}`;
+  } else if (GameList[roomCode].getPlayerBy('name', playerName) || GameList[roomCode].getSpectatorBy('name', playerName)) {
+    errorMsg = `Error: Name '${playerName}' is already taken.`;
   }
 
   if (errorMsg.length > 0) {
