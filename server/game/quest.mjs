@@ -25,6 +25,7 @@ export default class Quest {
 
   constructor(questNum, totalNumPlayers, needsTwoFails=false) {
     this.questNum = questNum;
+    this.totalNumPlayers = totalNumPlayers;
     this.teamSize = Quest.PLAYERS_ON_QUEST[questNum - 1][totalNumPlayers - 5];
     this.playersOnQuest = new Set([]);
     this.playersNeededLeft = this.teamSize;
@@ -34,19 +35,20 @@ export default class Quest {
       'socketID': null
     };
     this.acceptOrRejectTeam = {
-      'voted': [],
       'accept': [],
       'reject': []
     };
+    this.teamVotesNeededLeft = totalNumPlayers;
     this.teamAccepted = false;
     this.leaderHasConfirmedTeam = false;
     this.currentQuest = false;
     this.needsTwoFails = needsTwoFails;
     this.votes = {
-      'voted': [],
+      'questNum': this.questNum,
       'succeed': 0,
       'fail': 0
     };
+    this.questVotesNeededLeft = this.teamSize;
     this.success = null;
   }
 
@@ -71,19 +73,18 @@ export default class Quest {
   }
 
   /**
-   * @param {String} name 
+   * @param {String} playerName 
    * @param {String} decision 
    */
-  addTeamVote(name, decision) {
-    this.acceptOrRejectTeam[decision].push(name);
-    this.acceptOrRejectTeam.voted.push(name);
+  addTeamVote({playerName, decision}) {
+    this.acceptOrRejectTeam[decision].push(playerName);
+    this.teamVotesNeededLeft--;
   }
 
-  /**
-   * @param {Number} totalNumPlayers 
-   */
-  assignTeamResult(totalNumPlayers) {
-    this.teamAccepted = this.acceptOrRejectTeam.reject.length >= totalNumPlayers / 2;
+  assignTeamResult() {
+    this.teamAccepted = this.acceptOrRejectTeam.reject.length >= this.totalNumPlayers / 2;
+    this.acceptOrRejectTeam.accept.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+    this.acceptOrRejectTeam.reject.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
   }
 
   /**
@@ -95,12 +96,11 @@ export default class Quest {
   }
 
   /**
-   * @param {String} name 
    * @param {String} decision 
    */
-  addQuestVote(name, decision) {
+  addQuestVote({decision}) {
     this.votes[decision]++;
-    this.votes.voted.push(name);
+    this.questVotesNeededLeft--;
   }
 
   assignQuestResult() {
@@ -110,9 +110,10 @@ export default class Quest {
   //resets all values relating to players on quest & quest votes to original values
   resetQuest() {
     this.playersNeededLeft = this.teamSize;
+    this.questVotesNeededLeft = this.teamSize;
+    this.teamVotesNeededLeft = this.totalNumPlayers;
     this.playersOnQuest.clear();
     this.acceptOrRejectTeam = {
-      'voted': [],
       'accept': [],
       'reject': []
     };

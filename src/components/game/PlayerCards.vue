@@ -23,9 +23,7 @@
         <strong>Role:</strong>
         {{ player.role }}
         <br />
-        <b-badge v-if="player.onQuest && !concealedQuestVotes.includes(player.name)" class="avalon-badge">On Quest</b-badge>
-        <b-badge v-if="player.onQuest && concealedQuestVotes.includes(player.name)" class="avalon-badge-secondary">Went on Quest</b-badge>
-        <b-badge v-if="concealedTeamVotes.includes(player.name)" class="avalon-badge-secondary">Voted on Team</b-badge>
+        <b-badge v-if="player.onQuest" class="avalon-badge">On Quest</b-badge>
         <span v-if="player.disconnected === true" class="font-italic">Disconnected</span>
       </h6>
       <div v-if="showAddRemovePlayerBtns">
@@ -66,9 +64,7 @@ export default {
     return {
       showAddRemovePlayerBtns: false,
       disableAddPlayerBtn: false,
-      showAssassinateBtn: false,
-      concealedTeamVotes: [],
-      concealedQuestVotes: []
+      showAssassinateBtn: false
     };
   },
   computed: mapState(["playerName", "players"]),
@@ -94,18 +90,6 @@ export default {
     },
     showAssassinateBtn(showAssassinateBtn) {
       this.showAssassinateBtn = showAssassinateBtn;
-    },
-    updateConcealedTeamVotes(concealedTeamVotes) {
-      this.concealedTeamVotes = concealedTeamVotes;
-    },
-    updateConcealedQuestVotes(concealedQuestVotes) {
-      this.concealedQuestVotes = concealedQuestVotes;
-    },
-    revealTeamVotes() {
-      this.concealedTeamVotes = [];
-    },
-    revealQuestVotes() {
-      this.concealedQuestVotes = [];
     }
   }
 };
