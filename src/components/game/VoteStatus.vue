@@ -32,23 +32,25 @@
 export default {
   data() {
     return {
-      //deciding team
       teamVotes: null,
       showTeamVoteResults: false,
 
-      //deciding outcome of quest
       questVotes: null,
       showQuestVoteResults: false
     };
   },
   sockets: {
-    revealTeamVotes(votes) {
-      this.teamVotes = votes;
-      this.showTeamVoteResults = true;
-    },
-    revealQuestVotes(votes) {
-      this.questVotes = votes;
-      this.showQuestVoteResults = true;
+    revealVoteStatus({type, votes}) {
+      switch (type) {
+        case 'team':
+          this.teamVotes = votes;
+          this.showTeamVoteResults = true;
+          break;
+        case 'quest':
+          this.questVotes = votes;
+          this.showQuestVoteResults = true;
+          break;
+      }
     },
     hidePreviousVotes() {
       this.showTeamVoteResults = false;

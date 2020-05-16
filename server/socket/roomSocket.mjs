@@ -2,6 +2,7 @@ import { GameList } from './appSocket.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import GameBot from '../game/gameBot.mjs';
+import { sanitizeTeamView } from '../game/utility.mjs';
 
 /**
  * @param {Object} io
@@ -44,11 +45,11 @@ export function joinRoom(io, socket) {
      */
     socket.on('joinRoom', function (data) {
       const { playerName, roomCode } = data;
+      const player = GameList[roomCode].players.find(player => player.name === playerName);
 
       //reconnect disconnected player after the game has started
-      if (GameList[roomCode] && GameList[roomCode].getPlayerBy('name', playerName) &&
-        GameList[roomCode].getPlayerBy('name', playerName).disconnected === true) {
-        resolve({playerName, roomCode, reconnect: true});
+      if (GameList[roomCode] && player && player.disconnected === true) {
+        resolve({ playerName, roomCode, reconnect: true });
       }
       //validate user input
       if (!validatePlayerJoinsRoom(socket, playerName, roomCode)) return;
@@ -57,15 +58,16 @@ export function joinRoom(io, socket) {
       socket.emit('passedValidation', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
 
-      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Player'));
+      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
       const msg = { id: Date.now(), adminMsg: `${playerName} has joined the game.` };
       GameList[roomCode].chat.push(msg);
 
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
       io.in(roomCode).emit('updateChat', msg);
 
       if (GameList[roomCode].players.length >= 5) {
-        const hostSocketID = GameList[roomCode].getPlayerBy('type', 'Host').socketID;
+        const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
         io.to(hostSocketID).emit('showStartGameBtn');
       }
       resolve(data);
@@ -96,7 +98,22 @@ export function spectateRoom(io, socket) {
       const msg = { id: Date.now(), adminMsg: `${playerName} is spectating the game.` };
       GameList[roomCode].chat.push(msg);
 
-      socket.emit('updatePlayerCards', GameList[roomCode].players);
+      if (GameList[roomCode].gameIsStarted) {
+        socket.emit('startGame');
+        socket.emit('setRoleList', GameList[roomCode].roleList);
+
+        let currentQuest = GameList[roomCode].getCurrentQuest();
+        socket.emit('updateQuestCards', GameList[roomCode].quests);
+        socket.emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+        socket.emit('updateVoteTrack', currentQuest.voteTrack);
+        if (currentQuest.teamVotesNeededLeft <= 0) {
+          io.in(roomCode).emit('revealVoteStatus', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
+        }
+      }
+      GameList[roomCode].spectators.forEach(spectator => {
+        io.to(spectator.socketID).emit('updatePlayerCards',
+          sanitizeTeamView(spectator.socketID, 'Spectator', GameList[roomCode].players))
+      });
       io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
       io.in(roomCode).emit('updateChat', msg);
 
@@ -154,7 +171,7 @@ function validatePlayerJoinsRoom(socket, playerName, roomCode) {
     errorMsg = 'Error: Cannot join a game that has already started';
   } else if (playerName === null || playerName.length < 1 || playerName.length > 20) {
     errorMsg = `Error: Player name must be between 1-20 characters: ${playerName}`;
-  } else if (GameList[roomCode].getPlayerBy('name', playerName)) {
+  } else if (GameList[roomCode].players.find(player => player.name === playerName)) {
     errorMsg = `Error: Player name '${playerName}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
@@ -181,7 +198,8 @@ function validatePlayerSpectatesRoom(socket, playerName, roomCode) {
   }
   else if (playerName === null || playerName.length < 1 || playerName.length > 20) {
     errorMsg = `Error: Name must be between 1-20 characters: ${playerName}`;
-  } else if (GameList[roomCode].getPlayerBy('name', playerName) || GameList[roomCode].getSpectatorBy('name', playerName)) {
+  } else if (GameList[roomCode].players.find(player => player.name === playerName)
+    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
     errorMsg = `Error: Name '${playerName}' is already taken.`;
   }
 

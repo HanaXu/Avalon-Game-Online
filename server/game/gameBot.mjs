@@ -26,7 +26,7 @@ export default class GameBot {
         });
 
         this.socket.on('startGame', () => {
-            let self = GameList[this.roomCode].getPlayerBy('name', this.playerName);
+            let self = GameList[this.roomCode].players.find(player => player.name === this.playerName);
             this.team = self.team;
             this.initializePlayerRiskScores();
         });
