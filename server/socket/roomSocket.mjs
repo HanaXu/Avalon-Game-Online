@@ -45,10 +45,10 @@ export function joinRoom(io, socket) {
      */
     socket.on('joinRoom', function (data) {
       const { playerName, roomCode } = data;
-      const player = GameList[roomCode].players.find(player => player.name === playerName);
 
       //reconnect disconnected player after the game has started
-      if (GameList[roomCode] && player && player.disconnected === true) {
+      if (GameList[roomCode] && GameList[roomCode].players.find(player => player.name === playerName) &&
+        GameList[roomCode].players.find(player => player.name === playerName).disconnected) {
         resolve({ playerName, roomCode, reconnect: true });
       }
       //validate user input
