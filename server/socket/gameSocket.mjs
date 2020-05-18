@@ -178,7 +178,7 @@ export function gameSocket(io, socket, port, roomCode) {
       GameList[roomCode].deletePersonFrom({ arrayName: 'players', socketID: socket.id });
       updateServerChatMsg(`${player.name} has disconnected.`);
 
-      if (player.type === 'Host') {
+      if (player.type === 'Host' && GameList[roomCode].players.length > 0) {
         const newHost = GameList[roomCode].assignNextHost();
         io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
         updateServerChatMsg(`${newHost.name} has become the new host.`);
