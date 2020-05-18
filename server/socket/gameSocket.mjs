@@ -2,13 +2,25 @@ import {
   GameList,
   updatePlayerCards
 } from './appSocket.mjs';
+import GameBot from '../game/gameBot.mjs';
 
 /**
  * @param {Object} io
  * @param {Object} socket
  * @param {Number} roomCode
  */
-export function gameSocket(io, socket, roomCode) {
+export function gameSocket(io, socket, port, roomCode) {
+  /**
+   * @param {Number} roomCode 
+   * @param {Number} port 
+   */
+  socket.on('createBot', function () {
+    const player = GameList[roomCode].players.find(player => player.socketID === socket.id);
+    if (!GameList[roomCode].gameIsStarted && player.type === 'Host') {
+      new GameBot(roomCode, port).startListening();
+    }
+  });
+
   socket.on('updateChat', (msg) => {
     GameList[roomCode].chat.push(msg);
     io.in(roomCode).emit('updateChat', msg);
@@ -147,32 +159,32 @@ export function gameSocket(io, socket, roomCode) {
   });
 
   socket.on('disconnect', function () {
-    if (Object.keys(GameList).length != 0 && typeof GameList[roomCode] !== 'undefined') {
-      const spectator = GameList[roomCode].spectators.find(spectator => spectator.socketID === socket.id);
-      let msg;
+    if (Object.keys(GameList).length === 0 || typeof GameList[roomCode] === 'undefined') return;
 
-      if (spectator) {
-        msg = { id: Date.now(), adminMsg: `${spectator.name} has stopped spectating the game.` };
-        GameList[roomCode].deletePersonFrom({ arrayName: 'spectators', socketID: socket.id });
-        io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
+    const spectator = GameList[roomCode].spectators.find(spectator => spectator.socketID === socket.id);
+    let player = GameList[roomCode].players.find(player => player.socketID === socket.id);
+
+    if (spectator) {
+      GameList[roomCode].deletePersonFrom({ arrayName: 'spectators', socketID: socket.id });
+      io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
+      updateServerChatMsg(`${spectator.name} has stopped spectating the game.`);
+    }
+    else if (GameList[roomCode].gameIsStarted) {
+      player.disconnected = true;
+      updatePlayerCards(io, GameList[roomCode].players, GameList[roomCode].spectators);
+      updateServerChatMsg(`${player.name} has disconnected.`);
+    }
+    else { // lobby
+      GameList[roomCode].deletePersonFrom({ arrayName: 'players', socketID: socket.id });
+      updateServerChatMsg(`${player.name} has disconnected.`);
+
+      if (player.type === 'Host') {
+        const newHost = GameList[roomCode].assignNextHost();
+        io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
+        updateServerChatMsg(`${newHost.name} has become the new host.`);
+        if (GameList[roomCode].players.length >= 5) io.to(newHost.socketID).emit('showStartGameBtn');
       }
-      else {
-        const players = GameList[roomCode].players;
-        let player = GameList[roomCode].players.find(player => player.socketID === socket.id);
-
-        if (GameList[roomCode].gameIsStarted) {
-          player.disconnected = true;
-          updatePlayerCards(io, players, GameList[roomCode].spectators);
-        }
-        else { // player is in lobby
-          GameList[roomCode].deletePersonFrom({ arrayName: 'players', socketID: socket.id });
-          io.in(roomCode).emit('updatePlayerCards', players);
-        }
-        msg = { id: Date.now(), adminMsg: `${player.name} has disconnected.` };
-      }
-
-      GameList[roomCode].chat.push(msg);
-      io.in(roomCode).emit('updateChat', msg);
+      io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     }
   });
 
@@ -218,6 +230,15 @@ export function gameSocket(io, socket, roomCode) {
   function updateQuestMsg(msg) {
     GameList[roomCode].gameState['questMsg'] = msg;
     io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+  }
+
+  /**
+   * @param {String} msg 
+   */
+  function updateServerChatMsg(msg) {
+    const msgObj = { id: Date.now(), serverMsg: msg };
+    GameList[roomCode].chat.push(msgObj);
+    io.in(roomCode).emit('updateChat', msgObj);
   }
 
   /**
@@ -308,7 +329,7 @@ export function reconnectPlayerToStartedGame(io, socket, playerName, roomCode) {
   socket.join(roomCode);
 
   socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
-  const msg = { id: Date.now(), adminMsg: `${playerName} has reconnected.` };
+  const msg = { id: Date.now(), serverMsg: `${playerName} has reconnected.` };
   GameList[roomCode].chat.push(msg);
   io.in(roomCode).emit('updateChat', msg);
 

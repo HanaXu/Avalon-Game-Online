@@ -143,6 +143,15 @@ export default class Game {
     }
   }
 
+  assignNextHost() {
+    for (let i in this.players) {
+      if (this.players[i] !== null) {
+        this.players[i].type = 'Host';
+        return this.players[i];
+      }
+    }
+  }
+
   assignFirstLeader() {
     // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
     for (let i in this.players) {

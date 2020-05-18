@@ -2,7 +2,7 @@
   <div class="card">
     <div class="card-body message-ctn" v-chat-scroll>
       <div v-for="message in messages" :key="message.id" class="message">
-        <em v-if="message.adminMsg" style="color: grey">{{message.adminMsg}}</em>
+        <em v-if="message.serverMsg" style="color: grey">{{message.serverMsg}}</em>
         <div v-else>
           <strong>{{`${message.playerName} `}}</strong>
           <span class="timestamp">({{message.time}})</span>

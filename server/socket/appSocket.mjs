@@ -20,7 +20,7 @@ export function appSocket(io, socket, port) {
       if (reconnect) {
         reconnectPlayerToStartedGame(io, socket, playerName, roomCode);
       }
-      gameSocket(io, socket, roomCode);
+      gameSocket(io, socket, port, roomCode);
     });
 }
 
