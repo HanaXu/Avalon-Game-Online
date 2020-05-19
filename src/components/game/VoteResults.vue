@@ -40,7 +40,7 @@ export default {
     };
   },
   sockets: {
-    revealVoteStatus({type, votes}) {
+    revealVoteResults({type, votes}) {
       switch (type) {
         case 'team':
           this.teamVotes = votes;

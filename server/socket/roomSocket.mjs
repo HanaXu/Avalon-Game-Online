@@ -49,8 +49,10 @@ export function joinRoom(io, socket) {
         resolve({ playerName, roomCode, reconnect: true });
       }
       //validate user input
+      if (!validateRoomCodeExists(socket, roomCode)) return;
       if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
-      if (!validatePlayerJoinsRoom(socket, playerName, roomCode)) return;
+      if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
+      if (!validateRoomHasCapacityAndGameDidNotStart(socket, roomCode)) return;
 
       socket.join(roomCode);
       socket.emit('passedValidation', { playerName, roomCode });
@@ -85,8 +87,9 @@ export function spectateRoom(io, socket) {
       const { playerName, roomCode } = data;
 
       //validate user input
+      if (!validateRoomCodeExists(socket, roomCode)) return;
       if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
-      if (!validatePlayerSpectatesRoom(socket, playerName, roomCode)) return;
+      if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
 
       socket.join(roomCode);
       socket.emit('passedValidation', { playerName, roomCode });
@@ -106,7 +109,7 @@ export function spectateRoom(io, socket) {
         socket.emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
         socket.emit('updateVoteTrack', currentQuest.voteTrack);
         if (currentQuest.teamVotesNeededLeft <= 0) {
-          io.in(roomCode).emit('revealVoteStatus', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
+          io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
         }
         if (GameList[roomCode].winningTeam !== null) {
           io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
@@ -136,12 +139,19 @@ function generateRoomCode() {
 
 /**
  * @param {Object} socket 
- * @param {String} playerName 
+ * @param {String} errorMsg 
  */
-function validatePlayerNameMeetsRequirements(socket, playerName) {
-  if (playerName === null || playerName.length < 1 || playerName.length > 20) {
-    console.log(`Error: Player name must be between 1-20 characters: ${playerName}`);
-    socket.emit('updateErrorMsg', `Error: Name must be between 1-20 characters: ${playerName}`);
+function logAndEmitError(socket, errorMsg) {
+  console.log(errorMsg);
+  socket.emit('updateErrorMsg', errorMsg)
+}
+
+/**
+ * @param {Object} socket 
+ */
+function validateRoomCodeExists(socket, roomCode) {
+  if (typeof GameList[roomCode] === 'undefined') {
+    logAndEmitError(socket, `Error: Room code '${GameList[roomCode]}' does not exist.`);
     return false;
   }
   return true;
@@ -150,51 +160,59 @@ function validatePlayerNameMeetsRequirements(socket, playerName) {
 /**
  * @param {Object} socket 
  * @param {String} playerName 
+ */
+function validatePlayerNameMeetsRequirements(socket, playerName) {
+  if (playerName === null || playerName.length < 1 || playerName.length > 20) {
+    logAndEmitError(socket, `Error: Player name must be between 1-20 characters: ${playerName}`);
+    return false;
+  }
+  return true;
+}
+
+function validateNameIsAlreadyTaken(socket, roomCode, playerName) {
+  if (GameList[roomCode].players.find(player => player.name === playerName)
+    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
+      logAndEmitError(socket, `Error: Name '${playerName}' is already taken.`);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * @param {Object} socket 
  * @param {Number} roomCode 
  */
-function validatePlayerJoinsRoom(socket, playerName, roomCode) {
+function validateRoomHasCapacityAndGameDidNotStart(socket, roomCode) {
   let errorMsg = "";
 
-  if (typeof GameList[roomCode] === 'undefined') {
-    errorMsg = `Error: Room code '${GameList[roomCode]}' does not exist.`;
-  }
-  else if (GameList[roomCode].gameIsStarted) {
+  if (GameList[roomCode].gameIsStarted) {
     errorMsg = 'Error: Cannot join a game that has already started';
-  } else if (GameList[roomCode].players.find(player => player.name === playerName)
-    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
-    errorMsg = `Error: Name '${playerName}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
   }
 
   if (errorMsg.length > 0) {
-    console.log(errorMsg);
-    socket.emit('updateErrorMsg', errorMsg);
+    logAndEmitError(socket, errorMsg);
     return false;
   }
   return true;
 }
 
 /**
- * @param {Object} socket 
- * @param {String} playerName 
- * @param {Number} roomCode 
+ * Make sure chosen optional roles works for number of players
+ * If 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
+ * @param {Object} roles 
+ * @param {Number} numPlayers 
  */
-function validatePlayerSpectatesRoom(socket, playerName, roomCode) {
-  let errorMsg = "";
+export function validateOptionalRoles(roles, numPlayers) {
+  const evilRoles = roles.filter((role) => role != "Percival");
 
-  if (typeof GameList[roomCode] === 'undefined') {
-    errorMsg = `Error: Room code '${GameList[roomCode]}' does not exist.`;
+  if (numPlayers <= 6 && evilRoles.length > 1) {
+    return `Error: Games with 5 or 6 players can only include 1 optional evil role.
+                  <br/>Please select only one, then click Start Game again.`;
   }
-  else if (GameList[roomCode].players.find(player => player.name === playerName)
-    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
-    errorMsg = `Error: Name '${playerName}' is already taken.`;
+  else if ((numPlayers > 6 && numPlayers < 10) && evilRoles.length > 2) {
+    return `Error: Games with 7, 8, or 9 players can only include 2 optional evil roles.
+                  <br/>Please select only one, then click Start Game again.`;
   }
-
-  if (errorMsg.length > 0) {
-    console.log(errorMsg);
-    socket.emit('updateErrorMsg', errorMsg);
-    return false;
-  }
-  return true;
 }

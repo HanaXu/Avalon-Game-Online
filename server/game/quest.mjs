@@ -98,13 +98,14 @@ export default class Quest {
   /**
    * @param {String} decision 
    */
-  addQuestVote({decision}) {
+  addQuestVote(decision) {
     this.votes[decision]++;
     this.questVotesNeededLeft--;
   }
 
   assignQuestResult() {
     this.success = !(this.needsTwoFails ? this.votes.fail >=2 : this.votes.fail > 0);
+    return this.success;
   }
 
   //resets all values relating to players on quest & quest votes to original values

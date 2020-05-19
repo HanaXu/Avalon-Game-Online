@@ -17,7 +17,7 @@
         <VoteTrack />
       </div>
       <GameStatus />
-      <VoteStatus />
+      <VoteResults />
       <Actions />
     </div>
     <!-- Misc -->
@@ -36,7 +36,7 @@ import QuestCards from "@/components/game/QuestCards.vue";
 import VoteTrack from "@/components/game/VoteTrack.vue";
 import Actions from "@/components/game/Actions.vue";
 import GameStatus from "@/components/game/GameStatus.vue";
-import VoteStatus from "@/components/game/VoteStatus.vue";
+import VoteResults from "@/components/game/VoteResults.vue";
 import RoleList from "@/components/game/RoleList.vue";
 import { mapState } from "vuex";
 
@@ -49,7 +49,7 @@ export default {
     VoteTrack,
     Actions,
     GameStatus,
-    VoteStatus,
+    VoteResults,
     RoleList
   },
   computed: mapState(["playerName"]),

@@ -58,17 +58,11 @@ export default {
       this.$socket.emit("leaderHasConfirmedTeam");
     },
     playerAcceptsOrRejectsTeam(decision) {
-      this.$socket.emit("playerAcceptsOrRejectsTeam", {
-        playerName: this.playerName,
-        decision: decision
-      });
+      this.$socket.emit("playerAcceptsOrRejectsTeam", decision);
     },
     questVote(decision) {
       this.canVoteOnQuest = false;
-      this.$socket.emit("questVote", {
-        playerName: this.playerName,
-        decision: decision
-      });
+      this.$socket.emit("questVote", decision);
     }
   },
   sockets: {

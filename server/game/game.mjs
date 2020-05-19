@@ -226,10 +226,20 @@ export default class Game {
     }
   }
 
+  /**
+   * @param {String} property 
+   */
   resetPlayersProperty(property) {
     this.players.forEach(player => {
       player[property] = false;
     });
+  }
+
+  /**
+   * @param {Boolean} questSuccessful
+   */
+  incrementQuestSuccessFailCount(questSuccessful) {
+    questSuccessful ? this.questSuccesses++ : this.questFails++;
   }
 
   /**

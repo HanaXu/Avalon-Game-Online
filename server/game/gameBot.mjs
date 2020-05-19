@@ -44,10 +44,7 @@ export default class GameBot {
          */
         this.socket.on("showAcceptOrRejectTeamBtns", (showAcceptOrRejectTeamBtns) => {
             if (showAcceptOrRejectTeamBtns) {
-                this.socket.emit("playerAcceptsOrRejectsTeam", {
-                    playerName: this.playerName,
-                    decision: this.botAcceptOrRejectTeam()
-                });
+                this.socket.emit("playerAcceptsOrRejectsTeam", this.botAcceptOrRejectTeam());
             }
         });
 
@@ -73,10 +70,7 @@ export default class GameBot {
             
             if (currentQuest.questNum === 1) decision = 'succeed';
             else decision = this.team === 'Evil' ? 'fail' : 'succeed';
-            this.socket.emit('questVote', {
-                playerName: this.playerName,
-                decision: decision
-            });
+            this.socket.emit('questVote', decision);
         });
 
         this.socket.on('showAssassinateBtn', (showAssassinateBtn) => {
