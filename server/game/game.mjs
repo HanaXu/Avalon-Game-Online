@@ -62,6 +62,7 @@ export default class Game {
     this.questFails = 0;
     this.questSuccesses = 0;
     this.leaderIndex = 0;
+    this.winningTeam = null;
   }
 
   static get BaseRoles() {

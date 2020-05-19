@@ -6,9 +6,8 @@ import { sanitizeTeamView } from '../game/utility.mjs';
 /**
  * @param {Object} io
  * @param {Object} socket
- * @param {Number} port
  */
-export function createRoom(io, socket, port) {
+export function createRoom(io, socket) {
   return new Promise((resolve) => {
     /**
      * @param {String} playerName 
@@ -109,11 +108,16 @@ export function spectateRoom(io, socket) {
         if (currentQuest.teamVotesNeededLeft <= 0) {
           io.in(roomCode).emit('revealVoteStatus', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
         }
+        if (GameList[roomCode].winningTeam !== null) {
+          io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+        }
       }
-      GameList[roomCode].spectators.forEach(spectator => {
-        io.to(spectator.socketID).emit('updatePlayerCards',
-          sanitizeTeamView(spectator.socketID, 'Spectator', GameList[roomCode].players))
-      });
+      if (GameList[roomCode].winningTeam === null) {
+        GameList[roomCode].spectators.forEach(spectator => {
+          io.to(spectator.socketID).emit('updatePlayerCards',
+            sanitizeTeamView(spectator.socketID, 'Spectator', GameList[roomCode].players))
+        });
+      }
       io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
       resolve(data);
     });
@@ -132,7 +136,7 @@ function generateRoomCode() {
 
 /**
  * @param {Object} socket 
- * @param {String} name 
+ * @param {String} playerName 
  */
 function validatePlayerNameMeetsRequirements(socket, playerName) {
   if (playerName === null || playerName.length < 1 || playerName.length > 20) {
@@ -145,7 +149,7 @@ function validatePlayerNameMeetsRequirements(socket, playerName) {
 
 /**
  * @param {Object} socket 
- * @param {String} name 
+ * @param {String} playerName 
  * @param {Number} roomCode 
  */
 function validatePlayerJoinsRoom(socket, playerName, roomCode) {
@@ -156,8 +160,9 @@ function validatePlayerJoinsRoom(socket, playerName, roomCode) {
   }
   else if (GameList[roomCode].gameIsStarted) {
     errorMsg = 'Error: Cannot join a game that has already started';
-  } else if (GameList[roomCode].players.find(player => player.name === playerName)) {
-    errorMsg = `Error: Player name '${playerName}' is already taken.`;
+  } else if (GameList[roomCode].players.find(player => player.name === playerName)
+    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
+    errorMsg = `Error: Name '${playerName}' is already taken.`;
   } else if (GameList[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
   }
@@ -172,7 +177,7 @@ function validatePlayerJoinsRoom(socket, playerName, roomCode) {
 
 /**
  * @param {Object} socket 
- * @param {String} name 
+ * @param {String} playerName 
  * @param {Number} roomCode 
  */
 function validatePlayerSpectatesRoom(socket, playerName, roomCode) {

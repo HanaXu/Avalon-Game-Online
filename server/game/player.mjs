@@ -21,4 +21,9 @@ export default class Player {
     this.votedOnQuest = false;
     this.disconnected = false;
   }
+
+  reconnect(socketID) {
+    this.socketID = socketID;
+    this.disconnected = false;
+  }
 }
