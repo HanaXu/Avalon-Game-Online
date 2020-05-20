@@ -52,7 +52,7 @@ export default {
           break;
       }
     },
-    hidePreviousVotes() {
+    hidePreviousVoteResults() {
       this.showTeamVoteResults = false;
       this.showQuestVoteResults = false;
     }

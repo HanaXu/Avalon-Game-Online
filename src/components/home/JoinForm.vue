@@ -56,7 +56,7 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    passedValidation({ playerName, roomCode }) {
+    goToGame({ playerName, roomCode }) {
       this.$router.push({
         name: "game",
         params: { playerName, roomCode }

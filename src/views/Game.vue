@@ -1,12 +1,7 @@
 <template>
   <div class="row justify-content-md-center py-2">
     <div class="col-md-11">
-      <b-alert :show="spectators.length > 0" variant="dark" class="spectators">
-        Spectators: 
-        <span v-for="(spectator, index) in spectators" :key="index">
-          <span :class="{self: spectator.name === playerName}">{{spectator.name}}</span>,
-        </span>
-      </b-alert>
+      <Spectators />
     </div>
     <div class="col-md-8 px-2">
       <Lobby v-if="!gameStarted" />
@@ -38,6 +33,7 @@ import Actions from "@/components/game/Actions.vue";
 import GameStatus from "@/components/game/GameStatus.vue";
 import VoteResults from "@/components/game/VoteResults.vue";
 import RoleList from "@/components/game/RoleList.vue";
+import Spectators from "@/components/game/Spectators.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -50,21 +46,18 @@ export default {
     Actions,
     GameStatus,
     VoteResults,
-    RoleList
+    RoleList,
+    Spectators
   },
   computed: mapState(["playerName"]),
   data() {
     return {
-      gameStarted: false,
-      spectators: []
+      gameStarted: false
     };
   },
   sockets: {
     startGame() {
       this.gameStarted = true;
-    },
-    updateSpectatorsList(spectators) {
-      this.spectators = spectators;
     }
   }
 };

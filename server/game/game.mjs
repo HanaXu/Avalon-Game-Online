@@ -46,6 +46,20 @@ const BaseRoles = {
 };
 
 export default class Game {
+  /**
+   * @param {number} roomCode - Digits identifying which room the game is in
+   * @property {array} chat - Chat history of the game
+   * @property {boolean} gameIsStarted - Indicates if the game has started
+   * @property {Object} gameState - True/false values indicating various stages of the game
+   * @property {Object} roleList - Key/value pair of roles (and how many of each role) for the game
+   * @property {array} players
+   * @property {array} spectators
+   * @property {Object} quests
+   * @property {number} questFails - Number of failed quests
+   * @property {number} questSuccesses - Number of successful quests
+   * @property {number} leaderIndex 
+   * @property {boolean} winningTeam - 'good' or 'evil'
+   */
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.chat = [];
@@ -55,10 +69,10 @@ export default class Game {
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
-    this.roleList = null;
+    this.roleList = {};
     this.players = [];
     this.spectators = [];
-    this.quests = null;
+    this.quests = {};
     this.questFails = 0;
     this.questSuccesses = 0;
     this.leaderIndex = 0;
@@ -102,8 +116,8 @@ export default class Game {
   }
 
   /**
-   * @param {Number} questNum 
-   * @param {String} name 
+   * @param {number} questNum 
+   * @param {string} name 
    */
   addPlayerToQuest(questNum, name) {
     for (let i in this.players) {
@@ -117,8 +131,8 @@ export default class Game {
   }
 
   /**
-   * @param {Number} questNum 
-   * @param {String} name 
+   * @param {number} questNum 
+   * @param {string} name 
    */
   removePlayerFromQuest(questNum, name) {
     for (let i in this.players) {
@@ -132,8 +146,8 @@ export default class Game {
   }
 
   /**
-   * @param {String} arrayName
-   * @param {String} socketID 
+   * @param {string} arrayName
+   * @param {string} socketID 
    */
   deletePersonFrom({arrayName, socketID}) {
     for (let i in this[arrayName]) {
@@ -167,7 +181,7 @@ export default class Game {
 
   /**
    * Assign next room leader (goes in order incrementally always)
-   * @param {Number} questNum 
+   * @param {number} questNum 
    */
   assignNextLeader(questNum) {
     this.players[this.leaderIndex].leader = false; //reset prev leader Player object
@@ -227,7 +241,7 @@ export default class Game {
   }
 
   /**
-   * @param {String} property 
+   * @param {string} property 
    */
   resetPlayersProperty(property) {
     this.players.forEach(player => {
@@ -236,14 +250,14 @@ export default class Game {
   }
 
   /**
-   * @param {Boolean} questSuccessful
+   * @param {boolean} questSuccessful
    */
   incrementQuestSuccessFailCount(questSuccessful) {
     questSuccessful ? this.questSuccesses++ : this.questFails++;
   }
 
   /**
-   * @param {Number} lastQuestNum 
+   * @param {number} lastQuestNum 
    */
   startNextQuest(lastQuestNum) {
     if (lastQuestNum < 5) {

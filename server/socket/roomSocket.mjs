@@ -1,31 +1,27 @@
-import { GameList } from './appSocket.mjs';
+import { GameList } from './gameSocket.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import { sanitizeTeamView } from '../game/utility.mjs';
 
 /**
- * @param {Object} io
  * @param {Object} socket
  */
-export function createRoom(io, socket) {
+export function createRoom(socket) {
   return new Promise((resolve) => {
     /**
-     * @param {String} playerName 
+     * @param {string} playerName
      */
     socket.on('createRoom', function (playerName) {
       if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
 
       const roomCode = generateRoomCode();
-      socket.join(roomCode);
-      socket.emit('passedValidation', { playerName, roomCode });
-
       GameList[roomCode] = new Game(roomCode);
       GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
       GameList[roomCode].chat.push({ id: Date.now(), serverMsg: `${playerName} has joined the game.` });
 
+      join(socket, roomCode, playerName);
+      socket.emit('updatePlayerCards', GameList[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
-      io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-      io.in(roomCode).emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
       resolve({ playerName, roomCode });
     });
   });
@@ -54,14 +50,9 @@ export function joinRoom(io, socket) {
       if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
       if (!validateRoomHasCapacityAndGameDidNotStart(socket, roomCode)) return;
 
-      socket.join(roomCode);
-      socket.emit('passedValidation', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
-
+      join(socket, roomCode, playerName);
       GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
-      const msg = { id: Date.now(), serverMsg: `${playerName} has joined the game.` };
-      GameList[roomCode].chat.push(msg);
-      io.in(roomCode).emit('updateChat', msg);
+      updateServerChat(io, roomCode, `${playerName} has joined the game.`);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
 
@@ -91,14 +82,9 @@ export function spectateRoom(io, socket) {
       if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
       if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
 
-      socket.join(roomCode);
-      socket.emit('passedValidation', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: false });
-
+      join(socket, roomCode, playerName);
       GameList[roomCode].spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
-      const msg = { id: Date.now(), serverMsg: `${playerName} is spectating the game.` };
-      GameList[roomCode].chat.push(msg);
-      io.in(roomCode).emit('updateChat', msg);
+      updateServerChat(io, roomCode, `${playerName} is spectating the game.`);
 
       if (GameList[roomCode].gameIsStarted) {
         socket.emit('startGame');
@@ -127,6 +113,29 @@ export function spectateRoom(io, socket) {
   })
 }
 
+
+/**
+ * @param {Object} socket
+ * @param {number} roomCode
+ * @param {string} playerName
+ */
+function join(socket, roomCode, playerName) {
+  socket.join(roomCode);
+  socket.emit('goToGame', { playerName, roomCode });
+  socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
+}
+
+/**
+ * @param {Object} io
+ * @param {number} roomCode
+ * @param {string} msg
+ */
+function updateServerChat(io, roomCode, msg) {
+  const serverMsg = { id: Date.now(), serverMsg: msg };
+  GameList[roomCode].chat.push(serverMsg);
+  io.in(roomCode).emit('updateChat', serverMsg);
+}
+
 function generateRoomCode() {
   let roomCode = Math.floor(Math.random() * 999999) + 1;
   while (GameList.hasOwnProperty(roomCode)) {
@@ -139,7 +148,7 @@ function generateRoomCode() {
 
 /**
  * @param {Object} socket 
- * @param {String} errorMsg 
+ * @param {string} errorMsg 
  */
 function logAndEmitError(socket, errorMsg) {
   console.log(errorMsg);
@@ -147,7 +156,8 @@ function logAndEmitError(socket, errorMsg) {
 }
 
 /**
- * @param {Object} socket 
+ * @param {Object} socket
+ * @param {number} roomCode
  */
 function validateRoomCodeExists(socket, roomCode) {
   if (typeof GameList[roomCode] === 'undefined') {
@@ -159,7 +169,7 @@ function validateRoomCodeExists(socket, roomCode) {
 
 /**
  * @param {Object} socket 
- * @param {String} playerName 
+ * @param {string} playerName 
  */
 function validatePlayerNameMeetsRequirements(socket, playerName) {
   if (playerName === null || playerName.length < 1 || playerName.length > 20) {
@@ -169,10 +179,15 @@ function validatePlayerNameMeetsRequirements(socket, playerName) {
   return true;
 }
 
+/**
+ * @param {Object} socket
+ * @param {number} roomCode
+ * @param {string} playerName
+ */
 function validateNameIsAlreadyTaken(socket, roomCode, playerName) {
   if (GameList[roomCode].players.find(player => player.name === playerName)
     || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
-      logAndEmitError(socket, `Error: Name '${playerName}' is already taken.`);
+    logAndEmitError(socket, `Error: Name '${playerName}' is already taken.`);
     return false;
   }
   return true;
@@ -180,7 +195,7 @@ function validateNameIsAlreadyTaken(socket, roomCode, playerName) {
 
 /**
  * @param {Object} socket 
- * @param {Number} roomCode 
+ * @param {number} roomCode 
  */
 function validateRoomHasCapacityAndGameDidNotStart(socket, roomCode) {
   let errorMsg = "";
@@ -202,7 +217,7 @@ function validateRoomHasCapacityAndGameDidNotStart(socket, roomCode) {
  * Make sure chosen optional roles works for number of players
  * If 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
  * @param {Object} roles 
- * @param {Number} numPlayers 
+ * @param {number} numPlayers 
  */
 export function validateOptionalRoles(roles, numPlayers) {
   const evilRoles = roles.filter((role) => role != "Percival");

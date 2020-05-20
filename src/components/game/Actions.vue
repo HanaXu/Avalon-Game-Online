@@ -1,5 +1,5 @@
 <template>
-  <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons || canVoteOnQuest" class="status-section">
+  <b-row v-if="showConfirmTeamBtnToLeader || showAcceptRejectButtons || showQuestVoteBtns" class="status-section">
     <b-col class="section-title" md="2">Action</b-col>
     <b-col class="py-0">
       <div v-if="showConfirmTeamBtnToLeader">
@@ -21,7 +21,7 @@
           @click="playerAcceptsOrRejectsTeam('reject')"
         >Reject Team</b-button>
       </div>
-      <div v-if="canVoteOnQuest">
+      <div v-if="showQuestVoteBtns">
         <b-button
           class="avalon-btn-primary big"
           id="succeed-btn"
@@ -46,9 +46,8 @@ export default {
     return {
       showConfirmTeamBtnToLeader: false,
       showAcceptRejectButtons: false,
-      showHasVoted: false,
       showTeamVoteResults: false,
-      canVoteOnQuest: false,
+      showQuestVoteBtns: false,
       disableFailBtn: false
     };
   },
@@ -61,7 +60,7 @@ export default {
       this.$socket.emit("playerAcceptsOrRejectsTeam", decision);
     },
     questVote(decision) {
-      this.canVoteOnQuest = false;
+      this.showQuestVoteBtns = false;
       this.$socket.emit("questVote", decision);
     }
   },
@@ -73,7 +72,7 @@ export default {
       this.showAcceptRejectButtons = bool;
     },
     showSucceedOrFailQuestBtns(disableFailBtn) {
-      this.canVoteOnQuest = true;
+      this.showQuestVoteBtns = true;
       this.disableFailBtn = disableFailBtn;
     }
   }

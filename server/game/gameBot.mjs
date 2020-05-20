@@ -1,5 +1,5 @@
 import socketIO from 'socket.io-client';
-import { GameList } from '../socket/appSocket.mjs';
+import { GameList } from '../socket/gameSocket.mjs';
 
 const nameList = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 let nameIndex = Math.floor(Math.random() * nameList.length);
@@ -13,7 +13,7 @@ export default class GameBot {
         this.socket = socketIO.connect(`http://localhost:${port}`);
         this.playerName = `${nameList[(nameIndex++) % (nameList.length)]} The Bot`;
         this.roomCode = roomCode;
-        this.team = 'undecided';
+        this.team = '';
         this.sanitizedPlayers = [];
         this.playerRiskScores = []; //player name, identityKnown boolean, and riskScore
     };
@@ -32,7 +32,7 @@ export default class GameBot {
         });
 
         /**
-         * @param {Array} Players
+         * @param {array} Players
          */
         this.socket.on("updatePlayerCards", (players) => {
             this.sanitizedPlayers = players;
@@ -40,7 +40,7 @@ export default class GameBot {
 
         /**
          * Accept of Reject the vote for Quest Teams
-         * @param {Boolean} showAcceptOrRejectTeamBtns
+         * @param {boolean} showAcceptOrRejectTeamBtns
          */
         this.socket.on("showAcceptOrRejectTeamBtns", (showAcceptOrRejectTeamBtns) => {
             if (showAcceptOrRejectTeamBtns) {
@@ -56,7 +56,7 @@ export default class GameBot {
         });
 
         /**
-         * @param {Boolean} showAddRemovePlayerBtns
+         * @param {boolean} showAddRemovePlayerBtns
          */
         this.socket.on('showAddRemovePlayerBtns', (showAddRemovePlayerBtns) => {
             if (showAddRemovePlayerBtns) {

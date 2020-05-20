@@ -59,7 +59,7 @@ export default {
     // setAuth(requireAuth) {
     //   this.authRequired = requireAuth;
     // },
-    passedValidation({ playerName, roomCode }) {
+    goToGame({ playerName, roomCode }) {
       this.loading = false;
       this.$router.push({
         name: "game",

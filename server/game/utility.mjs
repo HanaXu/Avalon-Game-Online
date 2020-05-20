@@ -25,10 +25,10 @@ export function populateRoleList(teamObj) {
 }
 
 /**
- * @param {String} yourSocketID 
- * @param {String} yourRole 
- * @param {Array} players 
- * @returns {Array}
+ * @param {string} yourSocketID 
+ * @param {string} yourRole 
+ * @param {array} players 
+ * @returns {array}
  */
 export function sanitizeTeamView(yourSocketID, yourRole, players) {
     const clonedPlayers = JSON.parse(JSON.stringify(players));
@@ -54,8 +54,8 @@ export function sanitizeTeamView(yourSocketID, yourRole, players) {
 
 /**
  * Hide everyone's info
- * @param {Array} players 
- * @returns {Array}
+ * @param {array} players 
+ * @returns {array}
  */
 function sanitizeForSpectators(players) {
     for (const i in players) {
@@ -67,9 +67,9 @@ function sanitizeForSpectators(players) {
 
 /**
  * Hide everyone else's info
- * @param {String} yourSocketID 
- * @param {Array} players 
- * @returns {Array}
+ * @param {string} yourSocketID 
+ * @param {array} players 
+ * @returns {array}
  */
 function sanitizeForGoodTeam(yourSocketID, players) {
     for (const i in players) {
@@ -87,9 +87,9 @@ function sanitizeForGoodTeam(yourSocketID, players) {
 
 /**
  * Merlin & Morgana both appear to be Merlin
- * @param {String} yourSocketID 
- * @param {Array} players 
- * @returns {Array}
+ * @param {string} yourSocketID 
+ * @param {array} players 
+ * @returns {array}
  */
 function sanitizeForPercival(yourSocketID, players) {
     for (const i in players) {
@@ -114,9 +114,9 @@ function sanitizeForPercival(yourSocketID, players) {
 
 /**
  * Hide identities of good team & Oberon
- * @param {String} yourSocketID 
- * @param {Array} players 
- * @returns {Array}
+ * @param {string} yourSocketID 
+ * @param {array} players 
+ * @returns {array}
  */
 function sanitizeForEvilTeam(yourSocketID, players) {
     for (const i in players) {
@@ -140,9 +140,9 @@ function sanitizeForEvilTeam(yourSocketID, players) {
 
 /**
  * Hide identities of good team & Morgana
- * @param {String} yourSocketID 
- * @param {Array} players 
- * @returns {Array}
+ * @param {string} yourSocketID 
+ * @param {array} players 
+ * @returns {array}
  */
 function sanitizeForMerlin(yourSocketID, players) {
     for (const i in players) {
@@ -166,8 +166,8 @@ function sanitizeForMerlin(yourSocketID, players) {
 
 /**
  * Fisher-Yates shuffle
- * @param {Array} array 
- * @returns {Array}
+ * @param {array} array 
+ * @returns {array}
  */
 export function shuffle(array) {
     let currentIndex = array.length;
@@ -190,7 +190,7 @@ export function shuffle(array) {
 /**
  * Convert object to array for shuffling
  * @param {Object} team 
- * @returns {Array}
+ * @returns {array}
  */
 export function objectToArray(obj) {
     let arr = []

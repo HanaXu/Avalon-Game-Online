@@ -10,7 +10,7 @@ export default new Vuex.Store({
     players: []
   },
   mutations: {
-    SOCKET_passedValidation(state, { playerName, roomCode }) {
+    SOCKET_goToGame(state, { playerName, roomCode }) {
       state.playerName = playerName;
       state.roomCode = roomCode;
     },
