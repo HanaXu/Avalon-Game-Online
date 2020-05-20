@@ -58,14 +58,17 @@ export default class Game {
    * @property {number} questFails - Number of failed quests
    * @property {number} questSuccesses - Number of successful quests
    * @property {number} leaderIndex 
-   * @property {boolean} winningTeam - 'good' or 'evil'
+   * @property {boolean} winningTeam - 'Good' or 'Evil'
    */
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.chat = [];
     this.gameIsStarted = false;
     this.gameState = {
-      questMsg: null,
+      statusMsg: {
+        msg: '',
+        variant: ''
+      },
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };

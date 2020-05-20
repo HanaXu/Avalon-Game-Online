@@ -29,7 +29,7 @@ export default {
   data() {
     return {
       messages: [],
-      showMsgInput: null
+      showMsgInput: false
     };
   },
   computed: mapState(["roomCode", "playerName"]),

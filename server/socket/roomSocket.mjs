@@ -19,7 +19,9 @@ export function createRoom(socket) {
       GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
       GameList[roomCode].chat.push({ id: Date.now(), serverMsg: `${playerName} has joined the game.` });
 
-      join(socket, roomCode, playerName);
+      socket.join(roomCode);
+      socket.emit('goToGame', { playerName, roomCode });
+      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
       socket.emit('updatePlayerCards', GameList[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
       resolve({ playerName, roomCode });
@@ -50,8 +52,10 @@ export function joinRoom(io, socket) {
       if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
       if (!validateRoomHasCapacityAndGameDidNotStart(socket, roomCode)) return;
 
-      join(socket, roomCode, playerName);
+      socket.join(roomCode);
+      socket.emit('goToGame', { playerName, roomCode });
       GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
+      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
       updateServerChat(io, roomCode, `${playerName} has joined the game.`);
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
@@ -82,8 +86,10 @@ export function spectateRoom(io, socket) {
       if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
       if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
 
-      join(socket, roomCode, playerName);
+      socket.join(roomCode);
+      socket.emit('goToGame', { playerName, roomCode });
       GameList[roomCode].spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
+      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: false });
       updateServerChat(io, roomCode, `${playerName} is spectating the game.`);
 
       if (GameList[roomCode].gameIsStarted) {
@@ -92,7 +98,7 @@ export function spectateRoom(io, socket) {
 
         let currentQuest = GameList[roomCode].getCurrentQuest();
         socket.emit('updateQuestCards', GameList[roomCode].quests);
-        socket.emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+        socket.emit('updateStatusMsg', GameList[roomCode].gameState['statusMsg']);
         socket.emit('updateVoteTrack', currentQuest.voteTrack);
         if (currentQuest.teamVotesNeededLeft <= 0) {
           io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
@@ -111,18 +117,6 @@ export function spectateRoom(io, socket) {
       resolve(data);
     });
   })
-}
-
-
-/**
- * @param {Object} socket
- * @param {number} roomCode
- * @param {string} playerName
- */
-function join(socket, roomCode, playerName) {
-  socket.join(roomCode);
-  socket.emit('goToGame', { playerName, roomCode });
-  socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
 }
 
 /**

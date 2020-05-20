@@ -56,10 +56,10 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     updatePlayerCards();
 
     if (currentQuest.playersNeededLeft > 0) {
-      updateQuestMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
+      updateStatusMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
                       to go on quest ${currentQuest.questNum}`);
     } else {
-      updateQuestMsg(`Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
+      updateStatusMsg(`Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
       socket.emit('showConfirmTeamBtnToLeader', true);
     }
   });
@@ -72,7 +72,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     if (!GameList[roomCode].removePlayerFromQuest(currentQuest.questNum, playerName)) return;
     updatePlayerCards();
-    updateQuestMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
+    updateStatusMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
                     to go on quest ${currentQuest.questNum}`);
     socket.emit('showConfirmTeamBtnToLeader', false);
   });
@@ -85,7 +85,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     currentQuest.leaderHasConfirmedTeam = true;
 
     GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] = true;
-    updateQuestMsg('Waiting for all players to Accept or Reject team.');
+    updateStatusMsg('Waiting for all players to Accept or Reject team.');
     io.in(roomCode).emit('hidePreviousVoteResults');
 
     GameList[roomCode].players.forEach(player => {
@@ -103,7 +103,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     currentQuest.addTeamVote({ playerName: player.name, decision });
     player.voted = true;
     socket.emit('showAcceptOrRejectTeamBtns', false);
-    updateQuestMsg(`Waiting for ${currentQuest.teamVotesNeededLeft} more player(s) to Accept or Reject team.`);
+    updateStatusMsg(`Waiting for ${currentQuest.teamVotesNeededLeft} more player(s) to Accept or Reject team.`);
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.teamVotesNeededLeft <= 0) {
@@ -126,7 +126,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     currentQuest.addQuestVote(decision);
     player.voted = true;
-    updateQuestMsg(`Waiting for ${currentQuest.questVotesNeededLeft} more player(s) to go on quest.`);
+    updateStatusMsg(`Waiting for ${currentQuest.questVotesNeededLeft} more player(s) to go on quest.`);
 
     // all votes received
     if (currentQuest.questVotesNeededLeft <= 0) {
@@ -152,15 +152,12 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     console.log(`\nMerlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${playerName}.`);
     socket.emit('showAssassinateBtn', false);
 
-    let msg;
-    if (merlinPlayer.name === playerName) {
-      GameList[roomCode].winningTeam = 'evil';
-      msg = `Assassin successfully discovered and killed ${playerName}, who was Merlin. Evil Wins!`;
+    GameList[roomCode].winningTeam = merlinPlayer.name === playerName ? 'Evil' : 'Good';
+    if (GameList[roomCode].winningTeam === 'Evil') {
+      updateStatusMsg(`Assassin successfully discovered and killed ${playerName}, who was Merlin. <br/>Evil wins!`, 'danger');
     } else {
-      GameList[roomCode].winningTeam = 'good';
-      msg = `Assassin killed ${playerName}, who is not Merlin. Good Wins!`;
+      updateStatusMsg(`Assassin killed ${playerName}, who is not Merlin. <br/>Good wins!`, 'success');
     }
-    updateQuestMsg(msg);
     io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
 
@@ -206,7 +203,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
     io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
-    updateQuestMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
+    updateStatusMsg(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
                     to go on quest ${currentQuest.questNum}`);
     console.log(`Current Quest: ${currentQuest.questNum}`);
     io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
@@ -215,9 +212,9 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   /**
    * @param {string} msg 
    */
-  function updateQuestMsg(msg) {
-    GameList[roomCode].gameState['questMsg'] = msg;
-    io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+  function updateStatusMsg(msg, variant = '') {
+    GameList[roomCode].gameState['statusMsg'] = { msg, variant };
+    io.in(roomCode).emit('updateStatusMsg', { msg, variant });
   }
 
   /**
@@ -239,7 +236,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     //check if voteTrack has exceeded 5 (game over)
     if (currentQuest.voteTrack > 5) {
-      updateQuestMsg(`Quest ${currentQuest.questNum} had 5 failed team votes. Evil Wins!`);
+      updateStatusMsg(`Quest ${currentQuest.questNum} had 5 failed team votes. <br/>Evil wins!`, 'danger');
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     }
     //assign next leader
@@ -260,17 +257,18 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       GameList[roomCode].winningTeam = 'evil';
       // GameList[roomCode].resetPlayersProperty('onQuest');
       // GameList[roomCode].quests[questNum].resetQuest();
-      updateQuestMsg(`${GameList[roomCode].questFails} quests failed. Evil Wins!`);
+      updateStatusMsg(`${GameList[roomCode].questFails} quests failed. <br/>Evil wins!`, 'danger');
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     }
     //good is on track to win, evil can assassinate
     else if (GameList[roomCode].questSuccesses >= 3) {
       const assassinSocketID = GameList[roomCode].players.find(player => player.role === 'Assassin').socketID;
-      updateQuestMsg(`Good has triumphed over Evil by succeeding ${GameList[roomCode].questSuccesses} quests. 
-                      Waiting for Assassin to attempt to assassinate Merlin.`)
+      updateStatusMsg(`Good has triumphed over Evil by succeeding ${GameList[roomCode].questSuccesses} quests. 
+                      <br/>Waiting for Assassin to attempt to assassinate Merlin.`)
 
-      io.to(assassinSocketID).emit('updateQuestMsg', `You are the assassin. 
-                                    Assassinate the player you think is Merlin to win the game for evil.`);
+      io.to(assassinSocketID).emit('updateStatusMsg', {
+        msg: `You are the assassin. <br/> Assassinate the player you think is Merlin to win the game for evil.`
+      });
       io.to(assassinSocketID).emit('showAssassinateBtn', true);
     }
     else {
@@ -282,7 +280,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   }
 
   function showSucceedAndFailBtnsToPlayersOnQuest() {
-    updateQuestMsg('Waiting for quest team to go on quest.');
+    updateStatusMsg('Waiting for quest team to go on quest.');
     GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] = false;
     GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] = true;
 
@@ -316,7 +314,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     let currentQuest = GameList[roomCode].getCurrentQuest();
     io.in(roomCode).emit('updateQuestCards', GameList[roomCode].quests);
-    io.in(roomCode).emit('updateQuestMsg', GameList[roomCode].gameState['questMsg']);
+    io.in(roomCode).emit('updateStatusMsg', GameList[roomCode].gameState['statusMsg']);
     io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
 
     if (GameList[roomCode].gameState['showAcceptOrRejectTeamBtns'] && !player.voted) {
@@ -337,8 +335,9 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       socket.emit('showConfirmTeamBtnToLeader', true);
     }
     if (GameList[roomCode].questSuccesses >= 3 && GameList[roomCode].winningTeam === null && player.role === 'Assassin') {
-      socket.emit('updateQuestMsg', `You are the assassin. 
-                                    Assassinate the player you think is Merlin to win the game for evil.`);
+      socket.emit('updateStatusMsg', {
+        msg: `You are the assassin. <br/> Assassinate the player you think is Merlin to win the game for evil.`
+      });
       socket.emit('showAssassinateBtn', true);
     }
   }
