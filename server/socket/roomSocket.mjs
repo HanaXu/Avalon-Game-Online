@@ -98,7 +98,7 @@ export function spectateRoom(io, socket) {
 
         let currentQuest = GameList[roomCode].getCurrentQuest();
         socket.emit('updateQuestCards', GameList[roomCode].quests);
-        socket.emit('updateStatusMsg', GameList[roomCode].gameState['statusMsg']);
+        socket.emit('updateGameStatus', GameList[roomCode].gameState['status']);
         socket.emit('updateVoteTrack', currentQuest.voteTrack);
         if (currentQuest.teamVotesNeededLeft <= 0) {
           io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });

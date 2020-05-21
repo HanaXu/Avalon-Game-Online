@@ -65,7 +65,7 @@ export default class Game {
     this.chat = [];
     this.gameIsStarted = false;
     this.gameState = {
-      statusMsg: {
+      status: {
         msg: '',
         variant: ''
       },

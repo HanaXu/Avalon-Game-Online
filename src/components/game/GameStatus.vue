@@ -1,7 +1,7 @@
 <template>
-  <b-row v-if="statusMsg" class="status-section">
+  <b-row v-if="msg" class="status-section">
     <b-col class="section-title" md="2">Game Status</b-col>
-    <b-col v-html="statusMsg" :class="variant"></b-col>
+    <b-col v-html="msg" :class="variant"></b-col>
   </b-row>
 </template>
 
@@ -9,13 +9,13 @@
 export default {
   data() {
     return {
-      statusMsg: null,
+      msg: null,
       variant: null
     };
   },
   sockets: {
-    updateStatusMsg({ msg, variant }) {
-      this.statusMsg = msg;
+    updateGameStatus({ msg, variant }) {
+      this.msg = msg;
       this.variant = variant;
     }
   }

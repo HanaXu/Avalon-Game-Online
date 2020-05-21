@@ -1,6 +1,6 @@
 <template>
   <b-row v-if="showTeamVoteResults || showQuestVoteResults" class="status-section">
-    <b-col class="section-title" md="2">Vote Status</b-col>
+    <b-col class="section-title" md="2">Vote Results</b-col>
     <b-col>
       <!--all players have voted, show vote results-->
       <div
@@ -17,11 +17,16 @@
       </div>
       <!--all of quest team has voted-->
       <div class="row justify-content-center" v-if="showQuestVoteResults">
-        <div class="col-md-3">
+        <div class="col-md-2">
           <strong>Quest {{questVotes.questNum}} results:</strong>
+        </div>
+        <div class="col-md-3 py-1">
           <b-progress show-value :max="questVotes.succeed + questVotes.fail">
-            <b-progress-bar class="bg--success" :value="questVotes.succeed"></b-progress-bar>
-            <b-progress-bar class="bg--danger" :value="questVotes.fail"></b-progress-bar>
+            <b-progress-bar
+              class="bg--success"
+              :value="questVotes.succeed"
+            >Success: {{questVotes.succeed}}</b-progress-bar>
+            <b-progress-bar class="bg--danger" :value="questVotes.fail">Fail: {{questVotes.fail}}</b-progress-bar>
           </b-progress>
         </div>
       </div>
