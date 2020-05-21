@@ -10,6 +10,7 @@ export default class Player {
    * @property {boolean} onQuest - Indicates if the player is on the quest 
    * @property {boolean} voted - Indicates if the player has voted on team/quest
    * @property {boolean} disconnected - Indicates if the player is disconnected from a started game
+   * @property {boolean} assassinated - Indicates if the player was assassinated
    * @property {string[]} knownIdentities - A list of the player names whose team or identity is known to this player
    */
   constructor(socketID, name, roomCode, type) {
@@ -23,6 +24,7 @@ export default class Player {
     this.onQuest = false;
     this.voted = false;
     this.disconnected = false;
+    this.assassinated = false;
   }
 
   reconnect(socketID) {

@@ -150,7 +150,10 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     if (merlinPlayer.team === 'Evil') return;
 
     console.log(`\nMerlin is: ${merlinPlayer.name} \nAttempting to assassinate: ${playerName}.`);
+    const playerToAssassinate = GameList[roomCode].players.find(player => player.name === playerName);
+    playerToAssassinate.assassinated = true;
     socket.emit('showAssassinateBtn', false);
+    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
 
     GameList[roomCode].winningTeam = merlinPlayer.name === playerName ? 'Evil' : 'Good';
     if (GameList[roomCode].winningTeam === 'Evil') {
@@ -158,7 +161,6 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     } else {
       updateStatusMsg(`Assassin killed ${playerName}, who is not Merlin. <br/>Good wins!`, 'success');
     }
-    io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
   });
 
   socket.on('disconnect', function () {

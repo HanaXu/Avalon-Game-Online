@@ -10,6 +10,7 @@
           good: player.team === 'Good',
           disconnected: player.disconnected === true}"
     >
+      <span v-if="player.assassinated" class="cross-mark">X</span>
       <h5 class="card-title">
         {{ player.name }}
         <span v-if="player.leader">👑</span>
@@ -130,6 +131,16 @@ export default {
     background: #f8d7da;
     transition: 0.4s;
   }
+  .cross-mark {
+    position: absolute;
+    line-height: 1;
+    color: #a42323;
+    font-size: 150px;
+    top: 0;
+    left: 25px;
+    animation-name: shrinkIn;
+    animation-duration: 0.2s;
+  }
 }
 
 /****MOBILE SCREENS****/
@@ -139,6 +150,22 @@ export default {
       width: 90px;
       padding: 2px;
     }
+  }
+  .cross-mark {
+    font-size: 100px !important;
+    left: 12px !important;
+  }
+}
+
+@keyframes shrinkIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.2);
+    animation-timing-function: linear;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 </style>
