@@ -160,7 +160,7 @@ export default {
 @keyframes shrinkIn {
   0% {
     opacity: 0;
-    transform: scale(1.2);
+    transform: scale(3);
     animation-timing-function: linear;
   }
   100% {

@@ -323,14 +323,17 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       socket.emit('showAcceptOrRejectTeamBtns', true);
     }
     else if (currentQuest.teamVotesNeededLeft <= 0) {
-      io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
+      socket.emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
     }
     if (GameList[roomCode].gameState['showSucceedOrFailQuestBtns'] && !player.voted) {
       showSucceedAndFailBtnsToPlayersOnQuest();
     }
+    else if (currentQuest.questVotesNeededLeft <= 0) {
+      socket.emit('revealVoteResults', { type: 'quest', votes: currentQuest.votes });
+    }
     if (currentQuest.leaderInfo.name === playerName && !currentQuest.leaderHasConfirmedTeam) {
       currentQuest.leaderInfo.socketID = socket.id;
-      io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
+      socket.emit('showAddRemovePlayerBtns', true);
       socket.emit('showConfirmTeamBtnToLeader', false);
     }
     if (currentQuest.leaderInfo.name === playerName && currentQuest.playersNeededLeft <= 0 && !currentQuest.leaderHasConfirmedTeam) {
