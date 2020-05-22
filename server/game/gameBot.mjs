@@ -26,7 +26,7 @@ export default class GameBot {
         });
 
         this.socket.on('startGame', () => {
-            let self = GameList[this.roomCode].players.find(player => player.name === this.playerName);
+            let self = GameList[this.roomCode].players.find(player => player.socketID === this.socket.id);
             this.team = self.team;
             this.initializePlayerRiskScores();
         });
@@ -85,6 +85,7 @@ export default class GameBot {
     }
 
     initializePlayerRiskScores() {
+        this.playerRiskScores = [];
         this.sanitizedPlayers.forEach(player => {
            let risk;
            if (player.team === 'hidden') risk = 0;
@@ -159,7 +160,7 @@ export default class GameBot {
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
         this.socket.emit("addPlayerToQuest", evilPlayer.name);
 
-        for (let i = 1; i < teamSize; i++) {
+        for (let i = 0; i < teamSize; i++) {
             if (sortedPlayerRiskScores[i].team !== 'Evil') {
                 this.socket.emit("addPlayerToQuest", sortedPlayerRiskScores[i].name);
             }

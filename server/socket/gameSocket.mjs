@@ -40,8 +40,9 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
 
     GameList[roomCode].startGame(optionalRoles);
     updatePlayerCards();
-    io.in(roomCode).emit('startGame');
-    io.to(socket.id).emit('showSetupOptionsBtn', false);
+    io.in(roomCode).emit('startGame', true);
+    socket.emit('showSetupOptionsBtn', false);
+    socket.emit('showLobbyBtn', false);
     io.in(roomCode).emit('setRoleList', GameList[roomCode].roleList);
     leaderChoosesQuestTeam();
   });
@@ -161,6 +162,8 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     } else {
       updateGameStatus(`Assassin killed ${playerName}, who is not Merlin. <br/>Good wins!`, 'success');
     }
+    const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
+    io.to(hostSocketID).emit('showLobbyBtn', true);
   });
 
   socket.on('disconnect', function () {
@@ -178,16 +181,33 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     if (GameList[roomCode].gameIsStarted) player.disconnected = true;
     else GameList[roomCode].deletePersonFrom({ arrayName: 'players', socketID: socket.id });
     updateServerChat(`${player.name} has disconnected.`);
+    if (GameList[roomCode].players.length <= 5) io.in(roomCode).emit('showStartGameBtn', false);
 
     if (!GameList[roomCode].gameIsStarted && player.type === 'Host' && GameList[roomCode].players.length > 0) {
       const newHost = GameList[roomCode].assignNextHost();
       io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
       updateServerChat(`${newHost.name} has become the new host.`);
-      if (GameList[roomCode].players.length >= 5) io.to(newHost.socketID).emit('showStartGameBtn');
+      if (GameList[roomCode].players.length >= 5) {
+        io.to(newHost.socketID).emit('showStartGameBtn', true)
+      };
     }
 
     if (GameList[roomCode].winningTeam !== null) io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
     else updatePlayerCards();
+  });
+
+  socket.on('resetGame', function () {
+    io.in(roomCode).emit('startGame', false);
+    GameList[roomCode].resetGame();
+    updateGameStatus(null);
+    updatePlayerCards();
+    io.in(roomCode).emit('hidePreviousVoteResults');
+
+    const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
+    if (GameList[roomCode].players.length >= 5) {
+      io.to(hostSocketID).emit('showStartGameBtn', true);
+    }
+    io.to(hostSocketID).emit('showSetupOptionsBtn', true);
   });
 
   function updatePlayerCards() {
@@ -240,6 +260,8 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     if (currentQuest.voteTrack > 5) {
       updateGameStatus(`Quest ${currentQuest.questNum} had 5 failed team votes. Evil wins!`, 'danger');
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
+      io.to(hostSocketID).emit('showLobbyBtn', true);
     }
     //assign next leader
     else {
@@ -259,6 +281,8 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       GameList[roomCode].winningTeam = 'evil';
       updateGameStatus(`${GameList[roomCode].questFails} quests failed. Evil wins!`, 'danger');
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
+      io.to(hostSocketID).emit('showLobbyBtn', true);
     }
     //good is on track to win, evil can assassinate
     else if (GameList[roomCode].questSuccesses >= 3) {
@@ -303,10 +327,11 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
     updateServerChat(`${playerName} has reconnected.`);
 
-    socket.emit('startGame');
+    socket.emit('startGame', true);
     socket.emit('setRoleList', GameList[roomCode].roleList);
     if (GameList[roomCode].winningTeam !== null) {
       io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+      socket.emit('showLobbyBtn', true);
     } else {
       updatePlayerCards();
     }

@@ -31,4 +31,14 @@ export default class Player {
     this.socketID = socketID;
     this.disconnected = false;
   }
+
+  reset() {
+    this.team = '';
+    this.role = '';
+    this.leader = false;
+    this.onQuest = false;
+    this.voted = false;
+    this.disconnected = false;
+    this.assassinated = false;
+  }
 }

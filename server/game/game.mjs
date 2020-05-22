@@ -99,6 +99,25 @@ export default class Game {
     this.assignFirstLeader();
   }
 
+  resetGame() {
+    this.resetPlayers();
+    this.gameIsStarted = false;
+    this.gameState = {
+      status: {
+        msg: '',
+        variant: ''
+      },
+      showAcceptOrRejectTeamBtns: false,
+      showSucceedOrFailQuestBtns: false
+    };
+    this.roleList = {};
+    this.quests = {};
+    this.questFails = 0;
+    this.questSuccesses = 0;
+    this.leaderIndex = 0;
+    this.winningTeam = null;
+  }
+
   initializeQuests() {
     this.quests = {
       1: new Quest(1, this.players.length),
@@ -152,13 +171,18 @@ export default class Game {
    * @param {string} arrayName
    * @param {string} socketID 
    */
-  deletePersonFrom({arrayName, socketID}) {
+  deletePersonFrom({ arrayName, socketID }) {
     for (let i in this[arrayName]) {
       if (this[arrayName][i].socketID === socketID) {
         this[arrayName].splice(i, 1); //delete 1 element at index i
         break;
       }
     }
+  }
+
+  resetPlayers() {
+    this.players = this.players.filter(player => !player.disconnected);
+    this.players.forEach(player => player.reset());
   }
 
   assignNextHost() {

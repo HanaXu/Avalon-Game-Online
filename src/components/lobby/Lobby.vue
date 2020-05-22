@@ -71,12 +71,12 @@ export default {
     }
   },
   sockets: {
-    showStartGameBtn() {
-      this.showStartGameBtn = true;
+    showStartGameBtn(showStartGameBtn) {
+      this.showStartGameBtn = showStartGameBtn;
     },
-    startGame() {
+    startGame(startGame) {
       this.error = false;
-      this.showSetupOptionsBtn = false;
+      this.showSetupOptionsBtn = startGame;
     },
     showSetupOptionsBtn(bool) {
       this.showSetupOptionsBtn = bool;

@@ -10,6 +10,11 @@
         <PlayerCards />
         <QuestCards />
         <VoteTrack />
+        <b-button
+          v-if="showLobbyBtn"
+          @click="goToLobby"
+          class="mt-1 avalon-btn-primary big"
+        >Go To Lobby</b-button>
       </div>
       <GameStatus />
       <VoteResults />
@@ -52,12 +57,21 @@ export default {
   computed: mapState(["playerName"]),
   data() {
     return {
-      gameStarted: false
+      gameStarted: false,
+      showLobbyBtn: false
     };
   },
+  methods: {
+    goToLobby() {
+      this.$socket.emit('resetGame');
+    }
+  },
   sockets: {
-    startGame() {
-      this.gameStarted = true;
+    startGame(startGame) {
+      this.gameStarted = startGame;
+    },
+    showLobbyBtn(showLobbyBtn) {
+      this.showLobbyBtn = showLobbyBtn;
     }
   }
 };
@@ -80,6 +94,6 @@ export default {
 }
 .spectators {
   margin-top: 0 !important;
-  padding: 0.25rem .75rem !important;
+  padding: 0.25rem 0.75rem !important;
 }
 </style>

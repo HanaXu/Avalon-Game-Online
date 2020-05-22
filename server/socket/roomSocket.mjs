@@ -62,7 +62,7 @@ export function joinRoom(io, socket) {
 
       if (GameList[roomCode].players.length >= 5) {
         const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
-        io.to(hostSocketID).emit('showStartGameBtn');
+        io.to(hostSocketID).emit('showStartGameBtn', true);
       }
       resolve(data);
     });
@@ -93,7 +93,7 @@ export function spectateRoom(io, socket) {
       updateServerChat(io, roomCode, `${playerName} is spectating the game.`);
 
       if (GameList[roomCode].gameIsStarted) {
-        socket.emit('startGame');
+        socket.emit('startGame', true);
         socket.emit('setRoleList', GameList[roomCode].roleList);
 
         let currentQuest = GameList[roomCode].getCurrentQuest();
