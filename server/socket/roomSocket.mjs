@@ -1,4 +1,4 @@
-import { GameList } from './gameSocket.mjs';
+import { GameRooms } from './gameSocket.mjs';
 import Game from '../game/game.mjs';
 import Player from '../game/player.mjs';
 import { sanitizeTeamView } from '../game/utility.mjs';
@@ -12,17 +12,19 @@ export function createRoom(socket) {
      * @param {string} playerName
      */
     socket.on('createRoom', function (playerName) {
-      if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
+      if (!nameIsProperLength(playerName)) {
+        return socket.emit('updateErrorMsg', 'Error: Name must be between 1-20 characters.'); 
+      };
 
       const roomCode = generateRoomCode();
-      GameList[roomCode] = new Game(roomCode);
-      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
-      GameList[roomCode].chat.push({ id: Date.now(), serverMsg: `${playerName} has joined the game.` });
+      GameRooms[roomCode] = new Game(roomCode);
+      GameRooms[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
+      GameRooms[roomCode].chat.push({ id: Date.now(), serverMsg: `${playerName} has joined the game.` });
 
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
-      socket.emit('updatePlayerCards', GameList[roomCode].players);
+      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
+      socket.emit('updatePlayerCards', GameRooms[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
       resolve({ playerName, roomCode });
     });
@@ -41,28 +43,22 @@ export function joinRoom(io, socket) {
     socket.on('joinRoom', function (data) {
       const { playerName, roomCode } = data;
 
-      //reconnect disconnected player after the game has started
-      if (GameList[roomCode] && GameList[roomCode].players.find(player => player.name === playerName) &&
-        GameList[roomCode].players.find(player => player.name === playerName).disconnected) {
-        resolve({ playerName, roomCode, reconnect: true });
+      if (isPlayerReconnect(roomCode, playerName)) {
+        resolve({ ...data, reconnect: true });
       }
-      //validate user input
-      if (!validateRoomCodeExists(socket, roomCode)) return;
-      if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
-      if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
-      if (!validateRoomHasCapacityAndGameDidNotStart(socket, roomCode)) return;
+      if (!isValidInput(socket, roomCode, playerName)) return;
 
+      let game = GameRooms[roomCode];
+      game.players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      GameList[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
-      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: true });
+      socket.emit('initChat', { msgs: game.chat, showMsgInput: true });
       updateServerChat(io, roomCode, `${playerName} has joined the game.`);
-      io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
-      io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
+      io.in(roomCode).emit('updatePlayerCards', game.players);
+      io.in(roomCode).emit('updateSpectatorsList', game.spectators);
 
-      if (GameList[roomCode].players.length >= 5) {
-        const hostSocketID = GameList[roomCode].players.find(player => player.type === 'Host').socketID;
-        io.to(hostSocketID).emit('showStartGameBtn', true);
+      if (game.players.length >= 5) {
+        io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
       }
       resolve(data);
     });
@@ -80,40 +76,36 @@ export function spectateRoom(io, socket) {
      */
     socket.on('spectateRoom', function (data) {
       const { playerName, roomCode } = data;
+      if (!isValidInput(socket, roomCode, playerName, true)) return;
 
-      //validate user input
-      if (!validateRoomCodeExists(socket, roomCode)) return;
-      if (!validatePlayerNameMeetsRequirements(socket, playerName)) return;
-      if (!validateNameIsAlreadyTaken(socket, roomCode, playerName)) return;
-
+      let game = GameRooms[roomCode];
+      game.spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      GameList[roomCode].spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
-      socket.emit('initChat', { msgs: GameList[roomCode].chat, showMsgInput: false });
+      socket.emit('initChat', { msgs: game.chat, showMsgInput: false });
       updateServerChat(io, roomCode, `${playerName} is spectating the game.`);
 
-      if (GameList[roomCode].gameIsStarted) {
+      if (game.gameIsStarted) {
         socket.emit('startGame', true);
-        socket.emit('setRoleList', GameList[roomCode].roleList);
+        socket.emit('setRoleList', game.roleList);
 
-        let currentQuest = GameList[roomCode].getCurrentQuest();
-        socket.emit('updateQuestCards', GameList[roomCode].quests);
-        socket.emit('updateGameStatus', GameList[roomCode].gameState['status']);
+        let currentQuest = game.getCurrentQuest();
+        socket.emit('updateQuestCards', game.quests);
+        socket.emit('updateGameStatus', game.gameState['status']);
         socket.emit('updateVoteTrack', currentQuest.voteTrack);
         if (currentQuest.teamVotesNeededLeft <= 0) {
           io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
         }
-        if (GameList[roomCode].winningTeam !== null) {
-          io.in(roomCode).emit('updatePlayerCards', GameList[roomCode].players);
+        if (game.winningTeam !== null) {
+          io.in(roomCode).emit('updatePlayerCards', game.players);
         }
       }
-      if (GameList[roomCode].winningTeam === null) {
-        GameList[roomCode].spectators.forEach(spectator => {
-          io.to(spectator.socketID).emit('updatePlayerCards',
-            sanitizeTeamView(spectator.socketID, 'Spectator', GameList[roomCode].players))
+      if (game.winningTeam === null) {
+        game.spectators.forEach(spectator => {
+          io.to(spectator.socketID).emit('updatePlayerCards', sanitizeTeamView(spectator.socketID, 'Spectator', game.players))
         });
       }
-      io.in(roomCode).emit('updateSpectatorsList', GameList[roomCode].spectators);
+      io.in(roomCode).emit('updateSpectatorsList', game.spectators);
       resolve(data);
     });
   })
@@ -126,13 +118,13 @@ export function spectateRoom(io, socket) {
  */
 function updateServerChat(io, roomCode, msg) {
   const serverMsg = { id: Date.now(), serverMsg: msg };
-  GameList[roomCode].chat.push(serverMsg);
+  GameRooms[roomCode].chat.push(serverMsg);
   io.in(roomCode).emit('updateChat', serverMsg);
 }
 
 function generateRoomCode() {
   let roomCode = Math.floor(Math.random() * 999999) + 1;
-  while (GameList.hasOwnProperty(roomCode)) {
+  while (GameRooms.hasOwnProperty(roomCode)) {
     console.log(`collision with roomCode ${roomCode}`)
     roomCode = Math.floor(Math.random() * 999999) + 1;
   }
@@ -140,71 +132,44 @@ function generateRoomCode() {
   return roomCode;
 }
 
-/**
- * @param {Object} socket 
- * @param {string} errorMsg 
- */
-function logAndEmitError(socket, errorMsg) {
-  console.log(errorMsg);
-  socket.emit('updateErrorMsg', errorMsg)
+function isPlayerReconnect(roomCode, playerName) {
+  let game = GameRooms[roomCode];
+  if (game && game.players) {
+    return game.getPlayer('name', playerName) && game.getPlayer('name', playerName).disconnected;
+  }
+  return false;
 }
 
-/**
- * @param {Object} socket
- * @param {number} roomCode
- */
-function validateRoomCodeExists(socket, roomCode) {
-  if (typeof GameList[roomCode] === 'undefined') {
-    logAndEmitError(socket, `Error: Room code '${GameList[roomCode]}' does not exist.`);
+function isValidInput(socket, roomCode, playerName, isSpectator=false) {
+  let errorMsg = '';
+  if (!GameRooms[roomCode]) {
+    errorMsg = `Error: Room '${roomCode}' does not exist.`;
+  }
+  else if (!nameIsProperLength(playerName)) {
+    errorMsg = 'Error: Name must be between 1-20 characters.';
+  }
+  else if (GameRooms[roomCode].nameIsTaken(playerName)) {
+    errorMsg = `Error: Name '${playerName}' is already taken.`;
+  }
+  else if (!isSpectator && GameRooms[roomCode].gameIsStarted) {
+    errorMsg = 'Error: Cannot join a game that has already started.';
+  }
+  else if (!isSpectator && GameRooms[roomCode].players.length >= 10) {
+    errorMsg = `Error: Room '${roomCode}' has reached a capacity of 10.`;
+  }
+  if (errorMsg.length > 0) {
+    console.log(errorMsg);
+    socket.emit('updateErrorMsg', errorMsg);
     return false;
   }
   return true;
 }
 
 /**
- * @param {Object} socket 
  * @param {string} playerName 
  */
-function validatePlayerNameMeetsRequirements(socket, playerName) {
-  if (playerName === null || playerName.length < 1 || playerName.length > 20) {
-    logAndEmitError(socket, `Error: Player name must be between 1-20 characters: ${playerName}`);
-    return false;
-  }
-  return true;
-}
-
-/**
- * @param {Object} socket
- * @param {number} roomCode
- * @param {string} playerName
- */
-function validateNameIsAlreadyTaken(socket, roomCode, playerName) {
-  if (GameList[roomCode].players.find(player => player.name === playerName)
-    || GameList[roomCode].spectators.find(spectator => spectator.name === playerName)) {
-    logAndEmitError(socket, `Error: Name '${playerName}' is already taken.`);
-    return false;
-  }
-  return true;
-}
-
-/**
- * @param {Object} socket 
- * @param {number} roomCode 
- */
-function validateRoomHasCapacityAndGameDidNotStart(socket, roomCode) {
-  let errorMsg = "";
-
-  if (GameList[roomCode].gameIsStarted) {
-    errorMsg = 'Error: Cannot join a game that has already started';
-  } else if (GameList[roomCode].players.length >= 10) {
-    errorMsg = `Error: Room '${GameList[roomCode].roomCode}' has reached a capacity of 10`;
-  }
-
-  if (errorMsg.length > 0) {
-    logAndEmitError(socket, errorMsg);
-    return false;
-  }
-  return true;
+function nameIsProperLength(playerName) {
+  return playerName !== null && playerName.length > 0 && playerName.length <= 20;
 }
 
 /**

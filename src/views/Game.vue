@@ -3,7 +3,7 @@
     <div class="col-md-11">
       <Spectators />
     </div>
-    <div class="col-md-8 px-2">
+    <div class="col-md-8">
       <Lobby v-if="!gameStarted" />
       <!-- Game -->
       <div class="main-board" v-if="gameStarted">
@@ -21,7 +21,7 @@
       <Actions />
     </div>
     <!-- Misc -->
-    <div class="col-md-3 px-2">
+    <div class="col-md-3">
       <RoleList v-if="gameStarted" />
       <Chat />
     </div>
@@ -69,6 +69,9 @@ export default {
   sockets: {
     startGame(startGame) {
       this.gameStarted = startGame;
+      if (startGame) {
+        sessionStorage.clear();
+      }
     },
     showLobbyBtn(showLobbyBtn) {
       this.showLobbyBtn = showLobbyBtn;

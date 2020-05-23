@@ -1,5 +1,5 @@
 <template>
-  <b-row v-if="msg" class="status-section">
+  <b-row v-if="msg.length > 0" class="status-section">
     <b-col class="section-title" md="2">Game Status</b-col>
     <b-col v-html="msg" :class="variant"></b-col>
   </b-row>
@@ -9,8 +9,8 @@
 export default {
   data() {
     return {
-      msg: null,
-      variant: null
+      msg: '',
+      variant: ''
     };
   },
   sockets: {

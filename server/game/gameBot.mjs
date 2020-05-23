@@ -1,5 +1,5 @@
 import socketIO from 'socket.io-client';
-import { GameList } from '../socket/gameSocket.mjs';
+import { GameRooms } from '../socket/gameSocket.mjs';
 
 const nameList = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 let nameIndex = Math.floor(Math.random() * nameList.length);
@@ -26,7 +26,7 @@ export default class GameBot {
         });
 
         this.socket.on('startGame', () => {
-            let self = GameList[this.roomCode].players.find(player => player.socketID === this.socket.id);
+            let self = GameRooms[this.roomCode].getPlayer('socketID', this.socket.id);
             this.team = self.team;
             this.initializePlayerRiskScores();
         });
@@ -65,7 +65,7 @@ export default class GameBot {
         });
 
         this.socket.on('showSucceedOrFailQuestBtns', () => {
-            const currentQuest = GameList[this.roomCode].getCurrentQuest();
+            const currentQuest = GameRooms[this.roomCode].getCurrentQuest();
             let decision;
             
             if (currentQuest.questNum === 1) decision = 'succeed';
@@ -100,7 +100,7 @@ export default class GameBot {
     }
 
     botAcceptOrRejectTeam() {
-        const currentQuest = GameList[this.roomCode].getCurrentQuest();
+        const currentQuest = GameRooms[this.roomCode].getCurrentQuest();
         let decision;
         if (this.team === 'Evil') {
             decision = this.makeEvilQuestTeamVote(currentQuest);
@@ -154,7 +154,7 @@ export default class GameBot {
     }
 
     makeEvilLeaderPicks() {
-        const { teamSize } = GameList[this.roomCode].getCurrentQuest();
+        const { teamSize } = GameRooms[this.roomCode].getCurrentQuest();
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
 
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
@@ -169,7 +169,7 @@ export default class GameBot {
     }
 
     makeGoodLeaderPicks() {
-        const { teamSize } = GameList[this.roomCode].getCurrentQuest();
+        const { teamSize } = GameRooms[this.roomCode].getCurrentQuest();
 
         //add players with the lowest risk score
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));

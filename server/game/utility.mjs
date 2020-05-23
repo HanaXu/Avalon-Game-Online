@@ -18,37 +18,37 @@ export function populateRoleList(teamObj) {
     };
     for (let role in teamObj) {
         if (teamObj[role] <= 0) continue;
-        GoodTeam.has(role) ? roleList['good'][role] = teamObj[role]
-            : roleList['evil'][role] = teamObj[role];
+        if (GoodTeam.has(role)) roleList['good'][role] = teamObj[role];
+        else roleList['evil'][role] = teamObj[role];
     }
     return roleList;
 }
 
 /**
- * @param {string} yourSocketID 
- * @param {string} yourRole 
+ * @param {string} socketID 
+ * @param {string} role 
  * @param {array} players 
  * @returns {array}
  */
-export function sanitizeTeamView(yourSocketID, yourRole, players) {
+export function sanitizeTeamView(socketID, role, players) {
     const clonedPlayers = JSON.parse(JSON.stringify(players));
 
-    if (yourRole === 'Spectator') {
+    if (role === 'Spectator') {
         return sanitizeForSpectators(clonedPlayers);
     }
-    else if (yourRole === 'Percival') {
-        return sanitizeForPercival(yourSocketID, clonedPlayers);
+    else if (role === 'Percival') {
+        return sanitizeForPercival(socketID, clonedPlayers);
     }
-    else if (yourRole === 'Merlin') {
-        return sanitizeForMerlin(yourSocketID, clonedPlayers);
+    else if (role === 'Merlin') {
+        return sanitizeForMerlin(socketID, clonedPlayers);
     }
     //loyal servant of arthur or Oberon
-    else if (GoodTeam.has(yourRole) || yourRole === 'Oberon') {
-        return sanitizeForGoodTeam(yourSocketID, clonedPlayers);
+    else if (GoodTeam.has(role) || role === 'Oberon') {
+        return sanitizeForGoodTeam(socketID, clonedPlayers);
     }
     //evil team
-    else if (!GoodTeam.has(yourRole)) {
-        return sanitizeForEvilTeam(yourSocketID, clonedPlayers);
+    else if (!GoodTeam.has(role)) {
+        return sanitizeForEvilTeam(socketID, clonedPlayers);
     }
 }
 
@@ -67,17 +67,14 @@ function sanitizeForSpectators(players) {
 
 /**
  * Hide everyone else's info
- * @param {string} yourSocketID 
+ * @param {string} socketID 
  * @param {array} players 
  * @returns {array}
  */
-function sanitizeForGoodTeam(yourSocketID, players) {
+function sanitizeForGoodTeam(socketID, players) {
     for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
-            // dont hide your own info
-            continue;
-        } else {
-            // hide everyone else's info
+        if (players[i].socketID === socketID) continue;
+        else {
             players[i].role = 'hidden';
             players[i].team = 'hidden';
         }
@@ -87,24 +84,18 @@ function sanitizeForGoodTeam(yourSocketID, players) {
 
 /**
  * Merlin & Morgana both appear to be Merlin
- * @param {string} yourSocketID 
+ * @param {string} socketID 
  * @param {array} players 
  * @returns {array}
  */
-function sanitizeForPercival(yourSocketID, players) {
+function sanitizeForPercival(socketID, players) {
     for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
-            // dont hide your own info
-            continue;
-        } else if (
-            players[i].role == 'Merlin' ||
-            players[i].role == 'Morgana'
-        ) {
+        if (players[i].socketID === socketID) continue;
+        else if (players[i].role == 'Merlin' || players[i].role == 'Morgana') {
             //Merlin & Morgana both appear to be Merlin
             players[i].role = 'Merlin';
             players[i].team = 'Good';
         } else {
-            // hide everyone else's info
             players[i].role = 'hidden';
             players[i].team = 'hidden';
         }
@@ -114,24 +105,18 @@ function sanitizeForPercival(yourSocketID, players) {
 
 /**
  * Hide identities of good team & Oberon
- * @param {string} yourSocketID 
+ * @param {string} socketID 
  * @param {array} players 
  * @returns {array}
  */
-function sanitizeForEvilTeam(yourSocketID, players) {
+function sanitizeForEvilTeam(socketID, players) {
     for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
-            // dont hide your own info
-            continue;
-        } else if (
-            GoodTeam.has(players[i].role) ||
-            players[i].role == 'Oberon'
-        ) {
+        if (players[i].socketID === socketID) continue;
+        else if (GoodTeam.has(players[i].role) || players[i].role == 'Oberon') {
             // hide good team's info (& Oberon)
             players[i].role = 'hidden';
             players[i].team = 'hidden';
         } else {
-            //just hide role of your teammates
             players[i].role = 'hidden';
         }
     }
@@ -140,24 +125,18 @@ function sanitizeForEvilTeam(yourSocketID, players) {
 
 /**
  * Hide identities of good team & Morgana
- * @param {string} yourSocketID 
+ * @param {string} socketID 
  * @param {array} players 
  * @returns {array}
  */
-function sanitizeForMerlin(yourSocketID, players) {
+function sanitizeForMerlin(socketID, players) {
     for (const i in players) {
-        if (players[i].socketID === yourSocketID) {
-            // dont hide your own info
-            continue;
-        } else if (
-            GoodTeam.has(players[i].role) ||
-            players[i].role == 'Mordred'
-        ) {
+        if (players[i].socketID === socketID) continue;
+        else if (GoodTeam.has(players[i].role) || players[i].role == 'Mordred') {
             // hide good team's info (& Mordred)
             players[i].role = 'hidden';
             players[i].team = 'hidden';
         } else {
-            //just hide role of your teammates
             players[i].role = 'hidden';
         }
     }
@@ -177,7 +156,7 @@ export function shuffle(array) {
     // While there remain elements to shuffle...
     while (currentIndex !== 0) {
         // Pick a remaining element...
-        randomIndex = Math.floor(Math.random() * currentIndex);
+        randomIndex = Math.floor(Math.random() * (currentIndex + 1));
         currentIndex--;
         // And swap it with the current element.
         temporaryValue = array[currentIndex];

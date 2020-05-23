@@ -94,6 +94,7 @@ export default class Game {
    */
   startGame(optionalRoles) {
     this.gameIsStarted = true;
+    // shuffle(this.players);
     this.initializeQuests();
     this.assignRoles(optionalRoles);
     this.assignFirstLeader();
@@ -165,6 +166,31 @@ export default class Game {
       }
     }
     return false;
+  }
+
+  /**
+   * @param key 
+   * @param value
+   */
+  getPlayer(key, value) {
+    return this.players.find(player => player[key] === value);
+  }
+
+  /**
+   * @param key 
+   * @param value
+   */
+  getSpectator(key, value) {
+    return this.spectators.find(spectator => spectator[key] === value);
+  }
+
+  /**
+   * @param {string} name
+   * @return {boolean} 
+   */
+  nameIsTaken(name) {
+    return this.players.some(player => player.name === name) ||
+           this.spectators.some(spectator => spectator.name === name);
   }
 
   /**
