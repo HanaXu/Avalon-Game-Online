@@ -92,30 +92,6 @@ export default class Game {
   }
 
   /**
-   * @param {string} socketID 
-   * @param {string} name 
-   * @param {string} type 
-   */
-  addPlayer(socketID, name, type) {
-    this.players.push(new Player(socketID, name, type));
-    const msg = { id: Date.now(), serverMsg: `${name} has joined the game.` };
-    this.chat.push(msg);
-    return msg;
-  }
-
-  /**
-   * @param {string} socketID 
-   * @param {string} name 
-   * @param {string} type 
-   */
-  addSpectator(socketID, name, type) {
-    this.spectators.push(new Player(socketID, name, type));
-    const msg = { id: Date.now(), serverMsg: `${name} is spectating the game.` };
-    this.chat.push(msg);
-    return msg;
-  }
-
-  /**
    * @param {Object} optionalRoles 
    */
   startGame(optionalRoles) {
@@ -161,63 +137,28 @@ export default class Game {
     });
   }
 
-  getCurrentQuest() {
-    return this.quests[this.currentQuestNum];
-  }
-
   /**
+   * @param {string} socketID 
    * @param {string} name 
+   * @param {string} type 
    */
-  addPlayerToQuest(name) {
-    let player = this.getPlayer('name', name);
-    if (player.name === name && this.quests[this.currentQuestNum].playersNeededLeft > 0 && !player.onQuest) {
-      this.quests[this.currentQuestNum].addPlayer(name);
-      player.onQuest = true;
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * @param {string} name 
-   */
-  removePlayerFromQuest(name) {
-    let player = this.getPlayer('name', name);
-    if (player.name === name && player.onQuest) {
-      this.quests[this.currentQuestNum].removePlayer(name);
-      player.onQuest = false;
-      return true;
-    }
-    return false;
+  addPlayer(socketID, name, type) {
+    this.players.push(new Player(socketID, name, type));
+    const msg = { id: Date.now(), serverMsg: `${name} has joined the game.` };
+    this.chat.push(msg);
+    return msg;
   }
 
   /**
    * @param {string} socketID 
-   * @param {string} decision 
+   * @param {string} name 
+   * @param {string} type 
    */
-  addTeamVote(socketID, decision) {
-    let player = this.getPlayer('socketID', socketID);
-    this.quests[this.currentQuestNum].addTeamVote(player.name, decision);
-    player.voted = true;
-  }
-
-  assignTeamResult() {
-    this.quests[this.currentQuestNum].assignTeamResult();
-  }
-
-  /**
-   * @param {string} socketID 
-   * @param {string} decision 
-   */
-  addQuestVote(socketID, decision) {
-    let player = this.getPlayer('socketID', socketID);
-    this.quests[this.currentQuestNum].addQuestVote(decision);
-    player.voted = true;
-  }
-
-  assignQuestResult() {
-    const questSuccessful = this.quests[this.currentQuestNum].assignQuestResult();
-    questSuccessful ? this.questSuccesses++ : this.questFails++;
+  addSpectator(socketID, name, type) {
+    this.spectators.push(new Player(socketID, name, type));
+    const msg = { id: Date.now(), serverMsg: `${name} is spectating the game.` };
+    this.chat.push(msg);
+    return msg;
   }
 
   /**
@@ -234,6 +175,88 @@ export default class Game {
    */
   getSpectator(key, value) {
     return this.spectators.find(spectator => spectator[key] === value);
+  }
+
+  getCurrentQuest() {
+    return this.quests[this.currentQuestNum];
+  }
+
+  /**
+   * @param {string} name 
+   */
+  addPlayerToQuest(name) {
+    let player = this.getPlayer('name', name);
+    if (player && !player.onQuest && this.getCurrentQuest().playersNeededLeft > 0) {
+      this.getCurrentQuest().addPlayer(name);
+      player.onQuest = true;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @param {string} name 
+   */
+  removePlayerFromQuest(name) {
+    let player = this.getPlayer('name', name);
+    if (player && player.onQuest) {
+      this.getCurrentQuest().removePlayer(name);
+      player.onQuest = false;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} decision 
+   */
+  addTeamVote(socketID, decision) {
+    let player = this.getPlayer('socketID', socketID);
+    if (player && !player.voted) {
+      this.getCurrentQuest().addTeamVote(player.name, decision);
+      player.voted = true;
+      return true;
+    }
+    return false;
+  }
+
+  assignTeamResult() {
+    this.getCurrentQuest().assignTeamResult();
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} decision 
+   */
+  addQuestVote(socketID, decision) {
+    let player = this.getPlayer('socketID', socketID);
+    if (player && !player.voted) {
+      this.getCurrentQuest().addQuestVote(decision);
+      player.voted = true;
+      return true;
+    }
+    return false;
+  }
+
+  assignQuestResult() {
+    const questSuccessful = this.getCurrentQuest().assignQuestResult();
+    questSuccessful ? this.questSuccesses++ : this.questFails++;
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} name 
+   * @returns {boolean}
+   */
+  assassinatePlayer(name) {
+    let playerToAssassinate = this.getPlayer('name', name);
+    if (playerToAssassinate && playerToAssassinate.team === 'Good') {
+      playerToAssassinate.assassinated = true;
+      playerToAssassinate.role === 'Merlin' ? this.winningTeam = 'Evil' : this.winningTeam = 'Good';
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -264,18 +287,14 @@ export default class Game {
   }
 
   assignNextHost() {
-    for (let i in this.players) {
-      if (this.players[i] !== null) {
-        this.players[i].type = 'Host';
-        return this.players[i];
-      }
-    }
+    this.players[0].type = 'Host';
+    return this.players[0];
   }
 
   assignNextLeader() {
     this.players[this.leaderIndex].leader = false; //reset prev leader Player object
     this.resetPlayersProperty('onQuest');
-    this.quests[this.currentQuestNum].resetQuest();
+    this.getCurrentQuest().resetQuest();
 
     //increment leaderIndex (mod by playerLength so it wraps around)
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
@@ -286,10 +305,18 @@ export default class Game {
     }
     //assign new leader to correct Player
     this.players[this.leaderIndex].leader = true;
-    this.quests[this.currentQuestNum].assignLeaderInfo({
+    this.getCurrentQuest().assignLeaderInfo({
       name: this.players[this.leaderIndex].name,
       socketID: this.players[this.leaderIndex].socketID
     });
+  }
+
+  startNextQuest() {
+    if (this.currentQuestNum < 5) {
+      this.quests[this.currentQuestNum].currentQuest = false;
+      this.quests[this.currentQuestNum += 1].currentQuest = true;
+      this.assignNextLeader();
+    }
   }
 
   /**
@@ -335,28 +362,6 @@ export default class Game {
     this.players.forEach(player => {
       player[property] = false;
     });
-  }
-
-  startNextQuest() {
-    if (this.currentQuestNum < 5) {
-      this.quests[this.currentQuestNum].currentQuest = false;
-      this.quests[this.currentQuestNum += 1].currentQuest = true;
-      this.assignNextLeader();
-    }
-  }
-
-  /**
-   * @param {string} name 
-   * @returns {boolean}
-   */
-  assassinatePlayer(socketID, name) {
-    let playerToAssassinate = this.getPlayer('name', name);
-    if (this.getPlayer('socketID', socketID).role === 'Assassin' && playerToAssassinate.team === 'Good') {
-      playerToAssassinate.assassinated = true;
-      playerToAssassinate.role === 'Merlin' ? this.winningTeam = 'Evil' : this.winningTeam = 'Good';
-      return true;
-    }
-    return false;
   }
 
 }

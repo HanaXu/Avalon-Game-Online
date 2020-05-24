@@ -93,7 +93,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('playerAcceptsOrRejectsTeam', function (decision) {
-    game.addTeamVote(socket.id, decision);
+    if (!game.addTeamVote(socket.id, decision)) return;
     socket.emit('showAcceptOrRejectTeamBtns', false);
 
     let currentQuest = game.getCurrentQuest();
@@ -114,7 +114,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('questVote', function (decision) {
-    game.addQuestVote(socket.id, decision);
+    if (!game.addQuestVote(socket.id, decision)) return;
 
     let currentQuest = game.getCurrentQuest();
     updateGameStatus(`Waiting for ${currentQuest.questVotesNeededLeft} more player(s) to go on quest.`);
@@ -134,7 +134,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} playerName 
    */
   socket.on('assassinatePlayer', function (playerName) {
-    if (!game.assassinatePlayer(socket.id, playerName)) return;
+    if (!game.assassinatePlayer(playerName)) return;
     socket.emit('showAssassinateBtn', false);
     io.in(roomCode).emit('updatePlayerCards', game.players);
 
