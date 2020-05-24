@@ -162,11 +162,13 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     io.in(roomCode).emit('hidePreviousVoteResults');
     io.to(game.getPlayer('type', 'Host').socketID).emit('showSetupOptionsBtn', true);
     game.resetGame();
-    updateGameStatus('');
     updatePlayerCards();
 
     if (game.players.length >= 5) {
       io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
+      updateGameStatus('Waiting for Host to start the game.');
+    } else {
+      updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
     }
   });
 
@@ -307,6 +309,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       game.getPlayer('socketID', socketID).disconnected = true
     } else {
       game.deletePersonFrom({ arrayName: 'players', socketID: socketID })
+      updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
     }
   }
 

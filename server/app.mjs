@@ -25,7 +25,7 @@ io.on('connection', socket => {
   // socket.on('checkForAuth', () => {
   //   socket.emit('setAuth', requireAuth);
   // });
-  Promise.race([createRoom(socket), joinRoom(io, socket), spectateRoom(io, socket)])
+  Promise.race([createRoom(io, socket), joinRoom(io, socket), spectateRoom(io, socket)])
     .then(({ playerName, roomCode, reconnect }) => {
       gameSocket(io, socket, port, roomCode, playerName, reconnect);
     });

@@ -3,9 +3,10 @@ import Game from '../game/game.mjs';
 import { sanitizeTeamView } from '../game/utility.mjs';
 
 /**
+ * @param {Object} io
  * @param {Object} socket
  */
-export function createRoom(socket) {
+export function createRoom(io, socket) {
   return new Promise((resolve) => {
     /**
      * @param {string} playerName
@@ -24,6 +25,7 @@ export function createRoom(socket) {
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
       socket.emit('updatePlayerCards', GameRooms[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
+      updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
       resolve({ playerName, roomCode });
     });
   });
@@ -53,9 +55,11 @@ export function joinRoom(io, socket) {
       io.in(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
+      updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
 
       if (GameRooms[roomCode].players.length >= 5) {
         io.to(GameRooms[roomCode].getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
+        updateGameStatus(io, roomCode, 'Waiting for Host to start the game.');
       }
       resolve(data);
     });
@@ -78,20 +82,25 @@ export function spectateRoom(io, socket) {
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: false });
+      socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
       const msg = GameRooms[roomCode].addSpectator(socket.id, playerName, 'Spectator');
       io.in(roomCode).emit('updateChat', msg);
+      io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
 
-      if (GameRooms[roomCode].gameIsStarted) emitGameStartedStuff(io, socket, roomCode);
+      if (GameRooms[roomCode].gameIsStarted) emitGameStartedStuff(socket, roomCode);
       if (GameRooms[roomCode].winningTeam !== null) {
-        io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
+        socket.emit('updatePlayerCards', GameRooms[roomCode].players);
       } else {
-        sanitizeSpectatorView(io, roomCode);
+        socket.emit('updatePlayerCards', sanitizeTeamView(socket.id, 'Spectator', GameRooms[roomCode].players));
       }
       resolve(data);
     });
   })
 }
 
+/**
+ * @returns {number}
+ */
 function generateRoomCode() {
   let roomCode = Math.floor(Math.random() * 999999) + 1;
   while (GameRooms.hasOwnProperty(roomCode)) {
@@ -102,7 +111,22 @@ function generateRoomCode() {
   return roomCode;
 }
 
-function emitGameStartedStuff(io, socket, roomCode) {
+/**
+ * @param {Object} io 
+ * @param {number} roomCode 
+ * @param {string} msg 
+ * @param {string} variant 
+ */
+function updateGameStatus(io, roomCode, msg, variant = '') {
+  GameRooms[roomCode].gameState['status'] = { msg, variant };
+  io.in(roomCode).emit('updateGameStatus', { msg, variant });
+}
+
+/**
+ * @param {Object} socket 
+ * @param {number} roomCode 
+ */
+function emitGameStartedStuff(socket, roomCode) {
   socket.emit('startGame', true);
   socket.emit('setRoleList', GameRooms[roomCode].roleList);
 
@@ -111,18 +135,15 @@ function emitGameStartedStuff(io, socket, roomCode) {
   socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
   socket.emit('updateVoteTrack', voteTrack);
   if (teamVotesNeededLeft <= 0) {
-    io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: acceptOrRejectTeam });
+    socket.emit('revealVoteResults', { type: 'team', votes: acceptOrRejectTeam });
   }
 }
 
-function sanitizeSpectatorView(io, roomCode) {
-  GameRooms[roomCode].spectators.forEach(spectator => {
-    io.to(spectator.socketID).emit('updatePlayerCards',
-      sanitizeTeamView(spectator.socketID, 'Spectator', GameRooms[roomCode].players))
-  });
-  io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
-}
-
+/**
+ * @param {number} roomCode 
+ * @param {string} playerName 
+ * @returns {boolean} 
+ */
 function isPlayerReconnect(roomCode, playerName) {
   let game = GameRooms[roomCode];
   if (game && game.players) {
@@ -131,6 +152,13 @@ function isPlayerReconnect(roomCode, playerName) {
   return false;
 }
 
+/**
+ * @param {Object} socket 
+ * @param {number} roomCode 
+ * @param {string} playerName 
+ * @param {boolean} isSpectator 
+ * @returns {boolean} 
+ */
 function isValidInput(socket, roomCode, playerName, isSpectator = false) {
   let errorMsg = '';
   if (!GameRooms[roomCode]) {
@@ -158,6 +186,7 @@ function isValidInput(socket, roomCode, playerName, isSpectator = false) {
 
 /**
  * @param {string} playerName 
+ * @returns {boolean} 
  */
 function nameIsProperLength(playerName) {
   return playerName !== null && playerName.length > 0 && playerName.length <= 20;
@@ -168,6 +197,7 @@ function nameIsProperLength(playerName) {
  * If 5 or 6 players, cannot have more than 1 of Mordred, Oberon, and Morgana
  * @param {Object} roles 
  * @param {number} numPlayers 
+ * @returns {string} 
  */
 export function validateOptionalRoles(roles, numPlayers) {
   const evilRoles = roles.filter((role) => role != "Percival");
