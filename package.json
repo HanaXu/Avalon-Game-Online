@@ -5,8 +5,7 @@
   "scripts": {
     "vue": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "node": "node --experimental-modules server/app.mjs",
-    "start": "concurrently \"vue-cli-service serve\" \"node --experimental-modules server/app.mjs\""
+    "serve": "node --experimental-modules server/app.mjs"
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
@@ -28,7 +27,6 @@
     "@vue/cli-plugin-babel": "^3.5.5",
     "@vue/cli-plugin-pwa": "^3.5.1",
     "@vue/cli-service": "^4.1.1",
-    "concurrently": "^5.2.0",
     "node-sass": "^4.14.1",
     "pm2": "^4.4.0",
     "sass-loader": "^7.1.0",
