@@ -90,7 +90,7 @@ export default class Quest {
   }
 
   assignTeamResult() {
-    this.teamAccepted = this.acceptOrRejectTeam.reject.length >= this.totalNumPlayers / 2;
+    this.teamAccepted = this.acceptOrRejectTeam.reject.length < this.totalNumPlayers / 2;
     this.acceptOrRejectTeam.accept.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
     this.acceptOrRejectTeam.reject.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
   }

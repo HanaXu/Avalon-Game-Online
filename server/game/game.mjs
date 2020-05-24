@@ -76,6 +76,7 @@ export default class Game {
     this.players = [];
     this.spectators = [];
     this.quests = {};
+    this.currentQuestNum = null;
     this.questFails = 0;
     this.questSuccesses = 0;
     this.leaderIndex = 0;
@@ -97,7 +98,6 @@ export default class Game {
     // shuffle(this.players);
     this.initializeQuests();
     this.assignRoles(optionalRoles);
-    this.assignFirstLeader();
   }
 
   resetGame() {
@@ -127,15 +127,17 @@ export default class Game {
       4: new Quest(4, this.players.length, this.players.length > 6),
       5: new Quest(5, this.players.length)
     };
+    this.currentQuestNum = 1;
     this.quests[1].currentQuest = true;
+    this.players[0].leader = true;
+    this.quests[1].assignLeaderInfo({
+      name: this.players[0].name,
+      socketID: this.players[0].socketID
+    });
   }
 
   getCurrentQuest() {
-    for (let i in this.quests) {
-      if (this.quests[i].currentQuest === true) {
-        return this.quests[i];
-      }
-    }
+    return this.quests[this.currentQuestNum];
   }
 
   /**
@@ -190,7 +192,7 @@ export default class Game {
    */
   nameIsTaken(name) {
     return this.players.some(player => player.name === name) ||
-           this.spectators.some(spectator => spectator.name === name);
+      this.spectators.some(spectator => spectator.name === name);
   }
 
   /**
@@ -220,26 +222,10 @@ export default class Game {
     }
   }
 
-  assignFirstLeader() {
-    // const randomNumber = Math.floor(Math.random() * Math.floor(this.players.length));
-    for (let i in this.players) {
-      if (this.players[i] != null) {
-        this.players[i].leader = true;
-        this.leaderIndex = i;
-        this.quests[1].assignLeaderInfo({ name: this.players[i].name, socketID: this.players[i].socketID });
-        break;
-      }
-    }
-  }
-
-  /**
-   * Assign next room leader (goes in order incrementally always)
-   * @param {number} questNum 
-   */
-  assignNextLeader(questNum) {
+  assignNextLeader() {
     this.players[this.leaderIndex].leader = false; //reset prev leader Player object
     this.resetPlayersProperty('onQuest');
-    this.quests[questNum].resetQuest();
+    this.quests[this.currentQuestNum].resetQuest();
 
     //increment leaderIndex (mod by playerLength so it wraps around)
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
@@ -250,7 +236,7 @@ export default class Game {
     }
     //assign new leader to correct Player
     this.players[this.leaderIndex].leader = true;
-    this.quests[questNum].assignLeaderInfo({
+    this.quests[this.currentQuestNum].assignLeaderInfo({
       name: this.players[this.leaderIndex].name,
       socketID: this.players[this.leaderIndex].socketID
     });
@@ -261,9 +247,8 @@ export default class Game {
    */
   assignRoles(optionalRoles) {
     let shuffledIdentities;
-    let teamObj = Game.BaseRoles[this.players.length];
+    let teamObj = JSON.parse(JSON.stringify(Game.BaseRoles[this.players.length]));
     if (optionalRoles.length > 0) {
-      teamObj = JSON.parse(JSON.stringify(Game.BaseRoles[this.players.length]));
       optionalRoles.forEach(optionalRole => {
         switch (optionalRole) {
           case 'Percival':
@@ -309,14 +294,25 @@ export default class Game {
     questSuccessful ? this.questSuccesses++ : this.questFails++;
   }
 
+  startNextQuest() {
+    if (this.currentQuestNum < 5) {
+      this.quests[this.currentQuestNum].currentQuest = false;
+      this.quests[this.currentQuestNum += 1].currentQuest = true;
+      this.assignNextLeader();
+    }
+  }
+
   /**
-   * @param {number} lastQuestNum 
+   * @param {string} playerName 
+   * @returns {boolean}
    */
-  startNextQuest(lastQuestNum) {
-    if (lastQuestNum < 5) {
-      this.quests[lastQuestNum].currentQuest = false;
-      this.quests[lastQuestNum + 1].currentQuest = true;
-      this.assignNextLeader(lastQuestNum + 1);
+  assassinatePlayer(playerName) {
+    let player = this.getPlayer('name', playerName);
+    player.assassinated = true;
+    if (player.role === 'Merlin') {
+      this.winningTeam = 'Evil';
+    } else {
+      this.winningTeam = 'Good';
     }
   }
 

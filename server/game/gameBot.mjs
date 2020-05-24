@@ -65,10 +65,9 @@ export default class GameBot {
         });
 
         this.socket.on('showSucceedOrFailQuestBtns', () => {
-            const currentQuest = GameRooms[this.roomCode].getCurrentQuest();
             let decision;
-            
-            if (currentQuest.questNum === 1) decision = 'succeed';
+
+            if (GameRooms[this.roomCode].currentQuestNum === 1) decision = 'succeed';
             else decision = this.team === 'Evil' ? 'fail' : 'succeed';
             this.socket.emit('questVote', decision);
         });
@@ -87,11 +86,11 @@ export default class GameBot {
     initializePlayerRiskScores() {
         this.playerRiskScores = [];
         this.sanitizedPlayers.forEach(player => {
-           let risk;
-           if (player.team === 'hidden') risk = 0;
-           else if (player.team === 'Evil') risk = 100;
-           else if (player.team === 'Good') risk = -100;
-           this.playerRiskScores.push({
+            let risk;
+            if (player.team === 'hidden') risk = 0;
+            else if (player.team === 'Evil') risk = 100;
+            else if (player.team === 'Good') risk = -100;
+            this.playerRiskScores.push({
                 name: player.name,
                 team: player.team,
                 risk: risk
@@ -109,7 +108,7 @@ export default class GameBot {
         }
         return decision;
     }
-    
+
     /**
      * @param {Object} currentQuest 
      */

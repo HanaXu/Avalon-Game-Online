@@ -13,7 +13,7 @@ export function createRoom(socket) {
      */
     socket.on('createRoom', function (playerName) {
       if (!nameIsProperLength(playerName)) {
-        return socket.emit('updateErrorMsg', 'Error: Name must be between 1-20 characters.'); 
+        return socket.emit('updateErrorMsg', 'Error: Name must be between 1-20 characters.');
       };
 
       const roomCode = generateRoomCode();
@@ -140,7 +140,7 @@ function isPlayerReconnect(roomCode, playerName) {
   return false;
 }
 
-function isValidInput(socket, roomCode, playerName, isSpectator=false) {
+function isValidInput(socket, roomCode, playerName, isSpectator = false) {
   let errorMsg = '';
   if (!GameRooms[roomCode]) {
     errorMsg = `Error: Room '${roomCode}' does not exist.`;
