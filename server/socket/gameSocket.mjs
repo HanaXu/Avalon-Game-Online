@@ -49,16 +49,15 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} playerName 
    */
   socket.on('addPlayerToQuest', function (playerName) {
-    let currentQuest = game.getCurrentQuest();
+    if (!game.addPlayerToQuest(playerName)) return;
 
-    if (!game.addPlayerToQuest(currentQuest.questNum, playerName)) return;
     updatePlayerCards();
-
-    if (currentQuest.playersNeededLeft > 0) {
-      updateGameStatus(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
-                      to go on quest ${currentQuest.questNum}`);
+    let { leaderInfo, playersNeededLeft, questNum } = game.getCurrentQuest();
+    if (playersNeededLeft > 0) {
+      updateGameStatus(`${leaderInfo.name} is choosing ${playersNeededLeft} more player(s)
+                      to go on quest ${questNum}`);
     } else {
-      updateGameStatus(`Waiting for ${currentQuest.leaderInfo.name} to confirm team.`);
+      updateGameStatus(`Waiting for ${leaderInfo.name} to confirm team.`);
       socket.emit('showConfirmTeamBtnToLeader', true);
     }
   });
@@ -67,21 +66,19 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} playerName 
    */
   socket.on('removePlayerFromQuest', function (playerName) {
-    let currentQuest = game.getCurrentQuest();
+    if (!game.removePlayerFromQuest(playerName)) return;
 
-    if (!game.removePlayerFromQuest(currentQuest.questNum, playerName)) return;
     updatePlayerCards();
-    updateGameStatus(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
-                    to go on quest ${currentQuest.questNum}`);
+    let { leaderInfo, playersNeededLeft, questNum } = game.getCurrentQuest();
+    updateGameStatus(`${leaderInfo.name} is choosing ${playersNeededLeft} more player(s)
+                    to go on quest ${questNum}`);
     socket.emit('showConfirmTeamBtnToLeader', false);
   });
 
   socket.on('leaderHasConfirmedTeam', function () {
-    let currentQuest = game.getCurrentQuest();
-
     socket.emit('showConfirmTeamBtnToLeader', false);
     socket.emit('showAddRemovePlayerBtns', false);
-    currentQuest.leaderHasConfirmedTeam = true;
+    game.getCurrentQuest().leaderHasConfirmedTeam = true;
 
     game.gameState['showAcceptOrRejectTeamBtns'] = true;
     updateGameStatus('Waiting for all players to Accept or Reject team.');
@@ -96,20 +93,20 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('playerAcceptsOrRejectsTeam', function (decision) {
-    let currentQuest = game.getCurrentQuest();
-
-    currentQuest.addTeamVote({ playerName: game.getPlayer('socketID', socket.id).name, decision });
-    game.getPlayer('socketID', socket.id).voted = true;
+    game.addTeamVote(socket.id, decision);
     socket.emit('showAcceptOrRejectTeamBtns', false);
+
+    let currentQuest = game.getCurrentQuest();
     updateGameStatus(`Waiting for ${currentQuest.teamVotesNeededLeft} more player(s) to Accept or Reject team.`);
 
     //everyone has voted, reveal the votes & move to next step
     if (currentQuest.teamVotesNeededLeft <= 0) {
       game.gameState['showAcceptOrRejectTeamBtns'] = false;
-      currentQuest.assignTeamResult();
+      game.assignTeamResult();
       revealVoteResults('team', currentQuest.acceptOrRejectTeam);
+      io.in(roomCode).emit('updateBotRiskScores', currentQuest);
       if (currentQuest.teamAccepted) showSucceedAndFailBtnsToPlayersOnQuest();
-      else incrementVoteTrackAndAssignNextLeader(currentQuest);
+      else incrementVoteTrackAndAssignNextLeader();
     }
   });
 
@@ -117,16 +114,15 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('questVote', function (decision) {
-    let currentQuest = game.getCurrentQuest();
+    game.addQuestVote(socket.id, decision);
 
-    currentQuest.addQuestVote(decision);
-    game.getPlayer('socketID', socket.id).voted = true;
+    let currentQuest = game.getCurrentQuest();
     updateGameStatus(`Waiting for ${currentQuest.questVotesNeededLeft} more player(s) to go on quest.`);
 
     // all votes received
     if (currentQuest.questVotesNeededLeft <= 0) {
       game.gameState['showSucceedOrFailQuestBtns'] = false;
-      game.incrementQuestSuccessFailCount(currentQuest.assignQuestResult());
+      game.assignQuestResult();
       revealVoteResults('quest', currentQuest.votes);
       io.in(roomCode).emit('updateBotRiskScores', currentQuest);
       io.in(roomCode).emit('updateQuestCards', game.quests);
@@ -138,9 +134,10 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} playerName 
    */
   socket.on('assassinatePlayer', function (playerName) {
-    if (game.getPlayer('role', 'Merlin').team === 'Evil') return;
+    if (!game.assassinatePlayer(socket.id, playerName)) return;
+    socket.emit('showAssassinateBtn', false);
+    io.in(roomCode).emit('updatePlayerCards', game.players);
 
-    assassinatePlayer(playerName);
     if (game.winningTeam === 'Evil') {
       updateGameStatus(`Assassin successfully discovered and killed ${playerName}, who was Merlin. <br/>Evil wins!`, 'danger');
     } else {
@@ -173,34 +170,27 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     }
   });
 
-  function assassinatePlayer(playerName) {
-    game.assassinatePlayer(playerName);
-    socket.emit('showAssassinateBtn', false);
-    io.in(roomCode).emit('updatePlayerCards', game.players);
-  }
-
   function revealVoteResults(type, votes) {
     game.resetPlayersProperty('voted');
     io.in(roomCode).emit('revealVoteResults', { type, votes });
   }
 
   function leaderChoosesQuestTeam() {
-    const currentQuest = game.getCurrentQuest();
+    const { voteTrack, leaderInfo, playersNeededLeft, questNum } = game.getCurrentQuest();
 
     io.in(roomCode).emit('updateQuestCards', game.quests);
-    io.in(roomCode).emit('updateVoteTrack', currentQuest.voteTrack);
-    updateGameStatus(`${currentQuest.leaderInfo.name} is choosing ${currentQuest.playersNeededLeft} more player(s)
-                    to go on quest ${currentQuest.questNum}`);
-    console.log(`Current Quest: ${currentQuest.questNum}`);
-    io.to(currentQuest.leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
+    io.in(roomCode).emit('updateVoteTrack', voteTrack);
+    updateGameStatus(`${leaderInfo.name} is choosing ${playersNeededLeft} more player(s)
+                    to go on quest ${questNum}`);
+    console.log(`Current Quest: ${questNum}`);
+    io.to(leaderInfo.socketID).emit('showAddRemovePlayerBtns', true);
   }
 
   /**
-   * @param {Object} currentQuest 
    * @param {string} msg 
    */
-  function incrementVoteTrackAndAssignNextLeader(currentQuest) {
-    io.in(roomCode).emit('updateBotRiskScores', currentQuest);
+  function incrementVoteTrackAndAssignNextLeader() {
+    let currentQuest = game.getCurrentQuest();
     currentQuest.voteTrack++;
 
     //check if voteTrack has exceeded 5 (game over)
@@ -211,7 +201,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     }
     //assign next leader
     else {
-      game.assignNextLeader(currentQuest.questNum);
+      game.assignNextLeader();
       updatePlayerCards();
       leaderChoosesQuestTeam();
     }
@@ -262,7 +252,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     });
     game.spectators.forEach(spectator => {
       io.to(spectator.socketID).emit('updatePlayerCards', sanitizeTeamView(spectator.socketID, 'Spectator', game.players))
-    })
+    });
   }
 
   /**

@@ -1,4 +1,5 @@
 import { objectToArray, shuffle, populateRoleList } from './utility.mjs';
+import Player from './player.mjs';
 import Quest from './quest.mjs';
 
 export const GoodTeam = new Set(['Merlin', 'Loyal Servant of Arthur', 'Percival']);
@@ -91,6 +92,30 @@ export default class Game {
   }
 
   /**
+   * @param {string} socketID 
+   * @param {string} name 
+   * @param {string} type 
+   */
+  addPlayer(socketID, name, type) {
+    this.players.push(new Player(socketID, name, type));
+    const msg = { id: Date.now(), serverMsg: `${name} has joined the game.` };
+    this.chat.push(msg);
+    return msg;
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} name 
+   * @param {string} type 
+   */
+  addSpectator(socketID, name, type) {
+    this.spectators.push(new Player(socketID, name, type));
+    const msg = { id: Date.now(), serverMsg: `${name} is spectating the game.` };
+    this.chat.push(msg);
+    return msg;
+  }
+
+  /**
    * @param {Object} optionalRoles 
    */
   startGame(optionalRoles) {
@@ -128,8 +153,8 @@ export default class Game {
       5: new Quest(5, this.players.length)
     };
     this.currentQuestNum = 1;
-    this.quests[1].currentQuest = true;
     this.players[0].leader = true;
+    this.quests[1].currentQuest = true;
     this.quests[1].assignLeaderInfo({
       name: this.players[0].name,
       socketID: this.players[0].socketID
@@ -141,33 +166,58 @@ export default class Game {
   }
 
   /**
-   * @param {number} questNum 
    * @param {string} name 
    */
-  addPlayerToQuest(questNum, name) {
-    for (let i in this.players) {
-      if (this.players[i].name === name && this.quests[questNum].playersNeededLeft > 0 && !this.players[i].onQuest) {
-        this.players[i].onQuest = true;
-        this.quests[questNum].addPlayer(name);
-        return true;
-      }
+  addPlayerToQuest(name) {
+    let player = this.getPlayer('name', name);
+    if (player.name === name && this.quests[this.currentQuestNum].playersNeededLeft > 0 && !player.onQuest) {
+      this.quests[this.currentQuestNum].addPlayer(name);
+      player.onQuest = true;
+      return true;
     }
     return false;
   }
 
   /**
-   * @param {number} questNum 
    * @param {string} name 
    */
-  removePlayerFromQuest(questNum, name) {
-    for (let i in this.players) {
-      if (this.players[i].name === name) {
-        this.players[i].onQuest = false;
-        this.quests[questNum].removePlayer(name);
-        return true;
-      }
+  removePlayerFromQuest(name) {
+    let player = this.getPlayer('name', name);
+    if (player.name === name && player.onQuest) {
+      this.quests[this.currentQuestNum].removePlayer(name);
+      player.onQuest = false;
+      return true;
     }
     return false;
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} decision 
+   */
+  addTeamVote(socketID, decision) {
+    let player = this.getPlayer('socketID', socketID);
+    this.quests[this.currentQuestNum].addTeamVote(player.name, decision);
+    player.voted = true;
+  }
+
+  assignTeamResult() {
+    this.quests[this.currentQuestNum].assignTeamResult();
+  }
+
+  /**
+   * @param {string} socketID 
+   * @param {string} decision 
+   */
+  addQuestVote(socketID, decision) {
+    let player = this.getPlayer('socketID', socketID);
+    this.quests[this.currentQuestNum].addQuestVote(decision);
+    player.voted = true;
+  }
+
+  assignQuestResult() {
+    const questSuccessful = this.quests[this.currentQuestNum].assignQuestResult();
+    questSuccessful ? this.questSuccesses++ : this.questFails++;
   }
 
   /**
@@ -287,13 +337,6 @@ export default class Game {
     });
   }
 
-  /**
-   * @param {boolean} questSuccessful
-   */
-  incrementQuestSuccessFailCount(questSuccessful) {
-    questSuccessful ? this.questSuccesses++ : this.questFails++;
-  }
-
   startNextQuest() {
     if (this.currentQuestNum < 5) {
       this.quests[this.currentQuestNum].currentQuest = false;
@@ -303,17 +346,17 @@ export default class Game {
   }
 
   /**
-   * @param {string} playerName 
+   * @param {string} name 
    * @returns {boolean}
    */
-  assassinatePlayer(playerName) {
-    let player = this.getPlayer('name', playerName);
-    player.assassinated = true;
-    if (player.role === 'Merlin') {
-      this.winningTeam = 'Evil';
-    } else {
-      this.winningTeam = 'Good';
+  assassinatePlayer(socketID, name) {
+    let playerToAssassinate = this.getPlayer('name', name);
+    if (this.getPlayer('socketID', socketID).role === 'Assassin' && playerToAssassinate.team === 'Good') {
+      playerToAssassinate.assassinated = true;
+      playerToAssassinate.role === 'Merlin' ? this.winningTeam = 'Evil' : this.winningTeam = 'Good';
+      return true;
     }
+    return false;
   }
 
 }

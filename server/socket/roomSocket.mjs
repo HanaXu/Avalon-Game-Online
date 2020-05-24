@@ -1,6 +1,5 @@
 import { GameRooms } from './gameSocket.mjs';
 import Game from '../game/game.mjs';
-import Player from '../game/player.mjs';
 import { sanitizeTeamView } from '../game/utility.mjs';
 
 /**
@@ -18,8 +17,7 @@ export function createRoom(socket) {
 
       const roomCode = generateRoomCode();
       GameRooms[roomCode] = new Game(roomCode);
-      GameRooms[roomCode].players.push(new Player(socket.id, playerName, roomCode, 'Host'));
-      GameRooms[roomCode].chat.push({ id: Date.now(), serverMsg: `${playerName} has joined the game.` });
+      GameRooms[roomCode].addPlayer(socket.id, playerName, 'Host');
 
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
@@ -48,17 +46,16 @@ export function joinRoom(io, socket) {
       }
       if (!isValidInput(socket, roomCode, playerName)) return;
 
-      let game = GameRooms[roomCode];
-      game.players.push(new Player(socket.id, playerName, roomCode, 'Guest'));
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: game.chat, showMsgInput: true });
-      updateServerChat(io, roomCode, `${playerName} has joined the game.`);
-      io.in(roomCode).emit('updatePlayerCards', game.players);
-      io.in(roomCode).emit('updateSpectatorsList', game.spectators);
+      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
+      const msg = GameRooms[roomCode].addPlayer(socket.id, playerName, 'Guest');
+      io.in(roomCode).emit('updateChat', msg);
+      io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
+      io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
 
-      if (game.players.length >= 5) {
-        io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
+      if (GameRooms[roomCode].players.length >= 5) {
+        io.to(GameRooms[roomCode].getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
       }
       resolve(data);
     });
@@ -78,48 +75,21 @@ export function spectateRoom(io, socket) {
       const { playerName, roomCode } = data;
       if (!isValidInput(socket, roomCode, playerName, true)) return;
 
-      let game = GameRooms[roomCode];
-      game.spectators.push(new Player(socket.id, playerName, roomCode, 'Spectator'));
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: game.chat, showMsgInput: false });
-      updateServerChat(io, roomCode, `${playerName} is spectating the game.`);
+      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: false });
+      const msg = GameRooms[roomCode].addSpectator(socket.id, playerName, 'Spectator');
+      io.in(roomCode).emit('updateChat', msg);
 
-      if (game.gameIsStarted) {
-        socket.emit('startGame', true);
-        socket.emit('setRoleList', game.roleList);
-
-        let currentQuest = game.getCurrentQuest();
-        socket.emit('updateQuestCards', game.quests);
-        socket.emit('updateGameStatus', game.gameState['status']);
-        socket.emit('updateVoteTrack', currentQuest.voteTrack);
-        if (currentQuest.teamVotesNeededLeft <= 0) {
-          io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: currentQuest.acceptOrRejectTeam });
-        }
-        if (game.winningTeam !== null) {
-          io.in(roomCode).emit('updatePlayerCards', game.players);
-        }
+      if (GameRooms[roomCode].gameIsStarted) emitGameStartedStuff(io, socket, roomCode);
+      if (GameRooms[roomCode].winningTeam !== null) {
+        io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
+      } else {
+        sanitizeSpectatorView(io, roomCode);
       }
-      if (game.winningTeam === null) {
-        game.spectators.forEach(spectator => {
-          io.to(spectator.socketID).emit('updatePlayerCards', sanitizeTeamView(spectator.socketID, 'Spectator', game.players))
-        });
-      }
-      io.in(roomCode).emit('updateSpectatorsList', game.spectators);
       resolve(data);
     });
   })
-}
-
-/**
- * @param {Object} io
- * @param {number} roomCode
- * @param {string} msg
- */
-function updateServerChat(io, roomCode, msg) {
-  const serverMsg = { id: Date.now(), serverMsg: msg };
-  GameRooms[roomCode].chat.push(serverMsg);
-  io.in(roomCode).emit('updateChat', serverMsg);
 }
 
 function generateRoomCode() {
@@ -130,6 +100,27 @@ function generateRoomCode() {
   }
   console.log(`\ngenerating new room code ${roomCode}`)
   return roomCode;
+}
+
+function emitGameStartedStuff(io, socket, roomCode) {
+  socket.emit('startGame', true);
+  socket.emit('setRoleList', GameRooms[roomCode].roleList);
+
+  let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = GameRooms[roomCode].getCurrentQuest();
+  socket.emit('updateQuestCards', GameRooms[roomCode].quests);
+  socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
+  socket.emit('updateVoteTrack', voteTrack);
+  if (teamVotesNeededLeft <= 0) {
+    io.in(roomCode).emit('revealVoteResults', { type: 'team', votes: acceptOrRejectTeam });
+  }
+}
+
+function sanitizeSpectatorView(io, roomCode) {
+  GameRooms[roomCode].spectators.forEach(spectator => {
+    io.to(spectator.socketID).emit('updatePlayerCards',
+      sanitizeTeamView(spectator.socketID, 'Spectator', GameRooms[roomCode].players))
+  });
+  io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
 }
 
 function isPlayerReconnect(roomCode, playerName) {

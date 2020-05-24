@@ -81,11 +81,11 @@ export default class Quest {
   }
 
   /**
-   * @param {string} playerName 
+   * @param {string} name 
    * @param {string} decision 
    */
-  addTeamVote({playerName, decision}) {
-    this.acceptOrRejectTeam[decision].push(playerName);
+  addTeamVote(name, decision) {
+    this.acceptOrRejectTeam[decision].push(name);
     this.teamVotesNeededLeft--;
   }
 

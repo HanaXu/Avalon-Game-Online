@@ -2,7 +2,6 @@ export default class Player {
   /**
    * @param {string} socketID
    * @param {string} name - The nickname entered by the player when they join the room
-   * @param {number} roomCode - Digits identifying which room this player is in.
    * @param {string} type - 'Guest' if joining a room, 'Host' if creating a room
    * @property {string} team - 'Good' or 'Evil'
    * @property {string} role - Player's role (Merlin, Loyal servant of arthur, etc)
@@ -13,10 +12,9 @@ export default class Player {
    * @property {boolean} assassinated - Indicates if the player was assassinated
    * @property {string[]} knownIdentities - A list of the player names whose team or identity is known to this player
    */
-  constructor(socketID, name, roomCode, type) {
+  constructor(socketID, name, type) {
     this.socketID = socketID;
     this.name = name;
-    this.roomCode = roomCode;
     this.type = type;
     this.team = '';
     this.role = '';
