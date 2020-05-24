@@ -1,6 +1,7 @@
 import express from 'express';
 import socketIO from 'socket.io';
 import path from 'path';
+import dotenv from 'dotenv';
 import { createRoom, joinRoom, spectateRoom } from './socket/roomSocket.mjs';
 import { gameSocket } from './socket/gameSocket.mjs';
 
@@ -10,13 +11,14 @@ const server = app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
 const io = socketIO(server);
+dotenv.config();
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-app.use(express.static(__dirname + "/../dist/"));
-
-app.get(/.*/, function (req, res) { //handle all other routes
-  res.sendFile(path.resolve("dist/index.html"));
-});
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.resolve("dist")));
+  app.get(/.*/, function (req, res) {
+    res.sendFile(path.resolve("dist/index.html"));
+  });
+}
 
 // const requireAuth = false;
 io.on('connection', socket => {
