@@ -1,4 +1,4 @@
-# avalonline
+# Avalon Game Online
 
 ## Project setup
 ```

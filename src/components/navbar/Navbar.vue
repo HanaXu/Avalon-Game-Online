@@ -3,23 +3,28 @@
     <b-navbar-brand>
       <img
         src="../../../public/img/icons/favicon-32x32.png"
-        alt="Avalonline icon"
+        alt="AvalonGame icon"
         width="32"
         height="32"
       />
-      Avalonline
-      <span v-if="roomCode">Room {{ roomCode }}</span>
+      AvalonGame
+      <span v-if="roomCode">: Room {{ roomCode }}</span>
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
         <b-nav-item to="/" @click="reload">Home</b-nav-item>
-        <b-nav-item v-b-modal.modal-game-rules busy="true">Game rules</b-nav-item>
-        <b-nav-item v-b-modal.modal-game-roles busy="true">Game roles</b-nav-item>
+        <b-nav-item
+          v-for="(value, key) in this.$data"
+          :key="key"
+          v-b-modal="'modal-' + key"
+          busy="true"
+        >
+          {{key}}
+          <NavModal :name="key" :arr="value" />
+        </b-nav-item>
       </b-navbar-nav>
     </b-collapse>
-    <NavModal name="rules" :dataArr="rules" />
-    <NavModal name="roles" :dataArr="roles" />
   </b-navbar>
 </template>
 
@@ -35,7 +40,20 @@ export default {
   },
   data() {
     return {
-      rules: [
+      About: [
+        {
+          heading: "",
+          html: `<p>AvalonGame is a free online adaptation of the board game The Resistance: Avalon.<br/>
+                No registration or login is required, simply start playing by creating a room!</p>
+                <p><i>This is a passion project and not affiliated with the original game.</i></p>
+                <p>Development: <a href="https://github.com/HanaXu/Avalon-Online" target="__blank">
+                https://github.com/HanaXu/Avalon-Online <svg xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 12 16" width="12" height="16"><path fill-rule="evenodd" 
+                d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 
+                2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"></path></svg></a></p>`
+        }
+      ],
+      Rules: [
         {
           heading: "Objective",
           html: `Avalon is the game of hidden loyalty. Players are either Loyal
@@ -68,7 +86,7 @@ export default {
                 <li>If the chosen player is not Merlin, good wins.</li></ul>`
         }
       ],
-      roles: [
+      Roles: [
         {
           heading: "Loyal Servant of Arthur (good)",
           html: `You have no special abilities.<br/>

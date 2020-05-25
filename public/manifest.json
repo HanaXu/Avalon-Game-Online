@@ -1,6 +1,6 @@
 {
-  "name": "avalonline",
-  "short_name": "avalonline",
+  "name": "avalongame",
+  "short_name": "avalongame",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",

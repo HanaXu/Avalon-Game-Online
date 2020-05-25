@@ -1,7 +1,7 @@
 <template>
   <div class="container" style="margin-top: 10%">
-    <h1 class="title">Avalonline</h1>
-    <h2 class="subtitle">A Game of dedication and bluffing</h2>
+    <h1 class="title">Play Avalon Online</h1>
+    <h2 class="subtitle">A Game of deception and deduction</h2>
     <div v-if="!(createToggled || joinToggled || spectateToggled)">
       <b-button :pressed.sync="createToggled" class="avalon-btn-primary big">Create Room</b-button>
       <b-button :pressed.sync="joinToggled" class="avalon-btn-primary big">Join Room</b-button>

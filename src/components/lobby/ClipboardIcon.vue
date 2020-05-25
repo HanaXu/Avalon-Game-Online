@@ -50,6 +50,5 @@ export default {
 <style scoped>
 svg {
   cursor: pointer;
-  vertical-align: baseline;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <b-modal :id="`modal-game-` + name" size="lg" scrollable :title="'Game ' + name">
-    <div v-for="(data, index) in dataArr" :key="index">
+  <b-modal :id="`modal-` + name" size="lg" scrollable :title="name">
+    <div v-for="(data, index) in arr" :key="index">
       <h2 class="heading">
         <strong>{{data.heading}}</strong>
       </h2>
@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  props: ["name", "dataArr"]
+  props: ["name", "arr"]
 };
 </script>
 

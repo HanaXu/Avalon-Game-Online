@@ -43,6 +43,9 @@ p, span {
 .self {
     background: #C7C2CF !important;
 }
+svg {
+    vertical-align: baseline !important;
+}
 
 @media screen and (min-width: 1px) {
     .navbar-default .navbar-brand {
