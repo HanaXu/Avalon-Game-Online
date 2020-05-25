@@ -7,7 +7,8 @@ export default new Vuex.Store({
   state: {
     roomCode: '',
     playerName: '',
-    players: []
+    players: [],
+    serverStatus: 'Offline'
   },
   mutations: {
     SOCKET_goToGame(state, { playerName, roomCode }) {
@@ -16,6 +17,12 @@ export default new Vuex.Store({
     },
     SOCKET_updatePlayerCards(state, players) {
       state.players = players;
+    },
+    SOCKET_connect(state) {
+      state.serverStatus = 'Online';
+    },
+    SOCKET_disconnect(state) {
+      state.serverStatus = 'Offline';
     }
   },
   actions: {

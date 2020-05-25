@@ -24,6 +24,16 @@
           <NavModal :name="key" :arr="value" />
         </b-nav-item>
       </b-navbar-nav>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-text>
+          Server Status:
+          <span
+            :class="{
+              'text-success': serverStatus === 'Online',
+              'text-danger': serverStatus === 'Offline'}"
+          >{{serverStatus}}</span>
+        </b-nav-text>
+      </b-navbar-nav>
     </b-collapse>
   </b-navbar>
 </template>
@@ -140,7 +150,7 @@ export default {
       ]
     };
   },
-  computed: mapState(["roomCode"]),
+  computed: mapState(["roomCode", "serverStatus"]),
   methods: {
     reload() {
       window.location.reload();
