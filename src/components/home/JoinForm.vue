@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
@@ -40,8 +42,14 @@ export default {
     };
   },
   props: ["action", "text"],
+  computed: mapState(["serverStatus"]),
   methods: {
     clickHandler(action) {
+      if (this.serverStatus === 'Disconnected') {
+        this.error = true;
+        this.errorMsg = 'Error: Unable to connect to server.';
+        return;
+      }
       this.error = false;
       this.loading = true;
       this.$socket.emit(action, {

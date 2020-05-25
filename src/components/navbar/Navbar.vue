@@ -29,8 +29,8 @@
           Server Status:
           <span
             :class="{
-              'text-success': serverStatus === 'Online',
-              'text-danger': serverStatus === 'Offline'}"
+              'text-success': serverStatus === 'Connected',
+              'text-danger': serverStatus === 'Disconnected'}"
           >{{serverStatus}}</span>
         </b-nav-text>
       </b-navbar-nav>

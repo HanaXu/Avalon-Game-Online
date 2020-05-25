@@ -22,6 +22,7 @@
 
 <script>
 // import Auth from "@/components/home/Auth.vue";
+import { mapState } from "vuex";
 
 export default {
   // components: {
@@ -40,8 +41,14 @@ export default {
   // beforeMount: function() {
   //   this.$socket.emit("checkForAuth");
   // },
+  computed: mapState(["serverStatus"]),
   methods: {
     createRoom() {
+      if (this.serverStatus === 'Disconnected') {
+        this.error = true;
+        this.errorMsg = 'Error: Unable to connect to server.';
+        return;
+      }
       this.error = false;
       this.createRoomClicked = true;
       // if (!this.authRequired) {
