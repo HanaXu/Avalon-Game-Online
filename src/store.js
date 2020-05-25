@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import router from './router'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    roomCode: '',
+    roomCode: null,
     playerName: '',
     players: [],
     serverStatus: 'Disconnected'
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     },
     SOCKET_disconnect(state) {
       state.serverStatus = 'Disconnected';
+      router.push({
+        name: "home"
+      });
     }
   },
   actions: {
