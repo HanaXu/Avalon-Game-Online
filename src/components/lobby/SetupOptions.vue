@@ -1,6 +1,6 @@
 <template>
   <b-modal id="setupModal" title="Setup Options" @hidden="handleClose">
-    <b-row>
+    <b-row v-if="showAddBotBtn">
       <b-button class="setupButton avalon-btn-primary" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
     </b-row>
     <b-row>
@@ -39,6 +39,7 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
+      showAddBotBtn: process.env.VUE_APP_DEBUG === 'true',
       error: false,
       errorMsg: "",
       selectedRoles: [], // Must be an array reference!

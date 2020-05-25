@@ -14,7 +14,7 @@ npm run vue
 
 ### Compiles and runs server for development
 ```
-npm run node
+npm run serve
 ```
 
 ### Compiles and minifies for production

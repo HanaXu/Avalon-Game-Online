@@ -60,7 +60,11 @@ export default {
                 https://github.com/HanaXu/Avalon-Online <svg xmlns="http://www.w3.org/2000/svg" 
                 viewBox="0 0 12 16" width="12" height="16"><path fill-rule="evenodd" 
                 d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 
-                2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"></path></svg></a></p>`
+                2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"></path></svg></a></p>
+                <p>Discord: <a href="https://discord.gg/FNHduv3" target="__blank">https://discord.gg/FNHduv3 
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 16" width="12" height="16"><path fill-rule="evenodd" 
+                d="M11 10h1v3c0 .55-.45 1-1 1H1c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h3v1H1v10h10v-3zM6 2l2.25 
+                2.25L5 7.5 6.5 9l3.25-3.25L12 8V2H6z"></path></svg></a>`
         }
       ],
       Rules: [
