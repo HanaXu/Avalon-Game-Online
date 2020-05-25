@@ -153,8 +153,12 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     else disconnectPlayer(socket.id);
 
     if (shouldAssignNextHost()) assignNextHost();
+    updateLobbyStatus();
+
     if (game.winningTeam !== null) io.in(roomCode).emit('updatePlayerCards', game.players);
     else updatePlayerCards();
+
+    gameRoomCleanUp();
   });
 
   socket.on('resetGame', function () {
@@ -163,14 +167,18 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     io.to(game.getPlayer('type', 'Host').socketID).emit('showSetupOptionsBtn', true);
     game.resetGame();
     updatePlayerCards();
+    updateLobbyStatus();
+  });
 
+  function updateLobbyStatus() {
     if (game.players.length >= 5) {
       io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
       updateGameStatus('Waiting for Host to start the game.');
-    } else {
+    } else if (game.players.length > 0) {
+      io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', false);
       updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
     }
-  });
+  }
 
   function revealVoteResults(type, votes) {
     game.resetPlayersProperty('voted');
@@ -285,12 +293,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     const newHost = game.assignNextHost();
     io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
     updateServerChat(`${newHost.name} has become the new host.`);
-
-    if (game.players.length >= 5) {
-      io.to(newHost.socketID).emit('showStartGameBtn', true)
-    } else {
-      io.in(roomCode).emit('showStartGameBtn', false);
-    }
+    updateLobbyStatus();
   }
 
   /**
@@ -306,11 +309,17 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   function disconnectPlayer(socketID) {
     updateServerChat(`${game.getPlayer('socketID', socketID).name} has disconnected.`);
     if (game.gameIsStarted) {
-      game.getPlayer('socketID', socketID).disconnected = true
+      game.getPlayer('socketID', socketID).disconnected = true;
     } else {
-      game.deletePersonFrom({ arrayName: 'players', socketID: socketID })
-      updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
+      game.deletePersonFrom({ arrayName: 'players', socketID: socketID });
     }
+  }
+
+  function gameRoomCleanUp() {
+    if (game.players.length > 0 && game.players.some(player => !player.disconnected)) return;
+    console.log(`all players disconnected, deleting room ${roomCode}`);
+    io.in(roomCode).emit('windowReload');
+    delete GameRooms[roomCode];
   }
 
   if (reconnect) {

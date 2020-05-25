@@ -27,6 +27,9 @@ export default new Vuex.Store({
       router.push({
         name: "home"
       });
+    },
+    SOCKET_windowReload() {
+      window.location.reload();
     }
   },
   actions: {

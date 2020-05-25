@@ -171,7 +171,7 @@ function isValidInput(socket, roomCode, playerName, isSpectator = false) {
     errorMsg = `Error: Name '${playerName}' is already taken.`;
   }
   else if (!isSpectator && GameRooms[roomCode].gameIsStarted) {
-    errorMsg = 'Error: Cannot join a game that has already started.';
+    errorMsg = 'Error: Cannot join a game that has already started. If you disconnected, enter the same name.';
   }
   else if (!isSpectator && GameRooms[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${roomCode}' has reached a capacity of 10.`;
