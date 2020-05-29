@@ -27,8 +27,11 @@ export default {
     };
   },
   sockets: {
-    updateQuestCards(quests) {
+    initQuests(quests) {
       this.quests = quests;
+    },
+    updateQuest(data) {
+      this.quests[data.questNum] = Object.assign(this.quests[data.questNum], data);
     }
   }
 };

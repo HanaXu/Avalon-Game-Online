@@ -240,8 +240,11 @@ export default class Game {
   }
 
   assignQuestResult() {
-    const questSuccessful = this.getCurrentQuest().assignQuestResult();
-    questSuccessful ? this.questSuccesses++ : this.questFails++;
+    const { questNum, success, currentQuest } = this.getCurrentQuest().assignQuestResult();
+    success ? this.questSuccesses++ : this.questFails++;
+    return {
+      questNum, success, currentQuest
+    }
   }
 
   /**

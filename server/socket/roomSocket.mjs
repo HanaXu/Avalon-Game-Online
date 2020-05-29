@@ -52,7 +52,7 @@ export function joinRoom(io, socket) {
       socket.emit('goToGame', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
       const msg = GameRooms[roomCode].addPlayer(socket.id, playerName, 'Guest');
-      io.in(roomCode).emit('updateChat', msg);
+      io.to(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
       updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
@@ -131,7 +131,7 @@ function emitGameStartedStuff(socket, roomCode) {
   socket.emit('setRoleList', GameRooms[roomCode].roleList);
 
   let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = GameRooms[roomCode].getCurrentQuest();
-  socket.emit('updateQuestCards', GameRooms[roomCode].quests);
+  socket.emit('initQuests', GameRooms[roomCode].quests);
   socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
   socket.emit('updateVoteTrack', voteTrack);
   if (teamVotesNeededLeft <= 0) {

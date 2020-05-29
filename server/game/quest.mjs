@@ -113,7 +113,12 @@ export default class Quest {
 
   assignQuestResult() {
     this.success = !(this.needsTwoFails ? this.votes.fail >=2 : this.votes.fail > 0);
-    return this.success;
+    this.currentQuest = false;
+    return {
+      questNum: this.questNum,
+      success: this.success,
+      currentQuest: this.currentQuest
+    };
   }
 
   //resets all values relating to players on quest & quest votes to original values

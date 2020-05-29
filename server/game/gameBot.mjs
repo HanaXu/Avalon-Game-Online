@@ -25,10 +25,12 @@ export default class GameBot {
             playerName: this.playerName
         });
 
-        this.socket.on('startGame', () => {
-            let self = GameRooms[this.roomCode].getPlayer('socketID', this.socket.id);
-            this.team = self.team;
-            this.initializePlayerRiskScores();
+        this.socket.on('startGame', (startGame) => {
+            if (startGame) {
+                let self = GameRooms[this.roomCode].getPlayer('socketID', this.socket.id);
+                this.team = self.team;
+                this.initializePlayerRiskScores();
+            }
         });
 
         /**
@@ -49,10 +51,10 @@ export default class GameBot {
         });
 
         /**
-         * @param {Object} quest
+         * @param {number} questNum
          */
-        this.socket.on('updateBotRiskScores', (quest) => {
-            this.updatePlayerRiskScores(quest);
+        this.socket.on('updateBotRiskScores', (questNum) => {
+            this.updatePlayerRiskScores(questNum);
         });
 
         /**
@@ -179,9 +181,11 @@ export default class GameBot {
     }
 
     /**
-     * @param {Object} quest 
+     * @param {number} questNum 
      */
-    updatePlayerRiskScores(quest) {
+    updatePlayerRiskScores(questNum) {
+        let quest = GameRooms[this.roomCode].quests[questNum];
+
         this.sanitizedPlayers.forEach(player => {
             let playerRiskScore = this.playerRiskScores.find(playerRiskScore => playerRiskScore.name === player.name);
             if (quest.leader === player.name && player.team === 'hidden') {
