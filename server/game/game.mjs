@@ -132,27 +132,24 @@ export default class Game {
   }
 
   /**
+   * @param {string} type - 'player' or 'spectator'
    * @param {string} socketID 
    * @param {string} name 
-   * @param {string} type 
+   * @param {string} isRoomHost 
    * @returns {Object}
    */
-  addPlayer(socketID, name, type) {
-    this.players.push(new Player(socketID, name, type));
-    const msg = { id: Date.now(), serverMsg: `${name} has joined the game.` };
-    this.chat.push(msg);
-    return msg;
-  }
-
-  /**
-   * @param {string} socketID 
-   * @param {string} name 
-   * @param {string} type 
-   * @returns {Object}
-   */
-  addSpectator(socketID, name, type) {
-    this.spectators.push(new Player(socketID, name, type));
-    const msg = { id: Date.now(), serverMsg: `${name} is spectating the game.` };
+  addPerson({ type, socketID, name, isRoomHost }) {
+    let msg;
+    switch (type) {
+      case 'player':
+        this.players.push(new Player(socketID, name, isRoomHost));
+        msg = { id: Date.now(), serverMsg: `${name} has joined the game.` };
+        break;
+      case 'spectator':
+        this.spectators.push(new Player(socketID, name, isRoomHost));
+        msg = { id: Date.now(), serverMsg: `${name} is spectating the game.` };
+        break;
+    }
     this.chat.push(msg);
     return msg;
   }
@@ -204,14 +201,22 @@ export default class Game {
   }
 
   /**
+   * @param {string} to - 'team' or 'quest'
    * @param {string} socketID 
    * @param {string} decision 
    * @returns {boolean}
    */
-  addTeamVote(socketID, decision) {
+  addVote(to, socketID, decision) {
     let player = this.getPlayer('socketID', socketID);
     if (player && !player.voted) {
-      this.getCurrentQuest().addTeamVote(player.name, decision);
+      switch (to) {
+        case 'team':
+          this.getCurrentQuest().addTeamVote(player.name, decision);
+          break;
+        case 'quest':
+          this.getCurrentQuest().addQuestVote(decision);
+          break;
+      }
       player.voted = true;
       return true;
     }
@@ -220,21 +225,6 @@ export default class Game {
 
   assignTeamResult() {
     this.getCurrentQuest().assignTeamResult();
-  }
-
-  /**
-   * @param {string} socketID 
-   * @param {string} decision 
-   * @returns {boolean}
-   */
-  addQuestVote(socketID, decision) {
-    let player = this.getPlayer('socketID', socketID);
-    if (player && !player.voted) {
-      this.getCurrentQuest().addQuestVote(decision);
-      player.voted = true;
-      return true;
-    }
-    return false;
   }
 
   /**
@@ -308,7 +298,7 @@ export default class Game {
    * @returns {Player}
    */
   assignNextHost() {
-    this.players[0].type = 'Host';
+    this.players[0].isRoomHost = true;
     return this.players[0];
   }
 

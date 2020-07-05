@@ -16,7 +16,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   let game = GameRooms[roomCode];
 
   socket.on('createBot', function () {
-    if (!game.gameIsStarted && game.getPlayer('socketID', socket.id).type === 'Host') {
+    if (!game.gameIsStarted && game.getPlayer('socketID', socket.id).isRoomHost) {
       new GameBot(roomCode, port).listen();
     }
   });
@@ -83,7 +83,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('playerAcceptsOrRejectsTeam', function (decision) {
-    if (!game.addTeamVote(socket.id, decision)) return;
+    if (!game.addVote('team', socket.id, decision)) return;
 
     socket.emit('showAcceptOrRejectTeamBtns', false);
     let currentQuest = game.getCurrentQuest();
@@ -109,7 +109,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
    * @param {string} decision 
    */
   socket.on('questVote', function (decision) {
-    if (!game.addQuestVote(socket.id, decision)) return;
+    if (!game.addVote('quest', socket.id, decision)) return;
 
     let currentQuest = game.getCurrentQuest();
     updateGameStatus(`Waiting for ${currentQuest.questVotesNeededLeft} more player(s) to go on quest.`);
@@ -137,7 +137,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     }
     socket.emit('showAssassinateBtn', false);
     io.in(roomCode).emit('updatePlayerCards', game.players);
-    io.to(game.getPlayer('type', 'Host').socketID).emit('showLobbyBtn', true);
+    io.to(game.getPlayer('isRoomHost', true).socketID).emit('showLobbyBtn', true);
   });
 
   socket.on('disconnect', function () {
@@ -155,7 +155,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   socket.on('resetGame', function () {
     io.in(roomCode).emit('startGame', false);
     io.in(roomCode).emit('hidePreviousVoteResults');
-    io.to(game.getPlayer('type', 'Host').socketID).emit('showSetupOptionsBtn', true);
+    io.to(game.getPlayer('isRoomHost', true).socketID).emit('showSetupOptionsBtn', true);
     game.resetGame();
     updatePlayerCards();
     updateLobbyStatus();
@@ -165,16 +165,16 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
     if (game.gameIsStarted) return;
 
     if (game.players.length >= 5) {
-      io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
+      io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
       updateGameStatus('Waiting for Host to start the game.');
     } else if (game.players.length > 0) {
-      io.to(game.getPlayer('type', 'Host').socketID).emit('showStartGameBtn', false);
+      io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', false);
       updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
     }
   }
 
   /**
-   * @param {string} type 
+   * @param {string} type - 'team' or 'quest'
    * @param {Object} votes 
    */
   function revealVoteResults(type, votes) {
@@ -226,7 +226,7 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
       updateGameStatus(`Quest ${currentQuest.questNum} had 5 failed team votes. Evil wins!`);
     }
     io.in(roomCode).emit('updatePlayerCards', game.players);
-    io.to(game.getPlayer('type', 'Host').socketID).emit('showLobbyBtn', true);
+    io.to(game.getPlayer('isRoomHost', true).socketID).emit('showLobbyBtn', true);
   }
 
   function showSucceedAndFailBtnsToPlayersOnQuest() {
@@ -272,14 +272,13 @@ export function gameSocket(io, socket, port, roomCode, playerName, reconnect) {
   }
 
   function shouldAssignNextHost() {
-    return !game.gameIsStarted && !game.getPlayer('type', 'Host') && game.players.length > 0;
+    return !game.gameIsStarted && !game.getPlayer('isRoomHost', true) && game.players.length > 0;
   }
 
   function assignNextHost() {
     const newHost = game.assignNextHost();
     io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
     updateServerChat(`${newHost.name} has become the new host.`);
-    updateLobbyStatus();
   }
 
   /**

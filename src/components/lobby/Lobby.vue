@@ -25,10 +25,8 @@
         <ul class="lobbyList">
           <li v-for="(player, index) in players" :key="index" class="offset-1">
             <span
-              v-if="player.name === playerName"
-              class="self p-1"
-            >{{ player.type }}: {{ player.name }}</span>
-            <span v-else>{{ player.type }}: {{ player.name }}</span>
+              :class="{self: player.name === playerName}"
+            >{{ player.isRoomHost ? 'Host' : 'Guest' }}: {{ player.name }}</span>
           </li>
         </ul>
       </div>

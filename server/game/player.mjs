@@ -2,7 +2,7 @@ export default class Player {
   /**
    * @param {string} socketID
    * @param {string} name - The nickname entered by the player when they join the room
-   * @param {string} type - 'Guest' if joining a room, 'Host' if creating a room
+   * @param {string} isRoomHost
    * @property {string} team - 'Good' or 'Evil'
    * @property {string} role - Player's role (Merlin, Loyal servant of arthur, etc)
    * @property {boolean} leader - Indicates if the player is the leader of the quest
@@ -12,10 +12,10 @@ export default class Player {
    * @property {boolean} assassinated - Indicates if the player was assassinated
    * @property {string[]} knownIdentities - A list of the player names whose team or identity is known to this player
    */
-  constructor(socketID, name, type) {
+  constructor(socketID, name, isRoomHost) {
     this.socketID = socketID;
     this.name = name;
-    this.type = type;
+    this.isRoomHost = isRoomHost;
     this.team = '';
     this.role = '';
     this.leader = false;

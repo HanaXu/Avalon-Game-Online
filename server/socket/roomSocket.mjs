@@ -19,7 +19,7 @@ export function createRoom(io, socket) {
 
       const roomCode = generateRoomCode();
       GameRooms[roomCode] = new Game(roomCode);
-      GameRooms[roomCode].addPlayer(socket.id, playerName, 'Host');
+      GameRooms[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: true });
 
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
@@ -53,14 +53,14 @@ export function joinRoom(io, socket) {
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
-      const msg = GameRooms[roomCode].addPlayer(socket.id, playerName, 'Guest');
+      const msg = GameRooms[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: false });
       io.to(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
       updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
 
       if (GameRooms[roomCode].players.length >= 5) {
-        io.to(GameRooms[roomCode].getPlayer('type', 'Host').socketID).emit('showStartGameBtn', true);
+        io.to(GameRooms[roomCode].getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
         updateGameStatus(io, roomCode, 'Waiting for Host to start the game.');
       }
       resolve(data);
@@ -86,7 +86,7 @@ export function spectateRoom(io, socket) {
       socket.emit('goToGame', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: false });
       socket.emit('updateGameStatus', GameRooms[roomCode].gameState['gameStatusMsg']);
-      const msg = GameRooms[roomCode].addSpectator(socket.id, playerName, 'Spectator');
+      const msg = GameRooms[roomCode].addPerson({ type: 'spectator', socketID: socket.id, name: playerName, isRoomHost: false });
       io.in(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
 
