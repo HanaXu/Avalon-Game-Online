@@ -66,7 +66,7 @@ export default class Game {
     this.chat = [];
     this.gameIsStarted = false;
     this.gameState = {
-      statusMsg: '',
+      gameStatusMsg: '',
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
@@ -102,7 +102,7 @@ export default class Game {
     this.resetPlayers();
     this.gameIsStarted = false;
     this.gameState = {
-      statusMsg: '',
+      gameStatusMsg: '',
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
@@ -135,6 +135,7 @@ export default class Game {
    * @param {string} socketID 
    * @param {string} name 
    * @param {string} type 
+   * @returns {Object}
    */
   addPlayer(socketID, name, type) {
     this.players.push(new Player(socketID, name, type));
@@ -147,6 +148,7 @@ export default class Game {
    * @param {string} socketID 
    * @param {string} name 
    * @param {string} type 
+   * @returns {Object}
    */
   addSpectator(socketID, name, type) {
     this.spectators.push(new Player(socketID, name, type));
@@ -156,21 +158,26 @@ export default class Game {
   }
 
   /**
-   * @param key 
-   * @param value
+   * @param {string} key 
+   * @param {string} value
+   * @returns {Player}
    */
   getPlayer(key, value) {
     return this.players.find(player => player[key] === value);
   }
 
   /**
-   * @param key 
-   * @param value
+   * @param {string} key 
+   * @param {string} value
+   * @returns {Player}
    */
   getSpectator(key, value) {
     return this.spectators.find(spectator => spectator[key] === value);
   }
 
+  /**
+   * @returns {Quest}
+   */
   getCurrentQuest() {
     return this.quests[this.currentQuestNum];
   }
@@ -178,6 +185,7 @@ export default class Game {
   /**
    * @param {string} action
    * @param {string} name
+   * @returns {boolean}
    */
   addRemovePlayerFromQuest(action, name) {
     let player = this.getPlayer('name', name);
@@ -198,6 +206,7 @@ export default class Game {
   /**
    * @param {string} socketID 
    * @param {string} decision 
+   * @returns {boolean}
    */
   addTeamVote(socketID, decision) {
     let player = this.getPlayer('socketID', socketID);
@@ -216,6 +225,7 @@ export default class Game {
   /**
    * @param {string} socketID 
    * @param {string} decision 
+   * @returns {boolean}
    */
   addQuestVote(socketID, decision) {
     let player = this.getPlayer('socketID', socketID);
@@ -227,6 +237,9 @@ export default class Game {
     return false;
   }
 
+  /**
+   * @returns {Object}
+   */
   assignQuestResult() {
     const { questNum, success, currentQuest } = this.getCurrentQuest().assignQuestResult();
     success ? this.questSuccesses++ : this.questFails++;
@@ -251,8 +264,22 @@ export default class Game {
   }
 
   /**
+   * @returns {boolean}
+   */
+  gameOver() {
+    if (this.questSuccesses >= 3) {
+      return true;
+    }
+    else if (this.questFails >= 3 || this.getCurrentQuest().voteTrack > 5) {
+      this.winningTeam = 'Evil';
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * @param {string} name
-   * @return {boolean} 
+   * @returns {boolean} 
    */
   nameIsTaken(name) {
     return this.players.some(player => player.name === name) ||
@@ -263,7 +290,7 @@ export default class Game {
    * @param {string} arrayName
    * @param {string} socketID 
    */
-  deletePersonFrom({ arrayName, socketID }) {
+  deletePersonFrom(arrayName, socketID) {
     for (let i in this[arrayName]) {
       if (this[arrayName][i].socketID === socketID) {
         this[arrayName].splice(i, 1); //delete 1 element at index i
@@ -277,6 +304,9 @@ export default class Game {
     this.players.forEach(player => player.reset());
   }
 
+  /**
+   * @returns {Player}
+   */
   assignNextHost() {
     this.players[0].type = 'Host';
     return this.players[0];

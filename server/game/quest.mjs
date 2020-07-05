@@ -111,6 +111,9 @@ export default class Quest {
     this.questVotesNeededLeft--;
   }
 
+  /**
+   * @returns {Object}
+   */
   assignQuestResult() {
     this.success = !(this.needsTwoFails ? this.votes.fail >=2 : this.votes.fail > 0);
     this.currentQuest = false;

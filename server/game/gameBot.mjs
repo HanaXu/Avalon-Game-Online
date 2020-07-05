@@ -25,6 +25,9 @@ export default class GameBot {
             playerName: this.playerName
         });
 
+        /**
+         * @param {boolean} startGame
+         */
         this.socket.on('startGame', (startGame) => {
             if (startGame) {
                 let self = GameRooms[this.roomCode].getPlayer('socketID', this.socket.id);
@@ -74,6 +77,9 @@ export default class GameBot {
             this.socket.emit('questVote', decision);
         });
 
+        /**
+         * @param {boolean} showAssassinateBtn
+         */
         this.socket.on('showAssassinateBtn', (showAssassinateBtn) => {
             if (showAssassinateBtn) {
                 let toAssassinate = Math.floor(Math.random() * this.sanitizedPlayers.length);
@@ -100,6 +106,9 @@ export default class GameBot {
         });
     }
 
+    /**
+     * @returns {string}
+     */
     botAcceptOrRejectTeam() {
         const currentQuest = GameRooms[this.roomCode].getCurrentQuest();
         let decision;
@@ -113,6 +122,7 @@ export default class GameBot {
 
     /**
      * @param {Object} currentQuest 
+     * @returns {string}
      */
     makeEvilQuestTeamVote(currentQuest) {
         let evilAmount = 0;
@@ -132,6 +142,7 @@ export default class GameBot {
 
     /**
      * @param {Object} currentQuest 
+     * @returns {string}
      */
     makeGoodQuestTeamVote(currentQuest) {
         if (this.nextVoteTrack == 5) {

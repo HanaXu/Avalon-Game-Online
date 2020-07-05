@@ -25,6 +25,9 @@ export default class Player {
     this.assassinated = false;
   }
 
+  /**
+   * @param {string} socketID 
+   */
   reconnect(socketID) {
     this.socketID = socketID;
     this.disconnected = false;

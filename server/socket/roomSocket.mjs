@@ -5,6 +5,7 @@ import { sanitizeTeamView } from '../game/utility.mjs';
 /**
  * @param {Object} io
  * @param {Object} socket
+ * @returns {Promise}
  */
 export function createRoom(io, socket) {
   return new Promise((resolve) => {
@@ -34,6 +35,7 @@ export function createRoom(io, socket) {
 /**
  * @param {Object} io 
  * @param {Object} socket 
+ * @returns {Promise}
  */
 export function joinRoom(io, socket) {
   return new Promise((resolve) => {
@@ -69,6 +71,7 @@ export function joinRoom(io, socket) {
 /**
  * @param {Object} io 
  * @param {Object} socket 
+ * @returns {Promise}
  */
 export function spectateRoom(io, socket) {
   return new Promise((resolve) => {
@@ -82,7 +85,7 @@ export function spectateRoom(io, socket) {
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
       socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: false });
-      socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
+      socket.emit('updateGameStatus', GameRooms[roomCode].gameState['gameStatusMsg']);
       const msg = GameRooms[roomCode].addSpectator(socket.id, playerName, 'Spectator');
       io.in(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
@@ -117,7 +120,7 @@ function generateRoomCode() {
  * @param {string} msg 
  */
 function updateGameStatus(io, roomCode, msg) {
-  GameRooms[roomCode].gameState['status'] = msg;
+  GameRooms[roomCode].gameState['gameStatusMsg'] = msg;
   io.in(roomCode).emit('updateGameStatus', msg);
 }
 
@@ -131,7 +134,7 @@ function emitGameStartedStuff(socket, roomCode) {
 
   let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = GameRooms[roomCode].getCurrentQuest();
   socket.emit('initQuests', GameRooms[roomCode].quests);
-  socket.emit('updateGameStatus', GameRooms[roomCode].gameState['status']);
+  socket.emit('updateGameStatus', GameRooms[roomCode].gameState['gameStatusMsg']);
   socket.emit('updateVoteTrack', voteTrack);
   if (teamVotesNeededLeft <= 0) {
     socket.emit('revealVoteResults', { type: 'team', votes: acceptOrRejectTeam });
