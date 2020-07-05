@@ -115,11 +115,10 @@ function generateRoomCode() {
  * @param {Object} io 
  * @param {number} roomCode 
  * @param {string} msg 
- * @param {string} variant 
  */
-function updateGameStatus(io, roomCode, msg, variant = '') {
-  GameRooms[roomCode].gameState['status'] = { msg, variant };
-  io.in(roomCode).emit('updateGameStatus', { msg, variant });
+function updateGameStatus(io, roomCode, msg) {
+  GameRooms[roomCode].gameState['status'] = msg;
+  io.in(roomCode).emit('updateGameStatus', msg);
 }
 
 /**

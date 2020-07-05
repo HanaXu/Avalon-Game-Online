@@ -51,7 +51,7 @@ export default class Game {
    * @param {number} roomCode - Digits identifying which room the game is in
    * @property {array} chat - Chat history of the game
    * @property {boolean} gameIsStarted - Indicates if the game has started
-   * @property {Object} gameState - True/false values indicating various stages of the game
+   * @property {Object} gameState - Values indicating various stages of the game
    * @property {Object} roleList - Key/value pair of roles (and how many of each role) for the game
    * @property {array} players
    * @property {array} spectators
@@ -66,10 +66,7 @@ export default class Game {
     this.chat = [];
     this.gameIsStarted = false;
     this.gameState = {
-      status: {
-        msg: '',
-        variant: ''
-      },
+      statusMsg: '',
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
@@ -105,10 +102,7 @@ export default class Game {
     this.resetPlayers();
     this.gameIsStarted = false;
     this.gameState = {
-      status: {
-        msg: '',
-        variant: ''
-      },
+      statusMsg: '',
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
@@ -182,24 +176,18 @@ export default class Game {
   }
 
   /**
-   * @param {string} name 
+   * @param {string} action
+   * @param {string} name
    */
-  addPlayerToQuest(name) {
+  addRemovePlayerFromQuest(action, name) {
     let player = this.getPlayer('name', name);
-    if (player && !player.onQuest && this.getCurrentQuest().playersNeededLeft > 0) {
+
+    if (action === 'add' && player && !player.onQuest && this.getCurrentQuest().playersNeededLeft > 0) {
       this.getCurrentQuest().addPlayer(name);
       player.onQuest = true;
       return true;
     }
-    return false;
-  }
-
-  /**
-   * @param {string} name 
-   */
-  removePlayerFromQuest(name) {
-    let player = this.getPlayer('name', name);
-    if (player && player.onQuest) {
+    else if (action === 'remove' && player && player.onQuest) {
       this.getCurrentQuest().removePlayer(name);
       player.onQuest = false;
       return true;

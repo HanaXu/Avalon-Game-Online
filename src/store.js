@@ -9,7 +9,7 @@ export default new Vuex.Store({
     roomCode: null,
     playerName: '',
     players: [],
-    serverStatus: 'Disconnected'
+    serverStatus: ''
   },
   mutations: {
     SOCKET_goToGame(state, { playerName, roomCode }) {

@@ -1,7 +1,7 @@
 <template>
   <b-row v-if="msg.length > 0" class="status-section">
     <b-col class="section-title" md="2">Game Status</b-col>
-    <b-col v-html="msg" :class="variant"></b-col>
+    <b-col v-html="msg"></b-col>
   </b-row>
 </template>
 
@@ -9,24 +9,13 @@
 export default {
   data() {
     return {
-      msg: '',
-      variant: ''
+      msg: ''
     };
   },
   sockets: {
-    updateGameStatus({ msg, variant }) {
+    updateGameStatus(msg) {
       this.msg = msg;
-      this.variant = variant;
     }
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.col.success {
-  color: #3c48bb !important;
-}
-.col.danger {
-  color: #a42323 !important;
-}
-</style>

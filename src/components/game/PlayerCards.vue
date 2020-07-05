@@ -39,13 +39,13 @@
           :id="'add-player-' + player.name"
           v-if="!player.onQuest"
           :disabled="disableAddPlayerBtn"
-          @click="addPlayerToQuest($event, player.name)"
+          @click="addRemovePlayerFromQuest($event, 'add', player.name)"
         >Add to Quest</b-button>
         <b-button
           class="mt-1 avalon-btn-primary"
           :id="'remove-player-' + player.name"
           v-if="player.onQuest"
-          @click="removePlayerFromQuest($event, player.name)"
+          @click="addRemovePlayerFromQuest($event, 'remove', player.name)"
         >Remove</b-button>
       </div>
       <div v-if="showAssassinateBtn && !(player.team === 'Evil')">
@@ -77,13 +77,9 @@ export default {
   },
   computed: mapState(["roomCode", "playerName", "players"]),
   methods: {
-    addPlayerToQuest(event, playerName) {
+    addRemovePlayerFromQuest(event, action, playerName) {
       event.target.blur();
-      this.$socket.emit("addPlayerToQuest", playerName);
-    },
-    removePlayerFromQuest(event, playerName) {
-      event.target.blur();
-      this.$socket.emit("removePlayerFromQuest", playerName);
+      this.$socket.emit("addRemovePlayerFromQuest", action, playerName);
     },
     assassinatePlayer(playerName) {
       this.$socket.emit("assassinatePlayer", playerName);

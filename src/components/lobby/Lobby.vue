@@ -6,7 +6,7 @@
         <ClipboardIcon copyElementId="roomCode" />
       </span>
       <input type="hidden" :value="roomCode" id="roomCode" />
-      <div v-b-tooltip.bottom title="A minimum of 5 players is required to start the game">
+      <div v-b-tooltip.bottom title="A minimum of 5 players are required to start the game">
         <span>
           Room capacity:
           <span

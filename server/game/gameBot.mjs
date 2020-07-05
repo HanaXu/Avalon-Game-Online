@@ -19,7 +19,7 @@ export default class GameBot {
     };
 
     //everything socket related goes here
-    startListening() {
+    listen() {
         this.socket.emit("joinRoom", {
             roomCode: this.roomCode,
             playerName: this.playerName
@@ -159,11 +159,11 @@ export default class GameBot {
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
 
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
-        this.socket.emit("addPlayerToQuest", evilPlayer.name);
+        this.socket.emit("addRemovePlayerFromQuest", 'add', evilPlayer.name);
 
         for (let i = 0; i < teamSize; i++) {
             if (sortedPlayerRiskScores[i].team !== 'Evil') {
-                this.socket.emit("addPlayerToQuest", sortedPlayerRiskScores[i].name);
+                this.socket.emit("addRemovePlayerFromQuest", 'add', sortedPlayerRiskScores[i].name);
             }
         }
         this.socket.emit('leaderHasConfirmedTeam');
@@ -175,7 +175,7 @@ export default class GameBot {
         //add players with the lowest risk score
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
         for (let i = 0; i < teamSize; i++) {
-            this.socket.emit("addPlayerToQuest", sortedPlayerRiskScores[i].name);
+            this.socket.emit("addRemovePlayerFromQuest", 'add', sortedPlayerRiskScores[i].name);
         }
         this.socket.emit('leaderHasConfirmedTeam');
     }
