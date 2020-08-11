@@ -16,31 +16,22 @@
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
     </div>
     <b-alert variant="danger" v-if="error" show>{{ errorMsg }}</b-alert>
-    <!-- <Auth v-if="createRoomClicked && authRequired"></Auth> -->
   </div>
 </template>
 
 <script>
-// import Auth from "@/components/home/Auth.vue";
 import { mapState } from "vuex";
 
 export default {
-  // components: {
-  //   Auth
-  // },
   data() {
     return {
       playerName: null,
       loading: false,
       error: false,
       errorMsg: null,
-      createRoomClicked: false,
-      // authRequired: null
+      createRoomClicked: false
     };
   },
-  // beforeMount: function() {
-  //   this.$socket.emit("checkForAuth");
-  // },
   computed: mapState(["serverStatus"]),
   methods: {
     createRoom() {
@@ -51,8 +42,6 @@ export default {
       }
       this.error = false;
       this.createRoomClicked = true;
-      // if (!this.authRequired) {
-      // }
       this.loading = true;
       this.$socket.emit("createRoom", this.playerName);
     }
@@ -63,9 +52,6 @@ export default {
       this.errorMsg = msg;
       this.loading = false;
     },
-    // setAuth(requireAuth) {
-    //   this.authRequired = requireAuth;
-    // },
     goToGame({ playerName, roomCode }) {
       this.loading = false;
       this.$router.push({

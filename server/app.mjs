@@ -20,11 +20,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// const requireAuth = false;
 io.on('connection', socket => {
-  // socket.on('checkForAuth', () => {
-  //   socket.emit('setAuth', requireAuth);
-  // });
   Promise.race([createRoom(io, socket), joinRoom(io, socket), spectateRoom(io, socket)])
     .then(({ playerName, roomCode, reconnect }) => {
       gameSocket(io, socket, port, roomCode, playerName, reconnect);
