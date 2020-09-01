@@ -2,7 +2,6 @@ import express from 'express';
 import socketIO from 'socket.io';
 import path from 'path';
 import dotenv from 'dotenv';
-import { createRoom, joinRoom, spectateRoom } from './socket/roomSocket.mjs';
 import { gameSocket } from './socket/gameSocket.mjs';
 
 const app = express();
@@ -21,8 +20,5 @@ if (process.env.NODE_ENV === "production") {
 }
 
 io.on('connection', socket => {
-  Promise.race([createRoom(io, socket), joinRoom(io, socket), spectateRoom(io, socket)])
-    .then(({ playerName, roomCode, reconnect }) => {
-      gameSocket(io, socket, port, roomCode, playerName, reconnect);
-    });
+  gameSocket(io, socket, port);
 });
