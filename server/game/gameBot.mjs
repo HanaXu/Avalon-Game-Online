@@ -1,5 +1,5 @@
 import socketIO from 'socket.io-client';
-import { GameRooms } from '../socket/gameSocket.mjs';
+import { Games } from '../socket/gameSocket.mjs';
 
 const nameList = ["John", "Larry", "Barry", "Sean", "Harry", "Lisa", "Lindsey", "Jennifer", "Kathy", "Linda"];
 let nameIndex = Math.floor(Math.random() * nameList.length);
@@ -30,7 +30,7 @@ export default class GameBot {
          */
         this.socket.on('startGame', (startGame) => {
             if (startGame) {
-                let self = GameRooms[this.roomCode].getPlayer('socketID', this.socket.id);
+                let self = Games[this.roomCode].getPlayer('socketID', this.socket.id);
                 this.team = self.team;
                 this.initializePlayerRiskScores();
             }
@@ -72,7 +72,7 @@ export default class GameBot {
         this.socket.on('showSucceedOrFailQuestBtns', () => {
             let decision;
 
-            if (GameRooms[this.roomCode].currentQuestNum === 1) decision = 'succeed';
+            if (Games[this.roomCode].currentQuestNum === 1) decision = 'succeed';
             else decision = this.team === 'Evil' ? 'fail' : 'succeed';
             this.socket.emit('questVote', decision);
         });
@@ -110,7 +110,7 @@ export default class GameBot {
      * @returns {string}
      */
     botAcceptOrRejectTeam() {
-        const currentQuest = GameRooms[this.roomCode].getCurrentQuest();
+        const currentQuest = Games[this.roomCode].getCurrentQuest();
         let decision;
         if (this.team === 'Evil') {
             decision = this.makeEvilQuestTeamVote(currentQuest);
@@ -166,7 +166,7 @@ export default class GameBot {
     }
 
     makeEvilLeaderPicks() {
-        const { teamSize } = GameRooms[this.roomCode].getCurrentQuest();
+        const { teamSize } = Games[this.roomCode].getCurrentQuest();
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
 
         let evilPlayer = sortedPlayerRiskScores.find(player => player.team === 'Evil');
@@ -181,7 +181,7 @@ export default class GameBot {
     }
 
     makeGoodLeaderPicks() {
-        const { teamSize } = GameRooms[this.roomCode].getCurrentQuest();
+        const { teamSize } = Games[this.roomCode].getCurrentQuest();
 
         //add players with the lowest risk score
         const sortedPlayerRiskScores = this.playerRiskScores.sort((a, b) => (a.risk > b.risk));
@@ -195,7 +195,7 @@ export default class GameBot {
      * @param {number} questNum 
      */
     updatePlayerRiskScores(questNum) {
-        let quest = GameRooms[this.roomCode].quests[questNum];
+        let quest = Games[this.roomCode].quests[questNum];
 
         this.sanitizedPlayers.forEach(player => {
             let playerRiskScore = this.playerRiskScores.find(playerRiskScore => playerRiskScore.name === player.name);

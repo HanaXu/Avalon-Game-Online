@@ -50,7 +50,7 @@ export default class Game {
   /**
    * @param {number} roomCode - Digits identifying which room the game is in
    * @property {array} chat - Chat history of the game
-   * @property {boolean} gameIsStarted - Indicates if the game has started
+   * @property {boolean} isStarted - Indicates if the game has started
    * @property {Object} gameState - Values indicating various stages of the game
    * @property {Object} roleList - Key/value pair of roles (and how many of each role) for the game
    * @property {array} players
@@ -64,7 +64,7 @@ export default class Game {
   constructor(roomCode) {
     this.roomCode = roomCode;
     this.chat = [];
-    this.gameIsStarted = false;
+    this.isStarted = false;
     this.gameState = {
       gameStatusMsg: '',
       showAcceptOrRejectTeamBtns: false,
@@ -79,6 +79,7 @@ export default class Game {
     this.questSuccesses = 0;
     this.leaderIndex = 0;
     this.winningTeam = null;
+    this.deleteRoomTimeout = null;
   }
 
   static get BaseRoles() {
@@ -92,7 +93,7 @@ export default class Game {
    * @param {Object} optionalRoles 
    */
   startGame(optionalRoles) {
-    this.gameIsStarted = true;
+    this.isStarted = true;
     // shuffle(this.players);
     this.initializeQuests();
     this.assignRoles(optionalRoles);
@@ -100,7 +101,7 @@ export default class Game {
 
   resetGame() {
     this.resetPlayers();
-    this.gameIsStarted = false;
+    this.isStarted = false;
     this.gameState = {
       gameStatusMsg: '',
       showAcceptOrRejectTeamBtns: false,
@@ -112,6 +113,7 @@ export default class Game {
     this.questSuccesses = 0;
     this.leaderIndex = 0;
     this.winningTeam = null;
+    this.deleteRoomTimeout = null;
   }
 
   initializeQuests() {

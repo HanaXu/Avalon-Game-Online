@@ -2,7 +2,7 @@ import { createRoom, joinRoom, spectateRoom, validateOptionalRoles } from './roo
 import { sanitizeTeamView } from '../game/utility.mjs';
 import GameBot from '../game/gameBot.mjs';
 
-export let GameRooms = {}; //keeps record of all game objects
+export let Games = {}; //keeps record of all game objects
 
 /**
  * @param {Object} io
@@ -15,10 +15,10 @@ export let GameRooms = {}; //keeps record of all game objects
 export function gameSocket(io, socket, port) {
   Promise.race([createRoom(io, socket), joinRoom(io, socket), spectateRoom(io, socket)])
     .then(({ playerName, roomCode, reconnect }) => {
-      let game = GameRooms[roomCode];
+      let game = Games[roomCode];
 
       socket.on('createBot', function () {
-        if (!game.gameIsStarted && game.getPlayer('socketID', socket.id).isRoomHost) {
+        if (!game.isStarted && game.getPlayer('socketID', socket.id).isRoomHost) {
           new GameBot(roomCode, port).listen();
         }
       });
@@ -143,7 +143,7 @@ export function gameSocket(io, socket, port) {
       });
 
       socket.on('disconnect', function () {
-        if (Object.keys(GameRooms).length === 0 || typeof game === 'undefined') return;
+        if (Object.keys(Games).length === 0 || typeof game === 'undefined') return;
 
         if (game.getSpectator('socketID', socket.id)) return disconnectSpectator(roomCode, socket.id);
         else disconnectPlayer(socket.id);
@@ -164,14 +164,14 @@ export function gameSocket(io, socket, port) {
       });
 
       function updateLobbyStatus() {
-        if (game.gameIsStarted) return;
+        if (game.isStarted) return;
 
         if (game.players.length >= 5) {
           io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
           updateGameStatus('Waiting for Host to start the game.');
         } else if (game.players.length > 0) {
           io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', false);
-          updateGameStatus(`Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
+          updateGameStatus(`Waiting for ${5 - Games[roomCode].players.length} more player(s) to join.`);
         }
       }
 
@@ -274,7 +274,7 @@ export function gameSocket(io, socket, port) {
       }
 
       function shouldAssignNextHost() {
-        return !game.gameIsStarted && !game.getPlayer('isRoomHost', true) && game.players.length > 0;
+        return !game.isStarted && !game.getPlayer('isRoomHost', true) && game.players.length > 0;
       }
 
       function assignNextHost() {
@@ -298,7 +298,7 @@ export function gameSocket(io, socket, port) {
        */
       function disconnectPlayer(socketID) {
         updateServerChat(`${game.getPlayer('socketID', socketID).name} has disconnected.`);
-        if (game.gameIsStarted) {
+        if (game.isStarted) {
           game.getPlayer('socketID', socketID).disconnected = true;
         } else {
           game.deletePersonFrom('players', socketID);
@@ -308,9 +308,12 @@ export function gameSocket(io, socket, port) {
       function gameRoomCleanUp() {
         if (game.players.length > 0 && game.players.some(player => !player.disconnected)) return;
 
-        console.log(`all players disconnected, deleting room ${roomCode}`);
+        console.log(`all players disconnected from room ${roomCode}`);
         io.in(roomCode).emit('windowReload');
-        delete GameRooms[roomCode];
+        game.deleteRoomTimeout = setTimeout(function(){
+          console.log(`no activity for 2 minutes, deleting room ${roomCode}`);
+          delete Games[roomCode];
+        }, 120000);
       }
 
       if (reconnect) {

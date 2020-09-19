@@ -1,4 +1,4 @@
-import { GameRooms } from './gameSocket.mjs';
+import { Games } from './gameSocket.mjs';
 import Game from '../game/game.mjs';
 import { sanitizeTeamView } from '../game/utility.mjs';
 
@@ -18,15 +18,15 @@ export function createRoom(io, socket) {
       };
 
       const roomCode = generateRoomCode();
-      GameRooms[roomCode] = new Game(roomCode);
-      GameRooms[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: true });
+      Games[roomCode] = new Game(roomCode);
+      Games[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: true });
 
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
-      socket.emit('updatePlayerCards', GameRooms[roomCode].players);
+      socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: true });
+      socket.emit('updatePlayerCards', Games[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
-      updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
+      updateGameStatus(io, roomCode, `Waiting for ${5 - Games[roomCode].players.length} more player(s) to join.`);
       resolve({ playerName, roomCode });
     });
   });
@@ -50,17 +50,18 @@ export function joinRoom(io, socket) {
       }
       if (!isValidInput(socket, roomCode, playerName)) return;
 
+      clearTimeout(Games[roomCode].deleteRoomTimeout);
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: true });
-      const msg = GameRooms[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: false });
+      socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: true });
+      const msg = Games[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: false });
       io.to(roomCode).emit('updateChat', msg);
-      io.in(roomCode).emit('updatePlayerCards', GameRooms[roomCode].players);
-      io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
-      updateGameStatus(io, roomCode, `Waiting for ${5 - GameRooms[roomCode].players.length} more player(s) to join.`);
+      io.in(roomCode).emit('updatePlayerCards', Games[roomCode].players);
+      io.in(roomCode).emit('updateSpectatorsList', Games[roomCode].spectators);
+      updateGameStatus(io, roomCode, `Waiting for ${5 - Games[roomCode].players.length} more player(s) to join.`);
 
-      if (GameRooms[roomCode].players.length >= 5) {
-        io.to(GameRooms[roomCode].getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
+      if (Games[roomCode].players.length >= 5) {
+        io.to(Games[roomCode].getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
         updateGameStatus(io, roomCode, 'Waiting for Host to start the game.');
       }
       resolve(data);
@@ -84,17 +85,17 @@ export function spectateRoom(io, socket) {
 
       socket.join(roomCode);
       socket.emit('goToGame', { playerName, roomCode });
-      socket.emit('initChat', { msgs: GameRooms[roomCode].chat, showMsgInput: false });
-      socket.emit('updateGameStatus', GameRooms[roomCode].gameState['gameStatusMsg']);
-      const msg = GameRooms[roomCode].addPerson({ type: 'spectator', socketID: socket.id, name: playerName, isRoomHost: false });
+      socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: false });
+      socket.emit('updateGameStatus', Games[roomCode].gameState['gameStatusMsg']);
+      const msg = Games[roomCode].addPerson({ type: 'spectator', socketID: socket.id, name: playerName, isRoomHost: false });
       io.in(roomCode).emit('updateChat', msg);
-      io.in(roomCode).emit('updateSpectatorsList', GameRooms[roomCode].spectators);
+      io.in(roomCode).emit('updateSpectatorsList', Games[roomCode].spectators);
 
-      if (GameRooms[roomCode].gameIsStarted) emitGameStartedStuff(socket, roomCode);
-      if (GameRooms[roomCode].winningTeam !== null) {
-        socket.emit('updatePlayerCards', GameRooms[roomCode].players);
+      if (Games[roomCode].isStarted) emitGameStartedStuff(socket, roomCode);
+      if (Games[roomCode].winningTeam !== null) {
+        socket.emit('updatePlayerCards', Games[roomCode].players);
       } else {
-        socket.emit('updatePlayerCards', sanitizeTeamView(socket.id, 'Spectator', GameRooms[roomCode].players));
+        socket.emit('updatePlayerCards', sanitizeTeamView(socket.id, 'Spectator', Games[roomCode].players));
       }
       resolve(data);
     });
@@ -106,7 +107,7 @@ export function spectateRoom(io, socket) {
  */
 function generateRoomCode() {
   let roomCode = Math.floor(Math.random() * 999999) + 1;
-  while (GameRooms.hasOwnProperty(roomCode)) {
+  while (Games.hasOwnProperty(roomCode)) {
     console.log(`collision with roomCode ${roomCode}`)
     roomCode = Math.floor(Math.random() * 999999) + 1;
   }
@@ -120,7 +121,7 @@ function generateRoomCode() {
  * @param {string} msg 
  */
 function updateGameStatus(io, roomCode, msg) {
-  GameRooms[roomCode].gameState['gameStatusMsg'] = msg;
+  Games[roomCode].gameState['gameStatusMsg'] = msg;
   io.in(roomCode).emit('updateGameStatus', msg);
 }
 
@@ -130,11 +131,11 @@ function updateGameStatus(io, roomCode, msg) {
  */
 function emitGameStartedStuff(socket, roomCode) {
   socket.emit('startGame', true);
-  socket.emit('setRoleList', GameRooms[roomCode].roleList);
+  socket.emit('setRoleList', Games[roomCode].roleList);
 
-  let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = GameRooms[roomCode].getCurrentQuest();
-  socket.emit('initQuests', GameRooms[roomCode].quests);
-  socket.emit('updateGameStatus', GameRooms[roomCode].gameState['gameStatusMsg']);
+  let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = Games[roomCode].getCurrentQuest();
+  socket.emit('initQuests', Games[roomCode].quests);
+  socket.emit('updateGameStatus', Games[roomCode].gameState['gameStatusMsg']);
   socket.emit('updateVoteTrack', voteTrack);
   if (teamVotesNeededLeft <= 0) {
     socket.emit('revealVoteResults', { type: 'team', votes: acceptOrRejectTeam });
@@ -147,7 +148,7 @@ function emitGameStartedStuff(socket, roomCode) {
  * @returns {boolean} 
  */
 function isPlayerReconnect(roomCode, playerName) {
-  let game = GameRooms[roomCode];
+  let game = Games[roomCode];
   if (game && game.players) {
     return game.getPlayer('name', playerName) && game.getPlayer('name', playerName).disconnected;
   }
@@ -163,19 +164,19 @@ function isPlayerReconnect(roomCode, playerName) {
  */
 function isValidInput(socket, roomCode, playerName, isSpectator = false) {
   let errorMsg = '';
-  if (!GameRooms[roomCode]) {
+  if (!Games[roomCode]) {
     errorMsg = `Error: Room '${roomCode}' does not exist.`;
   }
   else if (!nameIsProperLength(playerName)) {
     errorMsg = 'Error: Name must be between 1-20 characters.';
   }
-  else if (GameRooms[roomCode].nameIsTaken(playerName)) {
+  else if (Games[roomCode].nameIsTaken(playerName)) {
     errorMsg = `Error: Name '${playerName}' is already taken.`;
   }
-  else if (!isSpectator && GameRooms[roomCode].gameIsStarted) {
+  else if (!isSpectator && Games[roomCode].isStarted) {
     errorMsg = 'Error: Cannot join a game that has already started. If you disconnected, enter the same name.';
   }
-  else if (!isSpectator && GameRooms[roomCode].players.length >= 10) {
+  else if (!isSpectator && Games[roomCode].players.length >= 10) {
     errorMsg = `Error: Room '${roomCode}' has reached a capacity of 10.`;
   }
   if (errorMsg.length > 0) {
