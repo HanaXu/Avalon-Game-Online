@@ -32,13 +32,18 @@ export function gameSocket(io, socket, port) {
       });
 
       /**
-       * @param {Object} optionalRoles 
+       * @param {array} specialRoles
        */
-      socket.on('startGame', function (optionalRoles) {
-        const errorMsg = validateOptionalRoles(optionalRoles, game.players.length);
+      socket.on('updateSpecialRoles', (specialRoles) => {
+        game.specialRoles = specialRoles;
+        io.in(roomCode).emit('updateSpecialRoles', specialRoles);
+      });
+
+      socket.on('startGame', function () {
+        const errorMsg = validateOptionalRoles(game.specialRoles, game.players.length);
         if (errorMsg) return socket.emit('updateErrorMsg', errorMsg);
 
-        game.startGame(optionalRoles);
+        game.startGame();
         updatePlayerCards();
         socket.emit('showSetupOptionsBtn', false);
         socket.emit('showLobbyBtn', false);

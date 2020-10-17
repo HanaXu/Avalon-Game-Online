@@ -58,6 +58,7 @@ export function joinRoom(io, socket) {
       io.to(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updatePlayerCards', Games[roomCode].players);
       io.in(roomCode).emit('updateSpectatorsList', Games[roomCode].spectators);
+      io.in(roomCode).emit('updateSpecialRoles', Games[roomCode].specialRoles);
       updateGameStatus(io, roomCode, `Waiting for ${5 - Games[roomCode].players.length} more player(s) to join.`);
 
       if (Games[roomCode].players.length >= 5) {
@@ -90,6 +91,7 @@ export function spectateRoom(io, socket) {
       const msg = Games[roomCode].addPerson({ type: 'spectator', socketID: socket.id, name: playerName, isRoomHost: false });
       io.in(roomCode).emit('updateChat', msg);
       io.in(roomCode).emit('updateSpectatorsList', Games[roomCode].spectators);
+      io.in(roomCode).emit('updateSpecialRoles', Games[roomCode].specialRoles);
 
       if (Games[roomCode].isStarted) emitGameStartedStuff(socket, roomCode);
       if (Games[roomCode].winningTeam !== null) {

@@ -89,14 +89,11 @@ export default class Game {
     return GoodTeam;
   }
 
-  /**
-   * @param {Object} optionalRoles 
-   */
-  startGame(optionalRoles) {
+  startGame() {
     this.isStarted = true;
     // shuffle(this.players);
     this.initializeQuests();
-    this.assignRoles(optionalRoles);
+    this.assignRoles();
   }
 
   resetGame() {
@@ -107,6 +104,7 @@ export default class Game {
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
+    this.specialRoles = [];
     this.roleList = {};
     this.quests = {};
     this.questFails = 0;
@@ -332,15 +330,12 @@ export default class Game {
     }
   }
 
-  /**
-   * @param {Object} optionalRoles 
-   */
-  assignRoles(optionalRoles) {
+  assignRoles() {
     let shuffledIdentities;
     let teamObj = JSON.parse(JSON.stringify(Game.BaseRoles[this.players.length]));
-    if (optionalRoles.length > 0) {
-      optionalRoles.forEach(optionalRole => {
-        switch (optionalRole) {
+    if (this.specialRoles.length > 0) {
+      this.specialRoles.forEach(specialRole => {
+        switch (specialRole) {
           case 'Percival':
             teamObj['Loyal Servant of Arthur']--;
             teamObj['Percival'] = 1;

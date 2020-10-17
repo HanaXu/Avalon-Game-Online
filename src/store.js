@@ -9,7 +9,8 @@ export default new Vuex.Store({
     roomCode: null,
     playerName: '',
     players: [],
-    serverStatus: ''
+    serverStatus: '',
+    specialRoles: []
   },
   mutations: {
     SOCKET_goToGame(state, { playerName, roomCode }) {
@@ -30,6 +31,12 @@ export default new Vuex.Store({
     },
     SOCKET_windowReload() {
       window.location.reload();
+    },
+    SOCKET_updateSpecialRoles(state, specialRoles) {
+      state.specialRoles = specialRoles;
+    },
+    updateSpecialRoles(state, specialRoles) {
+      state.specialRoles = specialRoles;
     }
   },
   actions: {

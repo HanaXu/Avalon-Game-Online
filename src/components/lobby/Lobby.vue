@@ -15,6 +15,13 @@
         </span>
       </div>
     </b-row>
+    <b-row class="justify-content-center">
+      <span>Special Roles: 
+        <span v-for="(specialRole) in specialRoles" :key="specialRole">
+          {{specialRole}}, 
+        </span>
+      </span>
+    </b-row>
     <b-row>
       <div class="container">
         <b-button
@@ -31,7 +38,7 @@
         </ul>
       </div>
     </b-row>
-    <SetupOptions @selectedRoles="updateSetupOptions"></SetupOptions>
+    <SetupOptions></SetupOptions>
     <b-alert v-if="error" variant="danger" show v-html="errorMsg"></b-alert>
     <div v-if="showStartGameBtn">
       <b-button class="avalon-btn-primary big" id="start-game-btn" @click="startGame">Start Game</b-button>
@@ -51,20 +58,16 @@ export default {
   },
   data() {
     return {
-      optionalRoles: [],
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
       showStartGameBtn: false
     };
   },
-  computed: mapState(["roomCode", "playerName", "players"]),
+  computed: mapState(["roomCode", "playerName", "players", "specialRoles"]),
   methods: {
-    updateSetupOptions(selectedRoles) {
-      this.optionalRoles = selectedRoles;
-    },
     startGame() {
-      this.$socket.emit("startGame", this.optionalRoles);
+      this.$socket.emit("startGame", this.specialRoles);
       this.showStartGameBtn = false;
     }
   },

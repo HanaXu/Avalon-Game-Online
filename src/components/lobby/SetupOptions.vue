@@ -1,7 +1,12 @@
 <template>
   <b-modal id="setupModal" title="Setup Options" @hidden="handleClose">
     <b-row v-if="showAddBotBtn">
-      <b-button class="setupButton avalon-btn-primary" :disabled="players.length > 9" @click="createBot">Add Bot</b-button>
+      <b-button
+        class="setupButton avalon-btn-primary"
+        :disabled="players.length > 9"
+        @click="createBot"
+        >Add Bot</b-button
+      >
     </b-row>
     <b-row>
       <b-col sm="5">
@@ -11,12 +16,13 @@
         <b-form-group>
           <b-form-checkbox
             v-for="option in options"
-            v-model="selectedRoles"
+            v-model="specialRoles"
             :key="option.value"
             :value="option.value"
-            :disabled="option.value === 'Morgana' && !selectedRoles.includes('Percival')"
+            :disabled="option.value === 'Morgana' && !specialRoles.includes('Percival')"
             @input="validateSelectedRoles()"
-          >{{ option.text }}</b-form-checkbox>
+            >{{ option.text }}</b-form-checkbox
+          >
         </b-form-group>
       </b-col>
     </b-row>
@@ -24,8 +30,9 @@
       <strong>Notes:</strong>
       <em>
         <br />You cannot include Morgana unless Percival is also in the game.
-        <br />5 and 6-player games cannot include more than one optional evil role.
-        <br />7, 8, and 9-player games cannot include more than two optional evil roles.
+        <br />5 and 6-player games cannot include more than one optional evil
+        role. <br />7, 8, and 9-player games cannot include more than two
+        optional evil roles.
       </em>
     </p>
     <!--include footer so OK and Cancel buttons dont show up-->
@@ -34,15 +41,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
 export default {
   data() {
     return {
-      showAddBotBtn: process.env.VUE_APP_DEBUG === 'true',
+      showAddBotBtn: process.env.VUE_APP_DEBUG === "true",
       error: false,
       errorMsg: "",
-      selectedRoles: [], // Must be an array reference!
       options: [
         {
           text: "Percival (Good, knows Merlin)",
@@ -63,16 +67,35 @@ export default {
       ]
     };
   },
-  computed: mapState(["roomCode", "players"]),
+  computed: {
+    roomCode: {
+      get() {
+        return this.$store.state.roomCode;
+      }
+    },
+    players: {
+      get() {
+        return this.$store.state.players;
+      }
+    },
+    specialRoles: {
+      get() {
+        return this.$store.state.specialRoles;
+      },
+      set(specialRoles) {
+        this.$store.commit('updateSpecialRoles', specialRoles);
+      }
+    }
+  },
   methods: {
     validateSelectedRoles() {
       if (
-        this.selectedRoles.includes("Morgana") &&
-        !this.selectedRoles.includes("Percival")
+        this.specialRoles.includes("Morgana") &&
+        !this.specialRoles.includes("Percival")
       ) {
-        for (let i = 0; i < this.selectedRoles.length; i++) {
-          if (this.selectedRoles[i] === "Morgana") {
-            this.selectedRoles.splice(i, 1);
+        for (let i = 0; i < this.specialRoles.length; i++) {
+          if (this.specialRoles[i] === "Morgana") {
+            this.specialRoles.splice(i, 1);
           }
         }
       }
@@ -81,8 +104,7 @@ export default {
       this.$socket.emit("createBot");
     },
     handleClose() {
-      //send selected roles to parent (Lobby.vue)
-      this.$emit("selectedRoles", this.selectedRoles);
+      this.$socket.emit('updateSpecialRoles', this.specialRoles);
     }
   }
 };
