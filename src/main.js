@@ -9,6 +9,7 @@ import BootstrapVue from "bootstrap-vue";
 import VueSocketIO from 'vue-socket.io-extended';
 import io from 'socket.io-client';
 import VueChatScroll from "vue-chat-scroll";
+import VueGtag from "vue-gtag";
 
 const ioInstance = io(process.env.VUE_APP_SOCKET_CONNECT_URL, {
   reconnection: true,
@@ -23,6 +24,9 @@ Vue.use(VueSocketIO, ioInstance, {
   actionPrefix: 'SOCKET_', // (1) keep prefix in uppercase
   eventToActionTransformer: (actionName) => actionName // (2) cancel camelcasing
 });
+Vue.use(VueGtag, {
+  config: { id: "UA-167531826-1" }
+}, router);
 
 Vue.config.productionTip = false;
 
