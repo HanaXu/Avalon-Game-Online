@@ -11,16 +11,6 @@
 import { mapState } from "vuex";
 
 export default {
-  data() {
-    return {
-      spectators: []
-    };
-  },
-  computed: mapState(["playerName"]),
-  sockets: {
-    updateSpectatorsList(spectators) {
-      this.spectators = spectators;
-    }
-  }
+  computed: mapState(["playerName", "spectators"])
 };
 </script>

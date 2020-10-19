@@ -22,7 +22,7 @@ export function createRoom(io, socket) {
       Games[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: true });
 
       socket.join(roomCode);
-      socket.emit('goToGame', { playerName, roomCode });
+      socket.emit('goToLobby', { playerName, roomCode });
       socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: true });
       socket.emit('updatePlayerCards', Games[roomCode].players);
       socket.emit('showSetupOptionsBtn', true);
@@ -52,7 +52,7 @@ export function joinRoom(io, socket) {
 
       clearTimeout(Games[roomCode].deleteRoomTimeout);
       socket.join(roomCode);
-      socket.emit('goToGame', { playerName, roomCode });
+      socket.emit('goToLobby', { playerName, roomCode });
       socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: true });
       const msg = Games[roomCode].addPerson({ type: 'player', socketID: socket.id, name: playerName, isRoomHost: false });
       io.to(roomCode).emit('updateChat', msg);
@@ -85,7 +85,7 @@ export function spectateRoom(io, socket) {
       if (!isValidInput(socket, roomCode, playerName, true)) return;
 
       socket.join(roomCode);
-      socket.emit('goToGame', { playerName, roomCode });
+      socket.emit('goToLobby', { playerName, roomCode });
       socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: false });
       socket.emit('updateGameStatus', Games[roomCode].gameState['gameStatusMsg']);
       const msg = Games[roomCode].addPerson({ type: 'spectator', socketID: socket.id, name: playerName, isRoomHost: false });
@@ -129,10 +129,11 @@ function updateGameStatus(io, roomCode, msg) {
 
 /**
  * @param {Object} socket 
+ * @param {string} playerName 
  * @param {number} roomCode 
  */
-function emitGameStartedStuff(socket, roomCode) {
-  socket.emit('startGame', true);
+function emitGameStartedStuff(socket, playerName, roomCode) {
+  socket.emit('startGame', { startGame: true, playerName, roomCode });
   socket.emit('setRoleList', Games[roomCode].roleList);
 
   let { voteTrack, teamVotesNeededLeft, acceptOrRejectTeam } = Games[roomCode].getCurrentQuest();

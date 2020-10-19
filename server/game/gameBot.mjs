@@ -28,7 +28,7 @@ export default class GameBot {
         /**
          * @param {boolean} startGame
          */
-        this.socket.on('startGame', (startGame) => {
+        this.socket.on('startGame', ({ startGame }) => {
             if (startGame) {
                 let self = Games[this.roomCode].getPlayer('socketID', this.socket.id);
                 this.team = self.team;

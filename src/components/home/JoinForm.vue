@@ -8,7 +8,7 @@
           id="inline-form-input-room-code"
           placeholder="Room code"
           v-model="roomCode"
-          @keydown.enter.native.prevent="clickHandler(action)"
+          @keydown.enter.native.prevent="handleClick(action)"
         ></b-input>
       </b-input-group>
       <label class="sr-only" for="inline-form-input-player-name">Player name</label>
@@ -17,9 +17,9 @@
         class="mb-2 mr-sm-2 mb-sm-0"
         placeholder="Player name"
         v-model="playerName"
-        @keydown.enter.native.prevent="clickHandler(action)"
+        @keydown.enter.native.prevent="handleClick(action)"
       ></b-input>
-      <b-button @click="clickHandler(action)" class="avalon-btn-primary big">{{text}}</b-button>
+      <b-button @click="handleClick(action)" class="avalon-btn-primary big">{{text}}</b-button>
     </b-form>
     <div v-if="loading" class="text-center">
       <b-spinner variant="dark" label="Text Centered"></b-spinner>
@@ -44,7 +44,7 @@ export default {
   props: ["action", "text"],
   computed: mapState(["serverStatus"]),
   methods: {
-    clickHandler(action) {
+    handleClick(action) {
       if (this.serverStatus === 'Disconnected') {
         this.error = true;
         this.errorMsg = 'Error: Unable to connect to server.';
@@ -63,12 +63,6 @@ export default {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
-    },
-    goToGame({ playerName, roomCode }) {
-      this.$router.push({
-        name: "game",
-        params: { playerName, roomCode }
-      });
     }
   }
 };

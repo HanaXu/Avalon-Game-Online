@@ -23,6 +23,10 @@ export function gameSocket(io, socket, port) {
         }
       });
 
+      socket.on('windowReload', () => {
+        socket.emit('windowReload');
+      });
+
       /**
        * @param {Object} msg
        */
@@ -47,7 +51,7 @@ export function gameSocket(io, socket, port) {
         updatePlayerCards();
         socket.emit('showSetupOptionsBtn', false);
         socket.emit('showLobbyBtn', false);
-        io.in(roomCode).emit('startGame', true);
+        io.in(roomCode).emit('startGame', { startGame: true });
         io.in(roomCode).emit('setRoleList', game.roleList);
         io.in(roomCode).emit('initQuests', game.quests);
         leaderChoosesQuestTeam();
@@ -160,10 +164,11 @@ export function gameSocket(io, socket, port) {
       });
 
       socket.on('resetGame', function () {
-        io.in(roomCode).emit('startGame', false);
-        io.in(roomCode).emit('hidePreviousVoteResults');
-        io.to(game.getPlayer('isRoomHost', true).socketID).emit('showSetupOptionsBtn', true);
         game.resetGame();
+        io.in(roomCode).emit('startGame', { startGame: false });
+        io.in(roomCode).emit('hidePreviousVoteResults');
+        io.in(roomCode).emit('goToLobby', { playerName, roomCode });
+        io.to(game.getPlayer('isRoomHost', true).socketID).emit('showSetupOptionsBtn', true);
         updatePlayerCards();
         updateLobbyStatus();
       });
@@ -326,11 +331,10 @@ export function gameSocket(io, socket, port) {
         let player = game.getPlayer('name', playerName);
         player.reconnect(socket.id);
 
-        socket.emit('goToGame', { playerName, roomCode });
         socket.join(roomCode);
-        socket.emit('initChat', { msgs: game.chat, showMsgInput: true });
         updateServerChat(`${playerName} has reconnected.`);
-        socket.emit('startGame', true);
+        socket.emit('startGame', { startGame: true, playerName, roomCode });
+        socket.emit('initChat', { msgs: game.chat, showMsgInput: true });
         socket.emit('setRoleList', game.roleList);
         updatePlayerCards();
 

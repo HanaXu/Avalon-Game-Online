@@ -13,7 +13,7 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item to="/" @click="reload">Home</b-nav-item>
+        <b-nav-item @click="reload">Home</b-nav-item>
         <b-nav-item
           v-for="(value, key) in this.$data"
           :key="key"
@@ -157,7 +157,7 @@ export default {
   computed: mapState(["roomCode", "serverStatus"]),
   methods: {
     reload() {
-      window.location.reload();
+      this.$socket.emit('windowReload');
     }
   }
 };

@@ -7,8 +7,9 @@
           v-for="index in 5"
           :key="index"
           class="circle"
-          :class="{markBG: index === currentVoteTrack}"
-        >{{ index }}</span>
+          :class="{ markBG: index === currentVoteTrack }"
+          >{{ index }}</span
+        >
       </div>
     </b-row>
   </div>
@@ -51,16 +52,6 @@ export default {
   .circle:first-child {
     margin-left: 0.4rem;
   }
-  .section.voteTrack {
-    width: 290px;
-  }
-  .section.voteTrack .sectionTitle {
-    font-size: 14px;
-    vertical-align: middle;
-  }
-  .section.voteTrack.col {
-    padding: 0 !important;
-  }
 }
 
 /****NORMAL SCREENS****/
@@ -70,9 +61,6 @@ export default {
     height: 40px;
     padding-top: 10px;
     font-size: 15px;
-  }
-  .section.voteTrack {
-    width: 500px;
   }
 }
 </style>

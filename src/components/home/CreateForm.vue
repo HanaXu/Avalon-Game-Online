@@ -51,13 +51,6 @@ export default {
       this.error = true;
       this.errorMsg = msg;
       this.loading = false;
-    },
-    goToGame({ playerName, roomCode }) {
-      this.loading = false;
-      this.$router.push({
-        name: "game",
-        params: { playerName, roomCode }
-      });
     }
   }
 };

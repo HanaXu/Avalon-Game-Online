@@ -20,7 +20,7 @@
             :key="option.value"
             :value="option.value"
             :disabled="option.value === 'Morgana' && !specialRoles.includes('Percival')"
-            @input="validateSelectedRoles()"
+            @input="validateSelectedRoles"
             >{{ option.text }}</b-form-checkbox
           >
         </b-form-group>
