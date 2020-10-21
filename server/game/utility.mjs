@@ -59,8 +59,8 @@ export function sanitizeTeamView(socketID, role, players) {
  */
 function sanitizeForSpectators(players) {
     for (const i in players) {
-        players[i].role = 'hidden';
-        players[i].team = 'hidden';
+        players[i].role = '???';
+        players[i].team = '???';
     }
     return players;
 }
@@ -75,8 +75,8 @@ function sanitizeForGoodTeam(socketID, players) {
     for (const i in players) {
         if (players[i].socketID === socketID) continue;
         else {
-            players[i].role = 'hidden';
-            players[i].team = 'hidden';
+            players[i].role = '???';
+            players[i].team = '???';
         }
     }
     return players;
@@ -96,8 +96,8 @@ function sanitizeForPercival(socketID, players) {
             players[i].role = 'Merlin';
             players[i].team = 'Good';
         } else {
-            players[i].role = 'hidden';
-            players[i].team = 'hidden';
+            players[i].role = '???';
+            players[i].team = '???';
         }
     }
     return players;
@@ -114,10 +114,10 @@ function sanitizeForEvilTeam(socketID, players) {
         if (players[i].socketID === socketID) continue;
         else if (GoodTeam.has(players[i].role) || players[i].role == 'Oberon') {
             // hide good team's info (& Oberon)
-            players[i].role = 'hidden';
-            players[i].team = 'hidden';
+            players[i].role = '???';
+            players[i].team = '???';
         } else {
-            players[i].role = 'hidden';
+            players[i].role = '???';
         }
     }
     return players;
@@ -134,10 +134,10 @@ function sanitizeForMerlin(socketID, players) {
         if (players[i].socketID === socketID) continue;
         else if (GoodTeam.has(players[i].role) || players[i].role == 'Mordred') {
             // hide good team's info (& Mordred)
-            players[i].role = 'hidden';
-            players[i].team = 'hidden';
+            players[i].role = '???';
+            players[i].team = '???';
         } else {
-            players[i].role = 'hidden';
+            players[i].role = '???';
         }
     }
     return players;

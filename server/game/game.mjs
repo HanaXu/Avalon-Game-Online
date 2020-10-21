@@ -70,6 +70,7 @@ export default class Game {
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
+    this.specialRoles = [];
     this.roleList = {};
     this.players = [];
     this.spectators = [];
@@ -104,7 +105,6 @@ export default class Game {
       showAcceptOrRejectTeamBtns: false,
       showSucceedOrFailQuestBtns: false
     };
-    this.specialRoles = [];
     this.roleList = {};
     this.quests = {};
     this.questFails = 0;

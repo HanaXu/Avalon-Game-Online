@@ -16,6 +16,8 @@ export function gameSocket(io, socket, port) {
   Promise.race([createRoom(io, socket), joinRoom(io, socket), spectateRoom(io, socket)])
     .then(({ playerName, roomCode, reconnect }) => {
       let game = Games[roomCode];
+      if (shouldAssignNextHost()) assignNextHost();
+      updatePlayerCards();
 
       socket.on('createBot', function () {
         if (!game.isStarted && game.getPlayer('socketID', socket.id).isRoomHost) {
@@ -291,6 +293,7 @@ export function gameSocket(io, socket, port) {
         const newHost = game.assignNextHost();
         io.to(newHost.socketID).emit('showSetupOptionsBtn', true);
         updateServerChat(`${newHost.name} has become the new host.`);
+        console.log(`${newHost.name} has become the new host.`);
       }
 
       /**
@@ -333,7 +336,7 @@ export function gameSocket(io, socket, port) {
 
         socket.join(roomCode);
         updateServerChat(`${playerName} has reconnected.`);
-        socket.emit('startGame', { startGame: true, playerName, roomCode });
+        socket.emit('startGame', { startGame: true, playerName, roomCode, reconnect: true });
         socket.emit('initChat', { msgs: game.chat, showMsgInput: true });
         socket.emit('setRoleList', game.roleList);
         updatePlayerCards();

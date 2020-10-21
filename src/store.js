@@ -27,7 +27,7 @@ export default new Vuex.Store({
         }
       });
     },
-    SOCKET_startGame(state, { startGame, playerName, roomCode }) {
+    SOCKET_startGame(state, { startGame, playerName, roomCode, reconnect }) {
       state.gameStarted = startGame;
       if (roomCode) {
         state.roomCode = roomCode;
@@ -35,9 +35,11 @@ export default new Vuex.Store({
       if (playerName) {
         state.playerName = playerName;
       }
+      if (!reconnect) {
+        sessionStorage.clear();
+      }
 
       if (state.gameStarted) {
-        sessionStorage.clear();
         router.push({
           name: "game",
           params: {

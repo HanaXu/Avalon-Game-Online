@@ -46,11 +46,12 @@ export function joinRoom(io, socket) {
       const { playerName, roomCode } = data;
 
       if (isPlayerReconnect(roomCode, playerName)) {
-        resolve({ ...data, reconnect: true });
+        clearTimeout(Games[roomCode].deleteRoomTimeout);
+        return resolve({ ...data, reconnect: true });
       }
       if (!isValidInput(socket, roomCode, playerName)) return;
-
       clearTimeout(Games[roomCode].deleteRoomTimeout);
+
       socket.join(roomCode);
       socket.emit('goToLobby', { playerName, roomCode });
       socket.emit('initChat', { msgs: Games[roomCode].chat, showMsgInput: true });

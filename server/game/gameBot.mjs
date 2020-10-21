@@ -95,7 +95,7 @@ export default class GameBot {
         this.playerRiskScores = [];
         this.sanitizedPlayers.forEach(player => {
             let risk;
-            if (player.team === 'hidden') risk = 0;
+            if (player.team === '???') risk = 0;
             else if (player.team === 'Evil') risk = 100;
             else if (player.team === 'Good') risk = -100;
             this.playerRiskScores.push({
@@ -154,7 +154,7 @@ export default class GameBot {
                 if (player.team === 'Evil') {
                     return 'reject';
                 }
-                else if (player.team === 'hidden') {
+                else if (player.team === '???') {
                     let playerRisk = this.playerRiskScores.find(player => player.name === playerName).risk;
                     if (playerRisk > RISK_THRESHOLD) {
                         return 'reject';
@@ -199,11 +199,11 @@ export default class GameBot {
 
         this.sanitizedPlayers.forEach(player => {
             let playerRiskScore = this.playerRiskScores.find(playerRiskScore => playerRiskScore.name === player.name);
-            if (quest.leader === player.name && player.team === 'hidden') {
+            if (quest.leader === player.name && player.team === '???') {
                 quest.success ? playerRiskScore.risk-- : playerRiskScore.risk++;
             }
             //check for player on quest
-            if (Array.from(quest.playersOnQuest).includes(player.name) && player.team === 'hidden') {
+            if (Array.from(quest.playersOnQuest).includes(player.name) && player.team === '???') {
                 quest.success ? playerRiskScore.risk-- : playerRiskScore.risk += 10;
             }
             //check for vote accept

@@ -17,9 +17,7 @@
         <span
           v-b-modal="'notes-modal-' + player.name"
           style="cursor: pointer"
-          @mouseover="getPlayerNotes(`${roomCode}-${player.name}`)"
-          @mouseleave="clearPlayerNotes"
-          v-b-tooltip.hover.topright.html="playerNotes"
+          v-b-tooltip.hover.topright="`Notes...`"
         >📝</span>
       </h5>
       <NotesModal :playerName="player.name" />
@@ -71,8 +69,7 @@ export default {
     return {
       showAddRemovePlayerBtns: false,
       disableAddPlayerBtn: false,
-      showAssassinateBtn: false,
-      playerNotes: "Notes..."
+      showAssassinateBtn: false
     };
   },
   computed: mapState(["roomCode", "playerName", "players"]),
@@ -83,13 +80,6 @@ export default {
     },
     assassinatePlayer(playerName) {
       this.$socket.emit("assassinatePlayer", playerName);
-    },
-    getPlayerNotes(key) {
-      const savedNotes = sessionStorage.getItem(key);
-      this.playerNotes = savedNotes && savedNotes.length > 0 ? savedNotes : null;
-    },
-    clearPlayerNotes() {
-      setTimeout(() => (this.playerNotes = "Notes..."), 300);
     }
   },
   sockets: {
