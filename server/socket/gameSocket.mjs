@@ -169,7 +169,9 @@ export function gameSocket(io, socket, port) {
         game.resetGame();
         io.in(roomCode).emit('startGame', { startGame: false });
         io.in(roomCode).emit('hidePreviousVoteResults');
-        io.in(roomCode).emit('goToLobby', { playerName, roomCode });
+        game.players.forEach(player => {
+          io.to(player.socketID).emit('goToLobby', { playerName: player.name, roomCode });
+        });
         io.to(game.getPlayer('isRoomHost', true).socketID).emit('showSetupOptionsBtn', true);
         updatePlayerCards();
         updateLobbyStatus();
