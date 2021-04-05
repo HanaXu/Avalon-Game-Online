@@ -61,6 +61,7 @@ export async function handleRoomClick(io, socket) {
       const { playerName, roomCode } = data;
       if (!isValidInput(socket, roomCode, playerName, true)) return;
 
+      clearTimeout(Rooms[roomCode].deleteRoomTimeout);
       socket.join(roomCode);
       socket.emit('goToLobby', { playerName, roomCode });
       socket.emit('initChat', { msgs: Rooms[roomCode].chat, showMsgInput: false });

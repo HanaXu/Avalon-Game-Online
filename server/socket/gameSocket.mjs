@@ -341,9 +341,9 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
     console.log(`all players disconnected from room ${roomCode}`);
     io.in(roomCode).emit('windowReload');
     game.deleteRoomTimeout = setTimeout(function () {
-      console.log(`no activity for 2 minutes, deleting room ${roomCode}`);
+      console.log(`no activity for 5 minutes, deleting room ${roomCode}`);
       delete Rooms[roomCode];
-    }, 120000);
+    }, 300000);
   }
 
   if (reconnect) {

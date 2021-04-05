@@ -24,7 +24,5 @@ export let Rooms = {}; //keeps record of all game objects
 
 io.on('connection', async socket => {
   const { playerName, roomCode, reconnect } = await handleRoomClick(io, socket);
-  console.log(roomCode)
-
   gameSocket(io, socket, port, Rooms[roomCode], playerName, roomCode, reconnect);
 });
