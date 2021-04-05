@@ -71,7 +71,9 @@ export async function handleRoomClick(io, socket) {
       io.in(roomCode).emit('updateSpectatorsList', Rooms[roomCode].spectators);
       io.in(roomCode).emit('updateSpecialRoles', Rooms[roomCode].specialRoles);
 
-      if (Rooms[roomCode].isStarted) emitGameStartedStuff(socket, roomCode);
+      if (Rooms[roomCode].isStarted) {
+        emitGameStartedStuff(socket, playerName, roomCode);
+      }
       if (Rooms[roomCode].winningTeam !== null) {
         socket.emit('updatePlayerCards', Rooms[roomCode].players);
       } else {

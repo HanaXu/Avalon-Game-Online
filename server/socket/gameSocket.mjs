@@ -167,6 +167,9 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
     game.players.forEach(player => {
       io.to(player.socketID).emit('goToLobby', { playerName: player.name, roomCode });
     });
+    game.spectators.forEach(spectator => {
+      io.to(spectator.socketID).emit('goToLobby', { playerName: spectator.name, roomCode });
+    });
     io.to(game.getPlayer('isRoomHost', true).socketID).emit('showSetupOptionsBtn', true);
     updatePlayerCards();
     updateLobbyStatus();
