@@ -51,8 +51,9 @@ export async function handleRoomClick(io, socket) {
       updateGameStatus(io, roomCode, `Waiting for ${5 - Rooms[roomCode].players.length} more player(s) to join.`);
 
       if (Rooms[roomCode].players.length >= 5) {
-        io.to(Rooms[roomCode].getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
-        updateGameStatus(io, roomCode, 'Waiting for Host to start the game.');
+        const host = Rooms[roomCode].getPlayer('isRoomHost', true);
+        io.to(host.socketID).emit('showStartGameBtn', true);
+        updateGameStatus(io, roomCode, `Waiting for ${host.name} to start the game.`);
       }
       resolve(data);
     });
@@ -88,10 +89,10 @@ export async function handleRoomClick(io, socket) {
  * @returns {number}
  */
 function generateRoomCode() {
-  let roomCode = Math.floor(Math.random() * 999999) + 1;
+  let roomCode = Math.floor(Math.random() * 9999) + 1;
   while (Rooms.hasOwnProperty(roomCode)) {
     console.log(`collision with roomCode ${roomCode}`)
-    roomCode = Math.floor(Math.random() * 999999) + 1;
+    roomCode = Math.floor(Math.random() * 9999) + 1;
   }
   console.log(`\ngenerating new room code ${roomCode}`)
   return roomCode;

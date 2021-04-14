@@ -198,11 +198,12 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
   function updateLobbyStatus() {
     if (game.isStarted) return;
 
+    const host = game.getPlayer('isRoomHost', true);
     if (game.players.length >= 5) {
-      io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', true);
-      updateGameStatus('Waiting for Host to start the game.');
+      io.to(host.socketID).emit('showStartGameBtn', true);
+      updateGameStatus(`Waiting for ${host.name} to start the game.`);
     } else if (game.players.length > 0) {
-      io.to(game.getPlayer('isRoomHost', true).socketID).emit('showStartGameBtn', false);
+      io.to(host.socketID).emit('showStartGameBtn', false);
       updateGameStatus(`Waiting for ${5 - game.players.length} more player(s) to join.`);
     }
   }
@@ -245,7 +246,7 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
     //good is on track to win, evil can attempt to assassinate merlin
     if (game.questSuccesses >= 3) {
       updateGameStatus(`Good has triumphed over Evil by succeeding ${game.questSuccesses} quests. 
-                      <br/>Waiting for Assassin to attempt to assassinate Merlin.`)
+                      <br/>Waiting for the Assassin to attempt to assassinate Merlin.`)
 
       io.to(game.getPlayer('role', 'Assassin').socketID).emit('updateGameStatus',
         `You are the assassin. <br/> Assassinate the player you think is Merlin to win the game for evil.`);
@@ -257,7 +258,7 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
       updateGameStatus(`${game.questFails} quests failed. Evil wins!`);
     }
     else if (game.getCurrentQuest().voteTrack > 5) {
-      updateGameStatus(`Quest ${currentQuest.questNum} had 5 failed team votes. Evil wins!`);
+      updateGameStatus(`Quest ${game.getCurrentQuest().questNum} had 5 failed team votes. Evil wins!`);
     }
     io.in(roomCode).emit('updatePlayerCards', game.players);
     io.to(game.getPlayer('isRoomHost', true).socketID).emit('showLobbyBtn', true);

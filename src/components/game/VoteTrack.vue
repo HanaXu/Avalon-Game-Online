@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <b-row class="justify-content-center status-section">
-      <b-col class="section-title p-1">Vote Track</b-col>
+      <b-col class="section-title">Vote Track</b-col>
       <div class="p-1">
         <span
           v-for="index in 5"
