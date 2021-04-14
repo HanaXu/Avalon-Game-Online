@@ -139,13 +139,13 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
     if (!game.assassinatePlayer(playerName)) return;
 
     if (game.winningTeam === 'Evil') {
-      updateGameStatus(`Assassin successfully discovered and killed ${playerName}, who was Merlin. <br/>Evil wins!`);
+      updateGameStatus(`Assassin successfully discovered and killed ${playerName}, who was Merlin. Evil wins!`);
     } else {
-      updateGameStatus(`Assassin killed ${playerName}, who is not Merlin. <br/>Good wins!`);
+      updateGameStatus(`Assassin killed ${playerName}, who is not Merlin. Good wins!`);
     }
     socket.emit('showAssassinateBtn', false);
     io.in(roomCode).emit('updatePlayerCards', game.players);
-    io.to(game.getPlayer('isRoomHost', true).socketID).emit('showLobbyBtn', true);
+    io.in(roomCode).emit('showLobbyBtn', true);
   });
 
   socket.on('disconnect', function () {
@@ -245,7 +245,7 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
   function gameOver() {
     //good is on track to win, evil can attempt to assassinate merlin
     if (game.questSuccesses >= 3) {
-      updateGameStatus(`Good has triumphed over Evil by succeeding ${game.questSuccesses} quests. 
+      updateGameStatus(`Good has triumphed over Evil by succeeding ${game.questSuccesses} quests! 
                       <br/>Waiting for the Assassin to attempt to assassinate Merlin.`)
 
       io.to(game.getPlayer('role', 'Assassin').socketID).emit('updateGameStatus',
@@ -261,7 +261,7 @@ export function gameSocket(io, socket, port, game, playerName, roomCode, reconne
       updateGameStatus(`Quest ${game.getCurrentQuest().questNum} had 5 failed team votes. Evil wins!`);
     }
     io.in(roomCode).emit('updatePlayerCards', game.players);
-    io.to(game.getPlayer('isRoomHost', true).socketID).emit('showLobbyBtn', true);
+    io.in(roomCode).emit('showLobbyBtn', true);
   }
 
   function showSucceedAndFailBtnsToPlayersOnQuest() {

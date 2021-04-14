@@ -105,7 +105,7 @@ export default {
     margin: 5px;
     border: none;
     border-radius: 0 0 0.25rem 0.25rem;
-    width: 150px;
+    width: 100px;
   }
   .evil {
     border-top: 5px solid #a42323;
@@ -123,23 +123,20 @@ export default {
     color: #a42323;
     font-size: 150px;
     top: 0;
-    left: 25px;
+    left: 0;
     animation-name: shrinkIn;
     animation-duration: 0.2s;
   }
 }
 
-/****MOBILE SCREENS****/
-@media screen and (max-width: 425px) {
+@media screen and (min-width: 768px) {
   .player {
     .card {
-      width: 90px;
-      padding: 2px;
+      width: 150px;
     }
+    .cross-mark {
+    left: 25px;
   }
-  .cross-mark {
-    font-size: 100px !important;
-    left: 12px !important;
   }
 }
 
