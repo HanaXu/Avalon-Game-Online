@@ -52,16 +52,9 @@
       </b-row>
       <SetupOptions></SetupOptions>
       <b-alert v-if="error" variant="danger" show v-html="errorMsg"></b-alert>
-      <div v-if="showStartGameBtn">
-        <b-button
-          class="avalon-btn-primary big"
-          id="start-game-btn"
-          @click="startGame"
-          >Start Game</b-button
-        >
-      </div>
     </div>
     <GameStatus />
+    <Actions />
   </div>
 </template>
 
@@ -69,33 +62,25 @@
 import SetupOptions from "@/components/lobby/SetupOptions.vue";
 import ClipboardIcon from "@/components/lobby/ClipboardIcon.vue";
 import GameStatus from "@/components/game/GameStatus.vue";
+import Actions from "@/components/game/Actions.vue";
 import { mapState } from "vuex";
 
 export default {
   components: {
     SetupOptions,
     ClipboardIcon,
-    GameStatus
+    GameStatus,
+    Actions
   },
   data() {
     return {
       showSetupOptionsBtn: false,
       error: false,
       errorMsg: null,
-      showStartGameBtn: false,
     };
   },
   computed: mapState(["roomCode", "playerName", "players", "specialRoles"]),
-  methods: {
-    startGame() {
-      this.$socket.emit("startGame");
-      this.showStartGameBtn = false;
-    },
-  },
   sockets: {
-    showStartGameBtn(showStartGameBtn) {
-      this.showStartGameBtn = showStartGameBtn;
-    },
     startGame({ startGame }) {
       this.error = false;
       this.showSetupOptionsBtn = startGame;

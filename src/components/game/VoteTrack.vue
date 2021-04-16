@@ -1,5 +1,5 @@
 <template>
-  <b-row class="justify-content-center mt-3">
+  <b-row class="justify-content-center mt-3 mb-2">
     <div class="vote-track-ctn">
       <span>Vote Track</span>
       <div>

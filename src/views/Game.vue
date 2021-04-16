@@ -4,12 +4,6 @@
       <PlayerCards />
       <QuestCards />
       <VoteTrack />
-      <b-button
-        v-if="showLobbyBtn"
-        @click="goToLobby"
-        class="mt-1 avalon-btn-primary big"
-        >Go To Lobby</b-button
-      >
     </div>
     <GameStatus />
     <VoteResults />
@@ -33,21 +27,6 @@ export default {
     Actions,
     GameStatus,
     VoteResults
-  },
-  data() {
-    return {
-      showLobbyBtn: false
-    };
-  },
-  methods: {
-    goToLobby() {
-      this.$socket.emit("resetGame");
-    }
-  },
-  sockets: {
-    showLobbyBtn(showLobbyBtn) {
-      this.showLobbyBtn = showLobbyBtn;
-    }
   }
 };
 </script>
