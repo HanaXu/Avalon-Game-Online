@@ -87,7 +87,6 @@ export default {
   methods: {
     startGame() {
       this.$socket.emit("startGame");
-      this.showStartGameBtn = false;
     },
     leaderHasConfirmedTeam() {
       this.$socket.emit("leaderHasConfirmedTeam");

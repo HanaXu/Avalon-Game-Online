@@ -154,10 +154,10 @@ export function shuffle(array) {
     let randomIndex;
 
     // While there remain elements to shuffle...
-    while (currentIndex !== 0) {
+    while (--currentIndex > 0) {
         // Pick a remaining element...
         randomIndex = Math.floor(Math.random() * (currentIndex + 1));
-        currentIndex--;
+
         // And swap it with the current element.
         temporaryValue = array[currentIndex];
         array[currentIndex] = array[randomIndex];
@@ -174,7 +174,7 @@ export function shuffle(array) {
 export function objectToArray(obj) {
     let arr = []
     for (let property in obj) {
-        for (var i = 0; i < obj[property]; i++) {
+        for (let i = 0; i < obj[property]; i++) {
             arr.push(property)
         }
     }
