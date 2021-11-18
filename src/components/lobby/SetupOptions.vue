@@ -101,10 +101,10 @@ export default {
       }
     },
     createBot() {
-      this.$socket.emit("createBot");
+      this.$socket.client.emit("createBot");
     },
     handleClose() {
-      this.$socket.emit('updateSpecialRoles', this.specialRoles);
+      this.$socket.client.emit('updateSpecialRoles', this.specialRoles);
     }
   }
 };

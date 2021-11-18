@@ -6,7 +6,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    serverStatus: '',
     playerName: '',
     roomCode: null,
     gameStarted: false,
@@ -15,7 +14,7 @@ export default new Vuex.Store({
     specialRoles: []
   },
   mutations: {
-    SOCKET_goToLobby(state, { playerName, roomCode }) {
+    SOCKET_GOTOLOBBY(state, { playerName, roomCode }) {
       state.playerName = playerName;
       state.roomCode = roomCode;
 
@@ -27,7 +26,7 @@ export default new Vuex.Store({
         }
       });
     },
-    SOCKET_startGame(state, { startGame, playerName, roomCode, reconnect }) {
+    SOCKET_STARTGAME(state, { startGame, playerName, roomCode, reconnect }) {
       state.gameStarted = startGame;
       if (roomCode) {
         state.roomCode = roomCode;
@@ -49,17 +48,13 @@ export default new Vuex.Store({
         });
       }
     },
-    SOCKET_updatePlayerCards(state, players) {
+    SOCKET_UPDATEPLAYERCARDS(state, players) {
       state.players = players;
     },
-    SOCKET_updateSpectatorsList(state, spectators) {
+    SOCKET_UPDATESPECTATORSLIST(state, spectators) {
       state.spectators = spectators;
     },
-    SOCKET_connect(state) {
-      state.serverStatus = 'Connected';
-    },
-    SOCKET_disconnect(state) {
-      state.serverStatus = 'Disconnected';
+    SOCKET_DISCONNECT(state) {
       state.gameStarted = false;
       state.roomCode = null;
       state.playerName = '';
@@ -69,12 +64,12 @@ export default new Vuex.Store({
 
       router.push({ path: "/" });
     },
-    SOCKET_windowReload(state) {
+    SOCKET_WINDOWRELOAD(state) {
       state.roomCode = null;
       router.push({ path: "/" });
       window.location.reload();
     },
-    SOCKET_updateSpecialRoles(state, specialRoles) {
+    SOCKET_UPDATESPECIALROLES(state, specialRoles) {
       if (specialRoles) {
         state.specialRoles = specialRoles;
       }

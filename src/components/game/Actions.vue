@@ -86,20 +86,20 @@ export default {
   computed: mapState(["playerName"]),
   methods: {
     startGame() {
-      this.$socket.emit("startGame");
+      this.$socket.client.emit("startGame");
     },
     leaderHasConfirmedTeam() {
-      this.$socket.emit("leaderHasConfirmedTeam");
+      this.$socket.client.emit("leaderHasConfirmedTeam");
     },
     playerAcceptsOrRejectsTeam(decision) {
-      this.$socket.emit("playerAcceptsOrRejectsTeam", decision);
+      this.$socket.client.emit("playerAcceptsOrRejectsTeam", decision);
     },
     questVote(decision) {
       this.showQuestVoteBtns = false;
-      this.$socket.emit("questVote", decision);
+      this.$socket.client.emit("questVote", decision);
     },
     goToLobby() {
-      this.$socket.emit("resetGame");
+      this.$socket.client.emit("resetGame");
     }
   },
   sockets: {

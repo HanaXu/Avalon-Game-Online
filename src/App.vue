@@ -4,13 +4,13 @@
     <div class="row justify-content-center">
       <b-alert
         class="col-md-8 position-absolute"
-        :show="serverStatus === 'Disconnected'"
+        :show="$socket.disconnected"
         variant="danger"
         dismissible
       >
         <span>You have disconnected from the server.</span>
       </b-alert>
-      <div v-if="serverStatus !== 'Disconnected'" class="col-md-11 py-2">
+      <div v-if="$socket.connected" class="col-md-11 py-2">
         <Spectators />
       </div>
       <router-view />
@@ -36,7 +36,7 @@ export default {
     Chat,
     RoleList
   },
-  computed: mapState(["serverStatus", "roomCode", "gameStarted"]),
+  computed: mapState(["roomCode", "gameStarted"]),
 };
 </script>
 

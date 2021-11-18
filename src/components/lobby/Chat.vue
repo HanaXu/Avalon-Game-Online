@@ -36,7 +36,7 @@ export default {
   methods: {
     sendMessage(e) {
       e.preventDefault();
-      this.$socket.emit("updateChat", {
+      this.$socket.client.emit("updateChat", {
         id: Date.now(),
         playerName: this.playerName,
         msg: e.target.value,

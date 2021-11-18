@@ -76,10 +76,10 @@ export default {
   methods: {
     addRemovePlayerFromQuest(event, action, playerName) {
       event.target.blur();
-      this.$socket.emit("addRemovePlayerFromQuest", action, playerName);
+      this.$socket.client.emit("addRemovePlayerFromQuest", action, playerName);
     },
     assassinatePlayer(playerName) {
-      this.$socket.emit("assassinatePlayer", playerName);
+      this.$socket.client.emit("assassinatePlayer", playerName);
     }
   },
   sockets: {

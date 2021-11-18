@@ -29,9 +29,9 @@
           Server Status:
           <span
             :class="{
-              'text-success': serverStatus === 'Connected',
-              'text-danger': serverStatus === 'Disconnected'}"
-          >{{serverStatus}}</span>
+              'text-success': $socket.connected,
+              'text-danger': $socket.disconnected}"
+          >{{$socket.connected ? 'Connected' : 'Disconnected'}}</span>
         </b-nav-text>
       </b-navbar-nav>
     </b-collapse>
@@ -154,10 +154,10 @@ export default {
       ]
     };
   },
-  computed: mapState(["roomCode", "serverStatus"]),
+  computed: mapState(["roomCode"]),
   methods: {
     reload() {
-      this.$socket.emit('windowReload');
+      this.$socket.client.emit('windowReload');
     }
   }
 };

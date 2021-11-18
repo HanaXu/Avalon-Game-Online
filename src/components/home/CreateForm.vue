@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
 export default {
   data() {
     return {
@@ -32,10 +30,9 @@ export default {
       createRoomClicked: false
     };
   },
-  computed: mapState(["serverStatus"]),
   methods: {
     createRoom() {
-      if (this.serverStatus === 'Disconnected') {
+      if (this.$socket.disconnected) {
         this.error = true;
         this.errorMsg = 'Error: Unable to connect to server.';
         return;
@@ -43,7 +40,7 @@ export default {
       this.error = false;
       this.createRoomClicked = true;
       this.loading = true;
-      this.$socket.emit("createRoom", this.playerName);
+      this.$socket.client.emit("createRoom", this.playerName);
     }
   },
   sockets: {
