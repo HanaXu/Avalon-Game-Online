@@ -1,5 +1,5 @@
 import express from 'express';
-import socketIO from 'socket.io';
+import { Server } from 'socket.io';
 import path from 'path';
 import dotenv from 'dotenv';
 import { gameSocket } from './socket/gameSocket.mjs';
@@ -10,7 +10,12 @@ const port = 3000;
 const server = app.listen(port, () => {
   console.log(`server running on port ${port}`);
 });
-const io = socketIO(server);
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:8080'],
+    methods: ['GET', 'POST'],
+  },
+});
 dotenv.config();
 
 if (process.env.NODE_ENV === "production") {

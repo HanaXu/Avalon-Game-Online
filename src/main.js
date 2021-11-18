@@ -13,7 +13,7 @@ import VueChatScroll from "vue-chat-scroll";
 const ioInstance = io(process.env.VUE_APP_SOCKET_CONNECT_URL, {
   reconnection: true,
   reconnectionDelay: 500,
-  maxReconnectionAttempts: Infinity
+  maxReconnectionAttempts: Infinity,
 });
 
 Vue.use(BootstrapVue);
