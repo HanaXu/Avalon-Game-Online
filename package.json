@@ -27,7 +27,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.5.5",
     "@vue/cli-plugin-pwa": "^3.5.1",
-    "@vue/cli-service": "^4.5.15",
+    "@vue/cli-service": "^5.0.8",
     "node-sass": "^4.14.1",
     "pm2": "^4.4.0",
     "sass-loader": "^7.1.0",
